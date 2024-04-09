@@ -716,6 +716,10 @@ $(document).ready(function () {
 				swal_confirm_button = 'COM_EMUNDUS_USERS_AFFECT_USER_CONFIRM';
 				preconfirm = "if ($('#agroups').val() == null) {Swal.showValidationMessage(Joomla.JText._('COM_EMUNDUS_USERS_AFFECT_GROUP_ERROR'))}"
 				break;
+			case 6:
+				title = 'COM_EMUNDUS_CREATE_CSV';
+				swal_confirm_button = 'COM_EMUNDUS_EXPORTS_GENERATE_EXCEL';
+				break;
 		}
 
 		switch (id) {
@@ -744,7 +748,7 @@ $(document).ready(function () {
 			case 24:
 				swalForm = true;
 				title = 'COM_EMUNDUS_ACTIONS_EDIT_USER';
-				swal_confirm_button = 'COM_EMUNDUS_USERS_EDIT_USER_CONFIRM';
+				swal_confirm_button = '	COM_EMUNDUS_USERS_EDIT_USER_CONFIRM';
 				preconfirm = "let checklanme =formCheck('lname');let checkfname =formCheck('fname');let checkmail =formCheck('mail');let checklogin =formCheck('login'); if (!checklanme || !checkfname || !checkmail || !checklogin) {Swal.showValidationMessage(Joomla.JText._('COM_EMUNDUS_USERS_ERROR_PLEASE_COMPLETE'))}";				html = '<div id="data"></div>';
 
 				addLoader();
@@ -878,6 +882,52 @@ $(document).ready(function () {
 				});
 				break;
 
+			case 6:
+				Swal.fire({
+					title: $(this).children('a').text(),
+					showCancelButton: true,
+					showCloseButton: true,
+					confirmButtonText: Joomla.JText._('COM_EMUNDUS_EXPORTS_GENERATE_EXCEL'),
+					cancelButtonText: Joomla.JText._('JCANCEL'),
+					reverseButtons: true,
+					customClass: {
+						title: 'em-swal-title',
+						cancelButton: 'em-swal-cancel-button',
+						confirmButton: 'em-swal-confirm-button',
+					},
+				}).then((result) => {
+					if (result.value) {
+						addLoader();
+
+						$.ajax({
+							type: 'POST',
+							url: 'index.php?option=com_emundus&controller=users&task=exportusers&Itemid=' + itemId,
+							data: {
+								users: checkInput
+							},
+							success: (result) => {
+								removeLoader();
+								Swal.fire({
+									position: 'center',
+									type: 'success',
+									title: result.msg,
+									showConfirmButton: false,
+									timer: 1500,
+									customClass: {
+										title: 'w-full justify-center',
+									}
+								});
+
+								reloadData();
+							},
+							error: function(jqXHR) {
+								removeLoader();
+								console.log(jqXHR.responseText);
+							}
+						});
+					}
+				});
+				break;
 			case 26:
 				Swal.fire({
 					title: $(this).children('a').text(),
@@ -1264,7 +1314,6 @@ $(document).ready(function () {
 					}
 				});
 				break;
-
 			case 23:
 				var checkInput = getUserCheck();
 

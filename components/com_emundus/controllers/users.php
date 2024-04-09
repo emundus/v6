@@ -1288,4 +1288,74 @@ class EmundusControllerUsers extends JControllerLegacy {
 		exit;
 	}
 
+    public function exportusers() {
+        // Vérification des autorisations d'accès
+
+        if (!EmundusHelperAccess::asAccessAction(12, 'd') && !EmundusHelperAccess::asAccessAction(20, 'd')) {
+            $this->setRedirect('index.php', JText::_('ACCESS_DENIED'), 'error');
+            return;
+        }
+
+        // Récupération des identifiants d'utilisateurs à extraire
+        $jinput = JFactory::getApplication()->input;
+        $users = $jinput->getString('users', null);
+        $userIds = [];
+
+        // Si l'option 'all' est sélectionnée, récupérer tous les utilisateurs
+        if ($users === 'all') {
+            $modelUsers = new EmundusModelUsers();
+            $allUsers = $modelUsers->getUsers(0, 0);
+
+            foreach ($allUsers as $user) {
+                $userIds[] = $user->id;
+            }
+        } else {
+            // Décode les identifiants des utilisateurs fournis
+            $userIds = (array) json_decode(stripslashes($users));
+        }
+
+        echo JPATH_SITE;
+
+        // Création du fichier CSV
+        $csvFileName = 'user_data.csv';
+        $path = JPATH_SITE.'/tmp/'.$csvFileName;
+        $csvFile = fopen($path, 'w');
+
+        fputs($csvFile, $bom = (chr(0xEF) . chr(0xBB) . chr(0xBF)));
+
+        // Entête du fichier CSV
+        fputcsv($csvFile, array('ID', 'Email' /* Ajoutez d'autres colonnes au besoin */));
+
+        // Récupération des données des utilisateurs et écriture dans le fichier CSV
+        foreach ($userIds as $userId) {
+            $user = JFactory::getUser($userId);
+            $userData = array(
+                $user->id,
+                $user->email,
+                // Ajoutez d'autres données utilisateur nécessaires ici
+            );
+            fputcsv($csvFile, $userData);
+        }
+        fseek($csvFile, 0);
+
+        fclose($csvFile);
+
+        // Envoi du fichier CSV à l'utilisateur
+        header('Content-type: text/csv');
+        header('Content-Disposition: attachment; filename='.$csvFileName);
+        header('Last-Modified: '.gmdate('D, d M Y H:i:s') . ' GMT');
+        header('Cache-Control: no-store, no-cache, must-revalidate');
+        header('Cache-Control: pre-check=0, post-check=0, max-age=0');
+        header('Pragma: anytextexeptno-cache', true);
+        header('Cache-control: private');
+        header('Expires: 0');
+
+        ob_clean();
+        ob_end_flush();
+        readfile($path);
+
+        exit;
+    }
+
+
 }
