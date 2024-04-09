@@ -5,17 +5,18 @@
 
       <!-- DROPDOWN -->
       <div v-if="param.type === 'dropdown' || param.type === 'sqldropdown'">
-        <select v-if="repeat_name !== '' && param.options.length > 0" v-model="element.params[repeat_name][index_name][param.name]" class="em-w-100">
+        <select v-if="repeat_name !== '' && param.options && param.options.length > 0" v-model="element.params[repeat_name][index_name][param.name]" class="em-w-100">
           <option v-for="option in param.options" :value="option.value">{{ translate(option.label) }}</option>
         </select>
-        <select v-else-if="param.options.length > 0"  v-model="element.params[param.name]" class="em-w-100">
+        <select v-else-if="param.options && param.options.length > 0" v-model="element.params[param.name]" class="em-w-100">
           <option v-for="option in param.options" :value="option.value">{{ translate(option.label) }}</option>
         </select>
         <div  v-if="element.plugin === 'emundus_fileupload'">
-          <button type="button" class="mt-2 underline text-profile-color" @click="EventNewDocForm">
-            <label>{{translate('COM_EMUNDUS_FORM_BUILDER_CREATE_DOCUMENT_NAME')}}</label>
+          <button type="button" class="mt-2 text-profile-color flex items-center" @click="EventNewDocForm">
+            <label class="!mb-0">{{translate('COM_EMUNDUS_FORM_BUILDER_CREATE_DOCUMENT_NAME')}}</label>
+            <span class="material-icons-outlined" :class="[(isActive ? 'rotate-90' : '')]">chevron_right</span>
           </button>
-          <FormBuilderCreateDocument v-if="isActive" profile_id="1" @documents-updated="reloadComponent"></FormBuilderCreateDocument>
+          <FormBuilderCreateDocument v-if="isActive" :profile_id="profile_id" :current_document="parseInt(element.params[param.name])" :key="parseInt(element.params[param.name])" :context="'element'" @documents-updated="reloadComponent"></FormBuilderCreateDocument>
         </div>
 
       </div>
@@ -113,6 +114,11 @@ export default {
       type: Number,
       required: false,
       default: 0
+    },
+    profile_id: {
+      type: Number,
+      required: false,
+      default: 0
     }
   },
   data: () => ({
@@ -146,7 +152,9 @@ export default {
         }
       }
 
-      this.updateSqlDropdownOptions(param);
+      if (param.type === 'sqldropdown') {
+        this.updateSqlDropdownOptions(param);
+      }
     })
   },
   methods: {

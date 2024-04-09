@@ -2279,6 +2279,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .m-0 {
   margin: 0px;
 }
+.\!mb-0 {
+  margin-bottom: 0px !important;
+}
 .mb-0 {
   margin-bottom: 0px;
 }
@@ -2500,6 +2503,10 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .origin-top-right {
   transform-origin: top right;
+}
+.rotate-90 {
+  --tw-rotate: 90deg;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 .transform {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));

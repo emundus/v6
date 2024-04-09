@@ -4159,6 +4159,10 @@ if(in_array($applicant,$exceptions)){
 				$db->setQuery($query);
 				$db->execute();
 			}
+
+			if (version_compare($cache_version, '1.39.0', '<=') || $firstrun) {
+				//TODO: Create method to add attachment OtherDocument (check before if it's not already created)
+			}
 		}
 
 		return $succeed;

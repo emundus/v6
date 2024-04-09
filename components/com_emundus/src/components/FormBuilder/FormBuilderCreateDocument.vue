@@ -1,6 +1,6 @@
 <template>
   <div id="form-builder-create-document">
-    <div class="em-flex-row em-flex-space-between em-p-16">
+    <div class="em-flex-row em-flex-space-between em-p-16" v-if="context !== 'element'">
       <p class="em-font-weight-500">{{ translate("COM_EMUNDUS_FORM_BUILDER_DOCUMENT_PROPERTIES") }}</p>
       <span class="material-icons-outlined em-pointer" @click="$emit('close')">close</span>
     </div>
@@ -146,7 +146,7 @@ export default {
       required: true
     },
     current_document: {
-      type: Object,
+      type: [Object,Number],
       default: null
     },
     mandatory: {
@@ -157,6 +157,11 @@ export default {
 			type: String,
 			default: "create"
 		},
+    context: {
+      type: String,
+      required: false,
+      default: ''
+    }
   },
   components: {
     IncrementalSelect,
@@ -230,6 +235,14 @@ export default {
       formService.getDocumentModels().then(response => {
         if (response.status) {
           this.models = response.data;
+          if(this.current_document !== null && typeof this.current_document !== 'object') {
+            this.models.find((model) => {
+              if (model.id == this.current_document) {
+                this.current_document = model;
+              }
+            });
+          }
+
           if (this.current_document != null && (this.current_document.docid || this.current_document.id)) {
             this.selectModel({
               target: {

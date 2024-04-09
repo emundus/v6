@@ -761,7 +761,6 @@
       "label": "COM_EMUNDUS_ONBOARD_WANTED_FILE_TYPE",
       "name": "attachmentId",
       "type": "sqldropdown",
-      "special": "fileupload",
       "table": "jos_emundus_setup_attachments",
       "key": "id",
       "where": "published = 1",

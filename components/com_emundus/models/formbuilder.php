@@ -1405,7 +1405,7 @@ class EmundusModelFormbuilder extends JModelList {
 	 * @param $labels
 	 * @return false|mixed
 	 */
-    function createSimpleElement($gid, $plugin, $attachementId = null, $evaluation = 0, $labels = null) {
+    function createSimpleElement($gid, $plugin, $attachementId = 0, $evaluation = 0, $labels = null) {
 	    $elementId = false;
 
 		if (!empty($gid) && !empty($plugin)) {
@@ -1425,7 +1425,8 @@ class EmundusModelFormbuilder extends JModelList {
 				}
 
 				// Prepare parameters
-				$params = $this->h_fabrik->prepareElementParameters($plugin);
+				//TODO: If $plugin == 'emundus_fileupload' && empty($attachmentId) select id wher lbl == 'OtherDocument'
+				$params = $this->h_fabrik->prepareElementParameters($plugin, true, $attachementId);
 				//
 
 				// Prepare ordering
