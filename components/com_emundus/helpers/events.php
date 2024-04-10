@@ -153,6 +153,25 @@ class EmundusHelperEvents {
         }
     }
 
+    private function getFormsIdFromTablesId($table_ids): array
+    {
+        $form_ids = [];
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        foreach ($table_ids as $table_id) {
+            $query->clear()
+                ->select('form_id')
+                ->from('#__fabrik_lists')
+                ->where('db_table_name = (SELECT db_table_name FROM #__fabrik_lists WHERE id = ' . $table_id . ')');
+
+            $db->setQuery($query);
+            $form_ids = array_merge($form_ids, $db->loadColumn());
+        }
+
+        return $form_ids;
+    }
+
     function isApplicationSent($params) : bool{
         $mainframe = JFactory::getApplication();
 
@@ -180,11 +199,12 @@ class EmundusHelperEvents {
             $eMConfig = JComponentHelper::getParams('com_emundus');
             $copy_application_form = $eMConfig->get('copy_application_form', 0);
 	        $copy_application_form_type   = $eMConfig->get('copy_application_form_type', 0);
-	        $copy_exclude_forms      = $eMConfig->get('copy_exclude_forms', []);
-	        $copy_include_forms      = $eMConfig->get('copy_include_forms', []);
+	        $copy_exclude_tables_id      = $eMConfig->get('copy_exclude_tables_id', []);
+	        $copy_include_tables_id      = $eMConfig->get('copy_include_tables_id', []);
             $can_edit_until_deadline = $eMConfig->get('can_edit_until_deadline', '0');
             $can_edit_after_deadline = $eMConfig->get('can_edit_after_deadline', '0');
-
+            $copy_include_forms = $this->getFormsIdFromTablesId($copy_include_tables_id);
+            $copy_exclude_forms = $this->getFormsIdFromTablesId($copy_exclude_tables_id);
             $id_applicants = $eMConfig->get('id_applicants', '0');
             $applicants = explode(',',$id_applicants);
 
