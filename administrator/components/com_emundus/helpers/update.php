@@ -3735,7 +3735,24 @@ class EmundusHelperUpdate
         return $db->loadResult();
     }
 
-    public static function createTypeDocumentAttachement(){
-        //todo create type document attachement
+    public static function createTypeDocumentAttachement($arg1,$arg2,$arg3,$arg4,$arg5,$arg6,$arg7,$arg8,$arg9,$arg10,$arg11,$arg13,$arg14,$arg15,$arg16,$arg17,$arg18,$arg19,$arg20,$arg21,$arg22 ){
+        $db = JFactory::getDBO();
+$query = $db->getQuery(true);
+$query->insert($db->quoteName('jos_emundus_setup_attachments'))
+    ->columns($db->quoteName(['lbl', 'value', 'description', 'allowed_types', 'nbmax', 'ordering', 'published', 'ocr_keywords', 'category', 'video_max_length', 'min_width', 'max_width', 'min_height', 'max_height', 'min_pages_pdf', 'max_pages_pdf', 'default_attachment', 'sync', 'sync_method', 'params', 'max_filesize']))
+    //i want to use the arguments passed to the function as values
+    ->values(implode(',', array_map([$db, 'quote'], [$arg1, $arg2, $arg3, $arg4, $arg5, $arg6, $arg7, $arg8, $arg9, $arg10, $arg11, $arg13, $arg14, $arg15, $arg16, $arg17, $arg18, $arg19, $arg20, $arg21, $arg22])));
+$db->setQuery($query);
+
+        try {
+            $output_status_inserted = $db->execute();
+        } catch (Exception $e) {
+            $output_status_inserted = false;
+            JLog::add('Error trying to insert _OtherDocument element in jos_emundus_setup_attachments ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
+            $update_campaign_workflow['message'] = 'Error trying to insert _OtherDocument element in jos_emundus_setup_attachments   ' . $e->getMessage();
+        }
+
+        return $output_status_inserted;
+
     }
 }

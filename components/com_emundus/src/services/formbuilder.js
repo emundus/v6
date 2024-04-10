@@ -13,7 +13,6 @@ export default {
                 'index.php?option=com_emundus&controller=formbuilder&task=createsimpleelement',
                 formData
             );
-
             return response.data;
         } catch (e) {
             return {

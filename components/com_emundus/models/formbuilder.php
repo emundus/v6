@@ -1425,7 +1425,14 @@ class EmundusModelFormbuilder extends JModelList {
 				}
 
 				// Prepare parameters
-				//TODO: If $plugin == 'emundus_fileupload' && empty($attachmentId) select id wher lbl == 'OtherDocument'
+                if ($plugin == 'emundus_fileupload' && empty($attachementId)) {
+                    $query->clear()
+                        ->select('id')
+                        ->from($db->quoteName('#__emundus_setup_attachments'))
+                        ->where($db->quoteName('lbl') . ' = ' . $db->quote('_OtherDocument'));
+                    $db->setQuery($query);
+                    $attachementId = $db->loadResult();
+                }
 				$params = $this->h_fabrik->prepareElementParameters($plugin, true, $attachementId);
 				//
 
