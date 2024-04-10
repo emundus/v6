@@ -559,8 +559,9 @@ class EmundusFiltersFiles extends EmundusFilters
                     ->leftJoin('#__emundus_campaign_candidature AS jecc ON jeua.fnum = jecc.fnum')
                     ->leftJoin('#__emundus_setup_campaigns AS jesc ON jecc.campaign_id = jesc.id')
                     ->leftJoin('#__emundus_setup_programmes AS jesp ON jesc.training = jesp.code')
-                    ->where('ju.block = 0')
+                    ->where('jeua.action_id = 1')
                     ->andWhere('jecc.campaign_id IN ' . '(' . implode(',', $this->user_campaigns) . ') OR jesp.id IN ' . '(' . implode(',', $this->user_programs) . ')')
+                    ->andWhere('ju.block = 0')
                     ->group('ju.id');
 
                 try {

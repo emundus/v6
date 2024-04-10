@@ -3953,7 +3953,17 @@ class EmundusHelperFiles
                                         $users_assoc_alias = array_search('jos_emundus_group_assoc', $already_joined);
                                     }
 
-                                    $where['q'] .= ' AND ' . $this->writeQueryWithOperator($users_assoc_alias . '.user_id', $filter['value'], $filter['operator']);
+                                    if ($filter['operator'] === 'NOT IN') {
+                                        $where['q'] .= ' AND jecc.fnum NOT IN (
+                                            SELECT DISTINCT jos_emundus_users_assoc.fnum
+                                            FROM jos_emundus_users_assoc
+                                            WHERE ' . $this->writeQueryWithOperator('jos_emundus_users_assoc.user_id', $filter['value'], 'IN') . '
+                                            AND jeua.action_id = 1 AND jeua.r = 1
+                                        )';
+                                    } else {
+                                        $where['q'] .= ' AND ' . $this->writeQueryWithOperator($users_assoc_alias . '.user_id', $filter['value'], $filter['operator']);
+                                    }
+
                                     break;
                                 default:
                                     break;
