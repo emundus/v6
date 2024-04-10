@@ -1289,23 +1289,18 @@ class EmundusControllerUsers extends JControllerLegacy {
 	}
 
     public function exportusers() {
-        // Récupération des valeurs des cases à cocher
+
         $jinput = JFactory::getApplication()->input;
         $checkboxes = $jinput->get('checkboxes', array(), 'ARRAY');
 
-        var_dump($checkboxes);
-
-        // Vérification des autorisations d'accès
-        if (!EmundusHelperAccess::asAccessAction(12, 'd') && !EmundusHelperAccess::asAccessAction(20, 'd')) {
+        if (!EmundusHelperAccess::asAccessAction(12, 'r')) {
             $this->setRedirect('index.php', JText::_('ACCESS_DENIED'), 'error');
             return;
         }
 
-        // Récupération des identifiants d'utilisateurs à extraire
         $users = $jinput->getString('users', null);
         $userIds = [];
 
-        // Si l'option 'all' est sélectionnée, récupérer tous les utilisateurs
         if ($users === 'all') {
             $modelUsers = new EmundusModelUsers();
             $allUsers = $modelUsers->getUsers(0, 0);
@@ -1314,18 +1309,15 @@ class EmundusControllerUsers extends JControllerLegacy {
                 $userIds[] = $user->id;
             }
         } else {
-            // Décode les identifiants des utilisateurs fournis
             $userIds = (array) json_decode(stripslashes($users));
         }
 
-        // Création du fichier CSV
-        $csvFileName = 'user_data.csv';
+        $csvFileName = 'export_users_'.date('Y-m-d_H-i').'.csv';;
         $path = JPATH_SITE . '/tmp/' . $csvFileName;
         $csvFile = fopen($path, 'w');
 
         fputs($csvFile, $bom = (chr(0xEF) . chr(0xBB) . chr(0xBF)));
 
-        // Entête du fichier CSV
         if ($checkboxes['id']){
             $headers[] = 'Id';
         }
@@ -1335,31 +1327,34 @@ class EmundusControllerUsers extends JControllerLegacy {
         if ($checkboxes['mail']) {
             $headers[] = 'Email';
         }
-        // Ajoutez d'autres en-têtes en fonction des cases à cocher supplémentaires
 
         fputcsv($csvFile, $headers);
 
-        // Récupération des données des utilisateurs et écriture dans le fichier CSV
         foreach ($userIds as $userId) {
             $user = JFactory::getUser($userId);
-            if ($checkboxes['id']) {
-                $userData[] = $user->id;
-            }
-            if ($checkboxes['nom']) {
-                $userData[] = $user->name;
-            }
-            if ($checkboxes['mail']) {
-                $userData[] = $user->email;
-            }
-            // Ajoutez d'autres données utilisateur nécessaires ici
 
-            fputcsv($csvFile, $userData);
+            $userData = array();
+
+            if($user->email !== null)
+            {
+                if ($checkboxes['id']) {
+                    $userData[] = $user->id;
+                }
+                if ($checkboxes['nom']) {
+                    $userData[] = $user->name;
+                }
+                if ($checkboxes['mail']) {
+                    $userData[] = $user->email;
+                }
+
+                fputcsv($csvFile, $userData);
+            }
         }
+
 
         fseek($csvFile, 0);
         fclose($csvFile);
 
-        // Envoi du fichier CSV à l'utilisateur
         header('Content-type: text/csv');
         header('Content-Disposition: attachment; filename=' . $csvFileName);
         header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
@@ -1371,8 +1366,27 @@ class EmundusControllerUsers extends JControllerLegacy {
 
         ob_clean();
         ob_end_flush();
-        readfile($path);
 
+        echo json_encode(array('csvFilePath' => $path, 'fileName'=> $csvFileName));
+
+        exit;
+    }
+
+    public function deleteusersfile() {
+
+        if (!EmundusHelperAccess::asAccessAction(12, 'r')) {
+            $this->setRedirect('index.php', JText::_('ACCESS_DENIED'), 'error');
+            return;
+        }
+
+        $jinput = JFactory::getApplication()->input;
+        $fileName = $jinput->get('fileName');
+
+        $filePath = JPATH_SITE . '/tmp/' . $fileName;
+
+        if (file_exists($filePath)) {
+            unlink($filePath);
+        }
         exit;
     }
 

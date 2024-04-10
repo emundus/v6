@@ -884,15 +884,31 @@ $(document).ready(function () {
 
 			case 6:
 				var checkboxesHTML = `
-        <input type="checkbox" id="checkbox-nom" name="checkbox-nom" value="nom">
-        <label for="checkbox-nom">Nom Prénom</label><br>
-        
-        <input type="checkbox" id="checkbox-mail" name="checkbox-mail" value="mail">
-        <label for="checkbox-mail">Mail</label><br>
-        
-        <input type="checkbox" id="checkbox-id" name="checkbox-id" value="id">
-        <label for="checkbox-id">ID</label><br>
-    `;
+				<style>
+					.checkbox-label {
+						display: inline-block;
+						vertical-align: top; 
+					}
+				</style>
+				
+				<h5>Sélectionnez les données que vous souhaitez exporter :</h5>
+				
+				<div>
+					<input type="checkbox" id="checkbox-nom" name="checkbox-nom" value="nom">
+					<label for="checkbox-nom" class="checkbox-label">Nom Prénom</label>
+				</div>
+				
+				<div>
+					<input type="checkbox" id="checkbox-mail" name="checkbox-mail" value="mail">
+					<label for="checkbox-mail" class="checkbox-label">Mail</label>
+				</div>
+				
+				<div>
+					<input type="checkbox" id="checkbox-id" name="checkbox-id" value="id">
+					<label for="checkbox-id" class="checkbox-label">ID</label>
+				</div>
+
+    			`;
 
 				Swal.fire({
 					title: $(this).children('a').text(),
@@ -911,7 +927,6 @@ $(document).ready(function () {
 					if (result.value) {
 						addLoader();
 
-						// Récupération des valeurs des cases à cocher
 						var tcheckInput = {
 							nom: $('#checkbox-nom').prop('checked'),
 							mail: $('#checkbox-mail').prop('checked'),
@@ -930,23 +945,41 @@ $(document).ready(function () {
 							url: 'index.php?option=com_emundus&controller=users&task=exportusers&Itemid=' + itemId,
 							data: {
 								users: checkInput,
-								checkboxes: checkedBoxes // Envoyer les valeurs des cases à cocher au serveur
+								checkboxes: checkedBoxes
 							},
-							success: (result) => {
+							success: function(result) {
 								removeLoader();
-								Swal.fire({
+
+								var response = JSON.parse(result);
+								var fileName = response.fileName;
+
+								var downloadButton = $('<a>').attr('href', "/tmp/" + fileName).attr('download', fileName).text('Télécharger le fichier CSV');
+								var swalInstance = Swal.fire({
 									position: 'center',
 									type: 'success',
-									title: result.msg,
+									title: 'Téléchargement prêt',
+									html: downloadButton,
 									showConfirmButton: false,
-									timer: 1500,
 									customClass: {
 										title: 'w-full justify-center',
 									}
 								});
 
-								reloadData();
+								swalInstance.then(() => {
+									$.ajax({
+										type: 'POST',
+										url: 'index.php?option=com_emundus&controller=users&task=deleteusersfile&Itemid=\' + itemId',
+										data: { fileName: fileName},
+										success: function(response) {
+											// console.log(response);
+										},
+										error: function(jqXHR, textStatus, errorThrown) {
+											console.error(textStatus, errorThrown);
+										}
+									});
+								});
 							},
+
 							error: function(jqXHR) {
 								removeLoader();
 								console.log(jqXHR.responseText);
