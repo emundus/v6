@@ -3744,6 +3744,7 @@ class EmundusModelFiles extends JModelLegacy
      * @throws Exception
      */
     public function getFabrikValueRepeat($elt, $fnums, $params, $groupRepeat) {
+        $values = [];
 
         if (!is_array($fnums)) {
             $fnums = [$fnums];
@@ -3755,69 +3756,98 @@ class EmundusModelFiles extends JModelLegacy
         $plugin = $elt['plugin'];
         $isFnumsNull = ($fnums === null);
         $isDatabaseJoin = ($plugin === 'databasejoin');
-        $isMulti = (@$params->database_join_display_type == "multilist" || @$params->database_join_display_type == "checkbox");
+        $isMulti = !empty($params) && ($params->database_join_display_type == "multilist" || $params->database_join_display_type == "checkbox");
         $dbo = $this->getDbo();
 
-        if ($plugin === 'date') {
-            $date_form_format = $this->dateFormatToMysql($params->date_form_format);
-            $query = 'select GROUP_CONCAT(DATE_FORMAT(t_repeat.' . $name.', '.$dbo->quote($date_form_format).')  SEPARATOR ", ") as val, t_origin.fnum ';
-        } elseif ($isDatabaseJoin) {
-            if ($groupRepeat) {
-                $query = 'select GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR ", ") as val, t_table.fnum ';
-            } else {
-                if ($isMulti) {
-                    $query = 'select GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR ", ") as val, t_elt.fnum ';
+        // check if $tableName contains fnum column
+        $query = "SHOW COLUMNS FROM {$tableName} LIKE 'fnum'";
+        $dbo->setQuery($query);
+        $has_fnum_column = !empty($dbo->loadAssoc());
+
+        if (!empty($has_fnum_column)) {
+            if ($isDatabaseJoin) {
+                if ($groupRepeat) {
+                    $query = 'select GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR ", ") as val, t_table.fnum ';
+                    $tableName2 = $tableJoin;
+                    if ($isMulti) {
+                        $query .= ' FROM ' . $params->join_db_name . ' as  t_origin left join '.$tableName.'_repeat_'.$name .' as t_repeat on t_repeat.' . $name . " = t_origin.".$params->join_key_column . ' left join ' . $tableName2 . ' as t_elt on t_elt.id = t_repeat.parent_id left join '.$tableName.' as t_table on t_table.id = t_elt.parent_id ';
+                    } else {
+                        $query .= ' FROM ' . $params->join_db_name . ' as  t_origin left join '.$tableName2.' as t_elt on t_elt.' . $name . " = t_origin.".$params->join_key_column." left join $tableName as t_table on t_table.id = t_elt.parent_id ";
+                    }
+                    $query .= ' where t_table.fnum in ("'.implode('","', $fnums).'") group by t_table.fnum';
+
                 } else {
-                    $query = 'select t_origin.' . $params->join_val_column . ' as val, t_elt.fnum ';
+                    if ($isMulti) {
+                        $query = 'select GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR ", ") as val, t_elt.fnum ';
+                        $query .= ' FROM ' . $params->join_db_name . ' as  t_origin left join '.$tableName.'_repeat_'.$name .' as t_repeat on t_repeat.' . $name . " = t_origin.".$params->join_key_column . ' left join ' . $tableName . ' as t_elt on t_elt.id = t_repeat.parent_id ';
+                    } else {
+                        $query = 'select t_origin.' . $params->join_val_column . ' as val, t_elt.fnum ';
+                        $query .= ' FROM ' . $params->join_db_name . ' as  t_origin left join '.$tableName.' as t_elt on t_elt.' . $name . " = t_origin.".$params->join_key_column;
+                    }
+                    $query .= ' where t_elt.fnum in ("'.implode('","', $fnums).'") group by t_elt.fnum';
                 }
+            } else {
+                if ($plugin === 'date') {
+                    $date_form_format = $this->dateFormatToMysql($params->date_form_format);
+                    $query = 'SELECT GROUP_CONCAT(DATE_FORMAT(t_repeat.' . $name.', '.$dbo->quote($date_form_format).')  SEPARATOR ", ") as val, t_origin.fnum ';
+                } else {
+                    $query = 'SELECT  GROUP_CONCAT(t_repeat.' . $name.'  SEPARATOR ", ") as val, t_origin.fnum ';
+                }
+
+                $query .= ' FROM ' . $tableJoin . ' as t_repeat  left join ' . $tableName . ' as t_origin on t_origin.id = t_repeat.parent_id';
+                $query .= ' where t_origin.fnum in ("'.implode('","', $fnums).'") group by t_origin.fnum';
             }
         } else {
-            $query = 'SELECT  GROUP_CONCAT(t_repeat.' . $name.'  SEPARATOR ", ") as val, t_origin.fnum ';
-        }
+            if (!class_exists('EmundusHelperFiles')) {
+                require_once JPATH_ROOT . '/components/com_emundus/helpers/files.php';
+            }
+            $h_files = new EmundusHelperFiles();
+            $joins = $h_files->findJoinsBetweenTablesRecursively('jos_emundus_campaign_candidature', $tableName);
 
-        if ($isDatabaseJoin) {
-            if ($groupRepeat) {
-                $tableName2 = $tableJoin;
-                if ($isMulti) {
-                    $query .= ' FROM ' . $params->join_db_name . ' as  t_origin left join '.$tableName.'_repeat_'.$name .' as t_repeat on t_repeat.' . $name . " = t_origin.".$params->join_key_column . ' left join ' . $tableName2 . ' as t_elt on t_elt.id = t_repeat.parent_id left join '.$tableName.' as t_table on t_table.id = t_elt.parent_id ';
+            if (!empty($joins)) {
+                if ($isDatabaseJoin) {
+                    if ($groupRepeat) {
+                        // todo:
+
+                    } else {
+                        if ($isMulti) {
+                            // todo:
+
+                        } else {
+                            $alreadys_joined = [
+                                't_origin' => $params->join_val_column,
+                                't_elt' => $tableName,
+                            ];
+                            $joins_str = $h_files->writeJoins($joins, $alreadys_joined, true);
+                            $jecc_alias = array_search('jos_emundus_campaign_candidature', $alreadys_joined);
+
+                            $query = 'SELECT t_origin.' . $params->join_val_column . ' as val, ' . $jecc_alias . '.fnum ';
+                            $query .= ' FROM ' . $params->join_db_name . ' as  t_origin ';
+                            $query .= ' LEFT JOIN '.$tableName.' as t_elt on t_elt.' . $name . " = t_origin.".$params->join_key_column;
+                            $query .= $joins_str;
+                            $query .= ' WHERE ' . $jecc_alias . '.fnum in ("'.implode('","', $fnums).'") group by ' . $jecc_alias . '.fnum';
+                        }
+                    }
                 } else {
-                    $query .= ' FROM ' . $params->join_db_name . ' as  t_origin left join '.$tableName2.' as t_elt on t_elt.' . $name . " = t_origin.".$params->join_key_column." left join $tableName as t_table on t_table.id = t_elt.parent_id ";
-                }
-            } else {
-                if ($isMulti) {
-                    $query .= ' FROM ' . $params->join_db_name . ' as  t_origin left join '.$tableName.'_repeat_'.$name .' as t_repeat on t_repeat.' . $name . " = t_origin.".$params->join_key_column . ' left join ' . $tableName . ' as t_elt on t_elt.id = t_repeat.parent_id ';
-                } else {
-                    $query .= ' FROM ' . $params->join_db_name . ' as  t_origin left join '.$tableName.' as t_elt on t_elt.' . $name . " = t_origin.".$params->join_key_column;
+                    // todo:
                 }
             }
-
-        } else {
-            $query .= ' FROM ' . $tableJoin . ' as t_repeat  left join '.$tableName.' as t_origin on t_origin.id = t_repeat.parent_id';
         }
 
-        if ($isMulti || $isDatabaseJoin) {
-            if ($groupRepeat) {
-                $query .= ' where t_table.fnum in ("'.implode('","', $fnums).'") group by t_table.fnum';
-            } else {
-                $query .= ' where t_elt.fnum in ("'.implode('","', $fnums).'") group by t_elt.fnum';
-            }
-        } else {
-            $query .= ' where t_origin.fnum in ("'.implode('","', $fnums).'") group by t_origin.fnum';
-        }
-
-        try{
+        try {
             $dbo->setQuery($query);
 
             if (!$isFnumsNull) {
-                $res = $dbo->loadAssocList('fnum');
+                $values = $dbo->loadAssocList('fnum');
             } else {
-                $res = $dbo->loadAssocList();
+                $values = $dbo->loadAssocList();
             }
 
-            return $res;
         } catch(Exception $e) {
-            throw $e;
+            JLog::add('Failed to get fabrik value repeat ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
         }
+
+        return $values;
     }
 
     /**
@@ -3828,24 +3858,63 @@ class EmundusModelFiles extends JModelLegacy
      * @throws Exception
      */
     public function getFabrikValue($fnums, $tableName, $name, $dateFormat = null) {
+        $values = [];
 
         if (!is_array($fnums))
             $fnums = [$fnums];
 
         $dbo = JFactory::getDbo();
-        if ($dateFormat !== null) {
-            $dateFormat = $this->dateFormatToMysql($dateFormat);
-            $query = "select fnum, DATE_FORMAT({$name}, ".$dbo->quote($dateFormat).") as val from {$tableName} where fnum in ('".implode("','", $fnums)."')";
+        // first, does the field fnum exists in the table ?
+        $query = "SHOW COLUMNS FROM {$tableName} LIKE 'fnum'";
+        $dbo->setQuery($query);
+        $has_fnum_column = !empty($dbo->loadAssoc());
+
+        if ($has_fnum_column) {
+            if ($dateFormat !== null) {
+                $dateFormat = $this->dateFormatToMysql($dateFormat);
+                $query = "select fnum, DATE_FORMAT({$name}, ".$dbo->quote($dateFormat).") as val from {$tableName} where fnum in ('".implode("','", $fnums)."')";
+            } else {
+                $query = "select fnum, $dbo->quote({$name}) as val from {$tableName} where fnum in ('".implode("','", $fnums)."')";
+            }
+
+            try {
+                $dbo->setQuery($query);
+                $values = $dbo->loadAssocList('fnum');
+            } catch(Exception $e) {
+                JLog::add('Failed to get fabrik value ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            }
         } else {
-            $query = "select fnum, $dbo->quote({$name}) as val from {$tableName} where fnum in ('".implode("','", $fnums)."')";
+            if (!class_exists('EmundusHelperFiles')) {
+                require_once JPATH_ROOT . '/components/com_emundus/helpers/files.php';
+            }
+            $h_files = new EmundusHelperFiles();
+            $joins = $h_files->findJoinsBetweenTablesRecursively($tableName, 'jos_emundus_campaign_candidature');
+            if (!empty($joins)) {
+                $already_joined = [
+                    't_origin' => $tableName,
+                ];
+                $joins_str = $h_files->writeJoins($joins, $already_joined, true);
+                $jecc_alias = array_search('jos_emundus_campaign_candidature', $already_joined);
+
+                if ($dateFormat !== null) {
+                    $query = "SELECT DATE_FORMAT(t_origin.{$name}, ".$dbo->quote($dateFormat).") as val,  " . $jecc_alias . ".fnum ";
+                } else {
+                    $query = "SELECT t_origin.{$name} as val, " . $jecc_alias . ".fnum ";
+                }
+                $query .= " FROM {$tableName} as t_origin ";
+                $query .= $joins_str;
+                $query .= " WHERE  " . $jecc_alias . ".fnum in ('".implode("','", $fnums)."')";
+
+                try {
+                    $dbo->setQuery($query);
+                    $values = $dbo->loadAssocList('fnum');
+                } catch(Exception $e) {
+                    JLog::add('Failed to get fabrik value ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                }
+            }
         }
 
-        try {
-            $dbo->setQuery($query);
-            return $dbo->loadAssocList('fnum');
-        } catch(Exception $e) {
-            throw $e;
-        }
+        return $values;
     }
 
     public function getStatus() {
