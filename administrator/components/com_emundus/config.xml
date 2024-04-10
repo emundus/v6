@@ -212,27 +212,27 @@
 			<option value="0">COM_EMUNDUS_COPY_APPLICATION_FORM_TYPE_EXCLUDE</option>
 			<option value="1">COM_EMUNDUS_COPY_APPLICATION_FORM_TYPE_INCLUDE</option>
 		</field>
-		<field name="copy_include_forms"
+		<field name="copy_include_tables_id"
 			   label="COM_EMUNDUS_COPY_APPLICATION_FORM_INCLUDE"
 			   description=""
 			   showon="copy_application_form:1[AND]copy_application_form_type:1"
 			   menu="hide"
 			   type="sql"
-			   query="SELECT id, label FROM jos_fabrik_forms WHERE published = 1"
+			   query="SELECT id, db_table_name FROM jos_fabrik_lists WHERE published = 1 GROUP BY db_table_name"
 			   key_field="id"
-			   value_field="label"
+			   value_field="db_table_name"
 			   multiple="true"
 			   default=""
 		/>
-		<field name="copy_exclude_forms"
+		<field name="copy_exclude_tables_id"
 			   label="COM_EMUNDUS_COPY_APPLICATION_FORM_EXCLUDE"
 			   description="COM_EMUNDUS_COPY_APPLICATION_FORM_EXCLUDE_DESC"
 			   showon="copy_application_form:1[AND]copy_application_form_type:0"
 			   menu="hide"
 			   type="sql"
-			   query="SELECT id, label FROM jos_fabrik_forms WHERE published = 1"
+			   query="SELECT id, db_table_name FROM jos_fabrik_lists WHERE published = 1 GROUP BY db_table_name"
 			   key_field="id"
-			   value_field="label"
+			   value_field="db_table_name"
 			   multiple="true"
 			   default=""
 		/>
