@@ -1271,7 +1271,7 @@ class EmundusModelEmails extends JModelList {
 
             $mail_to = $jinput->post->getRaw('mail_to');
 
-            $mail_tmpl = $this->getEmail('confirm_post');
+            $mail_tmpl = $this->getEmail('expert');
 
             if (!empty($mail_to)) {
                 $mail_body = $this->setBody($example_user, $jinput->post->getRaw('mail_body'));
@@ -1390,7 +1390,8 @@ class EmundusModelEmails extends JModelList {
                         'EXPERT_ACCEPT_LINK_NOFORM'    => Uri::base().$link_accept_noform,
                         'EXPERT_REFUSE_LINK_NOFORM'    => Uri::base().$link_refuse_noform,
                         'EXPERT_ACCEPT_LINK_RELATIVE_NOFORM'    => $link_accept_noform,
-                        'EXPERT_REFUSE_LINK_RELATIVE_NOFORM'    => $link_refuse_noform
+                        'EXPERT_REFUSE_LINK_RELATIVE_NOFORM'    => $link_refuse_noform,
+                        'EXPERT_ACCEPT_BUTTON' => Text::_('COM_EMUNDUS_ACCEPT'),
                     );
 
                     if (!empty($formid->agreement)) {

@@ -4287,22 +4287,13 @@ $(document).ready(function() {
                         fnums: fnums
                     },
                     success: function(result) {
-                        const dataWrapper = document.getElementById('data');
-
-                        if (dataWrapper) {
-                            dataWrapper.innerHTML = result;
-                            document.querySelector('.em-swal-confirm-button').style.opacity = '0';
-                            $('#email-loader').remove();
-                            dataWrapper.classList.remove('em-loader');
-                        }
+                        $('#data').append(result);
+                        document.querySelector('.em-swal-confirm-button').style.opacity = '0';
+                        $('#email-loader').remove();
+                        $('#data').removeClass('em-loader');
                     },
                     error: function (jqXHR) {
-                        const dataWrapper = document.getElementById('data');
-                        if (dataWrapper) {
-                            dataWrapper.classList.remove('em-loader');
-                            dataWrapper.innerHTML = '<p class="alert alert-error">' + Joomla.JText._('COM_EMUNDUS_ONBOARD_ERROR_MESSAGE') +'</p>';
-                        }
-                        console.warn(jqXHR.responseText);
+                        console.log(jqXHR.responseText);
                     }
                 });
                 break;
