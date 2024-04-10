@@ -17,6 +17,7 @@
             <span class="material-icons-outlined" :class="[(isActive ? 'rotate-90' : '')]">chevron_right</span>
           </button>
           <FormBuilderCreateDocument v-if="isActive" :profile_id="profile_id" :current_document="parseInt(element.params[param.name])" :key="parseInt(element.params[param.name])" :context="'element'" @documents-updated="reloadComponent"></FormBuilderCreateDocument>
+
         </div>
 
       </div>

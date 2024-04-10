@@ -3735,6 +3735,25 @@ class EmundusHelperUpdate
         return $db->loadResult();
     }
 
+    public static function getAllIndexAttachement(){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select($db->quoteName('id'))
+            ->from($db->quoteName('jos_emundus_setup_attachments'));
+
+        $db->setQuery($query);
+
+        try {
+            $ids = $db->loadColumn();
+        } catch (Exception $e) {
+            echo "Error: " . $e->getMessage();
+        }
+
+// Now $ids contains all the IDs from the table
+        return $ids;
+    }
+
     public static function createTypeDocumentAttachement($arg1,$arg2,$arg3,$arg4,$arg5,$arg6,$arg7,$arg8,$arg9,$arg10,$arg11,$arg13,$arg14,$arg15,$arg16,$arg17,$arg18,$arg19,$arg20,$arg21,$arg22 ){
         $db = JFactory::getDBO();
 $query = $db->getQuery(true);
@@ -3751,8 +3770,31 @@ $db->setQuery($query);
             JLog::add('Error trying to insert _OtherDocument element in jos_emundus_setup_attachments ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
             $update_campaign_workflow['message'] = 'Error trying to insert _OtherDocument element in jos_emundus_setup_attachments   ' . $e->getMessage();
         }
-
         return $output_status_inserted;
-
     }
+
+    public static function cleanFalangContent($ref_id,$referencefield,$value){
+    $db = JFactory::getDBO();
+    $query = $db->getQuery(true);
+    if($ref_id == null){
+        $query->delete($db->quoteName('jos_falang_content'))
+        ->where($db->quoteName('reference_table') . ' = ' . $db->quote($referencefield))
+        ->where($db->quoteName('value') . ' = ' . $db->quote($value));
+        $db->setQuery($query);
+        $db->execute();
+    }else {
+        foreach ($ref_id as $item) {
+            $query = $db->getQuery(true);
+            $query->delete($db->quoteName('jos_falang_content'))
+                ->where($db->quoteName('reference_table') . ' = ' . $db->quote($referencefield))
+                ->where($db->quoteName('reference_id') . ' != ' . $db->quote($item));
+            $db->setQuery($query);
+            $db->execute();
+
+        }
+    }
+
+
+}
+
 }

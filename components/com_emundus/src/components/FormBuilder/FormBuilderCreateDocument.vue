@@ -32,7 +32,7 @@
           <incremental-select
               v-if="models.length > 0"
               :options="documentList"
-              :defaultValue="incSelectDefaultValue"
+              :defaultValue="parseInt(current_document.id)"
               :locked="mode != 'create'"
               @update-value="updateDocumentSelectedValue"
           >

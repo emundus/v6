@@ -4154,11 +4154,15 @@ if(in_array($applicant,$exceptions)){
                 $id_OtherDocument = EmundusHelperUpdate::checkTypeDocumentAttachement();
                 if (isset($id_OtherDocument)) {
                     // $id_OtherDocument is set and is not NULL
-                    echo " - Type document OtherDocument already exists\n".$id_OtherDocument;
+                    //echo " - Type document OtherDocument already exists\n".$id_OtherDocument;
                 } else {
                     // $id_OtherDocument is not set or is NULL
                     EmundusHelperUpdate::createTypeDocumentAttachement("_OtherDocument","Other_documents","base type of document for the componant fileupload","pdf;jpg;jpeg;doc;docx;odt;zip",5,20,1,NULL,1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,0,NULL,NULL,NULL);
                 }
+                EmundusHelperUpdate::cleanFalangContent(NULL,"emundus_setup_attachments",NULL);
+                $allIndexAttachement = EmundusHelperUpdate::getAllIndexAttachement();
+                EmundusHelperUpdate::cleanFalangContent($allIndexAttachement,"emundus_setup_attachments",NULL);
+
             }
         }
 

@@ -1452,7 +1452,7 @@ class EmundusModelForm extends JModelList {
 
 				foreach ($attachments as $attachment) {
 					$attachment->can_be_deleted = strpos($attachment->lbl, '_em') === 0;
-					$attachment->name = $falang->getFalang($attachment->id,'emundus_setup_attachments','value', $attachment->value);
+					$attachment->name = $falang->getFalang($attachment->id,'emundus_setup_attachments','test', $attachment->value);
 					$attachment->description = $falang->getFalang($attachment->id,'emundus_setup_attachments','description', $attachment->description);
 				}
 			}
