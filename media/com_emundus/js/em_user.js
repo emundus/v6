@@ -33,7 +33,7 @@ function clearchosen(target){
 
 function getUserCheck() {
 	var id = parseInt($('.modal-body').attr('act-id'));
-	if ($('#em-check-all-all').is(':checked')) {
+	if ($('#em-check-all').is(':checked')) {
 		var checkInput = 'all';
 	} else {
 		var i = 0;
@@ -54,6 +54,8 @@ function getUserCheck() {
 	}
 	return checkInput;
 }
+
+
 
 function formCheck(id) {
 	let check = true;
@@ -891,23 +893,32 @@ $(document).ready(function () {
 					}
 				</style>
 				
-				<h5>Sélectionnez les données que vous souhaitez exporter :</h5>
+				<h5 style="margin-top: 10px;">Sélectionnez les données que vous souhaitez exporter :</h5>
 				
-				<div>
-					<input type="checkbox" id="checkbox-nom" name="checkbox-nom" value="nom">
-					<label for="checkbox-nom" class="checkbox-label">Nom Prénom</label>
+				<div class="form-group">
+					<input type="checkbox" id="checkbox-id" name="checkbox-id" value="id">
+					<label for="checkbox-id" class="checkbox-label">ID</label>
 				</div>
 				
-				<div>
+				<div class="form-group">
+					<input type="checkbox" id="checkbox-nom" name="checkbox-nom" value="nom">
+					<label for="checkbox-nom" class="checkbox-label">Nom</label>
+				</div>
+				
+				<div class="form-group">
+					<input type="checkbox" id="checkbox-prenom" name="checkbox-prenom" value="prenom">
+					<label for="checkbox-prenom" class="checkbox-label">Prénom </label>
+				</div>
+				
+				<div class="form-group">
 					<input type="checkbox" id="checkbox-mail" name="checkbox-mail" value="mail">
 					<label for="checkbox-mail" class="checkbox-label">Mail</label>
 				</div>
 				
-				<div>
-					<input type="checkbox" id="checkbox-id" name="checkbox-id" value="id">
-					<label for="checkbox-id" class="checkbox-label">ID</label>
+				<div class="form-group">
+					<input type="checkbox" id="checkbox-registerdate" name="checkbox-registerdate" value="registerdate">
+					<label for="checkbox-registerdate" class="checkbox-label">Date d'inscription</label>
 				</div>
-
     			`;
 
 				Swal.fire({
@@ -927,19 +938,21 @@ $(document).ready(function () {
 					if (result.value) {
 						addLoader();
 
-						var tcheckInput = {
+						var checkBoxesProps = {
+							id: $('#checkbox-id').prop('checked'),
 							nom: $('#checkbox-nom').prop('checked'),
+							prenom: $('#checkbox-prenom').prop('checked'),
 							mail: $('#checkbox-mail').prop('checked'),
-							id: $('#checkbox-id').prop('checked')
+							registerdate: $('#checkbox-registerdate').prop('checked'),
+
 						};
 
 						var checkedBoxes = {};
-						for (var key in tcheckInput) {
-							if (tcheckInput.hasOwnProperty(key) && tcheckInput[key]) {
+						for (var key in checkBoxesProps) {
+							if (checkBoxesProps.hasOwnProperty(key) && checkBoxesProps[key]) {
 								checkedBoxes[key] = true;
 							}
 						}
-
 						$.ajax({
 							type: 'POST',
 							url: 'index.php?option=com_emundus&controller=users&task=exportusers&Itemid=' + itemId,
@@ -982,7 +995,7 @@ $(document).ready(function () {
 
 							error: function(jqXHR) {
 								removeLoader();
-								console.log(jqXHR.responseText);
+								console.log(jqXHR);
 							}
 						});
 					}
@@ -1192,7 +1205,7 @@ $(document).ready(function () {
 
 	function runAction(id, url = '', option = '') {
 
-		if ($('#em-check-all-all').is(':checked')) {
+		if ($('#em-check-all').is(':checked')) {
 			var checkInput = 'all';
 		} else {
 			var i = 0;
