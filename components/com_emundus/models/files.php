@@ -1886,7 +1886,6 @@ class EmundusModelFiles extends JModelLegacy
                         left join #__emundus_setup_status as ss on ss.step = cc.status
                         where cc.fnum in ("'. implode('","', $fnums).'")';
             $db->setQuery($query);
-//echo str_replace('#_', 'jos', $query);
             if ($format == 'array') {
                 return $db->loadAssocList('fnum');
             } else {

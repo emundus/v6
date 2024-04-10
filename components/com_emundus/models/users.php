@@ -1092,17 +1092,12 @@ class EmundusModelUsers extends JModelList {
         return $db->loadColumn();
     }
 
-    public function login($uid) {
+    public function login($uid, $redirect = 'index.php') {
         $app     = JFactory::getApplication();
         $db      = JFactory::getDBO();
         $session = JFactory::getSession();
 
         $instance   = JFactory::getUser($uid);
-
-       // $userarray = array();
-        //$userarray['username'] = $instance->username;
-        //$userarray['password'] = $instance->password;
-        //$app->login($userarray);
 
         $instance->set('guest', 0);
 
@@ -1125,15 +1120,17 @@ class EmundusModelUsers extends JModelList {
         $instance->setLastVisit();
 
         // Trigger OnUserLogin
-        JPluginHelper::importPlugin('user', 'emundus');
-        $dispatcher = JEventDispatcher::getInstance();
-        $options = array('action' => 'core.login.site', 'remember' => false);
+	    JPluginHelper::importPlugin('user');
+	    JPluginHelper::importPlugin('emundus');
+	    $options = array();
+	    $options['action'] = 'core.login.site';
+	    $options['redirect'] = $redirect;
 
-        $dispatcher->trigger( 'onUserLogin', $instance );
-        $dispatcher->trigger('callEventHandler', ['onUserLogin', ['instance' => $instance]]);
+	    $response['username'] = $instance->get('username');
+	    $app->triggerEvent('onUserLogin', array($response, $options));
+	    $app->triggerEvent('callEventHandler', ['onUserLogin', ['user_id' => $uid]]);
 
-        return $instance;
-
+	    return $instance;
     }
 
 
@@ -1147,7 +1144,7 @@ class EmundusModelUsers extends JModelList {
 	 * @return bool|JException
 	 * @throws Exception
 	 */
-    public function plainLogin($credentials, $redirect = 1) {
+    public function plainLogin($credentials, $redirect = 'index.php') {
         // Get the application object.
         $app = JFactory::getApplication();
 
@@ -1157,6 +1154,7 @@ class EmundusModelUsers extends JModelList {
         $credentials['password'] = $this->_passw;*/
 
         $options = array();
+	    $options['action'] = 'core.login.site';
         $options['redirect'] = $redirect;
         return $app->login($credentials, $options);
 
