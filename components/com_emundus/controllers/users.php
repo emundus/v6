@@ -1289,8 +1289,9 @@ class EmundusControllerUsers extends JControllerLegacy {
 	}
 
     public function exportusers() {
-
         $jinput = JFactory::getApplication()->input;
+
+        $modelUsers = new EmundusModelUsers();
 
         $checkboxes = $jinput->get('checkboxes', array(), 'ARRAY');
 
@@ -1302,24 +1303,20 @@ class EmundusControllerUsers extends JControllerLegacy {
         $users = $jinput->getString('users', null);
 
         if ($users === 'all') {
-            $modelUsers = new EmundusModelUsers();
             $allUsers = $modelUsers->getUsers(0, 0);
-
+            $userIds = array();
             foreach ($allUsers as $user) {
                 $userIds[] = $user->id;
             }
-        }
-        else{
+        } else {
             $userIds = (array) json_decode(stripslashes($users));
         }
 
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true)
-            ->select($db->quoteName(['user_id', 'firstname', 'lastname', 'email', 'registerDate']))
-            ->from($db->quoteName('jos_emundus_users'))
-            ->where($db->quoteName('user_id') . ' IN (' . implode(',', $userIds) . ')');
-        $db->setQuery($query);
-        $results = $db->loadObjectList();
+        $allUsersDetails = array();
+        foreach ($userIds as $userId) {
+            $userDetails = $this->getUserDetails($userId);
+            $allUsersDetails[] = $userDetails;
+        }
 
         $csvFileName = 'export_users_' . date('Y-m-d_H-i') . '.csv';
         $path = JPATH_SITE . '/tmp/' . $csvFileName;
@@ -1327,46 +1324,21 @@ class EmundusControllerUsers extends JControllerLegacy {
 
         fputs($csvFile, $bom = (chr(0xEF) . chr(0xBB) . chr(0xBF)));
 
+        // Écrire les en-têtes du CSV
         $headers = array();
-        if ($checkboxes['id']) {
-            $headers[] = 'ID';
-        }
-        if ($checkboxes['prenom']) {
-            $headers[] = 'Prénom';
-        }
-        if ($checkboxes['nom']) {
-            $headers[] = 'Nom';
-        }
-        if ($checkboxes['mail']) {
-            $headers[] = 'Mail';
-        }
-        if ($checkboxes['registerdate']) {
-            $headers[] = 'Date_Inscription';
+        foreach ($allUsersDetails[0] as $key => $value) {
+            $headers[] = strtoupper($key);
         }
         fputcsv($csvFile, $headers);
 
-        foreach ($results as $user) {
-            $userData = array();
-            if ($checkboxes['id']) {
-                $userData[] = $user->user_id;
-            }
-            if ($checkboxes['prenom']) {
-                $userData[] = $user->firstname;
-            }
-            if ($checkboxes['nom']) {
-                $userData[] = $user->lastname;
-            }
-            if ($checkboxes['mail']) {
-                $userData[] = $user->email;
-            }
-            if ($checkboxes['registerdate']) {
-                $userData[] = $user->registerDate;
-            }
-            fputcsv($csvFile, $userData);
+        // Écrire les données des utilisateurs dans le CSV
+        foreach ($allUsersDetails as $userDetails) {
+            fputcsv($csvFile, $userDetails);
         }
 
         fclose($csvFile);
 
+        // Télécharger le fichier CSV
         header('Content-type: text/csv');
         header('Content-Disposition: attachment; filename=' . $csvFileName);
         header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
@@ -1384,7 +1356,6 @@ class EmundusControllerUsers extends JControllerLegacy {
     }
 
     public function deleteusersfile() {
-
         if (!EmundusHelperAccess::asAccessAction(12, 'r')) {
             $this->setRedirect('index.php', JText::_('ACCESS_DENIED'), 'error');
             return;
@@ -1393,6 +1364,11 @@ class EmundusControllerUsers extends JControllerLegacy {
         $jinput = JFactory::getApplication()->input;
         $fileName = $jinput->get('fileName');
 
+        if (!preg_match('/^export_users_.+\.csv$/', $fileName)) {
+            JFactory::getApplication()->enqueueMessage(JText::_('INVALID_FILE_NAME'), 'error');
+            return;
+        }
+
         $filePath = JPATH_SITE . '/tmp/' . $fileName;
 
         if (file_exists($filePath)) {
@@ -1400,6 +1376,23 @@ class EmundusControllerUsers extends JControllerLegacy {
         }
         exit;
     }
+
+    public function getUserDetails($uid) {
+
+        $modelUsers = new EmundusModelUsers();
+
+        $columns = $modelUsers->getColumnsForm();
+        $user = $modelUsers->getUserById($uid);
+
+        $userDetails = array();
+
+        foreach ($columns as $column) {
+
+                $userDetails[$column] = $user[1];
+        }
+        return $userDetails;
+    }
+
 
 }
 

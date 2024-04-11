@@ -718,10 +718,6 @@ $(document).ready(function () {
 				swal_confirm_button = 'COM_EMUNDUS_USERS_AFFECT_USER_CONFIRM';
 				preconfirm = "if ($('#agroups').val() == null) {Swal.showValidationMessage(Joomla.JText._('COM_EMUNDUS_USERS_AFFECT_GROUP_ERROR'))}"
 				break;
-			case 6:
-				title = 'COM_EMUNDUS_CREATE_CSV';
-				swal_confirm_button = 'COM_EMUNDUS_EXPORTS_GENERATE_EXCEL';
-				break;
 		}
 
 		switch (id) {
@@ -885,123 +881,31 @@ $(document).ready(function () {
 				break;
 
 			case 6:
-				var checkboxesHTML = `
-				<style>
-					.checkbox-label {
-						display: inline-block;
-						vertical-align: top; 
-					}
-				</style>
-				
-				<h5 style="margin-top: 10px;">Sélectionnez les données que vous souhaitez exporter :</h5>
-				
-				<div class="form-group">
-					<input type="checkbox" id="checkbox-id" name="checkbox-id" value="id">
-					<label for="checkbox-id" class="checkbox-label">ID</label>
-				</div>
-				
-				<div class="form-group">
-					<input type="checkbox" id="checkbox-nom" name="checkbox-nom" value="nom">
-					<label for="checkbox-nom" class="checkbox-label">Nom</label>
-				</div>
-				
-				<div class="form-group">
-					<input type="checkbox" id="checkbox-prenom" name="checkbox-prenom" value="prenom">
-					<label for="checkbox-prenom" class="checkbox-label">Prénom </label>
-				</div>
-				
-				<div class="form-group">
-					<input type="checkbox" id="checkbox-mail" name="checkbox-mail" value="mail">
-					<label for="checkbox-mail" class="checkbox-label">Mail</label>
-				</div>
-				
-				<div class="form-group">
-					<input type="checkbox" id="checkbox-registerdate" name="checkbox-registerdate" value="registerdate">
-					<label for="checkbox-registerdate" class="checkbox-label">Date d'inscription</label>
-				</div>
-    			`;
-
-				Swal.fire({
-					title: $(this).children('a').text(),
-					html: checkboxesHTML,
-					showCancelButton: true,
-					showCloseButton: true,
-					confirmButtonText: Joomla.JText._('COM_EMUNDUS_EXPORTS_GENERATE_EXCEL'),
-					cancelButtonText: Joomla.JText._('JCANCEL'),
-					reverseButtons: true,
-					customClass: {
-						title: 'em-swal-title',
-						cancelButton: 'em-swal-cancel-button',
-						confirmButton: 'em-swal-confirm-button',
+				addLoader();
+				title = 'COM_EMUNDUS_CREATE_CSV';
+				swal_confirm_button = 'COM_EMUNDUS_EXPORTS_GENERATE_EXCEL';
+				preconfirm = "var atLeastOneChecked = false; $('.form-group input[type=\"checkbox\"]').each(function() { if ($(this).is(':checked')) { atLeastOneChecked = true; return false; } }); if (!atLeastOneChecked) { Swal.showValidationMessage(Joomla.JText._('COM_EMUNDUS_EXPORTS_SELECT_AT_LEAST_ONE_INFORMATION')); }";
+				await $.ajax({
+					type: 'get',
+					url: url,
+					dataType: 'html',
+					data: {
+						user: sid
 					},
-				}).then((result) => {
-					if (result.value) {
-						addLoader();
+					success: function (result) {
+						removeLoader();
 
-						var checkBoxesProps = {
-							id: $('#checkbox-id').prop('checked'),
-							nom: $('#checkbox-nom').prop('checked'),
-							prenom: $('#checkbox-prenom').prop('checked'),
-							mail: $('#checkbox-mail').prop('checked'),
-							registerdate: $('#checkbox-registerdate').prop('checked'),
-
-						};
-
-						var checkedBoxes = {};
-						for (var key in checkBoxesProps) {
-							if (checkBoxesProps.hasOwnProperty(key) && checkBoxesProps[key]) {
-								checkedBoxes[key] = true;
-							}
-						}
-						$.ajax({
-							type: 'POST',
-							url: 'index.php?option=com_emundus&controller=users&task=exportusers&Itemid=' + itemId,
-							data: {
-								users: checkInput,
-								checkboxes: checkedBoxes
-							},
-							success: function(result) {
-								removeLoader();
-
-								var response = JSON.parse(result);
-								var fileName = response.fileName;
-
-								var downloadButton = $('<a>').attr('href', "/tmp/" + fileName).attr('download', fileName).text('Télécharger le fichier CSV');
-								var swalInstance = Swal.fire({
-									position: 'center',
-									type: 'success',
-									title: 'Téléchargement prêt',
-									html: downloadButton,
-									showConfirmButton: false,
-									customClass: {
-										title: 'w-full justify-center',
-									}
-								});
-
-								swalInstance.then(() => {
-									$.ajax({
-										type: 'POST',
-										url: 'index.php?option=com_emundus&controller=users&task=deleteusersfile&Itemid=\' + itemId',
-										data: { fileName: fileName},
-										success: function(response) {
-											// console.log(response);
-										},
-										error: function(jqXHR, textStatus, errorThrown) {
-											console.error(textStatus, errorThrown);
-										}
-									});
-								});
-							},
-
-							error: function(jqXHR) {
-								removeLoader();
-								console.log(jqXHR);
-							}
-						});
+						swalForm = true;
+						title = 'COM_EMUNDUS_CREATE_CSV';
+						swal_confirm_button = 'COM_EMUNDUS_EXPORTS_GENERATE_EXCEL';
+						html = result;
+					},
+					error: function (jqXHR) {
+						removeLoader();
+						console.log(jqXHR.responseText);
 					}
 				});
 				break;
-
 			case 26:
 				Swal.fire({
 					title: $(this).children('a').text(),
@@ -1237,6 +1141,82 @@ $(document).ready(function () {
 		 * 34: send email
 		 */
 		switch (id) {
+
+			case 6:
+				addLoader();
+
+				var checkBoxesProps = {
+					id: $('#checkbox-id').prop('checked'),
+					nom: $('#checkbox-nom').prop('checked'),
+					prenom: $('#checkbox-prenom').prop('checked'),
+					mail: $('#checkbox-mail').prop('checked'),
+					registerdate: $('#checkbox-registerdate').prop('checked'),
+				};
+
+				var checkedBoxes = {};
+				for (var key in checkBoxesProps) {
+					if (checkBoxesProps.hasOwnProperty(key) && checkBoxesProps[key]) {
+						checkedBoxes[key] = true;
+					}
+				}
+
+				$.ajax({
+					type: 'POST',
+					url: 'index.php?option=com_emundus&controller=users&task=exportusers&Itemid=' + itemId,
+					data: {
+						users: checkInput,
+						checkboxes: checkedBoxes,
+					},
+					success: function(result) {
+						removeLoader();
+
+						var response = JSON.parse(result);
+						var fileName = response.fileName;
+
+						var downloadButton = $('<a>').attr('href', "/tmp/" + fileName)
+							.attr('download', fileName)
+							.text('Télécharger le fichier CSV')
+							.css({
+								'display': 'block',
+								'margin': '0 auto',
+								'text-align': 'center',
+								'max-width': '80%'
+							});
+
+						var swalInstance = Swal.fire({
+							position: 'center',
+							type: 'success',
+							title: 'Téléchargement prêt',
+							html: downloadButton,
+							showConfirmButton: false,
+							customClass: {
+								title: 'w-full justify-center'
+							}
+						});
+
+						swalInstance.then(() => {
+							$.ajax({
+								type: 'POST',
+								url: 'index.php?option=com_emundus&controller=users&task=deleteusersfile&Itemid=' + itemId,
+								data: { fileName: fileName },
+								success: function(response) {
+									// console.log(response);
+								},
+								error: function(jqXHR, textStatus, errorThrown) {
+									console.error(textStatus, errorThrown);
+								}
+							});
+						});
+					},
+
+					error: function(jqXHR) {
+						removeLoader();
+						console.log(jqXHR.responseText);
+					}
+				});
+				break;
+
+
 			case 19:
 				var programs = $('#gprogs');
 				var progs = "";

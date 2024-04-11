@@ -2433,16 +2433,23 @@ class EmundusModelUsers extends JModelList {
         return $db->loadObjectList();
     }
 
-	public function getUsersByIds($ids) {
+	public function getUsersByIds($ids, $emundusTable = false) {
 		$users = [];
 
 		if (!empty($ids)) {
 			$db = JFactory::getDBO();
 
 			$query = $db->getQuery(true);
+            if(!$emundusTable) {
 			$query->select('*')
 				->from('#__users')
 				->where('id IN ('.implode(',', $ids).')');
+            }
+            else{
+                $query->select('*')
+                    ->from('#__emundus_users')
+                    ->where('user_id IN ('.implode(',', $ids).')');
+            }
 
 			try {
 				$db->setQuery($query);
@@ -3683,4 +3690,18 @@ class EmundusModelUsers extends JModelList {
 		//shuffle the password string before returning!
 		return str_shuffle($password);
 	}
+
+    public function getColumnsForm() {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select($db->quoteName('fe.name'))
+            ->from($db->quoteName('#__fabrik_elements', 'fe'))
+            ->leftJoin($db->quoteName('#__fabrik_formgroup', 'ff') . ' ON ff.group_id = fe.group_id')
+            ->where($db->quoteName('ff.form_id') . ' = ' . $this->getProfileForm());
+
+        $db->setQuery($query);
+        return $db->loadColumn();
+    }
+
 }
