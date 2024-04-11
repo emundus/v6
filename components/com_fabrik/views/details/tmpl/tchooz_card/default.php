@@ -25,9 +25,9 @@ require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'acces
     <div>
         <div class="em-flex-row em-flex-space-between em-w-100 em-mb-12 em-pointer">
             <button type="button" class="em-flex-row" onclick="window.location.href = document.referrer"><span class="material-icons em-neutral-700-color">arrow_back</span><span class="em-ml-8 em-text-neutral-900"><?php echo JText::_('MOD_EM_CAMPAIGN_BACK'); ?></span></button>
-            <?php  if ($this->showPrint):
-	            echo $this->printLink;
-             endif;?>
+            <div class="flex">
+                <?php echo $this->loadTemplate('buttons');?>
+            </div>
         </div>
 
         <div class="em-grid-small em-mt-8 em-mt-8">

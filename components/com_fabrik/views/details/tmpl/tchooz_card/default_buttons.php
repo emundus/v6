@@ -12,14 +12,14 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-if ($this->showEmail):
-	echo $this->emailLink;
-endif;
+if ($this->showEmail && !empty($this->emailLink)) {
+    echo $this->emailLink;
+}
 
-if ($this->showPDF):
-	echo $this->pdfLink;
-endif;
+if ($this->showPDF && !empty($this->pdfLink)) {
+    echo $this->pdfLink;
+}
 
-if ($this->showPrint):
-	echo $this->printLink;
-endif;
+if ($this->showPrint && !empty($this->printLink)) {
+    echo $this->printLink;
+}
