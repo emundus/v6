@@ -92,13 +92,19 @@ class EmundusModelRanking extends JModelList
                     $query->clear()
                         ->select('er.rank, cc.id as ccid')
                         ->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
-                        ->leftJoin($this->db->quoteName('#__emundus_ranking', 'er') . ' ON ' . $this->db->quoteName('cc.id') . ' = ' . $this->db->quoteName('er.ccid') . ' AND ' .$this->db->quoteName('er.hierarchy_id') . ' = ' . $this->db->quote($hierarchy_order_by))
+                        ->leftJoin($this->db->quoteName('#__emundus_ranking', 'er') . ' ON ' . $this->db->quoteName('cc.id') . ' = ' . $this->db->quoteName('er.ccid'))
                         ->where($this->db->quoteName('cc.id') . ' IN (' . implode(',', $ids) . ')')
+                        ->andWhere(($this->db->quoteName('er.hierarchy_id') . ' = ' . $this->db->quote($hierarchy_order_by) . ' OR er.hierarchy_id IS NULL'))
                         ->setLimit($limit, $offset);
+
+                    $query->order('er.rank ' . $sort);
 
                     $this->db->setQuery($query);
                     $ranks = $this->db->loadAssocList('ccid');
-                    $ids = array_keys($ranks);
+
+                    if (!empty($ranks)) {
+                        $ids = array_keys($ranks);
+                    }
                 }
 
                 $query->clear()
@@ -110,7 +116,12 @@ class EmundusModelRanking extends JModelList
                     ->andWhere('(er.hierarchy_id = ' . $this->db->quote($hierarchy) . ') OR er.id IS NULL');
 
                 $query->setLimit($limit, $offset);
-                $query->order('er.rank ' . $sort);
+
+                if ($sort == 'ASC') {
+                    $query->order('IFNULL(IF(er.rank > 0, er.rank, null), 999999)' . $sort);
+                } else {
+                    $query->order('er.rank ' . $sort);
+                }
 
                 try {
                     $this->db->setQuery($query);

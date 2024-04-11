@@ -618,7 +618,9 @@ class EmundusFiltersFiles extends EmundusFilters
 									{
 										$new_default_filter['operator'] = 'IN';
 										$new_default_filter['values']   = $this->getFabrikElementValuesFromElementId($element['id']);
-									}
+									} else if ($new_default_filter['type'] === 'text') {
+                                        $new_default_filter['operator'] = 'LIKE';
+                                    }
 								}
 								$new_default_filter['plugin'] = $element['plugin'];
 							}

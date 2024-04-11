@@ -105,6 +105,11 @@
 			<option value="">Please select your option</option>
 		</field>
 
+		<field name="fix_file_header" label="COM_EMUNDUS_FIX_FILE_HEADER" type="list" default="0" description="">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+
 		<field
 				name="spacer0"
 				type="spacer"
@@ -335,13 +340,21 @@
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
+		<field name="check_eval" type="radio" default="0" label="COM_EMUNDUS_CHECK_EVAL" description="COM_EMUNDUS_CHECK_EVAL_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+		<field name="check_decision" type="radio" default="0" label="COM_EMUNDUS_CHECK_DECISION" description="COM_EMUNDUS_CHECK_DECISION_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
 
 		<field name="export_application_pdf_title_color" type="text" default="#000000" label="COM_EMUNDUS_EXPORT_APPLICATION_TITLE_COLOR" description="COM_EMUNDUS_EXPORT_APPLICATION_TITLE_COLOR_DESC"/>
 
-		<filed name="show_empty_fields" type="radio" default="1" label="COM_EMUNDUS_SHOW_EMPTY_FIELDS" description="COM_EMUNDUS_SHOW_EMPTY_FIELDS_DESC"/>
 		<field name="export_path" type="text" size="6" label="COM_EMUNDUS_EXPORT_PATH" description="COM_EMUNDUS_EXPORT_PATH_DESC"/>
 		<field name="application_form_order" type="text" size="6" label="COM_EMUNDUS_APPLICATION_FORM_ORDER" description="COM_EMUNDUS_APPLICATION_FORM_ORDER_DESC"/>
 		<field name="attachment_order" type="text" size="6" label="COM_EMUNDUS_CANDIDACY_FORM_ORDER" description="COM_EMUNDUS_CANDIDACY_FORM_ORDER_DESC"/>
+		<field name="export_concat_separator" type="text" size="6" default=", " label="COM_EMUNDUS_EXPORT_APPLICATION_SEPARATOR" description="COM_EMUNDUS_EXPORT_APPLICATION_SEPARATOR_DESC"/>
 
 		<field
 				name="spacer1"
@@ -417,6 +430,10 @@
 		<field name="expert_fabrikformid" type="text" default="110" label="COM_EMUNDUS_EXPERT_FIELD" description="COM_EMUNDUS_EXPERT_FIELD_DESC" />
 		<field name="expert_document_id" type="text" default="36" label="COM_EMUNDUS_EXPERT_DOCUMENT_FIELD" description="COM_EMUNDUS_EXPERT_DOCUMENT_FIELD_DESC" />
 		<field name="default_email_tmpl" type="text" default="expert" label="COM_EMUNDUS_EXPERT_DEFAULT_EMAIL_TMPL_FIELD" description="COM_EMUNDUS_EXPERT_DEFAULT_EMAIL_TMPL_FIELD_DESC" />
+		<field name="email_check_dns" menu="hide" type="list" default="1" label="COM_EMUNDUS_EMAIL_CHECK_DNS" description="COM_EMUNDUS_EMAIL_CHECK_DNS_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
 	</fieldset>
 	<fieldset label="COM_EMUNDUS_IMPORTS" name="imports" description="COM_EMUNDUS_IMPORTS_DESC">
 		<field name="ldapFiltersImport" type="text" required="false" label="COM_EMUNDUS_LDAP_FILTERS_IMPORT_LABEL" description="COM_EMUNDUS_LDAP_FILTERS_IMPORT_DESC" />

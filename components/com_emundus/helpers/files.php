@@ -2062,9 +2062,9 @@ class EmundusHelperFiles
             $fnum = $tag['fnum'];
 			$class = str_replace('label-','',$tag['class']);
             if (!isset($tagsList[$fnum])) {
-                $tagsList[$fnum] = '<div class="flex sticker label-border-'.$class.'"><span class="circle '.$tag['class'].'"></span><span class="label-text-'.$class.'">'.$tag['label'].'</span></div>';
+                $tagsList[$fnum] = '<div class="flex items-center gap-2 sticker label-'.$class.'" title="' . $tag['label'] . '"><span class="circle"></span><span class="text-white truncate font-semibold max-w-[150px] text-sm">'.$tag['label'].'</span></div>';
             } else {
-                $tagsList[$fnum] .= '<div class="flex sticker label-border-'.$class.'"><span class="circle '.$tag['class'].'"></span><span class="label-text-'.$class.'">'.$tag['label'].'</span></div>';
+                $tagsList[$fnum] .= '<div class="flex items-center gap-2 sticker label-'.$class.'" title="' . $tag['label'] . '"><span class="circle"></span><span class="text-white truncate font-semibold max-w-[150px] text-sm">'.$tag['label'].'</span></div>';
             }
         }
         return $tagsList;
@@ -2378,9 +2378,12 @@ class EmundusHelperFiles
 		foreach ($evaluations as $eval)
 		{
 
-			$str = '<br><hr>';
+            // If the name was already retrieved (dropdown label for exemple), show it directly instead of getting user
+            $evaluator_name = (int)$eval['jos_emundus_evaluations___user'] == 0 ? $eval['jos_emundus_evaluations___user'] : JFactory::getUser($eval['jos_emundus_evaluations___user'])->name;
+
+            $str = '<br><hr>';
 			$str .= '<p><em style="font-size: 14px">' . JText::_('COM_EMUNDUS_EVALUATION_EVALUATED_ON') . ' : ' . JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')) . ' - ' . $fnumInfo['name'] . '</em></p>';
-			$str .= '<h2>' . JText::_('COM_EMUNDUS_EVALUATION_EVALUATOR') . ': ' . JFactory::getUser($eval['jos_emundus_evaluations___user'])->name . '</h2>';
+            $str .= '<h2>' . JText::_('COM_EMUNDUS_EVALUATION_EVALUATOR') . ': ' . $evaluator_name . '</h2>';
 			$str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
 
 			foreach ($elements as $element)
@@ -3981,7 +3984,16 @@ class EmundusHelperFiles
                                     $where['q'] .= ' AND ' . $this->writeQueryWithOperator('jecc.published', $filter['value'], $filter['operator']);
                                     break;
                                 case 'tags':
-                                    $where['q'] .= ' AND ( ' . $this->writeQueryWithOperator('eta.id_tag', $filter['value'], $filter['operator']) . ' )';
+                                    if ($filter['operator'] === 'NOT IN') {
+                                        $where['q'] .= ' AND jecc.fnum NOT IN (
+                                            SELECT DISTINCT jos_emundus_campaign_candidature.fnum
+                                            FROM jos_emundus_campaign_candidature
+                                            LEFT JOIN jos_emundus_tag_assoc ON jos_emundus_tag_assoc.fnum = jos_emundus_campaign_candidature.fnum
+                                            WHERE ' . $this->writeQueryWithOperator('jos_emundus_tag_assoc.id_tag', $filter['value'], 'IN') . '
+                                        )';
+                                    } else {
+                                        $where['q'] .= ' AND ( ' . $this->writeQueryWithOperator('eta.id_tag', $filter['value'], $filter['operator']) . ' )';
+                                    }
                                     break;
                                 case 'group_assoc':
                                     if (!in_array('jos_emundus_group_assoc', $already_joined)) {
