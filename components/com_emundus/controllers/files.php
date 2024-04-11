@@ -146,12 +146,13 @@ class EmundusControllerFiles extends JControllerLegacy
 					}
 				}
 				$session->set('adv_cols', $filter_fabrik_element_ids);
+                $session->set('last-filters-use-adavanced', true);
 
 				$response = ['status' => true, 'msg' => JText::_('FILTERS_APPLIED')];
 			} else {
 				$response['msg'] = JText::_('MISSING_PARAMS');
 			}
-		}
+        }
 
 		echo json_encode((object)$response);
 		exit;
@@ -196,6 +197,7 @@ class EmundusControllerFiles extends JControllerLegacy
             }
         }
 
+        $session->set('last-filters-use-adavanced', false);
         $session->set('filt_params', $params);
 
         echo json_encode((object)(array('status' => true)));
@@ -2135,11 +2137,32 @@ class EmundusControllerFiles extends JControllerLegacy
                         $files_export = EmundusHelperExport::getAttachmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id']);
                     }
                 }
+                $check_eval = $eMConfig->get('check_eval', 0);
+                $skip_eval = false;
+                if ($check_eval == 1){
+                    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
+                    $m_eval = new EmundusModelEvaluation();
+                    $eval = $m_eval->getEvaluationsFnum($fnum);
+                    if(empty($eval)){
+                        $skip_eval = true;
+                    }
+                }
 
-                if ($assessment)
+                $check_decision = $eMConfig->get('check_decision', 0);
+                $skip_decision = false;
+                if ($check_decision == 1){
+                    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'decision.php');
+                    $m_decision = new EmundusModelDecision();
+                    $getDecision = $m_decision->getDecisionFnum($fnum);
+                    if(empty($getDecision)){
+                        $skip_decision = true;
+                    }
+                }
+
+                if ($assessment && !$skip_eval)
                     $files_list[] = EmundusHelperExport::getEvalPDF($fnum, $options);
 
-                if ($decision)
+                if ($decision && !$skip_decision)
                     $files_list[] = EmundusHelperExport::getDecisionPDF($fnum, $options);
 
                 if ($admission)
@@ -2995,15 +3018,33 @@ class EmundusControllerFiles extends JControllerLegacy
                     }
                 }
 
+                $check_eval = $eMConfig->get('check_eval', 0);
+                $skip_eval = false;
+                if ($check_eval == 1){
+                    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
+                    $m_eval = new EmundusModelEvaluation();
+                    $eval = $m_eval->getEvaluationsFnum($fnum);
+                    if(empty($eval)){
+                        $skip_eval = true;
+                    }
+                }
 
+                $check_decision = $eMConfig->get('check_decision', 0);
+                $skip_decision = false;
+                if ($check_decision == 1){
+                    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'decision.php');
+                    $m_decision = new EmundusModelDecision();
+                    $getDecision = $m_decision->getDecisionFnum($fnum);
+                    if(empty($getDecision)){
+                        $skip_decision = true;
+                    }
+                }
 
-	            if ($assessment) {
+                if ($assessment && !$skip_eval)
                     $files_list[] = EmundusHelperExport::getEvalPDF($fnum, $options);
-                }
 
-                if ($decision) {
+                if ($decision && !$skip_decision)
                     $files_list[] = EmundusHelperExport::getDecisionPDF($fnum, $options);
-                }
 
                 if ($admission) {
 	                $admission_file = EmundusHelperExport::getAdmissionPDF($fnum, $options);

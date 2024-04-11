@@ -27,7 +27,8 @@ $show_account_edit_button = $params->get('show_account_edit_button', 1);
 $intro = $params->get('intro', '');
 
 $user_fullname = $e_user->lastname.' '.$e_user->firstname;
-$external = $user->password == '' ? true : false;
+$u_params = json_decode($user->params);
+$external = $user->password === '' || $u_params->OAuth2 === 'openid';
 
 $profile_picture = '/media/com_emundus/images/profile/default-profile.jpg';
 if($show_profile_picture == 1) {

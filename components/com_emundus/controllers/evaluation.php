@@ -101,6 +101,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
             }
         }
 
+        $session->set('last-filters-use-adavanced', false);
         $session->set('filt_params', $params);
         $session->set('limitstart', 0);
         echo json_encode((object)(array('status' => true)));
