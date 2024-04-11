@@ -13,7 +13,7 @@
         </select>
         <div  v-if="element.plugin === 'emundus_fileupload'" class="green-SectionTypeDocument mt-2 rounded-lg p-2">
           <button type="button" class=" flex items-center focus:outline-none" @click="EventNewDocForm" style="user-select: none">
-            <label class="!mb-0 pl-3" style="color: #008A35">{{translate('COM_EMUNDUS_FORM_BUILDER_CREATE_DOCUMENT_NAME')}}</label>
+            <label class="!mb-0 pl-3">{{translate('COM_EMUNDUS_FORM_BUILDER_CREATE_DOCUMENT_NAME')}}</label>
             <span class="material-icons-outlined" :class="[(isActive ? 'rotate-90' : '')]">chevron_right</span>
           </button>
           <FormBuilderCreateDocument v-if="isActive" :profile_id="profile_id" :current_document="parseInt(element.params[param.name])" :key="parseInt(element.params[param.name])" :context="'element'" @documents-updated="reloadComponent"></FormBuilderCreateDocument>
@@ -278,9 +278,17 @@ export default {
 }
 
 .green-SectionTypeDocument {
-  weight: bold;
-  background-color: #008A351A; /* Change background color to green when clicked */
-  background-color-opacity: 0.1;
+  font-weight: bold;
+  background-color: #dbdbdb;
+}
+
+@supports (background-color: hsl(from white h s 90%)) {
+  .green-SectionTypeDocument {
+    background-color: hsl(from var(--em-profile-color) h s 95%);
+  }
+  .green-SectionTypeDocument label {
+    color: var(--em-profile-color);
+  }
 }
 
 </style>
