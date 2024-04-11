@@ -2316,12 +2316,10 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
   margin-bottom: var(--em-spacing-9);
 }
 .me-1 {
-  -webkit-margin-end: var(--em-spacing-1);
-          margin-inline-end: var(--em-spacing-1);
+  margin-inline-end: var(--em-spacing-1);
 }
 .me-2 {
-  -webkit-margin-end: var(--em-spacing-2);
-          margin-inline-end: var(--em-spacing-2);
+  margin-inline-end: var(--em-spacing-2);
 }
 .ml-0 {
   margin-left: 0px;
@@ -2357,8 +2355,7 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
   margin-right: var(--em-spacing-4);
 }
 .ms-1 {
-  -webkit-margin-start: var(--em-spacing-1);
-          margin-inline-start: var(--em-spacing-1);
+  margin-inline-start: var(--em-spacing-1);
 }
 .mt-1 {
   margin-top: var(--em-spacing-1);

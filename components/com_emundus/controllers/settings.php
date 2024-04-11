@@ -1072,5 +1072,35 @@ class EmundusControllersettings extends JControllerLegacy {
 		echo json_encode((object)$results);
 		exit;
 	}
+
+    public function getTimeZone()
+    {
+        $results['status'] = true;
+        $results['msg'] = 'Timezones';
+        $allTimezones = DateTimeZone::listIdentifiers();
+// Initialize empty associative array for countries and cities
+        $countries_cities = [];
+        $countries= [];
+
+// Loop through each timezone and map it to the corresponding country
+        foreach ($allTimezones as $timezone) {
+            list($country, $city) = explode('/', $timezone);
+            // Check if the country already exists in the associative array
+            if (isset($countries_cities[$country])) {
+                // If it does, append the city to the array of cities for that country
+                $countries_cities[$country][] = $city;
+            } else {
+                // If it doesn't, create a new entry with the city as the first element of the array
+                $countries[]=$country;
+                $countries_cities[$country] = [$city];
+            }
+        }
+        $results['data1'] = $countries;
+        $results['data2'] = $countries_cities;
+
+
+        echo json_encode((object)$results);
+        exit;
+    }
 }
 

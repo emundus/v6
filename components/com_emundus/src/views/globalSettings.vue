@@ -1,4 +1,4 @@
-<template>
+<template xmlns="http://www.w3.org/1999/html">
   <div class="em-w-100">
     <aside id="logo-sidebar"
            class="fixed left-0 top-0 w-64 h-screen transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700"
@@ -38,8 +38,11 @@
            style="box-shadow:0.1em 0.05em 0.05em grey;">
         <div @click="handleSubMenuClick(index1)">
           <h1 id="accordion-collapse-heading-1" class="flex flex-row justify-between">
-            <span :id="'Subtile'+index1" class="em-font-size-24 ">{{ translate (SubMenus[indexMenuClick][index1].label) }}</span>
-            <i class="material-icons-outlined scale-150" :id="'SubtitleArrow'+index1" name="SubtitleArrows" style="transform-origin: unset">expand_more</i>
+            <span :id="'Subtile'+index1" class="em-font-size-24 ">{{
+                translate(SubMenus[indexMenuClick][index1].label)
+              }}</span>
+            <i class="material-icons-outlined scale-150" :id="'SubtitleArrow'+index1" name="SubtitleArrows"
+               style="transform-origin: unset">expand_more</i>
           </h1>
         </div>
 
@@ -50,7 +53,7 @@
               <h2>{{ translate(option.label) }}</h2>
               <hr>
             </div>
-            <div v-else-if="option.type ==='subSection'" >
+            <div v-else-if="option.type ==='subSection'">
               <a>test </a>
             </div>
             <div v-else class="block text-xl ">
@@ -69,7 +72,17 @@
             </div>
 
             <div class="flex flex-col" v-if="option.type_field === 'sqldropdown'">
-              <p>dropDown</p>
+              <div v-if="option.name === 'offset'">
+                <select  @change="selectLand($event)">
+                  <option class="selected hidden disabled"> {{translate("COM_EMUNDUS_GLOBAL_PARMAS_SITE_TIMEZONE_LAND")}}</option>
+                <option v-for="aTimeZone in $data.timeZoneLand" :value="aTimeZone" >{{ aTimeZone}}</option>
+              </select>
+                <select @change="finalSelect($event, $data.seletedLand )">
+                  <option class="selected hidden disabled"> {{translate("COM_EMUNDUS_GLOBAL_PARMAS_SITE_TIMEZONE_CITY")}}</option>
+                  <option v-for="aCity in $data.ListOfOptions" :value="aCity">{{aCity}}</option>
+                </select>
+
+              </div>
             </div>
 
             <div class="flex flex-col" v-if="option.type_field === 'yesno'">
@@ -108,13 +121,18 @@
       </div>
 
       <div class="flex flex-row flex-wrap">
-        <div v-for="tile in SubMenus[indexMenuClick]" v-if="tile.type==='Tile'" class="flex flex-col flex-wrap mr-3" :key="tile.id">
-          <div :style="{'width': '20em', 'height':'14em' ,'margin-bottom':'2em', 'box-shadow':'rgba(255, 255, 255, 0.1) 0px 1px 1px 0px inset, rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px'}" class="flex bg-white justify-center items-center rounded" name="tilebutton">
-            <button type="button" @click="redirect(tile.link)" class="rounded flex flex-col justify-center items-center">
+        <div v-for="tile in SubMenus[indexMenuClick]" v-if="tile.type==='Tile'" class="flex flex-col flex-wrap mr-3"
+             :key="tile.id">
+          <div
+              :style="{'width': '20em', 'height':'14em' ,'margin-bottom':'2em', 'box-shadow':'rgba(255, 255, 255, 0.1) 0px 1px 1px 0px inset, rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px'}"
+              class="flex bg-white justify-center items-center rounded" name="tilebutton">
+            <button type="button" @click="redirect(tile.link)"
+                    class="rounded flex flex-col justify-center items-center">
               <div class="rounded" :style="{ 'background-color': tile.color, 'width': '16em', 'height':'10em' }">
-                <i class="material-icons-outlined mt-16 " :style="{'transform': 'scale(7)' ,'margin-top': '4em', 'color':'white'}">{{ tile.icon }}</i>
+                <i class="material-icons-outlined mt-16 "
+                   :style="{'transform': 'scale(7)' ,'margin-top': '4em', 'color':'white'}">{{ tile.icon }}</i>
               </div>
-              {{ translate(tile.label)  }}
+              {{ translate(tile.label) }}
             </button>
 
           </div>
@@ -146,6 +164,7 @@ import Translations from "@/components/Settings/TranslationTool/Translations.vue
 import Orphelins from "@/components/Settings/TranslationTool/Orphelins.vue";
 import EditArticle from "@/components/Settings/Content/EditArticle.vue";
 import EditorQuill from "@/components/editorQuill.vue";
+import axios from "axios";
 
 
 export default {
@@ -195,6 +214,13 @@ export default {
     SubMenus: [],
     YNButtons: [],
 
+    timeZoneLand:[],
+    timeZoneCity:[],
+    ListOfOptions: [],
+    defaultSelect: 'Europe',
+    defaultSelect2: 'Paris',
+    seletedLand: '',
+
     form: {
       content: ''
     },
@@ -205,6 +231,7 @@ export default {
     this.loading = true;
     this.changeCSS();
     this.getParamFromjson();
+    this.getTimeZone();
     this.loading = false;
   },
 
@@ -301,6 +328,30 @@ export default {
       emails -> localhost/emails
        */
       window.location.href = link;
+    },
+    getTimeZone() {
+      return new Promise((resolve) => {
+        axios({
+          method: "get",
+          url: 'index.php?option=com_emundus&controller=settings&task=getTimeZone',
+        }).then((rep) => {
+          this.timeZoneLand= rep.data.data1;
+          this.timeZoneCity= rep.data.data2;
+        });
+
+        resolve(true);
+      });
+    },
+    selectLand(event){
+      let aTimeZone = event.target.value;
+      this.ListOfOptions = this.timeZoneCity[aTimeZone];
+      this.seletedLand = aTimeZone;
+    },
+    finalSelect(event, land){
+
+      let result = land + '/' + event.target.value;
+      //console.log(result);
+      //TODO push into adminisatrator
     }
   },
   computed: {},
