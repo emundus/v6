@@ -82,7 +82,8 @@
                 </select>
               </td>
               <td v-else>
-                <span>{{ file.rank }}</span>
+                <span v-if="file.rank > 0">{{ file.rank }}</span>
+                <span v-else> {{ translate('COM_EMUNDUS_CLASSEMENT_NOT_RANKED') }} </span>
               </td>
             </tr>
           </draggable>
