@@ -2138,91 +2138,66 @@ class EmundusModelEvaluation extends JModelList {
 				                    $params      = json_decode($elt['params']);
 				                    $groupParams = json_decode($elt['group_params']);
 
-				                    if (@$groupParams->repeat_group_button == 1 || $elt['plugin'] === 'databasejoin') {
-					                    $fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, $groupParams->repeat_group_button == 1);
-				                    }
-				                    else {
-					                    if ($elt['plugin'] == 'date') {
-						                    $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name'], $params->date_form_format);
-					                    }
-					                    else {
-						                    $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
-					                    }
-				                    }
+                                    if (!empty($groupParams) && $groupParams->repeat_group_button == 1) {
+                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, $groupParams->repeat_group_button == 1);
+                                    } else if ($elt['plugin'] == 'date') {
+                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name'], $params->date_form_format);
+                                    } else if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown" || $elt['plugin'] == "radiobutton") {
 
-				                    if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown" || $elt['plugin'] == "radiobutton") {
+                                        foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
+                                            if ($elt['plugin'] == "checkbox") {
+                                                $val = json_decode($val['val']);
+                                            } else {
+                                                $val = explode(',', $val['val']);
+                                            }
 
-					                    foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
-						                    if ($elt['plugin'] == "checkbox") {
-							                    $val = json_decode($val['val']);
-						                    }
-						                    else {
-							                    $val = explode(',', $val['val']);
-						                    }
+                                            if (count($val) > 0) {
+                                                foreach ($val as $k => $v) {
+                                                    $index = array_search($v, $params->sub_options->sub_values);
+                                                    $val[$k] = JText::_($params->sub_options->sub_labels[$index]);
+                                                }
+                                                $fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", $val);
+                                            } else {
+                                                $fabrikValues[$elt['id']][$fnum]['val'] = "";
+                                            }
+                                        }
 
-						                    if (count($val) > 0) {
-							                    foreach ($val as $k => $v) {
-								                    $index   = array_search($v, $params->sub_options->sub_values);
-								                    $val[$k] = JText::_($params->sub_options->sub_labels[$index]);
-							                    }
-							                    $fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", $val);
-						                    }
-						                    else {
-							                    $fabrikValues[$elt['id']][$fnum]['val'] = "";
-						                    }
-					                    }
+                                    } elseif ($elt['plugin'] == "birthday") {
 
-				                    }
-				                    elseif ($elt['plugin'] == "birthday") {
+                                        foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
+                                            $val = explode(',', $val['val']);
+                                            foreach ($val as $k => $v) {
+                                                if (!empty($v)) {
+                                                    $val[$k] = date($params->details_date_format, strtotime($v));
+                                                }
+                                            }
+                                            $fabrikValues[$elt['id']][$fnum]['val'] = implode(",", $val);
+                                        }
 
-					                    foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
-						                    $val = explode(',', $val['val']);
-						                    foreach ($val as $k => $v) {
-							                    if (!empty($v)) {
-								                    $val[$k] = date($params->details_date_format, strtotime($v));
-							                    }
-						                    }
-						                    $fabrikValues[$elt['id']][$fnum]['val'] = implode(",", $val);
-					                    }
-
-				                    }
-				                    elseif($elt['plugin'] == 'textarea' && $whitespace_textarea == 1){
-					                    $formatted_text = explode('<br />',nl2br($fabrikValues[$elt['id']][$fnum]['val']));
-					                    $inline = new \PhpOffice\PhpWord\Element\TextRun();
-					                    foreach ($formatted_text as $key => $text){
-						                    if(!empty($text))
-						                    {
-							                    if($key > 0)
-							                    {
-								                    $inline->addTextBreak();
-							                    }
-							                    $inline->addText(trim($text),array('name' => 'Arial'));
-						                    }
-					                    }
-					                    $fabrikValues[$elt['id']][$fnum]['val'] = $inline;
-					                    $fabrikValues[$elt['id']][$fnum]['complex_data'] = true;
-				                    }
-				                    elseif($elt['plugin'] == 'emundus_phonenumber'){
-					                    $fabrikValues[$elt['id']][$fnum]['val'] = substr($fabrikValues[$elt['id']][$fnum]['val'], 2, strlen($fabrikValues[$elt['id']][$fnum]['val']));
-				                    }
-                                    elseif($elt['plugin'] == 'cascadingdropdown') {
+                                    } elseif ($elt['plugin'] == 'textarea' && $whitespace_textarea == 1) {
+                                        $formatted_text = explode('<br />', nl2br($fabrikValues[$elt['id']][$fnum]['val']));
+                                        $inline = new \PhpOffice\PhpWord\Element\TextRun();
+                                        foreach ($formatted_text as $key => $text) {
+                                            if (!empty($text)) {
+                                                if ($key > 0) {
+                                                    $inline->addTextBreak();
+                                                }
+                                                $inline->addText(trim($text), array('name' => 'Arial'));
+                                            }
+                                        }
+                                        $fabrikValues[$elt['id']][$fnum]['val'] = $inline;
+                                        $fabrikValues[$elt['id']][$fnum]['complex_data'] = true;
+                                    } elseif ($elt['plugin'] == 'emundus_phonenumber') {
+                                        $fabrikValues[$elt['id']][$fnum]['val'] = substr($fabrikValues[$elt['id']][$fnum]['val'], 2, strlen($fabrikValues[$elt['id']][$fnum]['val']));
+                                    } elseif ($elt['plugin'] == 'cascadingdropdown') {
                                         foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
                                             $fabrikValues[$elt['id']][$fnum]['val'] = $_mEmail->getCddLabel($elt, $val['val']);
                                         }
+                                    } else if ($elt['plugin'] === 'databasejoin') {
+                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, $groupParams->repeat_group_button == 1);
+                                    } else {
+                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
                                     }
-				                    else {
-					                    if (@$groupParams->repeat_group_button == 1 || $elt['plugin'] === 'databasejoin') {
-						                    $fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, $groupParams->repeat_group_button == 1);
-					                    }
-                                        else {
-                                            if ($elt['plugin'] == 'date') {
-                                                $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name'], $params->date_form_format);
-                                            }
-                                            else {
-                                                $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
-                                            }
-                                        }
-				                    }
 
 				                    if(!isset($fabrikValues[$elt['id']][$fnum]['complex_data'])){
 					                    $fabrikValues[$elt['id']][$fnum]['complex_data'] = false;
