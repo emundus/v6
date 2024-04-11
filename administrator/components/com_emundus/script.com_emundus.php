@@ -4160,7 +4160,7 @@ if(in_array($applicant,$exceptions)){
 				$db->execute();
 			}
 
-            if (version_compare($cache_version, '1.38.8', '<=') || $firstrun) {
+            if (version_compare($cache_version, '1.38.10', '<=') || $firstrun) {
                 // Create new id_prog table
                 $columns       = [
                     [
