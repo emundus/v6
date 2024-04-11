@@ -1567,6 +1567,8 @@ class EmundusModelApplication extends JModelList
                     foreach ($groupes as $itemg) {
                         $g_params = json_decode($itemg->params);
 
+                        $hidden_group_param_values = [0, '-1', '-2'];
+
 	                    $query = $this->_db->getQuery(true);
 	                    $query->select('fe.id,fe.name,fe.label,fe.plugin,fe.params,fe.default,fe.eval')
 		                    ->from($this->_db->quoteName('#__fabrik_elements','fe'))
@@ -1584,7 +1586,7 @@ class EmundusModelApplication extends JModelList
 	                    }
 
 	                    if (count($elements) > 0) {
-	                        if (($allowed_groups !== true && !in_array($itemg->group_id, $allowed_groups)) || !EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, (int)$g_params->access)) {
+                            if ((($allowed_groups !== true && !in_array($itemg->group_id, $allowed_groups)) || !EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, (int)$g_params->access)) && !in_array($g_params->repeat_group_show_first,$hidden_group_param_values)) {
 	                            $forms .= '<fieldset class="em-personalDetail">
 												<h6 class="em-font-weight-400">' . JText::_($itemg->label) . '</h6>
 												<table class="em-restricted-group mt-4 mb-4">
