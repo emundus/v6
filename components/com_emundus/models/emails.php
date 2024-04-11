@@ -867,6 +867,12 @@ class EmundusModelEmails extends JModelList {
 	                    $fabrikValues[$elt['id']][$fnum]['val'] = substr($val['val'], 2, strlen($val['val']));
                     }
                 }
+                if ($elt['plugin'] == 'yesno'){
+                    foreach ($fabrikValues[$elt['id']] as $fnum => $val)
+                    {
+                        $fabrikValues[$elt['id']][$fnum]['val'] = $val['val'] ? JText::_('JYES') : JText::_('JNO');
+                    }
+                }
             }
             $preg = array('patterns' => array(), 'replacements' => array());
             foreach ($fnumsArray as $fnum) {
@@ -896,7 +902,7 @@ class EmundusModelEmails extends JModelList {
      * @return mixed|string
      * @since version v6
      */
-    private function getCddLabel($elt, $val) {
+    public function getCddLabel($elt, $val) {
         $attribs = json_decode($elt['params']);
         $id = $attribs->cascadingdropdown_id;
         $r1 = explode('___', $id);
@@ -1592,21 +1598,51 @@ class EmundusModelEmails extends JModelList {
      * @return Mixed Array
      * @since v6
      */
-    public function get_messages_to_from_user($user_id) {
+    public function get_messages_to_from_user($user_id)
+    {
         $messages = [];
 
         if (!empty($user_id)) {
             $query = $this->_db->getQuery(true);
 
             try {
-                $query->select('m.*,el.fnum_to')
-                    ->from('#__messages AS m')
-                    ->leftJoin('#__emundus_logs AS el ON m.message_id = JSON_EXTRACT(el.params,'.$this->_db->quote('$.message_id'). ') AND JSON_VALID(el.params)')
-                    ->where(array('el.user_id_to = '.$this->_db->quote($user_id), 'el.action_id = 9', 'el.message = '.$this->_db->quote('COM_EMUNDUS_LOGS_EMAIL_SENT')))
-                    ->extendWhere('OR', 'm.user_id_to = '.$this->_db->quote($user_id))
-                    ->order('m.date_time DESC');
-                $this->_db->setQuery($query);
+                // First we get all messages sent to the user
+                $query->select('*')
+                    ->from($this->_db->quoteName('#__messages'))
+                    ->where($this->_db->quoteName('user_id_to') . ' = ' . $user_id . ' AND ' . $this->_db->quoteName('folder_id') . ' <> 2')
+                    ->order($this->_db->quoteName('date_time') . ' DESC');
+                $this->_db->setquery($query);
                 $messages = $this->_db->loadObjectList();
+
+                if (!empty($messages)) {
+                    // Then we get all messages from emundus_logs
+                    $query->clear()
+                        ->select('el.params,el.fnum_to')
+                        ->from($this->_db->quoteName('#__emundus_logs', 'el'))
+                        ->where($this->_db->quoteName('el.user_id_to') . ' = ' . $user_id)
+                        ->andWhere($this->_db->quoteName('el.action_id') . ' = 9')
+                        ->andWhere($this->_db->quoteName('el.message') . ' = ' . $this->_db->quote('COM_EMUNDUS_LOGS_EMAIL_SENT'));
+                    $this->_db->setQuery($query);
+                    $messages_fnums = $this->_db->loadObjectList();
+
+                    $messages_fnums_by_id = [];
+                    foreach ($messages_fnums as $message) {
+                        $params = json_decode($message->params);
+
+                        if (!empty($params) && !empty($params->message_id)) {
+                            $messages_fnums_by_id[$params->message_id] = $message->fnum_to;
+                        }
+                    }
+
+                    // Finally we filter the messages to add the fnum_to field
+                    $messages_fnums_by_id_keys = array_keys($messages_fnums_by_id);
+                    foreach ($messages as $message) {
+                        $message->fnum_to = '';
+                        if (in_array($message->message_id, $messages_fnums_by_id_keys)) {
+                            $message->fnum_to = $messages_fnums_by_id[$message->message_id];
+                        }
+                    }
+                }
             } catch (Exception $e) {
                 JLog::add('Error getting messages sent to or from user: '.$user_id.' at query: '.$query->__toString(), JLog::ERROR, 'com_emundus.error');
             }

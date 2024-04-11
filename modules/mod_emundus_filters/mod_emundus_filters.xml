@@ -116,6 +116,17 @@
                             description="FILTER_ORDER_DESC"
                             default="0"
                     />
+                    <field type="list" name="filter_groups" label="FILTER_ON_PUBLISHED_STATE">
+                        <option value="0">JNO</option>
+                        <option value="1">JYES</option>
+                    </field>
+                    <field
+                            type="text"
+                            name="filter_groups_order"
+                            label="FILTER_ORDER"
+                            description="FILTER_ORDER_DESC"
+                            default="0"
+                    />
                     <!-- repeatable field -->
                     <field name="more_filter_elements"
                            type="repeatable"
