@@ -11,9 +11,9 @@
         <select v-else-if="param.options && param.options.length > 0" v-model="element.params[param.name]" class="em-w-100">
           <option v-for="option in param.options" :value="option.value">{{ translate(option.label) }}</option>
         </select>
-        <div  v-if="element.plugin === 'emundus_fileupload'">
-          <button type="button" class="mt-2 text-profile-color flex items-center" @click="EventNewDocForm">
-            <label class="!mb-0">{{translate('COM_EMUNDUS_FORM_BUILDER_CREATE_DOCUMENT_NAME')}}</label>
+        <div  v-if="element.plugin === 'emundus_fileupload'" class="green-Menubutton mt-2 rounded-lg p-2">
+          <button type="button" class=" flex items-center focus:outline-none" @click="EventNewDocForm" style="user-select: none">
+            <label class="!mb-0 pl-3">{{translate('COM_EMUNDUS_FORM_BUILDER_CREATE_DOCUMENT_NAME')}}</label>
             <span class="material-icons-outlined" :class="[(isActive ? 'rotate-90' : '')]">chevron_right</span>
           </button>
           <FormBuilderCreateDocument v-if="isActive" :profile_id="profile_id" :current_document="parseInt(element.params[param.name])" :key="parseInt(element.params[param.name])" :context="'element'" @documents-updated="reloadComponent"></FormBuilderCreateDocument>
@@ -276,4 +276,12 @@ export default {
 .content[style*="display: block"] {
   display: block !important ;
 }
+
+.green-Menubutton {
+  weight: bold;
+  background-color: #008A351A; /* Change background color to green when clicked */
+  background-color-opacity: 0.1;
+  color: #008A35; /* Change text color to green */
+}
+
 </style>

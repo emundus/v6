@@ -4159,10 +4159,12 @@ if(in_array($applicant,$exceptions)){
                     // $id_OtherDocument is not set or is NULL
                     EmundusHelperUpdate::createTypeDocumentAttachement("_OtherDocument","Other_documents","base type of document for the componant fileupload","pdf;jpg;jpeg;doc;docx;odt;zip",5,20,1,NULL,1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,0,NULL,NULL,NULL);
                 }
+                //pas sûr si c'est utile de faire ça
+                /*
                 EmundusHelperUpdate::cleanFalangContent(NULL,"emundus_setup_attachments",NULL);
                 $allIndexAttachement = EmundusHelperUpdate::getAllIndexAttachement();
                 EmundusHelperUpdate::cleanFalangContent($allIndexAttachement,"emundus_setup_attachments",NULL);
-
+                */
             }
         }
 

@@ -32,7 +32,7 @@
           <incremental-select
               v-if="models.length > 0"
               :options="documentList"
-              :defaultValue="parseInt(current_document.id)"
+              :defaultValue="this.current_document.id "
               :locked="mode != 'create'"
               @update-value="updateDocumentSelectedValue"
           >
@@ -137,6 +137,7 @@ import editor from '../editor.vue';
 import IncrementalSelect from "../IncrementalSelect";
 import formBuilderMixin from "../../mixins/formbuilder";
 import Swal from 'sweetalert2';
+import {parseInt} from "lodash";
 
 export default {
   name: 'FormBuilderCreateDocument',
@@ -225,6 +226,7 @@ export default {
     this.getFileTypes();
   },
   methods: {
+    parseInt,
     selectTab(tab) {
       this.tabs.forEach(t => {
         t.active = false;

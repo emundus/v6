@@ -35,8 +35,8 @@ export default {
       required: true
     },
     defaultValue: {
-      type: Number,
-      required: false
+      required: false,
+      default: null
     },
 	  locked: {
 			type: Boolean,
@@ -74,13 +74,12 @@ export default {
     },
     onSelectValue(value) {
       this.selectedExistingValue = value;
-
       if (this.selectedExistingValue === -1) {
         this.unselectExistingValue();
       } else {
         this.isNewVal = false;
-        let detachedValue = this.existingValues.find((value) => {
-          return value.id === this.selectedExistingValue;
+        let detachedValue = this.existingValues.find((test) => {
+          return test.id === this.selectedExistingValue;
         });
 
         if (detachedValue) {
