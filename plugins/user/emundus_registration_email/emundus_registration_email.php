@@ -176,23 +176,29 @@ class plgUserEmundus_registration_email extends JPlugin {
                 $user->setParam('send_mail', false);
             }
 
-            // Generate the activation token.
-            $activation = md5(mt_rand());
+            if ($user->getParam('skip_activation', false) || JFactory::getSession()->get('skip_activation', false)) {
+                $user->activation = 1;
+            }
+            else
+            {
+                // Generate the activation token.
+                $activation = md5(mt_rand());
 
-            // Store token in User's Parameters
-            $user->setParam('emailactivation_token', $activation);
+                // Store token in User's Parameters
+                $user->setParam('emailactivation_token', $activation);
 
-            // Get the raw User Parameters
-            $params = $user->getParameters();
-            $user->set('params', $params);
+                // Get the raw User Parameters
+                $params = $user->getParameters();
+                $user->set('params', $params);
 
-            // Set the user table instance to include the new token.
-            $table = JTable::getInstance('user', 'JTable');
-            $table->load($userId);
-            $table->params = $params->toString();
+                // Set the user table instance to include the new token.
+                $table = JTable::getInstance('user', 'JTable');
+                $table->load($userId);
+                $table->params = $params->toString();
 
-            // Block the user (until he activates).
-            $table->block = $eMConfig->get('block_user',1);
+                // Block the user (until he activates).
+                $table->block = $eMConfig->get('block_user', 1);
+            }
 
             // Save user data
             if (!$table->store()) {
@@ -283,6 +289,8 @@ class plgUserEmundus_registration_email extends JPlugin {
      * @throws Exception
      */
     private function sendActivationEmail($data, $token) {
+
+        define('JPATH_COMPONENT', 'com_emundus');
 
         $params = json_decode($data['params']);
         if (isset($params->skip_activation)) {

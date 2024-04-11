@@ -163,16 +163,13 @@ if($user->guest || in_array($e_user->profile,$app_prof))
     $categories_filt = $session->get('category');
 
     $program_array = [];
-    if ($params->get('mod_em_campaign_layout') == 'institut_fr')
+    if (!empty($program_code))
     {
-        if (!empty($program_code))
-        {
-            $program_array['IN'] = array_map('trim', explode(',', $program_code));
-        }
-        if (!empty($ignored_program_code))
-        {
-            $program_array['NOT_IN'] = array_map('trim', explode(',', $ignored_program_code));
-        }
+        $program_array['IN'] = array_map('trim', explode(',', $program_code));
+    }
+    if (!empty($ignored_program_code))
+    {
+        $program_array['NOT_IN'] = array_map('trim', explode(',', $ignored_program_code));
     }
 
     include_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'programme.php');
@@ -191,6 +188,15 @@ if($user->guest || in_array($e_user->profile,$app_prof))
         }
     }
 
+    $programs_codes = [];
+    foreach ($programs as $program)
+    {
+        if (!empty($program['code']))
+        {
+            $programs_codes[] = $program['code'];
+        }
+    }
+
     $condition = '';
     if (!empty($searchword)) {
         $condition .= ' AND (ca.label LIKE "%"' . $db->quote($searchword) . '"%" OR ca.short_description LIKE "%"' . $db->quote($searchword) . '"%"';
@@ -201,9 +207,9 @@ if($user->guest || in_array($e_user->profile,$app_prof))
 
     }
 
-    if (!empty($program_code))
+    if (!empty($programs_codes))
     {
-        $condition .= ' AND pr.code IN (' . implode(',', array_map('trim', explode(',', $db->quote($program_code)))) . ')';
+        $condition .= ' AND pr.code IN (' . implode(',', $db->quote($programs_codes)) . ')';
     }
 
     if (!empty($codes))
@@ -215,13 +221,7 @@ if($user->guest || in_array($e_user->profile,$app_prof))
         $condition .= ' AND pr.programmes IN (' . implode(',', $db->quote(explode(',', $categories_filt))) . ')';
     }
 
-
-    if (!empty($ignored_program_code))
-    {
-        $condition .= ' AND pr.code NOT IN (' . implode(',', $db->quote(array_map('trim', explode(',', $ignored_program_code)))) . ')';
-    }
-
-// Get single campaign
+    // Get single campaign
     $cid = $app->input->getInt('cid', 0);
     if (!empty($cid))
     {

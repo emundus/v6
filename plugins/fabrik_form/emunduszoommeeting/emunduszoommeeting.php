@@ -4,7 +4,7 @@ defined('_JEXEC') or die('Restricted access');
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
-require_once "ZoomAPIWrapper.php";
+require_once JPATH_ROOT . '/components/com_emundus/classes/api/Zoom.php';
 
 /**
 * Create a Joomla user from the forms data
@@ -117,11 +117,7 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
         $template = file_get_contents($route . __FUNCTION__ . '_meeting.json');
         $json = json_decode($template, true);
 
-        # get api key from Back-Office
-        $eMConfig = JComponentHelper::getParams('com_emundus');
-        $apiSecret = $eMConfig->get('zoom_jwt', '');
-
-        $zoom = new ZoomAPIWrapper($apiSecret);
+        $zoom = new Zoom();
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -152,10 +148,14 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
             ));
 
             # call to Zoom API endpoint
-            $response = $zoom->doRequest('POST', '/users', array(), array(), $user);        /* array */
+			$response = $zoom->createUser([
+				'email' => $raw->email,
+				'first_name' => $raw->firstname,
+				'last_name' => $raw->lastname
+			]);
 
             # HTTP status = 201 :: User created
-            if ($zoom->responseCode() == 201) {
+            if (!empty($response) && $response['code'] == 201) {
                 # get host id
                 $host_id = $response['id'];
                 $host_last_name = $response['last_name'];
@@ -178,18 +178,14 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
 
                     if (!empty($email)) {
                         # get the user id by email
-                        $response = $zoom->doRequest('GET', '/users/' . $email, array(), array(), '');
+	                    $response = $zoom->getUserById($email);
 
                         # get the Zoom user id
                         $host_id = $response['id'];
 
                         $host_last_name = $response['last_name'];
                         $host_first_name = $response['first_name'];
-                    } else {
-                        // TODO: handle email not found
                     }
-                } else {
-                    $zoom->requestErrors();
                 }
             }
         }
@@ -249,11 +245,9 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
         $jid = '';
 
         if (empty($jury_id) && empty($meeting_session)) {
-            $response = $zoom->doRequest('POST', '/users/'. $host_id .'/meetings', array(), array(), json_encode($json, JSON_PRETTY_PRINT));
+            $response = $zoom->createMeeting($host_id, $json);
 
-            $httpCode = $zoom->responseCode();
-
-            if($httpCode == 201) {
+            if($response['code'] == 201) {
                 $send_first_email_flag = true;
 
                 # get last insert id
@@ -300,20 +294,18 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
                 } catch(Exception $e) {
                     JLog::add('Create Zoom meeting failed : ' . $e->getMessage(),JLog::ERROR, 'com_emundus');
                 }
-            } else {
-                $zoom->requestErrors();
             }
         } else {
-            $zoom->doRequest('PATCH', '/meetings/' . $meeting_session, array(), array(), json_encode($json, JSON_PRETTY_PRINT));
+	        $response = $zoom->updateMeeting($meeting_session, $json);
 
-            if ($zoom->responseCode() != 204) {
-                $zoom->requestErrors();
+            if ($response['code'] != 204) {
+                //$zoom->requestErrors();
             } else {
                 # be careful, each time the meeting room is updated, the start_url / join_url / registration / password / encrypted_password will be updated too. So, we need to get again the meeting by calling
-                $response = $zoom->doRequest('GET', '/meetings/' . $meeting_session, array(), array(), "");
+                $response = $zoom->getMeeting($meeting_session);
 
-                if ($zoom->responseCode() != 200) {
-                    $zoom->requestErrors();
+                if ($response['code'] != 200) {
+                    //$zoom->requestErrors();
                 } else {
                     try {
                         $query->clear()

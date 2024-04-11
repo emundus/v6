@@ -197,7 +197,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
 							],
 							[
 								'key' => JText::_('COM_EMUNDUS_ONBOARD_CATEGORY'),
-								'value' => $program->programmes,
+								'value' => JText::_($program->programmes),
 								'classes' => 'em-font-size-14 em-neutral-700-color',
 								'display' => 'all'
 							],
