@@ -575,7 +575,7 @@ if (!empty($this->custom_title)) :?>
                 <tr class="em-allowed-files">
                     <td>
                     <div class="em-ml-8">
-                    <p style="word-break: break-all;" class="text-neutral-600">'. JText::_('COM_EMUNDUS_ATTACHMENTS_PLEASE_ONLY').' '.$attachment->allowed_types.'</p>
+                    <p style="word-break: break-all;" class="text-neutral-600">'. JText::_('COM_EMUNDUS_ATTACHMENTS_PLEASE_ONLY').' '.$attachment->allowed_types.' | '.JText::sprintf('COM_EMUNDUS_ATTACHMENTS_MAXNB_TIP', $attachment->nbmax).'</p>
                     <div class="em-flex-row em-flex-space-between">';
                    if (!empty($this->attachments_to_upload) && in_array($attachment->id,$this->attachments_to_upload)) {
                        $div .= '<button class="btn btn-danger btn-xs em-pointer" onclick="uploadfromprofile('."$attachment->id".')">'.JText::_('COM_EMUNDUS_USERS_MY_DOCUMENTS_LOAD').'</button>';

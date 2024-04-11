@@ -264,7 +264,12 @@ class EmundusHelperEvents {
                 if ($fnum == @$user->fnum) {
                     //try to access edit view
                     if ($view == 'form') {
-                        if ((!$is_dead_line_passed && $isLimitObtained !== true) || in_array($user->id, $applicants) || ($is_app_sent && !$is_dead_line_passed && $can_edit_until_deadline && $isLimitObtained !== true) || ($is_dead_line_passed && $can_edit_after_deadline && $isLimitObtained !== true) || $can_edit) {
+                        if (
+							(!$is_app_sent && !$is_dead_line_passed && $isLimitObtained !== true)
+							|| in_array($user->id, $applicants)
+							|| ($is_app_sent && !$is_dead_line_passed && $can_edit_until_deadline)
+							|| ($is_dead_line_passed && $can_edit_after_deadline && ((!$is_app_sent && $isLimitObtained !== true) || $is_app_sent))
+							|| $can_edit) {
                             $reload_url = false;
                         }
                     }
