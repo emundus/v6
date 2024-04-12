@@ -132,7 +132,7 @@ class EmundusUnittestHelperSamples
         return $user_id;
     }
 
-    public function createSampleFile($cid, $uid, $force_new = true) {
+    public function createSampleFile($cid, $uid, $force_new = true, $return_ccid = false) {
 		$fnum = '';
 
 		if (!$force_new) {
@@ -152,6 +152,18 @@ class EmundusUnittestHelperSamples
 			$m_formbuilder = new EmundusModelFormbuilder;
 			$fnum = $m_formbuilder->createTestingFile($cid, $uid);
 		}
+
+        if (!empty($fnum) && $return_ccid) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('id')
+                ->from('#__emundus_campaign_candidature')
+                ->where('fnum = ' . $db->quote($fnum));
+
+            $db->setQuery($query);
+            $fnum = $db->loadResult();
+        }
 
         return $fnum;
     }

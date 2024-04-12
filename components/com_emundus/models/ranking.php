@@ -607,44 +607,21 @@ class EmundusModelRanking extends JModelList
         return $hierarchies;
     }
 
-    public function updateFileRanking($id, $user_id, $new_rank, $hierarchy_id)
+
+    /**
+     * @param $id
+     * @param $user_id
+     * @param $hierarchy_id
+     * @return int
+     */
+    public function getFileRanking($id, $user_id, $hierarchy_id)
     {
-        $updated = false;
+        $rank = -1;
 
-        if (!empty($id) && !empty($user_id) && !empty($new_rank) && !empty($hierarchy_id)) {
-            // make sure ccid id not one of the user's file as applicant
-
+        if (!empty($id) && !empty($user_id) && !empty($hierarchy_id)) {
             $query = $this->db->getQuery(true);
-
             $query->clear()
-                ->select('applicant_id')
-                ->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
-                ->where($this->db->quoteName('cc.id') . ' = ' . $this->db->quote($id));
-
-            $this->db->setQuery($query);
-            $applicant_id = $this->db->loadResult();
-
-            if ($applicant_id == $user_id) {
-                throw new Exception('You cannot rank your own file');
-            }
-
-            // if even one row is locked, then the whole user_id/hierarchy_id is locked
-            $query->clear()
-                ->select('id')
-                ->from($this->db->quoteName('#__emundus_ranking'))
-                ->where($this->db->quoteName('user_id') . ' = ' . $this->db->quote($user_id))
-                ->andWhere($this->db->quoteName('hierarchy_id') . ' = ' . $this->db->quote($hierarchy_id))
-                ->andWhere($this->db->quoteName('locked') . ' = 1');
-
-            $this->db->setQuery($query);
-            $locked_row = $this->db->loadResult();
-
-            if (!empty($locked_row)) {
-                throw new Exception(Text::_('COM_EMUNDUS_RANKING_UPDATE_RANKING_ERROR_LOCKED'));
-            }
-
-            $query->clear()
-                ->select($this->db->quoteName('rank'))
+                ->select('rank')
                 ->from($this->db->quoteName('#__emundus_ranking'))
                 ->where($this->db->quoteName('ccid') . ' = ' . $this->db->quote($id))
                 ->andWhere($this->db->quoteName('user_id') . ' = ' . $this->db->quote($user_id))
@@ -652,99 +629,300 @@ class EmundusModelRanking extends JModelList
 
             try {
                 $this->db->setQuery($query);
-                $old_rank = $this->db->loadResult();
+                $rank = (int) $this->db->loadResult();
 
-                // if old rank is the same as new rank, do nothing
-                if ($old_rank == $new_rank) {
-                    return true;
-                } else {
-                    if ($old_rank == 0) { // 0 is not a possible value
-                        $old_rank = -1;
-                    }
-
-                    if ($new_rank == -1) {
-                        // all ranks superior or equal to old rank should be decreased by 1
-                        $query->clear()
-                            ->update($this->db->quoteName('#__emundus_ranking'))
-                            ->set($this->db->quoteName('rank') . ' = ' . $this->db->quoteName('rank') . ' - 1')
-                            ->where($this->db->quoteName('user_id') . ' = ' . $this->db->quote($user_id))
-                            ->andWhere($this->db->quoteName('hierarchy_id') . ' = ' . $this->db->quote($hierarchy_id))
-                            ->andWhere($this->db->quoteName('rank') . ' > ' . $this->db->quote($old_rank));
-
-                        $this->db->setQuery($query);
-                        $this->db->execute();
-                    } else if ($old_rank == -1) {
-                        // all ranks superior or equal to new rank should be increased by 1
-                        $query->clear()
-                            ->update($this->db->quoteName('#__emundus_ranking'))
-                            ->set($this->db->quoteName('rank') . ' = ' . $this->db->quoteName('rank') . ' + 1')
-                            ->where($this->db->quoteName('user_id') . ' = ' . $this->db->quote($user_id))
-                            ->andWhere($this->db->quoteName('hierarchy_id') . ' = ' . $this->db->quote($hierarchy_id))
-                            ->andWhere($this->db->quoteName('rank') . ' >= ' . $this->db->quote($new_rank));
-
-                        $this->db->setQuery($query);
-                        $this->db->execute();
-                    } else if ($old_rank > $new_rank) {
-                        // all ranks between new rank and old rank should be increased by 1
-                        $query->clear()
-                            ->update($this->db->quoteName('#__emundus_ranking'))
-                            ->set($this->db->quoteName('rank') . ' = ' . $this->db->quoteName('rank') . ' + 1')
-                            ->where($this->db->quoteName('user_id') . ' = ' . $this->db->quote($user_id))
-                            ->andWhere($this->db->quoteName('hierarchy_id') . ' = ' . $this->db->quote($hierarchy_id))
-                            ->andWhere($this->db->quoteName('rank') . ' >= ' . $this->db->quote($new_rank))
-                            ->andWhere($this->db->quoteName('rank') . ' < ' . $this->db->quote($old_rank));
-
-                        $this->db->setQuery($query);
-                        $this->db->execute();
-                    } else if ($old_rank < $new_rank) {
-                        // all ranks between old rank and new rank should be decreased by 1
-                        $query->clear()
-                            ->update($this->db->quoteName('#__emundus_ranking'))
-                            ->set($this->db->quoteName('rank') . ' = ' . $this->db->quoteName('rank') . ' - 1')
-                            ->where($this->db->quoteName('user_id') . ' = ' . $this->db->quote($user_id))
-                            ->andWhere($this->db->quoteName('hierarchy_id') . ' = ' . $this->db->quote($hierarchy_id))
-                            ->andWhere($this->db->quoteName('rank') . ' > ' . $this->db->quote($old_rank))
-                            ->andWhere($this->db->quoteName('rank') . ' <= ' . $this->db->quote($new_rank));
-
-                        $this->db->setQuery($query);
-                        $this->db->execute();
-                    }
-
-                    $query->clear()
-                        ->select('id')
-                        ->from($this->db->quoteName('#__emundus_ranking'))
-                        ->where($this->db->quoteName('ccid') . ' = ' . $this->db->quote($id))
-                        ->andWhere($this->db->quoteName('user_id') . ' = ' . $this->db->quote($user_id))
-                        ->andWhere($this->db->quoteName('hierarchy_id') . ' = ' . $this->db->quote($hierarchy_id));
-
-                    $this->db->setQuery($query);
-                    $ranking_id = $this->db->loadResult();
-
-                    if (!empty($ranking_id)) {
-                        $query->clear()
-                            ->update($this->db->quoteName('#__emundus_ranking'))
-                            ->set($this->db->quoteName('rank') . ' = ' . $this->db->quote($new_rank))
-                            ->where($this->db->quoteName('id') . ' = ' . $this->db->quote($ranking_id));
-
-                        $this->db->setQuery($query);
-                        $updated = $this->db->execute();
-                    } else {
-                        $query->clear()
-                            ->insert($this->db->quoteName('#__emundus_ranking'))
-                            ->columns($this->db->quoteName('ccid') . ', ' . $this->db->quoteName('user_id') . ', ' . $this->db->quoteName('rank') . ', ' . $this->db->quoteName('hierarchy_id'))
-                            ->values($this->db->quote($id) . ', ' . $this->db->quote($user_id) . ', ' . $this->db->quote($new_rank) . ', ' . $this->db->quote($hierarchy_id));
-
-                        $this->db->setQuery($query);
-                        $updated = $this->db->execute();
-                    }
+                if ($rank < 1) {
+                    $rank = -1;
                 }
             } catch (Exception $e) {
-                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus.ranking.php');
-                throw new Exception('An error occurred while updating the file ranking.');
+                JLog::add('getFileRanking ' . $e->getMessage(), JLog::ERROR, 'com_emundus.ranking.php');
+            }
+        }
+
+        return $rank;
+    }
+
+    /**
+     * @param $id
+     * @param $user_id
+     * @param $new_rank
+     * @param $hierarchy_id
+     * @return false
+     * @throws Exception
+     */
+    public function updateFileRanking($id, $user_id, $new_rank, $hierarchy_id)
+    {
+        $updated = false;
+
+        if (!empty($id) && !empty($user_id) && !empty($new_rank) && !empty($hierarchy_id)) {
+            $query = $this->db->getQuery(true);
+            $query->clear()
+                ->select($this->db->quoteName('applicant_id'))
+                ->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
+                ->where($this->db->quoteName('cc.id') . ' = ' . $this->db->quote($id));
+
+            $this->db->setQuery($query);
+            $applicant_id = $this->db->loadResult();
+
+            if ($applicant_id == $user_id) {
+                throw new Exception(Text::_('COM_EMUNDUS_RANKING_UPDATE_RANKING_ERROR_RANK_OWN_FILE'));
+            }
+
+            $query->clear()
+                ->select($this->db->quoteName('cc.status'))
+                ->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
+                ->where($this->db->quoteName('cc.id') . ' = ' . $this->db->quote($id));
+            $file_status = $this->db->setQuery($query)->loadResult();
+            $status_user_can_rank = $this->getStatusUserCanRank($user_id, $hierarchy_id);
+
+            if ($file_status == $status_user_can_rank) {
+                $query->clear()
+                    ->select($this->db->quoteName('rank') . ', ' . $this->db->quoteName('locked'))
+                    ->from($this->db->quoteName('#__emundus_ranking'))
+                    ->where($this->db->quoteName('ccid') . ' = ' . $this->db->quote($id))
+                    ->andWhere($this->db->quoteName('user_id') . ' = ' . $this->db->quote($user_id))
+                    ->andWhere($this->db->quoteName('hierarchy_id') . ' = ' . $this->db->quote($hierarchy_id));
+
+                $this->db->setQuery($query);
+                $ranking = $this->db->loadAssoc();
+
+                if ($ranking['locked'] == 1) {
+                    throw new Exception(Text::_('COM_EMUNDUS_RANKING_UPDATE_RANKING_ERROR_LOCKED'));
+                }
+
+                $old_rank = !empty($ranking['rank']) && $ranking['rank'] > 0 ? $ranking['rank'] : -1;
+
+                if ($old_rank == $new_rank) {
+                    $updated = true;
+                } else {
+                    // if the new rank is -1, we need to decrease all ranks above the old rank by 1, unless they are locked
+                    if ($new_rank != -1) {
+                        // does the rank i want to reach already taken by another file and locked ?
+                        $query->clear()
+                            ->select($this->db->quoteName('er.ccid') . ', ' . $this->db->quoteName('er.locked') . ', ' . $this->db->quoteName('cc.status'))
+                            ->from($this->db->quoteName('#__emundus_ranking', 'er'))
+                            ->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'cc') . ' ON ' . $this->db->quoteName('cc.id') . ' = ' . $this->db->quoteName('er.ccid'))
+                            ->where($this->db->quoteName('er.rank') . ' = ' . $this->db->quote($new_rank))
+                            ->andWhere($this->db->quoteName('er.hierarchy_id') . ' = ' . $this->db->quote($hierarchy_id))
+                            ->andWhere($this->db->quoteName('er.user_id') . ' = ' . $this->db->quote($user_id));
+
+                        $this->db->setQuery($query);
+                        $same_rank_data = $this->db->loadAssoc();
+
+                        if (!empty($same_rank_data) && ($same_rank_data['locked'] == 1 || $same_rank_data['status'] != $status_user_can_rank)) {
+                            throw new Exception(Text::_('COM_EMUNDUS_RANKING_UPDATE_RANKING_ERROR_RANK_UNREACHABLE'));
+                        }
+
+                        $max_rank = $this->getMaxRankAvailable($hierarchy_id, $user_id);
+                        if ($new_rank > $max_rank) {
+                            throw new Exception(Text::_('COM_EMUNDUS_RANKING_UPDATE_RANKING_ERROR_NEW_RANK_UNREACHABLE'));
+                        }
+                    }
+
+                    $re_arranged_ranking = [];
+                    $locked_rank_positions = [];
+                    if ($new_rank == -1) {
+                        // all ranks superior or equal to old rank should be decreased by 1 unless they are locked
+                        $query->clear()
+                            ->select($this->db->quoteName('er.rank') . ', ' . $this->db->quoteName('er.id') . ', ' . $this->db->quoteName('er.locked') . ', ' . $this->db->quoteName('cc.status'))
+                            ->from($this->db->quoteName('#__emundus_ranking', 'er'))
+                            ->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'cc') . ' ON ' . $this->db->quoteName('cc.id') . ' = ' . $this->db->quoteName('er.ccid'))
+                            ->where($this->db->quoteName('er.user_id') . ' = ' . $this->db->quote($user_id))
+                            ->andWhere($this->db->quoteName('er.hierarchy_id') . ' = ' . $this->db->quote($hierarchy_id))
+                            ->andWhere($this->db->quoteName('er.rank') . ' > ' . $this->db->quote($ranking['rank']))
+                            ->order($this->db->quoteName('er.rank') . ' ASC');
+
+                        $this->db->setQuery($query);
+                        $ranks = $this->db->loadAssocList();
+                        $rank_to_apply = (int)$old_rank;
+
+                        $locked_rank_positions = array_filter(array_map(function($rank) use ($status_user_can_rank) {
+                            return $rank['locked'] == 1 || $rank['status'] != $status_user_can_rank ? $rank['rank'] : null;
+                        }, $ranks));
+
+                        foreach($ranks as $rank) {
+                            if ($rank['locked'] != 1 && $rank['status'] == $status_user_can_rank) {
+                                $re_arranged_ranking[$rank['id']] = $rank_to_apply;
+                                $rank_to_apply++;
+
+                                while(in_array($rank_to_apply, $locked_rank_positions)) {
+                                    $rank_to_apply++;
+                                }
+                            }
+                        }
+                    } else if ($old_rank == -1) {
+                        // all ranks superior or equal to new rank should be increased by 1 unless they are locked
+                        $query->clear()
+                            ->select($this->db->quoteName('er.rank') . ', ' . $this->db->quoteName('er.id') . ', ' . $this->db->quoteName('er.locked') . ', ' . $this->db->quoteName('cc.status'))
+                            ->from($this->db->quoteName('#__emundus_ranking', 'er'))
+                            ->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'cc') . ' ON ' . $this->db->quoteName('cc.id') . ' = ' . $this->db->quoteName('er.ccid'))
+                            ->where($this->db->quoteName('er.user_id') . ' = ' . $this->db->quote($user_id))
+                            ->andWhere($this->db->quoteName('er.hierarchy_id') . ' = ' . $this->db->quote($hierarchy_id))
+                            ->andWhere($this->db->quoteName('er.rank') . ' >= ' . $this->db->quote($new_rank))
+                            ->order($this->db->quoteName('er.rank') . ' ASC');
+
+                        $this->db->setQuery($query);
+                        $ranks = $this->db->loadAssocList();
+                        $rank_to_apply = $new_rank + 1;
+
+                        $locked_rank_positions = array_filter(array_map(function($rank) use ($status_user_can_rank) {
+                            return $rank['locked'] == 1 || $rank['status'] != $status_user_can_rank ? $rank['rank'] : null;
+                        }, $ranks));
+
+                        while(in_array($rank_to_apply, $locked_rank_positions)) {
+                            $rank_to_apply++;
+                        }
+
+                        foreach($ranks as $rank) {
+                            if ($rank['locked'] != 1 && $rank['status'] == $status_user_can_rank) {
+                                $re_arranged_ranking[$rank['id']] = $rank_to_apply;
+                                $rank_to_apply++;
+
+                                while(in_array($rank_to_apply, $locked_rank_positions)) {
+                                    $rank_to_apply++;
+                                }
+                            }
+                        }
+                    } else if ($old_rank > $new_rank) {
+                        // all ranks between new rank and old rank should be increased by 1 unless they are locked
+                        $query->clear()
+                            ->select($this->db->quoteName('er.rank') . ', ' . $this->db->quoteName('er.id') . ', ' . $this->db->quoteName('er.locked') . ', ' . $this->db->quoteName('cc.status'))
+                            ->from($this->db->quoteName('#__emundus_ranking', 'er'))
+                            ->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'cc') . ' ON ' . $this->db->quoteName('cc.id') . ' = ' . $this->db->quoteName('er.ccid'))
+                            ->where($this->db->quoteName('er.user_id') . ' = ' . $this->db->quote($user_id))
+                            ->andWhere($this->db->quoteName('er.hierarchy_id') . ' = ' . $this->db->quote($hierarchy_id))
+                            ->andWhere($this->db->quoteName('er.rank') . ' >= ' . $this->db->quote($new_rank))
+                            ->andWhere($this->db->quoteName('er.rank') . ' < ' . $this->db->quote($old_rank))
+                            ->order($this->db->quoteName('er.rank') . ' DESC');
+
+                        $this->db->setQuery($query);
+                        $ranks = $this->db->loadAssocList();
+                        $rank_to_apply = (int)$old_rank;
+
+                        $locked_rank_positions = array_filter(array_map(function($rank) use ($status_user_can_rank) {
+                            return $rank['locked'] == 1 || $rank['status'] != $status_user_can_rank ? $rank['rank'] : null;
+                        }, $ranks));
+
+                        foreach($ranks as $rank) {
+                            if ($rank['locked'] != 1 && $rank['status'] == $status_user_can_rank) {
+                                $re_arranged_ranking[$rank['id']] = $rank_to_apply;
+                                $rank_to_apply--;
+
+                                while(in_array($rank_to_apply, $locked_rank_positions)) {
+                                    $rank_to_apply--;
+                                }
+                            }
+                        }
+                    }  else if ($old_rank < $new_rank) {
+                        // all ranks between old rank and new rank should be decreased by 1 unless they are locked
+                        $query->clear()
+                            ->select($this->db->quoteName('er.rank') . ', ' . $this->db->quoteName('er.id') . ', ' . $this->db->quoteName('er.locked') . ', ' . $this->db->quoteName('cc.status'))
+                            ->from($this->db->quoteName('#__emundus_ranking', 'er'))
+                            ->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'cc') . ' ON ' . $this->db->quoteName('cc.id') . ' = ' . $this->db->quoteName('er.ccid'))
+                            ->where($this->db->quoteName('er.user_id') . ' = ' . $this->db->quote($user_id))
+                            ->andWhere($this->db->quoteName('er.hierarchy_id') . ' = ' . $this->db->quote($hierarchy_id))
+                            ->andWhere($this->db->quoteName('er.rank') . ' > ' . $this->db->quote($old_rank))
+                            ->andWhere($this->db->quoteName('er.rank') . ' <= ' . $this->db->quote($new_rank))
+                            ->order($this->db->quoteName('er.rank') . ' ASC');
+
+                        $this->db->setQuery($query);
+                        $ranks = $this->db->loadAssocList();
+                        $rank_to_apply = (int)$old_rank;
+
+                        $locked_rank_positions = array_filter(array_map(function($rank) use ($status_user_can_rank) {
+                            return $rank['locked'] == 1 || $rank['status'] != $status_user_can_rank ? $rank['rank'] : null;
+                        }, $ranks));
+
+                        foreach($ranks as $rank) {
+                            if ($rank['locked'] != 1 && $rank['status'] == $status_user_can_rank) {
+                                $re_arranged_ranking[$rank['id']] = $rank_to_apply;
+                                $rank_to_apply++;
+
+                                while(in_array($rank_to_apply, $locked_rank_positions)) {
+                                    $rank_to_apply++;
+                                }
+                            }
+                        }
+                    }
+
+                    foreach ($re_arranged_ranking as $rank_row_id => $new_rank_for_row) {
+                        $query->clear()
+                            ->update($this->db->quoteName('#__emundus_ranking'))
+                            ->set($this->db->quoteName('rank') . ' = ' . $this->db->quote($new_rank_for_row))
+                            ->where($this->db->quoteName('id') . ' = ' . $this->db->quote($rank_row_id));
+
+                        try {
+                            $this->db->setQuery($query);
+                            $this->db->execute();
+                        } catch (Exception $e) {
+                            JLog::add('updateFileRanking ' . $e->getMessage(), JLog::ERROR, 'com_emundus.ranking.php');
+                            throw new Exception('An error occurred while updating files ranking.');
+                        }
+                    }
+                }
+
+                $query->clear()
+                    ->select('id')
+                    ->from($this->db->quoteName('#__emundus_ranking'))
+                    ->where($this->db->quoteName('ccid') . ' = ' . $this->db->quote($id))
+                    ->andWhere($this->db->quoteName('user_id') . ' = ' . $this->db->quote($user_id))
+                    ->andWhere($this->db->quoteName('hierarchy_id') . ' = ' . $this->db->quote($hierarchy_id));
+
+                $this->db->setQuery($query);
+                $ranking_id = $this->db->loadResult();
+
+                if (!empty($ranking_id)) {
+                    $query->clear()
+                        ->update($this->db->quoteName('#__emundus_ranking'))
+                        ->set($this->db->quoteName('rank') . ' = ' . $this->db->quote($new_rank))
+                        ->where($this->db->quoteName('id') . ' = ' . $this->db->quote($ranking_id));
+
+                    $this->db->setQuery($query);
+                    $updated = $this->db->execute();
+                } else {
+                    $query->clear()
+                        ->insert($this->db->quoteName('#__emundus_ranking'))
+                        ->columns($this->db->quoteName('ccid') . ', ' . $this->db->quoteName('user_id') . ', ' . $this->db->quoteName('rank') . ', ' . $this->db->quoteName('hierarchy_id'))
+                        ->values($this->db->quote($id) . ', ' . $this->db->quote($user_id) . ', ' . $this->db->quote($new_rank) . ', ' . $this->db->quote($hierarchy_id));
+
+                    $this->db->setQuery($query);
+                    $updated = $this->db->execute();
+                }
+            } else {
+                throw new Exception(Text::_('COM_EMUNDUS_RANKING_UPDATE_RANKING_ERROR_RANK_NOT_ALLOWED_STATUS'));
             }
         }
 
         return $updated;
+    }
+
+    /**
+     * Returns the max next position reachable.
+     * If current max rank is x, then return x+1 (unless max is -1, return 1)
+     * @param $hierarchy_id
+     * @param $user_id
+     * @return int
+     */
+    public function getMaxRankAvailable($hierarchy_id, $user_id) {
+        $max_value_reachable = 1;
+
+        if (!empty($hierarchy_id) && !empty($user_id)) {
+            $query = $this->db->getQuery(true);
+            $query->clear()
+                ->select('MAX(' . $this->db->quoteName('rank') . ') as max')
+                ->from($this->db->quoteName('#__emundus_ranking'))
+                ->where($this->db->quoteName('hierarchy_id') . ' = ' . $this->db->quote($hierarchy_id))
+                ->andWhere($this->db->quoteName('user_id') . ' = ' . $this->db->quote($user_id));
+
+            $this->db->setQuery($query);
+            $current_max_value = $this->db->loadResult();
+
+            if ($current_max_value > 0) {
+                $max_value_reachable = $current_max_value + 1;
+            }
+        }
+
+        return $max_value_reachable;
     }
 
     /**

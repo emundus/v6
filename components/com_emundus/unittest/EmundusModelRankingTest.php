@@ -84,24 +84,34 @@ class EmundusModelRankingTest extends TestCase
 
         // Create a file for another user
         $another_user = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 100000) . '@emundus.test.fr');
-        $fnum_other = $this->h_sample->createSampleFile($campaign_id, $another_user);
-
-        $db = JFactory::getDbo();
-        $query = "SELECT id FROM #__emundus_campaign_candidature WHERE fnum = '$fnum_other'";
-        $db->setQuery($query);
-        $id = $db->loadResult();
+        $fnum_1 = $this->h_sample->createSampleFile($campaign_id, $another_user, true, true);
 
         // Update should work
-        $updated = $this->m_ranking->updateFileRanking($id, $ranker_user, 1, $ranker_hierarchy);
+        $updated = $this->m_ranking->updateFileRanking($fnum_1, $ranker_user, 1, $ranker_hierarchy);
         $this->assertTrue($updated, "I should be able to rank a file that I did not apply for.");
 
-        // Create a file for ranker user, and try to rank it
-        $fnum = $this->h_sample->createSampleFile($campaign_id, $ranker_user);
-        $query = "SELECT id FROM #__emundus_campaign_candidature WHERE fnum = '$fnum'";
-        $db->setQuery($query);
-        $id = $db->loadResult();
+        $fnum_2 = $this->h_sample->createSampleFile($campaign_id, $another_user, true, true);
+        $updated = $this->m_ranking->updateFileRanking($fnum_2, $ranker_user, 1, $ranker_hierarchy);
+        $this->assertTrue($updated, "I should be able to rank a file that I did not apply for and place it on a position that has already been attributed.");
 
+        $old_first_position_new_rank = $this->m_ranking->getFileRank($fnum_1);
+        $this->assertEquals(2, $old_first_position_new_rank, "The file that was first should now be second.");
+
+        $fnum_3 = $this->h_sample->createSampleFile($campaign_id, $another_user, true, true);
+        $updated = $this->m_ranking->updateFileRanking($fnum_3, $ranker_user, 3, $ranker_hierarchy);
+        $this->assertTrue($updated, "I should be able to rank a file that I did not apply for and place it on a new position");
+        $third_position = $this->m_ranking->getFileRank($fnum_3);
+        $this->assertEquals($third_position, "Posiotion is coherent");
+
+        $updated = $this->m_ranking->updateFileRanking($fnum_1, $ranker_user, -1, $ranker_hierarchy);
+        $this->assertTrue($updated, "I should be able to unrank a file that I did not apply for.");
+
+        $old_third_position_new_rank = $this->m_ranking->getFileRank($fnum_3);
+        $this->assertEquals(2, $old_third_position_new_rank, "The file that was third should now be second, because previous second one has been unranked.");
+
+        // Create a file for ranker user, and try to rank it
         // I should catch an exception if I try to rank a file that I apply for.
+        $id = $this->h_sample->createSampleFile($campaign_id, $ranker_user, true, true);
         $this->expectException(Exception::class);
         $this->m_ranking->updateFileRanking($id, $ranker_user, 1, $ranker_hierarchy);
     }
