@@ -1205,7 +1205,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
 
 	        if (extension_loaded('zip')) {
-		        $name = $this->export_zip($validFnums, $forms, $attachment, $assessment, $decision, $admission, $formids, $attachids, $options);
+                $name = $m_files->exportZip($validFnums, $forms, $attachment, $assessment, $decision, $admission, $formids, $attachids, $options, false, $current_user);
 	        } else {
 		        $name = $this->export_zip_pcl($validFnums);
 	        }
