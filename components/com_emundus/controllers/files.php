@@ -974,7 +974,7 @@ class EmundusControllerFiles extends JControllerLegacy
             }
         }
 
-        $res = $m_files->updateState($validFnums, $state);
+        $res = $m_files->updateState($validFnums, $state, $this->_user->id);
         $msg = '';
 
         if (is_array($res)) {
