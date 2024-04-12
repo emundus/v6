@@ -114,6 +114,7 @@
 	                v-if="showInRightPanel === 'element-properties'"
 	                @close="onCloseElementProperties"
 	                :element="selectedElement"
+                  :tabindex="tabIndex"
 	                :profile_id="parseInt(profile_id)"
 	            ></form-builder-element-properties>
 	            <form-builder-section-properties
@@ -194,6 +195,7 @@ export default {
       selectedPage: 0,
       selectedSection: null,
       selectedElement: null,
+      tabIndex: 0,
       optionsSelectedElement: false,
       selectedDocument: null,
 	    rightPanel: {
@@ -339,8 +341,12 @@ export default {
       this.selectedSection = event;
       this.showInRightPanel = 'section-properties';
     },
-    onOpenElementProperties(event)
+    onOpenElementProperties(event , index)
     {
+
+      console.log("forBuilder.vue");
+      console.log('the event',event);
+      console.log('the index',index);
       this.selectedElement = event;
       if (this.selectedElement.plugin === 'dropdown') {
         this.optionsSelectedElement = true;
@@ -348,7 +354,11 @@ export default {
         if (this.optionsSelectedElement === true){
           this.$refs.formBuilderPage.getSections();
         }
-        this.optionsSelectedElement = false;
+        if (this.selectedElement.plugin === "emundus_fileupload") {
+          this.tabIndex = index;
+        }
+
+          this.optionsSelectedElement = false;
       }
       this.showInRightPanel = 'element-properties';
     },

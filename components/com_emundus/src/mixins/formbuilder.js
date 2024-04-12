@@ -7,7 +7,8 @@ export default {
             moment.locale('fr');
             this.$store.dispatch('formBuilder/updateLastSave', moment().format('LT'));
         },
-        async swalConfirm(title, text, confirm, cancel, callback = null, showCancelButton = true, html = false) {
+        async swalConfirm(title, text, confirm, cancel, callback = null, showCancelButton = true, html = false)
+        {
             let options = {
                 title: title,
                 text: text,
@@ -38,5 +39,28 @@ export default {
                 }
             });
         },
+
+        async swalParameter(title,callback = null)
+        {
+            let options = {
+                title: title,
+                type: 'warning',
+                reverseButtons: true,
+                customClass: {
+                    title: 'em-swal-title',
+                },
+            };
+
+            return Swal.fire(options).then((result) => {
+                if (result.value) {
+                    if (callback != null) {
+                        callback();
+                    }
+                    return true;
+                } else {
+                    return false;
+                }
+            });
+        }
     }
 };

@@ -96,16 +96,37 @@ export default {
     this.groups = this.getSections();
   },
   methods: {
+    addGroup(group) {
+      this.loading = true;
+
+      const data = this.$store.getters['global/datas'];
+      const mode = typeof data.mode !== 'undefined' ? data.mode.value : 'forms';
+
+      formBuilderService.createSectionSimpleElements({
+        gid: group.id,
+        fid: this.form.id,
+        mode: mode
+      }).then(response => {
+        if (response.status && response.data.data.length > 0) {
+          this.$emit('element-created');
+          this.updateLastSave();
+          this.loading = false;
+        } else {
+          this.displayError(response.msg);
+          this.loading = false;
+        }
+      }).catch((error) => {
+        console.warn(error);
+        this.loading = false;
+      });
+    },
     getElements() {
       return require('../../../data/form-builder-elements.json');
     },
     getSections() {
       return require('../../../data/form-builder-sections.json');
     },
-    setCloneElement(element) {
-      this.cloneElement = element;
-    },
-    onDragEnd(event) {
+    onDragEnd: function (event) {
       this.loading = true;
       const to = event.to;
       if (to === null) {
@@ -133,6 +154,12 @@ export default {
             this.updateLastSave();
             this.loading = false;
           });
+          if (this.cloneElement.value === 'emundus_fileupload') {
+            this.swalParameter(this.translate("COM_EMUNDUS_ATTACHMENTS_SWAL_PARAM"));
+
+          }
+
+
         } else {
           this.displayError(response.msg);
           this.loading = false;
@@ -142,29 +169,8 @@ export default {
         this.loading = false;
       });
     },
-    addGroup(group) {
-      this.loading = true;
-
-      const data = this.$store.getters['global/datas'];
-      const mode = typeof data.mode !== 'undefined' ? data.mode.value : 'forms';
-
-      formBuilderService.createSectionSimpleElements({
-        gid: group.id,
-        fid: this.form.id,
-        mode: mode
-      }).then(response => {
-        if (response.status && response.data.data.length > 0) {
-          this.$emit('element-created');
-          this.updateLastSave();
-          this.loading = false;
-        } else {
-          this.displayError(response.msg);
-          this.loading = false;
-        }
-      }).catch((error) => {
-        console.warn(error);
-        this.loading = false;
-      });
+    setCloneElement(element) {
+      this.cloneElement = element;
     }
   },
   computed: {

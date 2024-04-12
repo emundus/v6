@@ -103,6 +103,11 @@ export default {
       type: Number,
       required: true
     },
+    tabindex: {
+      type: Number,
+      required: false,
+      default: 0
+    }
   },
   mixins: [formBuilderMixin],
   data() {
@@ -140,6 +145,8 @@ export default {
   mounted() {
     this.getDatabases();
     this.paramsAvailable();
+    this.showParameters();
+
   },
   methods: {
     getDatabases(){
@@ -216,6 +223,12 @@ export default {
         this.tabs[1].active = false;
         this.tabs[0].active = true;
         this.tabs[1].published = false;
+      }
+    },
+    showParameters(){
+      if(this.tabindex == 1){
+        this.tabs[1].active = true;
+        this.tabs[0].active = false;
       }
     }
   },

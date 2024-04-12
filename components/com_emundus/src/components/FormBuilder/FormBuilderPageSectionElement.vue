@@ -38,12 +38,11 @@
       <form-builder-element-phone-number v-else-if="element.plugin === 'emundus_phonenumber'" type="phonenumber" :element="element"></form-builder-element-phone-number>
       <form-builder-element-currency v-else-if="element.plugin === 'currency'" type="currency" :element="element"></form-builder-element-currency>
       <form-builder-element-geolocation v-else-if="element.plugin === 'emundus_geolocalisation'" type="geolocation" :element="element"></form-builder-element-geolocation>
-      <form-builder-element-emundus-file-upload v-else-if="element.plugin === 'emundus_fileupload'" type="fileupload" :element="element"></form-builder-element-emundus-file-upload>
+      <form-builder-element-emundus-file-upload v-else-if="element.plugin === 'emundus_fileupload'" type="fileupload"  @trigger-element-properties="triggerElementProperties"  :element="element"></form-builder-element-emundus-file-upload>
       <div v-else v-html="element.element" class="fabrikElement"></div>
     </div>
   </div>
 </template>
-
 <script>
 import formBuilderService from '../../services/formbuilder';
 import formBuilderMixin from "../../mixins/formbuilder";
@@ -58,6 +57,7 @@ import FormBuilderElementGeolocation
   from "@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementGeolocation.vue";
 import FormBuilderElementEmundusFileUpload
   from "@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementEmundusFileUpload.vue";
+import Swal from "sweetalert2";
 
 export default {
   components: {
@@ -149,8 +149,8 @@ export default {
         timer: 1500
       });
     },
-    triggerElementProperties() {
-      this.$emit('open-element-properties');
+    triggerElementProperties(index) {
+      this.$emit('open-element-properties',index);
     },
     cancelDelete(event) {
       let elementsPending = this.$parent.$parent.$parent.elementsDeletedPending;

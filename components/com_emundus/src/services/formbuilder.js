@@ -13,6 +13,12 @@ export default {
                 'index.php?option=com_emundus&controller=formbuilder&task=createsimpleelement',
                 formData
             );
+
+            if (params.plugin == 'emundus_fileupload') {
+                this.toggleElementPublishValue(response.data.data);
+            }
+
+
             return response.data;
         } catch (e) {
             return {

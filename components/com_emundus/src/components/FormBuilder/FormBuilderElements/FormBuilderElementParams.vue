@@ -279,12 +279,12 @@ export default {
 
 .green-SectionTypeDocument {
   font-weight: bold;
-  background-color: #dbdbdb;
+  background-color: #efeeee;
 }
 
 @supports (background-color: hsl(from white h s 90%)) {
   .green-SectionTypeDocument {
-    background-color: hsl(from var(--em-profile-color) h s 95%);
+    background-color: hsl(from var(--em-profile-color) h s 96%);
   }
   .green-SectionTypeDocument label {
     color: var(--em-profile-color);
