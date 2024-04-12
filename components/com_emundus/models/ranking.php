@@ -93,7 +93,7 @@ class EmundusModelRanking extends JModelList
                 $set_limit = true;
                 if (!empty($hierarchy_order_by) && $hierarchy_order_by !== 'default' && $hierarchy_order_by != $hierarchy) {
                     $query->clear()
-                        ->select('cc.id as ccid, IF(er.hierarchy_id = 2, er.rank, -1) as `rank`')
+                        ->select('cc.id as ccid, IF(er.hierarchy_id = ' . $this->db->quote($hierarchy_order_by) . ', er.rank, -1) as `rank`')
                         ->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
                         ->leftJoin($this->db->quoteName('#__emundus_ranking', 'er') . ' ON ' . $this->db->quoteName('cc.id') . ' = ' . $this->db->quoteName('er.ccid'))
                         ->where($this->db->quoteName('cc.id') . ' IN (' . implode(',', $ids) . ')')
