@@ -318,7 +318,7 @@ class EmundusHelperEvents {
 	        $fnumInfos = $user->fnums[$fnum];
 
 	        if($fnumInfos->applicant_id == $user->id) {
-		        $can_edit = true;
+                $can_edit = !$is_app_sent;
 		        $can_read = true;
 	        }
 
@@ -360,12 +360,17 @@ class EmundusHelperEvents {
 	            if ($fnumInfos->applicant_id == $user->id) {
                     //try to access edit view
                     if ($view == 'form') {
-                        if ((!$is_dead_line_passed && $isLimitObtained !== true) || in_array($user->id, $applicants) || ($is_app_sent && !$is_dead_line_passed && $can_edit_until_deadline && $isLimitObtained !== true) || ($is_dead_line_passed && $can_edit_after_deadline && $isLimitObtained !== true) || $can_edit) {
+                        if ((!$is_app_sent && !$is_dead_line_passed && $isLimitObtained !== true)
+                            || in_array($user->id, $applicants)
+                            || ($is_app_sent && !$is_dead_line_passed && $can_edit_until_deadline)
+                            || ($is_dead_line_passed && $can_edit_after_deadline && ((!$is_app_sent && $isLimitObtained !== true) || $is_app_sent))
+                            || $can_edit)
+                        {
                             $reload_url = false;
-	                        if ($reload < 2) {
-		                        $reload++;
-		                        $mainframe->redirect($form_url);
-	                        }
+                            if ($reload < 2) {
+                                $reload++;
+                                $mainframe->redirect($form_url);
+                            }
                         }
                     }
                     //try to access detail view or other
@@ -442,19 +447,17 @@ class EmundusHelperEvents {
                                     $mainframe->redirect($form_url);
                                 }
                             } else {
-                                if ($reload_url) {
+                                if ($reload_url && $view != 'details') {
                                     $mainframe->redirect($details_url);
                                 }
                             }
                         } else {
-                            if ($reload_url) {
+                            if ($reload_url && $view != 'form') {
                                 $mainframe->redirect($form_url);
                             }
                         }
-
                     }
                 }
-
             } else {
 
                 if ($can_edit == 1) {
