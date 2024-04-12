@@ -149,8 +149,8 @@ export default {
         timer: 1500
       });
     },
-    triggerElementProperties(index) {
-      this.$emit('open-element-properties',index);
+    triggerElementProperties() {
+      this.$emit('open-element-properties');
     },
     cancelDelete(event) {
       let elementsPending = this.$parent.$parent.$parent.elementsDeletedPending;

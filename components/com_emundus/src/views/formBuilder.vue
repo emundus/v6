@@ -51,7 +51,7 @@
             </div>
           </div>
           <div class="tab-content em-flex-start">
-            <form-builder-elements v-if="leftPanelActiveTab === 'Elements'" @element-created="onElementCreated" :form="currentPage">
+            <form-builder-elements v-if="leftPanelActiveTab === 'Elements'" @element-created="onElementCreated" :form="currentPage" @update-right-panel="updateRightPanel" >
             </form-builder-elements>
             <form-builder-document-formats
                 v-else-if="leftPanelActiveTab === 'Documents'"
@@ -271,6 +271,12 @@ export default {
     this.$modal.show('formBuilder');
   },
   methods: {
+    updateRightPanel(tab,element, index, id ) {
+      this.showInRightPanel = tab;
+      this.selectedElement = element;
+      this.tabIndex = index;
+      this.profile_id = id;
+    },
     getFormTitle() {
 			if (this.profile_id) {
 				formService.getProfileLabelByProfileId(this.profile_id).then(response => {
@@ -341,12 +347,8 @@ export default {
       this.selectedSection = event;
       this.showInRightPanel = 'section-properties';
     },
-    onOpenElementProperties(event , index)
+    onOpenElementProperties(event)
     {
-
-      console.log("forBuilder.vue");
-      console.log('the event',event);
-      console.log('the index',index);
       this.selectedElement = event;
       if (this.selectedElement.plugin === 'dropdown') {
         this.optionsSelectedElement = true;
@@ -354,10 +356,6 @@ export default {
         if (this.optionsSelectedElement === true){
           this.$refs.formBuilderPage.getSections();
         }
-        if (this.selectedElement.plugin === "emundus_fileupload") {
-          this.tabIndex = index;
-        }
-
           this.optionsSelectedElement = false;
       }
       this.showInRightPanel = 'element-properties';

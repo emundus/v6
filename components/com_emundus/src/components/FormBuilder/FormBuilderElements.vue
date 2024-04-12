@@ -89,6 +89,8 @@ export default {
       groups: [],
       cloneElement: {},
       loading: false,
+      showInRightPanel : ''
+
     }
   },
   created() {
@@ -156,6 +158,10 @@ export default {
           });
           if (this.cloneElement.value === 'emundus_fileupload') {
             this.swalParameter(this.translate("COM_EMUNDUS_ATTACHMENTS_SWAL_PARAM"));
+            this.showInRightPanel = 'element-properties'; // Change the value of showInRightPanel
+            console.log(this.form , 'this.form')
+            console.log(this.cloneElement , 'this.cloneElement')
+            //this.$emit('update-right-panel', this.showInRightPanel, , 1,response.data); // Emit an event to notify the parent component
 
           }
 
