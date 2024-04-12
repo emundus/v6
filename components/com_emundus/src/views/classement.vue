@@ -120,7 +120,7 @@
                 <span>{{ file.applicant }}</span>
                 <span class="em-neutral-600-color em-font-size-14">{{ file.fnum }}</span>
               </td>
-              <td v-if="!ismyRankingLocked">
+              <td v-if="!ismyRankingLocked && file.locked != 1">
                 <select v-model="file.rank" @change="onChangeRankValue(file)">
                   <option value="-1">{{ translate('COM_EMUNDUS_CLASSEMENT_NOT_RANKED') }}</option>
                   <option v-for="i in (maxRankValueAvailableForNotRanked)" :key="i">{{ i }}</option>
@@ -478,12 +478,11 @@ export default {
       });
     },
     onChangeRankValue(file) {
-      this.subRankingKey++;
-      rankingService.updateRanking(file.id, file.rank, this.hierarchy_id).then(response => {
+      if (file.locked == 1) {
         if (!response.status) {
           Swal.fire({
             title: this.translate('COM_EMUNDUS_RANKING_UPDATE_RANKING_ERROR_TITLE'),
-            text: this.translate(response.msg),
+            text: this.translate('COM_EMUNDUS_RANKING_UPDATE_RANKING_ERROR_LOCKED'),
             icon: 'error',
             customClass: {
               title: 'em-swal-title',
@@ -491,17 +490,32 @@ export default {
             },
           });
         }
-
-        this.getRankings().then(() => {
-          if (this.defaultFile && this.defaultFile.id) {
-            this.defaultFile = this.rankings.myRanking.find(f => f.id === this.defaultFile.id);
+      } else {
+        this.subRankingKey++;
+        rankingService.updateRanking(file.id, file.rank, this.hierarchy_id).then(response => {
+          if (!response.status) {
+            Swal.fire({
+              title: this.translate('COM_EMUNDUS_RANKING_UPDATE_RANKING_ERROR_TITLE'),
+              text: this.translate(response.msg),
+              icon: 'error',
+              customClass: {
+                title: 'em-swal-title',
+                confirmButton: 'em-swal-confirm-button',
+              },
+            });
           }
 
-          if (this.selectedOtherFile && this.selectedOtherFile.id) {
-            this.selectedOtherFile = this.rankings.myRanking.find(f => f.id === this.selectedOtherFile.id);
-          }
+          this.getRankings().then(() => {
+            if (this.defaultFile && this.defaultFile.id) {
+              this.defaultFile = this.rankings.myRanking.find(f => f.id === this.defaultFile.id);
+            }
+
+            if (this.selectedOtherFile && this.selectedOtherFile.id) {
+              this.selectedOtherFile = this.rankings.myRanking.find(f => f.id === this.selectedOtherFile.id);
+            }
+          });
         });
-      });
+      }
     },
     askToLockRankings() {
       if(this.rankingsToLock && this.rankings.myRanking.length > 0) {
