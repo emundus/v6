@@ -110,7 +110,7 @@ class EmundusModelEmails extends JModelList {
         }
 
         $query = $this->_db->getQuery(true);
-        $query->select('eset.id as trigger_id, eset.step, ese.*, eset.to_current_user, eset.to_applicant, eserp.programme_id, esp.code, esp.label, eser.profile_id, eserg.group_id, eseru.user_id, et.Template, GROUP_CONCAT(ert.tags) as tags, GROUP_CONCAT(erca.candidate_attachment) as attachments, GROUP_CONCAT(erla.letter_attachment) as letter_attachments, GROUP_CONCAT(err1.receivers) as cc, GROUP_CONCAT(err2.receivers) as bcc')
+        $query->select('eset.id as trigger_id, eset.step, ese.*, eset.to_current_user, eset.to_applicant, eserp.programme_id, esp.code, esp.label, GROUP_CONCAT(eser.profile_id) as profile_id, GROUP_CONCAT(eserg.group_id) as group_id, GROUP_CONCAT(eseru.user_id) as user_id, et.Template, GROUP_CONCAT(ert.tags) as tags, GROUP_CONCAT(erca.candidate_attachment) as attachments, GROUP_CONCAT(erla.letter_attachment) as letter_attachments, GROUP_CONCAT(err1.receivers) as cc, GROUP_CONCAT(err2.receivers) as bcc')
             ->from($this->_db->quoteName('#__emundus_setup_emails_trigger', 'eset'))
             ->leftJoin($this->_db->quoteName('#__emundus_setup_emails','ese').' ON '.$this->_db->quoteName('ese.id').' = '.$this->_db->quoteName('eset.email_id'))
             ->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_programme_id','eserp').' ON '.$this->_db->quoteName('eserp.parent_id').' = '.$this->_db->quoteName('eset.id'))
