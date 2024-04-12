@@ -18,6 +18,7 @@ use Joomla\CMS\Component\ComponentHelper;
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'filters.php');
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'fabrik.php');
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
 
 class EmundusModelUsers extends JModelList {
@@ -3694,7 +3695,7 @@ class EmundusModelUsers extends JModelList {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        $query->select('fe.id as id, fe.name as name, fe.plugin as plugin')
+        $query->select('fe.id as id, fe.name as name, fe.plugin as plugin, fe.label as label')
             ->from($db->quoteName('#__fabrik_elements', 'fe'))
             ->leftJoin($db->quoteName('#__fabrik_formgroup', 'ff') . ' ON ff.group_id = fe.group_id')
             ->where($db->quoteName('ff.form_id') . ' = ' . $this->getProfileForm())
@@ -3706,42 +3707,17 @@ class EmundusModelUsers extends JModelList {
         return $db->loadObjectList();
 
     }
+    public function getUserDetails($uid) {
 
-    public function getTableJoinAndColumnWithElementId($elemId) {
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $columns = $this->getColumnsForm();
+        $user = $this->getUserById($uid);
 
-        $query->select('fj.table_join as join_table, fj.params as params')
-            ->from($db->quoteName('#__fabrik_joins', 'fj'))
-            ->where($db->quoteName('fj.element_id') . ' = ' . $elemId);
+        $userDetails = array();
 
-        $db->setQuery($query);
-        return $db->loadObjectList();
-    }
-
-    public function getJoinLabelValueWithId($elemId, $valueId) {
-        $tableAndColumn = $this->getTableJoinAndColumnWithElementId($elemId);
-
-        if (!empty($tableAndColumn)) {
-            $params = $tableAndColumn[0]->params;
-            $decodedParams = json_decode($params);
-
-            if ($decodedParams !== null) {
-                $table = $tableAndColumn[0]->join_table;
-                $label = $decodedParams->{'join-label'};
-                $pk = $decodedParams->{'pk'};
-
-                $db = JFactory::getDbo();
-                $query = $db->getQuery(true);
-
-                $query->select($db->quoteName($label))
-                    ->from($db->quoteName($table))
-                    ->where($pk . ' = ' . (int)$valueId);
-
-                $db->setQuery($query);
-                return $db->loadResult();
-            }
+        foreach ($columns as $column) {
+            $userDetails[$column->label] = EmundusHelperFabrik::formatElementValue($column->name, $user[0]->{$column->name});
         }
-        return null;
+        return $userDetails;
     }
+
 }

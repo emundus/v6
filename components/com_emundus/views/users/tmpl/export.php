@@ -32,8 +32,8 @@ $userDetails = $modelUsers->getColumnsForm();
 foreach ($userDetails as $field) {
     ?>
     <div class="form-group">
-        <input type="checkbox" id="checkbox-<?= $field->name ?>" name="checkbox-<?= $field->name ?>" value="<?= $field->name ?>">
-        <label for="checkbox-<?= $field->name ?>" class="checkbox-label"><?= $field->name ?></label>
+        <input type="checkbox" id="checkbox-<?= $field->label ?>" name="checkbox-<?= $field->label ?>" value="<?= $field->label ?>">
+        <label for="checkbox-<?= $field->label ?>" class="checkbox-label"><?= JText::_($field->label) ?></label>
     </div>
     <?php
 }

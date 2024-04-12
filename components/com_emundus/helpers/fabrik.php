@@ -28,14 +28,17 @@ use libphonenumber\PhoneNumberFormat;
  * @subpackage	Content
  * @since 1.5
  */
-class EmundusHelperFabrik {
+class EmundusHelperFabrik
+{
 
-    static function updateParam($params,$attribute,$value){
+    static function updateParam($params, $attribute, $value)
+    {
         $params[$attribute] = strval($value);
         return $params;
     }
 
-    static function prepareListParams() {
+    static function prepareListParams()
+    {
         return array(
             'show-table-filters' => '1',
             'advanced-filter' => '0',
@@ -173,7 +176,8 @@ class EmundusHelperFabrik {
         );
     }
 
-    static function prepareFormParams($init_plugins = true, $type = '') {
+    static function prepareFormParams($init_plugins = true, $type = '')
+    {
         $params = array(
             'outro' => '',
             'copy_button' => '0',
@@ -232,18 +236,18 @@ class EmundusHelperFabrik {
         );
 
         $plugins = [];
-        if($init_plugins){
-			if ($type == 'eval') {
-				$plugins = [
-					'curl_code' => [
-						1 => '$student_id=JRequest::getVar(\'student_id\', null,\'get\');
+        if ($init_plugins) {
+            if ($type == 'eval') {
+                $plugins = [
+                    'curl_code' => [
+                        1 => '$student_id=JRequest::getVar(\'student_id\', null,\'get\');
 $student = isset($student_id) ? JUser::getInstance($student_id) : JUser::getInstance(\'{jos_emundus_evaluations___student_id}\');
 echo \'<h2>\'.$student->name.\'</h2>\';
 JHtml::script(JURI::base() . \'media/com_emundus/lib/jquery-1.10.2.min.js\');
 JHtml::script(JURI::base() . \'media/jui/js/chosen.jquery.min.js\' );
 JHtml::styleSheet(JURI::base() . \'media/jui/css/chosen.css\');
 JHTML::stylesheet(JURI::Base().\'media/com_fabrik/css/fabrik.css\');',
-						2 => 'echo \'<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>\';
+                        2 => 'echo \'<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>\';
 echo \'<script src="https://code.jquery.com/jquery-3.3.1.slim.js" integrity="sha256-fNXJFIlca05BIO2Y5zh1xrShK3ME+/lYZ0j+ChxX2DA=" crossorigin="anonymous"></script>\';
 echo \'<script>window.parent.ScrollToTop();</script>\';
 echo \'<style>.em-swal-title{
@@ -266,49 +270,51 @@ die("<script>
       	})
 	});
 </script>");'
-					],
-					'only_process_curl' => [
-						1 => 'onLoad',
-						2 => 'onAfterProcess'
-					],
-					'form_php_file' => [
-						1 => '-1',
-						2 => '-1'
-					],
-					'form_php_require_once' => [
-						1 => '0',
-						2 => '0'
-					],
-					'process-jplugins' => '2',
-					'plugins' => array('emundusisevaluatedbyme', 'php', 'php'),
-					'plugin_state' => array('1', '1', '1'),
-					'plugin_locations' => array('both', 'both', 'both'),
-					'plugin_events' => array('both', 'both', 'both'),
-					'plugin_description' => array('Is evaluated by me', 'css', 'sweet'),
-				];
-			} else {
-				$plugins = [
-					'process-jplugins' => '2',
-					'plugins' => array("emundustriggers"),
-					'plugin_state' => array("1"),
-					'plugin_locations' => array("both"),
-					'plugin_events' => array("both"),
-					'plugin_description' => array("emundus_events"),
-				];
-			}
+                    ],
+                    'only_process_curl' => [
+                        1 => 'onLoad',
+                        2 => 'onAfterProcess'
+                    ],
+                    'form_php_file' => [
+                        1 => '-1',
+                        2 => '-1'
+                    ],
+                    'form_php_require_once' => [
+                        1 => '0',
+                        2 => '0'
+                    ],
+                    'process-jplugins' => '2',
+                    'plugins' => array('emundusisevaluatedbyme', 'php', 'php'),
+                    'plugin_state' => array('1', '1', '1'),
+                    'plugin_locations' => array('both', 'both', 'both'),
+                    'plugin_events' => array('both', 'both', 'both'),
+                    'plugin_description' => array('Is evaluated by me', 'css', 'sweet'),
+                ];
+            } else {
+                $plugins = [
+                    'process-jplugins' => '2',
+                    'plugins' => array("emundustriggers"),
+                    'plugin_state' => array("1"),
+                    'plugin_locations' => array("both"),
+                    'plugin_events' => array("both"),
+                    'plugin_description' => array("emundus_events"),
+                ];
+            }
         }
 
-        return array_merge($params,$plugins);
+        return array_merge($params, $plugins);
     }
 
-    function prepareSubmittionPlugin($params) {
+    function prepareSubmittionPlugin($params)
+    {
         $params['submit_button_label'] = 'SUBMIT';
         $params['submit-success-msg'] = 'APPLICATION_SENT';
 
         return $params;
     }
 
-    static function prepareGroupParams() {
+    static function prepareGroupParams()
+    {
         return array(
             'split_page' => '0',
             'list_view_and_query' => '1',
@@ -336,12 +342,13 @@ die("<script>
         );
     }
 
-    static function prepareElementParameters($plugin, $notempty = true, $attachementId = 0) {
+    static function prepareElementParameters($plugin, $notempty = true, $attachementId = 0)
+    {
 
-	    $plugin_no_required = ['display','panel'];
-		$plugin_to_setup = '';
+        $plugin_no_required = ['display', 'panel'];
+        $plugin_to_setup = '';
         if ($plugin == 'nom' || $plugin == 'prenom' || $plugin == 'email') {
-	        $plugin_to_setup = $plugin;
+            $plugin_to_setup = $plugin;
             $plugin = 'field';
         }
 
@@ -416,7 +423,7 @@ die("<script>
             'validations' => array(),
         );
 
-        if($notempty && !in_array($plugin, $plugin_no_required)){
+        if ($notempty && !in_array($plugin, $plugin_no_required)) {
             $params['validations'] = array(
                 'plugin' => array(
                     "notempty",
@@ -444,7 +451,7 @@ die("<script>
             $params['notempty-validation_condition'] = array();
         }
 
-        if($plugin == 'date'){
+        if ($plugin == 'date') {
             $params['bootstrap_class'] = 'input-xlarge';
             $params['date_showtime'] = '0';
             $params['date_time_format'] = 'H:i';
@@ -468,7 +475,7 @@ die("<script>
         }
 
         if ($plugin == 'databasejoin') {
-	        $params['bootstrap_class'] = 'span12';
+            $params['bootstrap_class'] = 'span12';
             $params['database_join_display_type'] = 'dropdown';
             $params['join_db_name'] = '';
             $params['join_key_column'] = '';
@@ -501,9 +508,9 @@ die("<script>
             $params['clean_concat'] = '0';
 
             $ref_tables = ['data_nationality', 'data_country', 'data_departements'];
-            foreach($ref_tables as $table) {
+            foreach ($ref_tables as $table) {
                 $db = JFactory::getDbo();
-                $db->setQuery("SHOW TABLES LIKE " .$db->quote('data_nationality'));
+                $db->setQuery("SHOW TABLES LIKE " . $db->quote('data_nationality'));
                 $tableExists = $db->loadResult();
 
                 if (!empty($tableExists)) {
@@ -521,7 +528,7 @@ die("<script>
             }
         }
 
-        if($plugin == 'user'){
+        if ($plugin == 'user') {
             $params['my_table_data'] = 'id';
             $params['update_on_edit'] = '0';
             $params['update_on_copy'] = '0';
@@ -529,7 +536,7 @@ die("<script>
             $params['user_noselectionlabel'] = '';
         }
 
-        if($plugin == 'field'){
+        if ($plugin == 'field') {
             $params['placeholder'] = '';
             $params['password'] = 0;
             $params['maxlength'] = 255;
@@ -557,25 +564,25 @@ die("<script>
             $params['link_title'] = '';
             $params['link_attributes'] = '';
 
-	        if($plugin_to_setup == 'email') {
-		        $params['password'] = 3;
+            if ($plugin_to_setup == 'email') {
+                $params['password'] = 3;
 
-		        $params['validations']['plugin'][] = 'isemail';
-		        $params['validations']['plugin_published'][] = '1';
-		        $params['validations']['validate_in'][] = 'both';
-		        $params['validations']['validation_on'][] = 'both';
-		        $params['validations']['validate_hidden'][] = '0';
-		        $params['validations']['must_validate'][] = '0';
-		        $params['validations']['show_icon'][] = '1';
+                $params['validations']['plugin'][] = 'isemail';
+                $params['validations']['plugin_published'][] = '1';
+                $params['validations']['validate_in'][] = 'both';
+                $params['validations']['validation_on'][] = 'both';
+                $params['validations']['validate_hidden'][] = '0';
+                $params['validations']['must_validate'][] = '0';
+                $params['validations']['show_icon'][] = '1';
 
-		        $params['isemail-message'] = array('','');
-		        $params['isemail-validation_condition'] = array('','');
-		        $params['isemail-allow_empty'] = array('','1');
-		        $params['isemail-check_mx'] = array('','0');
-	        }
+                $params['isemail-message'] = array('', '');
+                $params['isemail-validation_condition'] = array('', '');
+                $params['isemail-allow_empty'] = array('', '1');
+                $params['isemail-check_mx'] = array('', '0');
+            }
         }
 
-        if($plugin == 'textarea'){
+        if ($plugin == 'textarea') {
             $params['textarea_placeholder'] = '';
             $params['height'] = '6';
             $params['use_wysiwyg'] = '0';
@@ -595,7 +602,7 @@ die("<script>
             $params['bootstrap_class'] = 'input-xxlarge';
         }
 
-        if($plugin == 'dropdown' || $plugin == 'checkbox' || $plugin == 'radiobutton'){
+        if ($plugin == 'dropdown' || $plugin == 'checkbox' || $plugin == 'radiobutton') {
             $params['sub_options'] = array(
                 'sub_values' => array(),
                 'sub_labels' => array(),
@@ -605,7 +612,7 @@ die("<script>
             $params['dropdown_populate'] = '';
         }
 
-        if($plugin == 'dropdown') {
+        if ($plugin == 'dropdown') {
             $params['multiple'] = '0';
             $params['dropdown_multisize'] = '3';
             $params['allow_frontend_addtodropdown'] = '0';
@@ -613,7 +620,7 @@ die("<script>
             $params['dd-savenewadditions'] = '0';
         }
 
-        if($plugin == 'checkbox') {
+        if ($plugin == 'checkbox') {
             $params['ck_options_per_row'] = '1';
             $params['sub_default_value'] = '';
             $params['sub_default_label'] = '';
@@ -622,14 +629,14 @@ die("<script>
             $params['chk-savenewadditions'] = '0';
         }
 
-        if($plugin == 'radiobutton') {
+        if ($plugin == 'radiobutton') {
             $params['options_per_row'] = 1;
             $params['btnGroup'] = 0;
             $params['rad-allowadd-onlylabel'] = 0;
             $params['rad-savenewadditions'] = 0;
         }
 
-        if($plugin == 'birthday'){
+        if ($plugin == 'birthday') {
             $params['birthday_daylabel'] = '';
             $params['birthday_monthlabel'] = '';
             $params['birthday_yearlabel'] = '';
@@ -643,34 +650,34 @@ die("<script>
             $params['empty_is_null'] = '1';
         }
 
-        if($plugin == 'years'){
+        if ($plugin == 'years') {
             $params['birthday_yearopt'] = 'number';
             $params['birthday_forward'] = '0';
             $params['birthday_yearstart'] = '100';
         }
 
-        if($plugin == 'display'){
+        if ($plugin == 'display') {
             $params['display_showlabel'] = '1';
         }
 
-        if($plugin == 'emundus_fileupload'){
+        if ($plugin == 'emundus_fileupload') {
             $params['size'] = '10485760';
             $params['attachmentId'] = $attachementId;
             $params['can_submit_encrypted'] = '2';
         }
 
-        if($plugin == 'yesno'){
-            $params['yesno_default']='0';
-            $params['yesno_icon_yes']='';
-            $params['yesno_icon_no']='';
-            $params['options_per_row']='4';
-            $params['toggle_others']='0';
-            $params['toggle_where']='';
+        if ($plugin == 'yesno') {
+            $params['yesno_default'] = '0';
+            $params['yesno_icon_yes'] = '';
+            $params['yesno_icon_no'] = '';
+            $params['options_per_row'] = '4';
+            $params['toggle_others'] = '0';
+            $params['toggle_where'] = '';
         }
 
-        if($plugin == 'currency') {
+        if ($plugin == 'currency') {
 
-            $object = (object) [
+            $object = (object)[
                 'iso3' => 'EUR',
                 'minimal_value' => '0.00',
                 'maximal_value' => '1000000.00',
@@ -681,34 +688,36 @@ die("<script>
             $params['all_currencies_options']['all_currencies_options0'] = $object;
         }
 
-		if($plugin == 'emundus_phonenumber') {
-			$params['default_country'] = 'FR';
-		}
+        if ($plugin == 'emundus_phonenumber') {
+            $params['default_country'] = 'FR';
+        }
 
-	    if($plugin == 'panel'){
-		    $params['type'] = '1';
-		    $params['accordion'] = '0';
-		    $params['title'] = '';
-		    $params['store_in_db'] = 0;
-	    }
+        if ($plugin == 'panel') {
+            $params['type'] = '1';
+            $params['accordion'] = '0';
+            $params['title'] = '';
+            $params['store_in_db'] = 0;
+        }
 
         return $params;
     }
 
-    static function getDBType($plugin){
+    static function getDBType($plugin)
+    {
         $dbtype = 'TEXT';
 
-        if($plugin == 'birthday'){
+        if ($plugin == 'birthday') {
             $dbtype = 'DATE';
         }
-        if($plugin == 'date'){
+        if ($plugin == 'date') {
             $dbtype = 'DATETIME';
         }
 
         return $dbtype;
     }
 
-    static function initLabel($plugin){
+    static function initLabel($plugin)
+    {
         $label = array();
         if ($plugin == 'nom') {
             $label = array(
@@ -741,7 +750,8 @@ die("<script>
         return $label;
     }
 
-    static function prepareFabrikMenuParams(){
+    static function prepareFabrikMenuParams()
+    {
         return [
             'rowid' => '',
             'usekey' => '',
@@ -765,7 +775,8 @@ die("<script>
         ];
     }
 
-    static function addOption($eid,$label,$value){
+    static function addOption($eid, $label, $value)
+    {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
@@ -774,7 +785,7 @@ die("<script>
                 ->from($db->quoteName('#__fabrik_elements'))
                 ->where($db->quoteName('id') . ' = ' . $db->quote($eid));
             $db->setQuery($query);
-            $params = json_decode($db->loadResult(),true);
+            $params = json_decode($db->loadResult(), true);
 
             $params['sub_options']['sub_values'][] = $value;
             $params['sub_options']['sub_labels'][] = $label;
@@ -785,12 +796,13 @@ die("<script>
             $db->setQuery($query);
             return $db->execute();
         } catch (Exception $e) {
-            JLog::add('component/com_emundus/helpers/fabrik | Cannot add option for element ' . $eid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/helpers/fabrik | Cannot add option for element ' . $eid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
 
-    static function addNotEmptyValidation($eid,$message = '',$condition = ''){
+    static function addNotEmptyValidation($eid, $message = '', $condition = '')
+    {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
@@ -799,11 +811,11 @@ die("<script>
                 ->from($db->quoteName('#__fabrik_elements'))
                 ->where($db->quoteName('id') . ' = ' . $db->quote($eid));
             $db->setQuery($query);
-            $params = json_decode($db->loadResult(),true);
+            $params = json_decode($db->loadResult(), true);
 
             $params['notempty-message'] = $message;
             $params['notempty-validation_condition'] = $condition;
-            if(!isset($params['validations']['plugin'])){
+            if (!isset($params['validations']['plugin'])) {
                 $params['validations'] = array(
                     'plugin' => array(),
                     'plugin_published' => array(),
@@ -823,23 +835,24 @@ die("<script>
             $params['validations']['show_icon'][] = '1';
 
             $query->clear()
-	            ->update($db->quoteName('#__fabrik_elements'))
+                ->update($db->quoteName('#__fabrik_elements'))
                 ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
                 ->where($db->quoteName('id') . ' = ' . $db->quote($eid));
             $db->setQuery($query);
             return $db->execute();
         } catch (Exception $e) {
-            JLog::add('component/com_emundus/helpers/fabrik | Cannot add notempty validation for element ' . $eid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/helpers/fabrik | Cannot add notempty validation for element ' . $eid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
 
-    static function checkFabrikJoins($eid,$name,$plugin,$group_id){
+    static function checkFabrikJoins($eid, $name, $plugin, $group_id)
+    {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
         try {
-            if($plugin == 'user'){
+            if ($plugin == 'user') {
                 $params = array(
                     'join-label' => 'id',
                     'type' => 'element',
@@ -859,77 +872,79 @@ die("<script>
 
                 $query->insert($db->quoteName('#__fabrik_joins'))
                     ->columns($db->quoteName(array_keys($data)))
-                    ->values(implode(',',$db->quote(array_values($data))));
+                    ->values(implode(',', $db->quote(array_values($data))));
                 $db->setQuery($query);
                 return $db->execute();
             }
 
             return true;
         } catch (Exception $e) {
-            JLog::add('component/com_emundus/helpers/fabrik | Cannot check fabrik joins for element ' . $eid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/helpers/fabrik | Cannot check fabrik joins for element ' . $eid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
 
-    static function addJsAction($eid,$action) {
+    static function addJsAction($eid, $action)
+    {
         $added = false;
 
-		if (!empty($eid) && !empty($action)) {
-			$db = JFactory::getDbo();
-			$query = $db->getQuery(true);
+        if (!empty($eid) && !empty($action)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
 
-			try {
-				$query->select('count(id)')
-					->from($db->quoteName('#__fabrik_jsactions'))
-					->where($db->quoteName('element_id') . ' = ' . $db->quote($eid));
-				$db->setQuery($query);
-				$assignations = $db->loadResult();
+            try {
+                $query->select('count(id)')
+                    ->from($db->quoteName('#__fabrik_jsactions'))
+                    ->where($db->quoteName('element_id') . ' = ' . $db->quote($eid));
+                $db->setQuery($query);
+                $assignations = $db->loadResult();
 
-				if (empty($assignations)) {
-					$js = null;
-					$params = array(
-						'js_e_event' => '',
-						'js_e_trigger' => '',
-						'js_e_condition' => '',
-						'js_e_value' => '',
-						'js_published' => '1',
-					);
-					if($action == 'nom'){
-						$js = "this.set(this.get('value').toUpperCase());";
-					}
-					if($action == 'prenom'){
-						$js = "const mySentence = this.get(&#039;value&#039;);const words = mySentence.split(&quot; &quot;);for (let i = 0; i &lt; words.length; i++) {words[i] = words[i][0].toUpperCase() + words[i].substr(1);};this.set(words.join(&quot; &quot;));";
-					}
+                if (empty($assignations)) {
+                    $js = null;
+                    $params = array(
+                        'js_e_event' => '',
+                        'js_e_trigger' => '',
+                        'js_e_condition' => '',
+                        'js_e_value' => '',
+                        'js_published' => '1',
+                    );
+                    if ($action == 'nom') {
+                        $js = "this.set(this.get('value').toUpperCase());";
+                    }
+                    if ($action == 'prenom') {
+                        $js = "const mySentence = this.get(&#039;value&#039;);const words = mySentence.split(&quot; &quot;);for (let i = 0; i &lt; words.length; i++) {words[i] = words[i][0].toUpperCase() + words[i].substr(1);};this.set(words.join(&quot; &quot;));";
+                    }
 
-					if(!empty($js) && !empty($params)) {
-						$query->clear()
-							->insert($db->quoteName('#__fabrik_jsactions'))
-							->set($db->quoteName('element_id') . ' = ' . $db->quote($eid))
-							->set($db->quoteName('action') . ' = ' . $db->quote('keyup'))
-							->set($db->quoteName('code') . ' = ' . $db->quote($js))
-							->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)));
-						$db->setQuery($query);
-						$added = $db->execute();
-					}
-				}
-			} catch (Exception $e) {
-				JLog::add('component/com_emundus/helpers/fabrik | Cannot create JS Action for element ' . $eid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-				$added = false;
-			}
-		}
+                    if (!empty($js) && !empty($params)) {
+                        $query->clear()
+                            ->insert($db->quoteName('#__fabrik_jsactions'))
+                            ->set($db->quoteName('element_id') . ' = ' . $db->quote($eid))
+                            ->set($db->quoteName('action') . ' = ' . $db->quote('keyup'))
+                            ->set($db->quoteName('code') . ' = ' . $db->quote($js))
+                            ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)));
+                        $db->setQuery($query);
+                        $added = $db->execute();
+                    }
+                }
+            } catch (Exception $e) {
+                JLog::add('component/com_emundus/helpers/fabrik | Cannot create JS Action for element ' . $eid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+                $added = false;
+            }
+        }
 
-		return $added;
+        return $added;
     }
 
-    static function getTableFromFabrik($id, $object = 'list') {
+    static function getTableFromFabrik($id, $object = 'list')
+    {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
         try {
             $query->select('fl.db_table_name')
-                ->from($db->quoteName('#__fabrik_lists','fl'));
+                ->from($db->quoteName('#__fabrik_lists', 'fl'));
             if ($object == 'form') {
-                $query->leftJoin($db->quoteName('#__fabrik_forms','ff').' ON '.$db->quoteName('fl.form_id').' = '.$db->quoteName('ff.id'))
+                $query->leftJoin($db->quoteName('#__fabrik_forms', 'ff') . ' ON ' . $db->quoteName('fl.form_id') . ' = ' . $db->quoteName('ff.id'))
                     ->where($db->quoteName('ff.id') . ' = ' . $db->quote($id));
             } else {
                 $query->where($db->quoteName('fl.id') . ' = ' . $db->quote($id));
@@ -938,48 +953,48 @@ die("<script>
             $db->setQuery($query);
             return $db->loadResult();
         } catch (Exception $e) {
-            JLog::add('component/com_emundus/helpers/fabrik | Cannot get table from fabrik with type '. $object .' ' . $id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/helpers/fabrik | Cannot get table from fabrik with type ' . $object . ' ' . $id . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
 
-	static function createFilterList(&$filters,$eid,$value,$condition = '=',$join = 'AND',$hidden = 0,$raw = 0)
-	{
-		if(!in_array($eid,$filters['elementid'])){
-			$db = JFactory::getDbo();
-			$query = $db->getQuery(true);
+    static function createFilterList(&$filters, $eid, $value, $condition = '=', $join = 'AND', $hidden = 0, $raw = 0)
+    {
+        if (!in_array($eid, $filters['elementid'])) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
 
-			$query->select('fl.db_table_name,fe.name')
-				->from($db->quoteName('#__fabrik_elements','fe'))
-				->leftJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffg.group_id').' = '.$db->quoteName('fe.group_id'))
-				->leftJoin($db->quoteName('#__fabrik_lists','fl').' ON '.$db->quoteName('fl.form_id').' = '.$db->quoteName('ffg.form_id'))
-				->where($db->quoteName('id') . ' = ' . $db->quote($eid));
-			$db->setQuery($query);
-			$element_details = $db->loadObject();
+            $query->select('fl.db_table_name,fe.name')
+                ->from($db->quoteName('#__fabrik_elements', 'fe'))
+                ->leftJoin($db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $db->quoteName('ffg.group_id') . ' = ' . $db->quoteName('fe.group_id'))
+                ->leftJoin($db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $db->quoteName('fl.form_id') . ' = ' . $db->quoteName('ffg.form_id'))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($eid));
+            $db->setQuery($query);
+            $element_details = $db->loadObject();
 
-			$filters['elementid'][] = $eid;
-			$filters['value'][] = $value;
-			$filters['condition'][] = $condition;
-			$filters['join'][] = $join;
-			$filters['no-filter-setup'][] = 0;
-			$filters['hidden'][] = $hidden;
-			$filters['key'][] = '`'.$element_details->db_table_name.'`.`'.$element_details->name.'`';
-			$filters['key2'][] = '';
-			$filters['search_type'][] = 'querystring';
-			$filters['match'][] = '1';
-			$filters['eval'][] = 3;
-			$filters['required'][] = '0';
-			$filters['access'][] = '1';
-			$filters['grouped_to_previous'][] = 0;
-			$filters['raw'][] = 0;
-			$filters['orig_condition'][] = '=';
-			$filters['sqlCond'][] = ' `'.$element_details->db_table_name.'`.`'.$element_details->name.'` = '.$value.' ';
-			$filters['origvalue'][] = $value;
-			$filters['filter'][] = $value;
-		}
+            $filters['elementid'][] = $eid;
+            $filters['value'][] = $value;
+            $filters['condition'][] = $condition;
+            $filters['join'][] = $join;
+            $filters['no-filter-setup'][] = 0;
+            $filters['hidden'][] = $hidden;
+            $filters['key'][] = '`' . $element_details->db_table_name . '`.`' . $element_details->name . '`';
+            $filters['key2'][] = '';
+            $filters['search_type'][] = 'querystring';
+            $filters['match'][] = '1';
+            $filters['eval'][] = 3;
+            $filters['required'][] = '0';
+            $filters['access'][] = '1';
+            $filters['grouped_to_previous'][] = 0;
+            $filters['raw'][] = 0;
+            $filters['orig_condition'][] = '=';
+            $filters['sqlCond'][] = ' `' . $element_details->db_table_name . '`.`' . $element_details->name . '` = ' . $value . ' ';
+            $filters['origvalue'][] = $value;
+            $filters['filter'][] = $value;
+        }
 
-		return $filters;
-	}
+        return $filters;
+    }
 
     /**
      *
@@ -1002,21 +1017,17 @@ die("<script>
             $iso2Test = '';
             $phone_number_util = PhoneNumberUtil::getInstance();
 
-            if (preg_match('/^\w{2}/', $phone_number))
-            {
+            if (preg_match('/^\w{2}/', $phone_number)) {
                 $iso2Test = substr($phone_number, 0, 2);
                 $phone_number = substr($phone_number, 2);
             }
 
-            if (preg_match('/^\+\d+$/', $phone_number))
-            {
-                try
-                {
+            if (preg_match('/^\+\d+$/', $phone_number)) {
+                try {
                     $phone_number = $phone_number_util->parse($phone_number);
                     $iso2 = $phone_number_util->getRegionCodeForNumber($phone_number);
 
-                    if ($iso2 || $iso2 === $iso2Test)
-                    {
+                    if ($iso2 || $iso2 === $iso2Test) {
                         $formattedValue = $iso2 . $phone_number_util->format($phone_number, $format);
                     }
                 } catch (Exception $e) {
@@ -1028,84 +1039,91 @@ die("<script>
         return $formattedValue;
     }
 
-	static function formatElementValue($elt_name, $raw_value)
-	{
-		$formatted_value = $raw_value;
+    static function formatElementValue($elt_name, $raw_value)
+    {
+        $formatted_value = $raw_value;
 
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
 
-		$query->select('fe.name,fe.params,fe.plugin')
-			->from($db->quoteName('#__fabrik_elements', 'fe'))
-			->where($db->quoteName('name') . ' = ' . $db->quote($elt_name));
-		$db->setQuery($query);
-		$element = $db->loadObject();
+        $query->select('fe.name,fe.params,fe.plugin')
+            ->from($db->quoteName('#__fabrik_elements', 'fe'))
+            ->where($db->quoteName('name') . ' = ' . $db->quote($elt_name));
+        $db->setQuery($query);
+        $element = $db->loadObject();
 
-		$params      = json_decode($element->params, true);
+        $params = json_decode($element->params, true);
 
 
-		//TODO: Use a switch case with $element->plugin
-		if ($element->plugin == 'date')
-		{
-			$date_format = $params['date_form_format'];
-			$date        = new DateTime($value);
+        //TODO: Use a switch case with $element->plugin
+        switch ($element->plugin) {
+            case($element->plugin == 'date'):
+                $date_format = $params['date_form_format'];
+                $date = new DateTime($date_format);
 
-			return $date->format($date_format);
-		}
+                $formatted_value = $date->format($date_format);
+                break;
 
-		if ($element->plugin == 'currency')
-		{
-			$currency                = $params['all_currencies_options']['all_currencies_options0'];
-			$currency                = (object) $currency;
-			$currency->minimal_value = number_format($currency->minimal_value, $currency->decimal_numbers, $currency->decimal_separator, $currency->thousand_separator);
-			$currency->maximal_value = number_format($currency->maximal_value, $currency->decimal_numbers, $currency->decimal_separator, $currency->thousand_separator);
 
-			return $currency->iso3 . ' ' . number_format($raw_value, $currency->decimal_numbers, $currency->decimal_separator, $currency->thousand_separator);
-		}
+            case($element->plugin == 'currency'):
 
-		if ($element->plugin == 'emundus_phonenumber')
-		{
-			$formatted_value = self::getFormattedPhoneNumberValue($raw_value);
-		}
+                $currency = $params['all_currencies_options']['all_currencies_options0'];
+                $currency = (object)$currency;
+                $currency->minimal_value = number_format($currency->minimal_value, $currency->decimal_numbers, $currency->decimal_separator, $currency->thousand_separator);
+                $currency->maximal_value = number_format($currency->maximal_value, $currency->decimal_numbers, $currency->decimal_separator, $currency->thousand_separator);
 
-		if ($element->plugin == 'databasejoin')
-		{
-			$db    = JFactory::getDbo();
-			$query = $db->getQuery(true);
+                $formatted_value = $currency->iso3 . ' ' . number_format($raw_value, $currency->decimal_numbers, $currency->decimal_separator, $currency->thousand_separator);
+                break;
 
-			//TODO: Missing join_val_column_concat
-			$query->select($params['join_val_column'])
-				->from($db->quoteName('#__' . $params['join_db_name']))
-				->where($db->quoteName($params['join_key_column']) . ' = ' . $db->quote($raw_value));
-			$db->setQuery($query);
-			$formatted_value = $db->loadResult();
-		}
 
-		if ($element->plugin == 'radiobutton' || $element->plugin == 'checkbox' || $element->plugin == 'dropdown')
-		{
-			$index = array_search($raw_value, $params['sub_options']['sub_values']);
-			if ($index !== false)
-			{
-				$formatted_value = $params['sub_options']['sub_labels'][$index];
-			}
-		}
+            case  ($element->plugin == 'emundus_phonenumber'):
 
-		if ($element->plugin == 'yesno')
-		{
-			$formatted_value = $raw_value == 1 ? 'Oui' : 'Non';
-		}
+                $formatted_value = self::getFormattedPhoneNumberValue($raw_value);
+                break;
 
-		if ($element->plugin == 'textarea')
-		{
-			$formatted_value = nl2br($raw_value);
-		}
 
-		if ($element->plugin == 'years')
-		{
-			//TODO: Translate "ans"
-			$formatted_value = $raw_value . ' ans';
-		}
+            case ($element->plugin == 'databasejoin'):
 
-		return $formatted_value;
-	}
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+
+                //TODO: Missing join_val_column_concat
+                $query->select($params['join_val_column'])
+                    ->from($db->quoteName($params['join_db_name']))
+                    ->where($db->quoteName($params['join_key_column']) . ' = ' . $db->quote($raw_value));
+                $db->setQuery($query);
+                $formatted_value = $db->loadResult();
+                break;
+
+
+            case ($element->plugin == 'radiobutton' || $element->plugin == 'checkbox' || $element->plugin == 'dropdown'):
+
+                $index = array_search($raw_value, $params['sub_options']['sub_values']);
+                if ($index !== false) {
+                    $formatted_value = $params['sub_options']['sub_labels'][$index];
+                }
+                break;
+
+
+            case ($element->plugin == 'yesno'):
+
+                $formatted_value = $raw_value == 1 ? 'Oui' : 'Non';
+                break;
+
+
+            case ($element->plugin == 'textarea'):
+
+                $formatted_value = nl2br($raw_value);
+                break;
+
+            case ($element->plugin == 'years'):
+
+                //TODO: Translate "ans"
+                $formatted_value = $raw_value . ' ans';
+                break;
+            default:
+                break;
+        }
+        return $formatted_value;
+    }
 }

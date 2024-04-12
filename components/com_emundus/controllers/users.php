@@ -1314,7 +1314,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 
         $allUsersDetails = array();
         foreach ($userIds as $userId) {
-            $userDetails = $this->getUserDetails($userId);
+            $userDetails = $modelUsers->getUserDetails($userId);
             $allUsersDetails[] = $userDetails;
         }
 
@@ -1331,7 +1331,7 @@ class EmundusControllerUsers extends JControllerLegacy {
             foreach ($userDetails as $key => $value) {
                 if (!in_array($key, $seenKeys) && $checkboxes[$key]) {
                     $seenKeys[] = $key;
-                    $headers[] = strtoupper($key);
+                    $headers[] = JText::_(strtoupper($key));
                 }
             }
         }
@@ -1389,29 +1389,5 @@ class EmundusControllerUsers extends JControllerLegacy {
         }
         exit;
     }
-
-    public function getUserDetails($uid) {
-
-        $modelUsers = new EmundusModelUsers();
-
-        $columns = $modelUsers->getColumnsForm();
-        $user = $modelUsers->getUserById($uid);
-
-        $userDetails = array();
-
-        foreach ($columns as $column) {
-
-            if($column->plugin == "databasejoin")
-            {
-                $userDetails[$column->name] = $modelUsers->getJoinLabelValueWithId($column->id, $user[0]->{$column->name});
-            }
-            else {
-                $userDetails[$column->name] = $user[0]->{$column->name};
-            }
-        }
-        return $userDetails;
-    }
-
-
 }
 
