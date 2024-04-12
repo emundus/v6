@@ -112,6 +112,12 @@ class EmundusAdministrationModelRanking extends JModelList
                 'name' => 'visible_hierarchy_id',
                 'type' => 'INT',
                 'null' => 0,
+            ],
+            [
+                'name' => 'ordering',
+                'type' => 'INT',
+                'null' => 1,
+                'default' => 0,
             ]
         ];
         $foreign_keys = [
