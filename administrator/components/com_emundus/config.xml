@@ -252,6 +252,7 @@
 		</field>
 		<field name="status_for_send" type="text" default="0" label="COM_EMUNDUS_SEND_APPLICATION_STATUS_FOR_SEND" description="COM_EMUNDUS_SEND_APPLICATION_STATUS_FOR_SEND_DESC" />
 		<field name="status_for_delete" type="text" default="" label="COM_EMUNDUS_SEND_APPLICATION_STATUS_FOR_DELETE" description="COM_EMUNDUS_SEND_APPLICATION_STATUS_FOR_DELETE_DESC" />
+		<field name="default_send_status" type="text" default="1" label="COM_EMUNDUS_SEND_APPLICATION_DEFAULT_STATUS" description="COM_EMUNDUS_SEND_APPLICATION_DEFAULT_STATUS_DESC" />
 		<field name="allow_anonym_files" type="radio" default="0" label="COM_EMUNDUS_ALLOW_ANONYM_FILES" description="COM_EMUNDUS_ALLOW_ANONYM_FILES_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
