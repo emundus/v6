@@ -1536,6 +1536,19 @@ class EmundusModelFiles extends JModelLegacy
             $query = $db->getQuery(true);
             $fnums = is_array($fnums) ? $fnums : [$fnums];
 
+            $codes = [];
+            foreach ($fnums as $fnum) {
+                $fnumTraining = $this->getFnumInfos($fnum)['training'];
+                $codes[] = $fnumTraining;
+            }
+            $codes = array_unique($codes);
+
+            // Get email triggers
+            include_once(JPATH_SITE.'/components/com_emundus/models/emails.php');
+            $m_emails = new EmundusModelEmails;
+
+            $triggers = $m_emails->getEmailTrigger($state, $codes, '0,1');
+
             try {
                 $query->select($db->quoteName('profile'))
                     ->from($db->quoteName('#__emundus_setup_status'))
@@ -1562,13 +1575,9 @@ class EmundusModelFiles extends JModelLegacy
                 }
 
                 foreach ($fnums as $fnum) {
-                    $query->clear()
-                        ->select('status')
-                        ->from('#__emundus_campaign_candidature')
-                        ->where('fnum = ' . $db->quote($fnum));
+                    $fnumInfos = $this->getFnumInfos($fnum);
 
-                    $db->setQuery($query);
-                    $old_status_step = $db->loadResult();
+                    $old_status_step = $fnumInfos['status'];
 
                     $dispatcher->trigger('onBeforeStatusChange', [$fnum, $state]);
                     $trigger = $dispatcher->trigger('callEventHandler', ['onBeforeStatusChange', ['fnum' => $fnum, 'state' => $state, 'old_state' => $old_status_step]]);
@@ -1589,21 +1598,13 @@ class EmundusModelFiles extends JModelLegacy
                     $res = $db->execute();
 
                     $old_status_lbl = $all_status[$old_status_step]['value'];
-
-                    // get the applicant id
-                    $query->clear()
-                        ->select($db->quoteName('applicant_id'))
-                        ->from($db->quoteName('#__emundus_campaign_candidature'))
-                        ->where($db->quoteName('fnum').' LIKE '.$db->quote($fnum));
-                    $db->setQuery($query);
-                    $applicant_id = $db->loadResult();
-
+                    $new_status_lbl = $all_status[$state]['value'];
                     if ($res) {
-                        $logs_params = ['updated' => [['old' => $old_status_lbl, 'new' => $all_status[$state]['value'], 'old_id' => $old_status_step, 'new_id' => $state]]];
-                        EmundusModelLogs::log($user_id, $applicant_id, $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
+                        $logs_params = ['updated' => [['old' => $old_status_lbl, 'new' => $new_status_lbl, 'old_id' => $old_status_step, 'new_id' => $state]]];
+                        EmundusModelLogs::log($user_id, $fnumInfos['applicant_id'], $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
                     } else {
-                        $logs_params = ['updated' => [['old' => $old_status_lbl, 'new' => $all_status[$state]['value'], 'old_id' => $old_status_step, 'new_id' => $state]]];
-                        EmundusModelLogs::log($user_id, $applicant_id, $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE_FAILED', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
+                        $logs_params = ['updated' => [['old' => $old_status_lbl, 'new' => $new_status_lbl, 'old_id' => $old_status_step, 'new_id' => $state]]];
+                        EmundusModelLogs::log($user_id, $fnumInfos['applicant_id'], $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE_FAILED', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
                     }
 
                     $dispatcher->trigger('onAfterStatusChange', [$fnum, $state]);
@@ -1613,21 +1614,34 @@ class EmundusModelFiles extends JModelLegacy
                         $query->clear()
                             ->update($db->quoteName('#__emundus_users'))
                             ->set($db->quoteName('profile').' = '.$profile)
-                            ->where($db->quoteName('user_id').' = '.substr($fnum, -7));
+                            ->where($db->quoteName('user_id').' = '.$db->quote($fnumInfos['applicant_id']));
                         $db->setQuery($query);
                         $db->execute();
+                    }
+
+                    if ($res) {
+                        $student = new stdClass();
+                        $student->id = $fnumInfos['applicant_id'];
+                        $student->name = $fnumInfos['name'];
+                        $student->email = $fnumInfos['email'];
+                        $student->fnum = $fnum;
+                        $student->campaign_id = $fnumInfos['campaign_id'];
+                        $student->code = $fnumInfos['training'];
+
+                        // Send email triggers
+                        $sent = $m_emails->sendEmailTrigger($state, [$fnumInfos['training']], '0,1', $student, null, $triggers);
+
+                        if ($sent) {
+                            $res = [
+                                'status' => true,
+                                'msg' => JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT').'<br>'
+                            ];
+                        }
                     }
                 }
             } catch (Exception $e) {
                 echo $e->getMessage();
                 JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-            }
-
-            if ($res) {
-                $res = [
-                    'status' => true,
-                    'msg' => $this->sendEmailAfterUpdateState($fnums, $state)
-                ];
             }
         }
 
