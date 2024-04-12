@@ -67,6 +67,8 @@ class EmundusModelRanking extends JModelList
             $ids = $this->getAllFilesRankerCanAccessTo($user_id);
 
             if (!empty($ids)) {
+                $MAX_RANK_VALUE = 999999;
+
                 $query = $this->db->getQuery(true);
                 $offset = ($page - 1) * $limit;
                 $files['total'] = count($ids);
@@ -88,22 +90,34 @@ class EmundusModelRanking extends JModelList
                     throw new Exception('An error occurred while fetching the files.' . $query->__toString());
                 }
 
+                $set_limit = true;
                 if (!empty($hierarchy_order_by) && $hierarchy_order_by !== 'default' && $hierarchy_order_by != $hierarchy) {
                     $query->clear()
-                        ->select('er.rank, cc.id as ccid')
+                        ->select('cc.id as ccid, IF(er.hierarchy_id = 2, er.rank, -1) as `rank`')
                         ->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
                         ->leftJoin($this->db->quoteName('#__emundus_ranking', 'er') . ' ON ' . $this->db->quoteName('cc.id') . ' = ' . $this->db->quoteName('er.ccid'))
                         ->where($this->db->quoteName('cc.id') . ' IN (' . implode(',', $ids) . ')')
-                        ->andWhere(($this->db->quoteName('er.hierarchy_id') . ' = ' . $this->db->quote($hierarchy_order_by) . ' OR er.hierarchy_id IS NULL'))
+                        ->andWhere($this->db->quoteName('er.hierarchy_id') . ' = ' . $this->db->quote($hierarchy_order_by) . ' OR ' . $this->db->quoteName('cc.id') . ' NOT IN (
+                            SELECT cc.id
+                            FROM `jos_emundus_campaign_candidature` AS `cc`
+                            LEFT JOIN `jos_emundus_ranking` AS `er` ON `cc`.`id` = `er`.`ccid`
+                            WHERE `cc`.`id` IN (' . implode(',', $ids) . ')
+                            AND `er`.`hierarchy_id` = ' . $this->db->quote($hierarchy_order_by) . ')'
+                        )
                         ->setLimit($limit, $offset);
 
-                    $query->order('er.rank ' . $sort);
+                    if ($sort === 'ASC') {
+                        $query->order('IFNULL(IF(`er`.`hierarchy_id` = ' . $this->db->quote($hierarchy_order_by) . ' AND `rank` != -1, `rank`, null), ' . $MAX_RANK_VALUE . ') ASC');
+                    } else {
+                        $query->order('IFNULL(IF(`er`.`hierarchy_id` = ' . $this->db->quote($hierarchy_order_by) . ', `rank`, -1), -1) DESC');
+                    }
 
                     $this->db->setQuery($query);
                     $ranks = $this->db->loadAssocList('ccid');
 
                     if (!empty($ranks)) {
                         $ids = array_keys($ranks);
+                        $set_limit = false;
                     }
                 }
 
@@ -115,12 +129,16 @@ class EmundusModelRanking extends JModelList
                     ->where($this->db->quoteName('cc.id') . ' IN (' . implode(',', $ids) . ')')
                     ->andWhere('(er.hierarchy_id = ' . $this->db->quote($hierarchy) . ') OR er.id IS NULL');
 
-                $query->setLimit($limit, $offset);
+                if ($set_limit) {
+                    $query->setLimit($limit, $offset);
+                }
 
-                if ($sort == 'ASC') {
-                    $query->order('IFNULL(IF(er.rank > 0, er.rank, null), 999999)' . $sort);
-                } else {
-                    $query->order('er.rank ' . $sort);
+                if ($hierarchy_order_by === 'default' && $hierarchy_order_by != $hierarchy) {
+                    if ($sort == 'ASC') {
+                        $query->order('IFNULL(IF(er.rank > 0, er.rank, null), ' . $MAX_RANK_VALUE . ')' . $sort);
+                    } else {
+                        $query->order('IFNULL(er.rank, -1) ' . $sort);
+                    }
                 }
 
                 try {
@@ -152,18 +170,20 @@ class EmundusModelRanking extends JModelList
                         } else {
                             $files['data'][$key]['sort_rank'] = -1;
                         }
+
+                        if ($files['data'][$key]['sort_rank'] == -1 && $sort == 'ASC') {
+                            $files['data'][$key]['sort_rank'] = $MAX_RANK_VALUE;
+                        }
                     }
 
                     // sort the files by rank
-                    if ($sort == 'ASC') {
-                        usort($files['data'], function ($a, $b) {
+                    usort($files['data'], function ($a, $b) use ($sort) {
+                        if ($sort == 'ASC') {
                             return $a['sort_rank'] <=> $b['sort_rank'];
-                        });
-                    } else {
-                        usort($files['data'], function ($a, $b) {
+                        } else {
                             return $b['sort_rank'] <=> $a['sort_rank'];
-                        });
-                    }
+                        }
+                    });
                 } else {
                     usort($files['data'], function ($a, $b) use ($sort) {
                         if ($sort == 'ASC') {
