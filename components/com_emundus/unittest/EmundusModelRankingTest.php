@@ -39,6 +39,32 @@ class EmundusModelRankingTest extends TestCase
         $this->assertTrue(true);
     }
 
+    public function testCreateHierarchy() {
+        $sys_hierarchy = $this->m_ranking->createHierarchy('Hiérarchie Admin', 0, 1);
+        $this->assertIsInt($sys_hierarchy);
+
+        $coord_hierarchy = $this->m_ranking->createHierarchy('Hiérarchie coord', 1, 2, $sys_hierarchy);
+        $this->assertIsInt($coord_hierarchy);
+
+        $this->expectException(Exception::class); // i should not be able to create on false profile
+        $hierarchy = $this->m_ranking->createHierarchy('Hiérarchie sur profil inexistant', 1, 9999);
+    }
+
+    public function testGetUserHierarchy() {
+        $hierarchy = $this->m_ranking->getUserHierarchy(95);
+        $this->assertIsNumeric($hierarchy);
+    }
+
+    public function testUpdateHierarchy() {
+        $coord_hierarchy = $this->m_ranking->getUserHierarchy(95);
+        $this->assertNotEmpty($coord_hierarchy);
+        $sys_hierarchy = $this->m_ranking->getUserHierarchy(62);
+        $this->assertNotEmpty($sys_hierarchy);
+
+        $updated = $this->m_ranking->updateHierarchy($sys_hierarchy, ['visible_hierarchies' => [$coord_hierarchy]]);
+        $this->assertTrue($updated);
+    }
+
     public function testGetFilesUserCanRank()
     {
         $files = $this->m_ranking->getFilesUserCanRank(95);
@@ -47,9 +73,10 @@ class EmundusModelRankingTest extends TestCase
 
     public function testUpdateFileRank()
     {
-        /*$ranker_user = 95;
+        $ranker_user = 95;
+        $ranker_hierarchy = $this->m_ranking->getUserHierarchy(95);
 
-        $updated = $this->m_ranking->updateFileRanking(0, 95, 1, 1);
+        $updated = $this->m_ranking->updateFileRanking(0, 95, 1, $ranker_hierarchy);
         $this->assertFalse($updated, "I should not be able to rank a file that does not exist.");
 
         $program = $this->h_sample->createSampleProgram();
@@ -65,7 +92,7 @@ class EmundusModelRankingTest extends TestCase
         $id = $db->loadResult();
 
         // Update should work
-        $updated = $this->m_ranking->updateFileRanking($id, $ranker_user, 1, 1);
+        $updated = $this->m_ranking->updateFileRanking($id, $ranker_user, 1, $ranker_hierarchy);
         $this->assertTrue($updated, "I should be able to rank a file that I did not apply for.");
 
         // Create a file for ranker user, and try to rank it
@@ -76,12 +103,12 @@ class EmundusModelRankingTest extends TestCase
 
         // I should catch an exception if I try to rank a file that I apply for.
         $this->expectException(Exception::class);
-        $this->m_ranking->updateFileRanking($id, $ranker_user, 1, 1);*/
+        $this->m_ranking->updateFileRanking($id, $ranker_user, 1, $ranker_hierarchy);
     }
 
     public function testAskUsersToLockRankings()
     {
-        /*$current_user_id = 95;
+        $current_user_id = 95;
         $users = [];
         $hierarchies = [];
 
@@ -96,9 +123,11 @@ class EmundusModelRankingTest extends TestCase
         $response = $this->m_ranking->askUsersToLockRankings($current_user_id, $users, []);
         $this->assertFalse($response['asked'], "I should not be able to ask users to lock rankings if user does not exist.");
 
-        $hierarchies = [2];
-        $response = $this->m_ranking->askUsersToLockRankings($current_user_id, $users, $hierarchies);
-        $this->assertTrue($response['asked'], "I should be able to ask users to lock rankings.");*/
+        $hierarchies = [$this->m_ranking->getUserHierarchy($current_user_id)];
+        $users = [$current_user_id];
+        $response = $this->m_ranking->askUsersToLockRankings(62, $users, $hierarchies);
+
+        //$this->assertTrue($response['asked'], "I should be able to ask users to lock rankings.");
 
         /*
          * Cannot assert on that because mail functions are not supported in tests
@@ -108,9 +137,8 @@ class EmundusModelRankingTest extends TestCase
         $this->assertEquals(2, sizeof($response['asked_to']), "2 people should have been asked to");
         */
 
-
         // if i pass no user expect exception
-        /*$this->expectException(Exception::class);
-        $this->m_ranking->askUsersToLockRankings(0, $users, $hierarchies);*/
+        $this->expectException(Exception::class);
+        $this->m_ranking->askUsersToLockRankings(0, $users, $hierarchies);
     }
 }
