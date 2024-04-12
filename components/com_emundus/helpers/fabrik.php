@@ -1027,4 +1027,85 @@ die("<script>
 
         return $formattedValue;
     }
+
+	static function formatElementValue($elt_name, $raw_value)
+	{
+		$formatted_value = $raw_value;
+
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select('fe.name,fe.params,fe.plugin')
+			->from($db->quoteName('#__fabrik_elements', 'fe'))
+			->where($db->quoteName('name') . ' = ' . $db->quote($elt_name));
+		$db->setQuery($query);
+		$element = $db->loadObject();
+
+		$params      = json_decode($element->params, true);
+
+
+		//TODO: Use a switch case with $element->plugin
+		if ($element->plugin == 'date')
+		{
+			$date_format = $params['date_form_format'];
+			$date        = new DateTime($value);
+
+			return $date->format($date_format);
+		}
+
+		if ($element->plugin == 'currency')
+		{
+			$currency                = $params['all_currencies_options']['all_currencies_options0'];
+			$currency                = (object) $currency;
+			$currency->minimal_value = number_format($currency->minimal_value, $currency->decimal_numbers, $currency->decimal_separator, $currency->thousand_separator);
+			$currency->maximal_value = number_format($currency->maximal_value, $currency->decimal_numbers, $currency->decimal_separator, $currency->thousand_separator);
+
+			return $currency->iso3 . ' ' . number_format($raw_value, $currency->decimal_numbers, $currency->decimal_separator, $currency->thousand_separator);
+		}
+
+		if ($element->plugin == 'emundus_phonenumber')
+		{
+			$formatted_value = self::getFormattedPhoneNumberValue($raw_value);
+		}
+
+		if ($element->plugin == 'databasejoin')
+		{
+			$db    = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			//TODO: Missing join_val_column_concat
+			$query->select($params['join_val_column'])
+				->from($db->quoteName('#__' . $params['join_db_name']))
+				->where($db->quoteName($params['join_key_column']) . ' = ' . $db->quote($raw_value));
+			$db->setQuery($query);
+			$formatted_value = $db->loadResult();
+		}
+
+		if ($element->plugin == 'radiobutton' || $element->plugin == 'checkbox' || $element->plugin == 'dropdown')
+		{
+			$index = array_search($raw_value, $params['sub_options']['sub_values']);
+			if ($index !== false)
+			{
+				$formatted_value = $params['sub_options']['sub_labels'][$index];
+			}
+		}
+
+		if ($element->plugin == 'yesno')
+		{
+			$formatted_value = $raw_value == 1 ? 'Oui' : 'Non';
+		}
+
+		if ($element->plugin == 'textarea')
+		{
+			$formatted_value = nl2br($raw_value);
+		}
+
+		if ($element->plugin == 'years')
+		{
+			//TODO: Translate "ans"
+			$formatted_value = $raw_value . ' ans';
+		}
+
+		return $formatted_value;
+	}
 }
