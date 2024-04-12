@@ -421,7 +421,7 @@ class EmundusModelApplicationTest extends TestCase
 		$shared_users = $this->m_application->getSharedFileUsers($fnumInfos['ccid']);
 
 		$this->assertSame('1', $shared_users[0]->u, 'The user should be able to update file');
-		$updated = $this->m_application->updateRight($shared_users[0]->id, $fnumInfos['ccid'], 'u',0,$user_id);
+		$updated = $this->m_application->updateRight($shared_users[0]->id, $fnumInfos['ccid'], 'u',0);
 		$this->assertTrue($updated, 'updateRight should return true if the right is updated');
 
 		$shared_users = $this->m_application->getSharedFileUsers($fnumInfos['ccid']);

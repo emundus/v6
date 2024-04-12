@@ -1247,7 +1247,7 @@ class EmundusControllerApplication extends JControllerLegacy
 
 			if(!empty($request_id) && !empty($ccid) && !empty($right)) {
 				$m_application      = $this->getModel('Application');
-				$response['status'] = $m_application->updateRight($request_id, $ccid, $right, $value, Factory::getUser()->id);
+				$response['status'] = $m_application->updateRight($request_id, $ccid, $right, $value);
 				if($response['status']) {
 					$response['msg'] = Text::_('COM_EMUNDUS_APPLICATIONS_COLLABORATE_RIGHT_UPDATED_SUCCESFULLY');
 				}

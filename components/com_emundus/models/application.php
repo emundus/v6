@@ -6054,33 +6054,33 @@ class EmundusModelApplication extends JModelList
 
 	public function getSharedFileUsers($ccid = null, $fnum = null)
 	{
-		if(!empty($ccid)) {
-			$cache_key = 'shared_file_users_' . $ccid;
-		} else {
-			$cache_key = 'shared_file_users_' . $fnum;
-		}
-		$shared_file_users = $this->h_cache->get($cache_key);
+        if (!empty($ccid)) {
+            $cache_key = 'shared_file_users_' . $ccid;
+        } else {
+            $cache_key = 'shared_file_users_' . $fnum;
+        }
+        $shared_file_users = $this->h_cache->get($cache_key);
 
-		if (empty($shared_file_users) && (!empty($ccid) || !empty($fnum))) {
-			$query = $this->_db->getQuery(true);
+        if (empty($shared_file_users) && (!empty($ccid) || !empty($fnum))) {
+            $query = $this->_db->getQuery(true);
 
-			$query->select('efr.*,eu.firstname as user_firstname,eu.lastname as user_lastname, eu.profile_picture')
-				->from($this->_db->quoteName('#__emundus_files_request','efr'))
-				->leftJoin($this->_db->quoteName('#__emundus_users','eu').' ON '.$this->_db->quoteName('eu.user_id').' = '.$this->_db->quoteName('efr.user_id'));
-			if(!empty($ccid)) {
-				$query->where($this->_db->quoteName('ccid') . ' = ' . $ccid);
-			} else {
-				$query->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
-			}
-			$this->_db->setQuery($query);
-			$shared_file_users = $this->_db->loadObjectList();
+            $query->select('efr.*,eu.firstname as user_firstname,eu.lastname as user_lastname, eu.profile_picture')
+                ->from($this->_db->quoteName('#__emundus_files_request', 'efr'))
+                ->leftJoin($this->_db->quoteName('#__emundus_users', 'eu') . ' ON ' . $this->_db->quoteName('eu.user_id') . ' = ' . $this->_db->quoteName('efr.user_id'));
+            if (!empty($ccid)) {
+                $query->where($this->_db->quoteName('ccid') . ' = ' . $ccid);
+            } else {
+                $query->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
+            }
+            $this->_db->setQuery($query);
+            $shared_file_users = $this->_db->loadObjectList();
 
-			if(!empty($shared_file_users)) {
-				$this->h_cache->set($cache_key,$shared_file_users);
-			}
-		}
+            if (!empty($shared_file_users)) {
+                $this->h_cache->set($cache_key, $shared_file_users);
+            }
+        }
 
-		return $shared_file_users;
+        return $shared_file_users;
 	}
 
     public function shareFileWith($emails, $ccid, $user_id = null, $auto_accept = 0)
@@ -6273,29 +6273,31 @@ class EmundusModelApplication extends JModelList
 		return $results;
 	}
 
-	public function updateRight($request_id,$ccid,$right,$value,$user_id)
+	public function updateRight($request_id, $ccid, $right, $value)
 	{
-		$updating = false;
+		$updated = false;
 
-		if(empty($user_id)) {
-			$user_id = $this->_user->id;
-		}
+        if (!empty($request_id) && !empty($ccid) && !empty($right)) {
+            try {
+                $query = $this->_db->getQuery(true);
 
-		try {
-			$query = $this->_db->getQuery(true);
+                $query->update($this->_db->quoteName('#__emundus_files_request'))
+                    ->set($this->_db->quoteName($right) . ' = ' . (int)$value)
+                    ->where($this->_db->quoteName('id') . ' = ' . $request_id)
+                    ->where($this->_db->quoteName('ccid') . ' = ' . $ccid);
+                $this->_db->setQuery($query);
+                $updated = $this->_db->execute();
+            }
+            catch (Exception $e) {
+                Log::add('Failed to update right via request_id ' . $request_id . ' with error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+            }
 
-			$query->update($this->_db->quoteName('#__emundus_files_request'))
-				->set($this->_db->quoteName($right) . ' = ' . (int)$value)
-				->where($this->_db->quoteName('id') . ' = ' . $request_id)
-				->where($this->_db->quoteName('ccid') . ' = ' . $ccid);
-			$this->_db->setQuery($query);
-			$updating = $this->_db->execute();
-		}
-		catch (Exception $e) {
-			Log::add('Failed to update right via request_id ' . $request_id . ' with error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
-		}
+            if ($updated) {
+                $this->h_cache->set('shared_file_users_' . $ccid, null);
+            }
+        }
 
-		return $updating;
+		return $updated;
 	}
 
 	public function getMyFilesRequests($user_id = null)
