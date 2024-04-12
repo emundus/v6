@@ -1579,10 +1579,10 @@ class EmundusModelEvaluation extends JModelList {
     }
 
     /*
-* 	Get Decision form ID By programme code
-*	@param code 		code of the programme
-* 	@return int
-*/
+    * 	Get Decision form ID By programme code
+    *	@param code 		code of the programme
+    * 	@return int
+    */
     function getDecisionFormByProgramme($code=null) {
         if ($code === NULL) {
             $session = JFactory::getSession();
@@ -1596,10 +1596,10 @@ class EmundusModelEvaluation extends JModelList {
 
         try {
             $query = 'SELECT ff.form_id
-					FROM #__fabrik_formgroup ff
-					WHERE ff.group_id IN (SELECT fabrik_decision_group_id FROM #__emundus_setup_programmes WHERE code like ' .
-                $this->_db->Quote($code) . ')';
-//die(str_replace('#_', 'jos', $query));
+                    FROM #__fabrik_formgroup ff
+                    WHERE ff.group_id IN (SELECT fabrik_decision_group_id FROM #__emundus_setup_programmes WHERE code like ' .
+                $this->_db->Quote($code) . ') AND ff.group_id <> \'\'';
+
             $this->_db->setQuery($query);
 
             return $this->_db->loadResult();
