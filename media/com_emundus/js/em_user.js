@@ -1145,13 +1145,12 @@ $(document).ready(function () {
 			case 6:
 				addLoader();
 
-				var checkBoxesProps = {
-					id: $('#checkbox-id').prop('checked'),
-					nom: $('#checkbox-nom').prop('checked'),
-					prenom: $('#checkbox-prenom').prop('checked'),
-					mail: $('#checkbox-mail').prop('checked'),
-					registerdate: $('#checkbox-registerdate').prop('checked'),
-				};
+				var checkBoxesProps = {};
+
+				$('input[type="checkbox"]').each(function() {
+					var checkboxValue = $(this).attr('value');
+					checkBoxesProps[checkboxValue] = $(this).prop('checked');
+				});
 
 				var checkedBoxes = {};
 				for (var key in checkBoxesProps) {
@@ -1159,6 +1158,7 @@ $(document).ready(function () {
 						checkedBoxes[key] = true;
 					}
 				}
+
 
 				$.ajax({
 					type: 'POST',
@@ -1215,6 +1215,7 @@ $(document).ready(function () {
 					}
 				});
 				break;
+
 
 
 			case 19:

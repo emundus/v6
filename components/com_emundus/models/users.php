@@ -3686,7 +3686,6 @@ class EmundusModelUsers extends JModelList {
 			//add a random char from the random set
 			$password .= $randomSet[array_rand(str_split($randomSet))];
 		}
-
 		//shuffle the password string before returning!
 		return str_shuffle($password);
 	}
@@ -3695,13 +3694,54 @@ class EmundusModelUsers extends JModelList {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        $query->select($db->quoteName('fe.name'))
+        $query->select('fe.id as id, fe.name as name, fe.plugin as plugin')
             ->from($db->quoteName('#__fabrik_elements', 'fe'))
             ->leftJoin($db->quoteName('#__fabrik_formgroup', 'ff') . ' ON ff.group_id = fe.group_id')
-            ->where($db->quoteName('ff.form_id') . ' = ' . $this->getProfileForm());
+            ->where($db->quoteName('ff.form_id') . ' = ' . $this->getProfileForm())
+            ->andWhere($db->quoteName('fe.hidden') . ' = ' . '0')
+            ->andWhere($db->quoteName('fe.published') . ' = ' . '1')
+            ->andWhere($db->quoteName('fe.name') . ' != ' . $db->quote('DEFAULT_LANGUAGE'));
 
         $db->setQuery($query);
-        return $db->loadColumn();
+        return $db->loadObjectList();
+
     }
 
+    public function getTableJoinAndColumnWithElementId($elemId) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('fj.table_join as join_table, fj.params as params')
+            ->from($db->quoteName('#__fabrik_joins', 'fj'))
+            ->where($db->quoteName('fj.element_id') . ' = ' . $elemId);
+
+        $db->setQuery($query);
+        return $db->loadObjectList();
+    }
+
+    public function getJoinLabelValueWithId($elemId, $valueId) {
+        $tableAndColumn = $this->getTableJoinAndColumnWithElementId($elemId);
+
+        if (!empty($tableAndColumn)) {
+            $params = $tableAndColumn[0]->params;
+            $decodedParams = json_decode($params);
+
+            if ($decodedParams !== null) {
+                $table = $tableAndColumn[0]->join_table;
+                $label = $decodedParams->{'join-label'};
+                $pk = $decodedParams->{'pk'};
+
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+
+                $query->select($db->quoteName($label))
+                    ->from($db->quoteName($table))
+                    ->where($pk . ' = ' . (int)$valueId);
+
+                $db->setQuery($query);
+                return $db->loadResult();
+            }
+        }
+        return null;
+    }
 }

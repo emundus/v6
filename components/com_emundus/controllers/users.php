@@ -1324,16 +1324,29 @@ class EmundusControllerUsers extends JControllerLegacy {
 
         fputs($csvFile, $bom = (chr(0xEF) . chr(0xBB) . chr(0xBF)));
 
-        // Écrire les en-têtes du CSV
+        $seenKeys = [];
         $headers = array();
-        foreach ($allUsersDetails[0] as $key => $value) {
-            $headers[] = strtoupper($key);
+
+        foreach ($allUsersDetails as $userDetails) {
+            foreach ($userDetails as $key => $value) {
+                if (!in_array($key, $seenKeys) && $checkboxes[$key]) {
+                    $seenKeys[] = $key;
+                    $headers[] = strtoupper($key);
+                }
+            }
         }
+
         fputcsv($csvFile, $headers);
 
-        // Écrire les données des utilisateurs dans le CSV
         foreach ($allUsersDetails as $userDetails) {
-            fputcsv($csvFile, $userDetails);
+            $userData = array();
+            foreach ($userDetails as $key => $value) {
+                if (in_array($key, $seenKeys))
+                {
+                    $userData[] = $value;
+                }
+            }
+            fputcsv($csvFile, $userData);
         }
 
         fclose($csvFile);
@@ -1388,7 +1401,13 @@ class EmundusControllerUsers extends JControllerLegacy {
 
         foreach ($columns as $column) {
 
-                $userDetails[$column] = $user[1];
+            if($column->plugin == "databasejoin")
+            {
+                $userDetails[$column->name] = $modelUsers->getJoinLabelValueWithId($column->id, $user[0]->{$column->name});
+            }
+            else {
+                $userDetails[$column->name] = $user[0]->{$column->name};
+            }
         }
         return $userDetails;
     }
