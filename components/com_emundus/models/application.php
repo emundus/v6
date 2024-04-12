@@ -6083,7 +6083,7 @@ class EmundusModelApplication extends JModelList
 		return $shared_file_users;
 	}
 
-	public function shareFileWith($emails, $ccid, $user_id = null)
+    public function shareFileWith($emails, $ccid, $user_id = null, $auto_accept = 0)
 	{
 		$default_rights = [
 			'r',
@@ -6152,7 +6152,8 @@ class EmundusModelApplication extends JModelList
 					'u',
 					'show_history',
 					'show_shared_users',
-				];
+                    'uploaded'
+                ];
 
 				$key = md5(date('Y-m-d h:m:i') . '::' . $file_info->fnum . '::' . $file_info->applicant_id . '::' . $email . '::' . rand());
 				$values = [
@@ -6167,8 +6168,9 @@ class EmundusModelApplication extends JModelList
 					in_array('r',$default_rights) ? 1 : 0,
 					in_array('u',$default_rights) ? 1 : 0,
 					in_array('show_history',$default_rights) ? 1 : 0,
-					in_array('show_shared_users',$default_rights) ? 1 : 0
-				];
+					in_array('show_shared_users',$default_rights) ? 1 : 0,
+                    $auto_accept
+                ];
 
 				$query->clear()
 					->insert($this->_db->quoteName('#__emundus_files_request'))
