@@ -44,8 +44,8 @@
               <th @click="reorder('default')">
                 <div class="flex flex-row items-center">
                   <span>{{ translate('COM_EMUNDUS_CLASSEMENT_YOUR_RANKING') }}</span>
-                  <div v-if="ordering.orderBy == 'default'">
-                    <span class="material-icons-outlined" v-if="ordering.order == 'ASC'">arrow_drop_up</span>
+                  <div v-if="ordering.orderBy === 'default'">
+                    <span class="material-icons-outlined" v-if="ordering.order === 'ASC'">arrow_drop_up</span>
                     <span class="material-icons-outlined" v-else>arrow_drop_down</span>
                   </div>
                 </div>
@@ -612,8 +612,12 @@ export default {
         window.dispatchEvent(new CustomEvent('openSecondaryFile', {detail: {file: file}}));
         this.$emit('other-selected-file', file);
       } else {
+
         this.defaultFile = file;
-        this.$modal.show('compareFiles');
+        // wait for defaultFile to be set
+        setTimeout(() => {
+          this.$modal.show('compareFiles');
+        }, 100);
       }
     },
     onSelectOtherFile(file) {
