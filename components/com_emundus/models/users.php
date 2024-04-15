@@ -3702,11 +3702,17 @@ class EmundusModelUsers extends JModelList {
             ->andWhere($db->quoteName('fe.hidden') . ' = ' . '0')
             ->andWhere($db->quoteName('fe.published') . ' = ' . '1')
             ->andWhere($db->quoteName('fe.name') . ' != ' . $db->quote('DEFAULT_LANGUAGE'));
-
         $db->setQuery($query);
-        return $db->loadObjectList();
 
+        function compareLabels($a, $b) {
+            return strcmp(JText::_($a->label), JText::_($b->label));
+        }
+
+        $columns = $db->loadObjectList();
+        usort($columns, 'compareLabels');
+        return  $columns;
     }
+
     public function getUserDetails($uid) {
 
         $columns = $this->getColumnsForm();

@@ -1146,10 +1146,14 @@ $(document).ready(function () {
 				addLoader();
 
 				var checkBoxesProps = {};
+				var allChecked = $('#checkbox-all').prop('checked');
 
 				$('input[type="checkbox"]').each(function() {
-					var checkboxValue = $(this).attr('value');
-					checkBoxesProps[checkboxValue] = $(this).prop('checked');
+					if ($(this).attr('value') !== 'all')
+					{
+						var checkboxValue = $(this).attr('value');
+						checkBoxesProps[checkboxValue] = allChecked ? true : $(this).prop('checked');
+					}
 				});
 
 				var checkedBoxes = {};
@@ -1158,7 +1162,6 @@ $(document).ready(function () {
 						checkedBoxes[key] = true;
 					}
 				}
-
 
 				$.ajax({
 					type: 'POST',

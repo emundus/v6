@@ -28,17 +28,24 @@ $userDetails = $modelUsers->getColumnsForm();
     <h5 style="margin-top: 10px; margin-bottom: 10px;"><?= JText::_('COM_EMUNDUS_EXPORTS_SELECT_INFORMATIONS'); ?></h5>
     <br>
 
-<?php
-foreach ($userDetails as $field) {
-    ?>
     <div class="form-group">
-        <input type="checkbox" id="checkbox-<?= $field->label ?>" name="checkbox-<?= $field->label ?>" value="<?= $field->label ?>">
-        <label for="checkbox-<?= $field->label ?>" class="checkbox-label"><?= JText::_($field->label) ?></label>
+        <input type="checkbox" id="checkbox-all" name="checkbox-all" value="all">
+        <label for="checkbox-all" class="checkbox-label">Tout</label>
     </div>
+
     <?php
-}
-?>
+    foreach ($userDetails as $field) {
+        ?>
+        <div class="form-group">
+            <input type="checkbox" id="checkbox-<?= $field->label ?>" name="checkbox-<?= $field->label ?>" value="<?= $field->label ?>">
+            <label for="checkbox-<?= $field->label ?>" class="checkbox-label"><?= JText::_($field->label) ?></label>
+        </div>
+        <?php
+    }
+    ?>
 </div>
+
+
 
 
 

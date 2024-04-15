@@ -1343,7 +1343,7 @@ class EmundusControllerUsers extends JControllerLegacy {
             foreach ($userDetails as $key => $value) {
                 if (in_array($key, $seenKeys))
                 {
-                    $userData[] = $value;
+                    $userData[] = JText::_($value);
                 }
             }
             fputcsv($csvFile, $userData);

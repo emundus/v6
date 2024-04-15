@@ -1054,8 +1054,6 @@ die("<script>
 
         $params = json_decode($element->params, true);
 
-
-        //TODO: Use a switch case with $element->plugin
         switch ($element->plugin) {
             case($element->plugin == 'date'):
                 $date_format = $params['date_form_format'];
@@ -1064,18 +1062,6 @@ die("<script>
                 $formatted_value = $date->format($date_format);
                 break;
 
-
-            case($element->plugin == 'currency'):
-
-                $currency = $params['all_currencies_options']['all_currencies_options0'];
-                $currency = (object)$currency;
-                $currency->minimal_value = number_format($currency->minimal_value, $currency->decimal_numbers, $currency->decimal_separator, $currency->thousand_separator);
-                $currency->maximal_value = number_format($currency->maximal_value, $currency->decimal_numbers, $currency->decimal_separator, $currency->thousand_separator);
-
-                $formatted_value = $currency->iso3 . ' ' . number_format($raw_value, $currency->decimal_numbers, $currency->decimal_separator, $currency->thousand_separator);
-                break;
-
-
             case  ($element->plugin == 'emundus_phonenumber'):
 
                 $formatted_value = self::getFormattedPhoneNumberValue($raw_value);
@@ -1083,17 +1069,26 @@ die("<script>
 
 
             case ($element->plugin == 'databasejoin'):
-
                 $db = JFactory::getDbo();
                 $query = $db->getQuery(true);
 
-                //TODO: Missing join_val_column_concat
-                $query->select($params['join_val_column'])
-                    ->from($db->quoteName($params['join_db_name']))
+                if (!empty($params['join_val_column_concat'])) {
+                    $lang = substr(JFactory::getLanguage()->getTag(), 0, 2);
+                    $params['join_val_column_concat'] = str_replace('{thistable}', $params['join_db_name'], $params['join_val_column_concat']);
+                    $params['join_val_column_concat'] = str_replace('{shortlang}', $lang, $params['join_val_column_concat']);
+
+                    $query->select($db->quoteName($params['join_val_column_concat']));
+                } else {
+                    $query->select($db->quoteName($params['join_val_column']));
+                }
+
+                $query->from($db->quoteName($params['join_db_name']))
                     ->where($db->quoteName($params['join_key_column']) . ' = ' . $db->quote($raw_value));
+
                 $db->setQuery($query);
                 $formatted_value = $db->loadResult();
                 break;
+
 
 
             case ($element->plugin == 'radiobutton' || $element->plugin == 'checkbox' || $element->plugin == 'dropdown'):
@@ -1107,19 +1102,13 @@ die("<script>
 
             case ($element->plugin == 'yesno'):
 
-                $formatted_value = $raw_value == 1 ? 'Oui' : 'Non';
+                $formatted_value = $raw_value == 1 ? JText::_('JYES') : JText::_('JNO');
                 break;
 
 
             case ($element->plugin == 'textarea'):
 
                 $formatted_value = nl2br($raw_value);
-                break;
-
-            case ($element->plugin == 'years'):
-
-                //TODO: Translate "ans"
-                $formatted_value = $raw_value . ' ans';
                 break;
             default:
                 break;

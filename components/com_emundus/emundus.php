@@ -127,6 +127,7 @@ JText::script('COM_EMUNDUS_ACTIONS_CANCEL');
 JText::script('COM_EMUNDUS_OK');
 JText::script('COM_EMUNDUS_ACTIONS_BACK');
 JText::script('COM_EMUNDUS_USERNAME');
+JText::script('COM_EMUNDUS_FORM_YEARS_OLD');
 JText::script('ID');
 JText::script('COM_EMUNDUS_ACTIONS_ALL');
 JText::script('COM_EMUNDUS_IN');
