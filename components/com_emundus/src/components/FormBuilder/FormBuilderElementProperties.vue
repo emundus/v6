@@ -145,6 +145,7 @@ export default {
   mounted() {
     this.getDatabases();
     this.paramsAvailable();
+    this.showParameters();
   },
 
   methods: {
@@ -214,7 +215,7 @@ export default {
       tab.active = true;
     },
     paramsAvailable(){
-
+      //console.log(elementParams[this.element.plugin]);
       if(typeof elementParams[this.element.plugin] !== 'undefined'){
         this.tabs[1].published = true;
         this.params = elementParams[this.element.plugin];
@@ -225,6 +226,7 @@ export default {
       }
     },
     showParameters(){
+      console.log(this.tabindex);
       if(this.tabindex === 0){
         this.tabs[0].active = true;
         this.tabs[1].active = false;

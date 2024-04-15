@@ -45,7 +45,7 @@ export default {
             let options = {
                 title: title,
                 type: 'warning',
-
+                width: 610, // to avoid the user on the elements below
                 html: `<div class="flex items-center">${textDesc}<i class="material-icons-outlined scale-150" style="user-select: none;">north_east</i></div>`,
                 reverseButtons: true,
                 customClass: {
