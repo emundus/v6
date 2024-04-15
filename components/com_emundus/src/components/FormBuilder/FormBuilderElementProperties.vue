@@ -226,7 +226,6 @@ export default {
       }
     },
     showParameters(){
-      console.log(this.tabindex);
       if(this.tabindex === 0){
         this.tabs[0].active = true;
         this.tabs[1].active = false;
