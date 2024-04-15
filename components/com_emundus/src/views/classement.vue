@@ -5,7 +5,7 @@
         <div id="nb-files" class="mr-2">{{ translate('COM_EMUNDUS_NB_FILES') + ' ' }} {{ rankings.nbFiles }}</div>
 
         <div id="pagination" class="ml-2 flex flex-row items-center">
-          <select v-model="pagination.perPage" @change="getRankings(true)">
+          <select v-model="pagination.perPage" @change="updatePerPage">
             <option v-for="option in pagination.perPageOptions" :key="option" :value="option">{{ translate('COM_EMUNDUS_DISPLAY') }} {{ option }}</option>
           </select>
         </div>
@@ -331,6 +331,16 @@ export default {
     }
   },
   created() {
+    // check session value for pagination options
+    const perPage = sessionStorage.getItem('rankingPerPage');
+    if (perPage && !isNaN(perPage)) {
+      if (this.pagination.perPageOptions.includes(parseInt(perPage))) {
+        this.pagination.perPage = parseInt(perPage);
+      } else {
+        this.pagination.perPage = 10;
+      }
+    }
+
     this.getRankings();
     this.getOtherHierarchyRankings();
     this.addFilterEventListener();
@@ -426,6 +436,10 @@ export default {
       if (oldPage !== this.pagination.page) {
         this.getRankings();
       }
+    },
+    updatePerPage() {
+      sessionStorage.setItem('rankingPerPage', this.pagination.perPage);
+      this.getRankings(true);
     },
     /**
      * @param orderBy
