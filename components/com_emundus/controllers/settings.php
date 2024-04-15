@@ -1073,34 +1073,46 @@ class EmundusControllersettings extends JControllerLegacy {
 		exit;
 	}
 
-    public function getTimeZone()
-    {
-        $results['status'] = true;
-        $results['msg'] = 'Timezones';
-        $allTimezones = DateTimeZone::listIdentifiers();
-// Initialize empty associative array for countries and cities
-        $countries_cities = [];
-        $countries= [];
+public function getTimeZone()
+{
+    $results['status'] = true;
+    $results['msg'] = 'Timezones';
+    $allTimezones = DateTimeZone::UTC;
 
-// Loop through each timezone and map it to the corresponding country
-        foreach ($allTimezones as $timezone) {
-            list($country, $city) = explode('/', $timezone);
-            // Check if the country already exists in the associative array
-            if (isset($countries_cities[$country])) {
-                // If it does, append the city to the array of cities for that country
-                $countries_cities[$country][] = $city;
-            } else {
-                // If it doesn't, create a new entry with the city as the first element of the array
-                $countries[]=$country;
-                $countries_cities[$country] = [$city];
+    $results['all']= $allTimezones;
+    $cities_offsets = [];
+/*
+    foreach ($allTimezones as $timezone_group) {
+        foreach ($timezone_group as $timezone) {
+            $value = $timezone['timezone_id'];
+            $timezone_parts = explode('/', $timezone['timezone_id']);
+            $country = $timezone_parts[0];
+            $city = isset($timezone_parts[1]) ? str_replace('_', ' ', $timezone_parts[1]) : '';
+            $city = $country . ', ' . $city; // include country in the city variable
+            $offset = round($timezone['offset'] / 3600, 2);
+
+            if ($offset > 0) {
+                $offset = '+' . $offset;
             }
+
+            $timezone_id = $timezone['timezone_id'];
+            if (!empty($city)) {
+                $cities_offsets[] = array(
+                    "label" => $city .' : '.$offset . ' hours',
+                    "value" => $value
+                );
+            }
+
+            $cities_offsets = array_filter($cities_offsets, function($city) {
+                return $city !== strtoupper($city);
+            });
         }
-        $results['data1'] = $countries;
-        $results['data2'] = $countries_cities;
-
-
-        echo json_encode((object)$results);
-        exit;
     }
+
+    $results['data1'] = $cities_offsets;
+*/
+    echo json_encode((object)$results);
+    exit;
+}
 }
 

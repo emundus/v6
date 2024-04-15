@@ -60,15 +60,15 @@
             "placeholder": "",
             "choices": [
               {
-                "label": "mois/jour/année",
-                "value": "MM/dd/yyyy"
-              },
-              {
-                "label": "jour/mois/année",
+                "label": "COM_EMUNDUS_GLOBAL_PARMAS_SITE_DATE_FORMAT_D/M/Y",
                 "value": "dd/MM/yyyy"
               },
               {
-                "label": "année/mois/jour",
+                "label": "COM_EMUNDUS_GLOBAL_PARMAS_SITE_DATE_FORMAT_M/D/Y",
+                "value": "MM/dd/yyyy"
+              },
+              {
+                "label": "COM_EMUNDUS_GLOBAL_PARMAS_SITE_DATE_FORMAT_Y/M/D",
                 "value": "yyyy/MM/dd"
               }
             ]

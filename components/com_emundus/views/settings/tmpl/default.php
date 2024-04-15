@@ -300,6 +300,9 @@ JText::script('COM_EMUNDUS_GLOBAL_PARMAS_SITE_TIMEZONE'); // Fuseau horaire
 JText::script('COM_EMUNDUS_GLOBAL_PARMAS_SITE_TIMEZONE_LAND'); // Pays
 JText::script('COM_EMUNDUS_GLOBAL_PARMAS_SITE_TIMEZONE_CITY'); // Ville
 JText::script('COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_FORMAT'); // Format de date
+JText::script('COM_EMUNDUS_GLOBAL_PARMAS_SITE_DATE_FORMAT_D/M/Y'); // Format de date
+JText::script('COM_EMUNDUS_GLOBAL_PARMAS_SITE_DATE_FORMAT_M/D/Y'); // Format de date
+JText::script('COM_EMUNDUS_GLOBAL_PARMAS_SITE_DATE_FORMAT_Y/M/D'); // Format de date
 JText::script('COM_EMUNDUS_ATTACHMENTS_KEYWORDS'); // Mots clés
 JText::script('COM_EMUNDUS_GLOBAL_PARMAS_SITE_NUMBER_LINES_LISTES'); // Nombre de lignes dans les listes
 

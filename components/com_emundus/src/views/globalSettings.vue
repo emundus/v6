@@ -73,14 +73,24 @@
 
             <div class="flex flex-col" v-if="option.type_field === 'sqldropdown'">
               <div v-if="option.name === 'offset'">
-                <select  @change="selectLand($event)">
-                  <option class="selected hidden disabled"> {{translate("COM_EMUNDUS_GLOBAL_PARMAS_SITE_TIMEZONE_LAND")}}</option>
-                <option v-for="aTimeZone in $data.timeZoneLand" :value="aTimeZone" >{{ aTimeZone}}</option>
-              </select>
-                <select @change="finalSelect($event, $data.seletedLand )">
-                  <option class="selected hidden disabled"> {{translate("COM_EMUNDUS_GLOBAL_PARMAS_SITE_TIMEZONE_CITY")}}</option>
-                  <option v-for="aCity in $data.ListOfOptions" :value="aCity">{{aCity}}</option>
-                </select>
+
+
+                <multiselect
+                    v-model="$data.timeZoneLand"
+                    label="label"
+                    track-by="value"
+                    :options="$data.timeZoneLand"
+                    :multiple="false"
+                    :taggable="false"
+                    select-label=""
+                    selected-label=""
+                    deselect-label=""
+                    :placeholder="translate('COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_FORMAT')"
+                    :close-on-select="true"
+                    :clear-on-select="false"
+                    :searchable="true"
+                    :allow-empty="false"
+                ></multiselect>
 
               </div>
             </div>
@@ -166,6 +176,8 @@ import EditArticle from "@/components/Settings/Content/EditArticle.vue";
 import EditorQuill from "@/components/editorQuill.vue";
 import axios from "axios";
 
+import Multiselect from 'vue-multiselect';
+
 
 export default {
   name: "globalSettings",
@@ -183,7 +195,10 @@ export default {
     ContentTool,
     TranslationTool,
     EditStatus,
-    EditTags
+    EditTags,
+    Multiselect,
+
+
   },
   props: {
     actualLanguage: {
@@ -214,12 +229,8 @@ export default {
     SubMenus: [],
     YNButtons: [],
 
+    selectedOffset: null,
     timeZoneLand:[],
-    timeZoneCity:[],
-    ListOfOptions: [],
-    defaultSelect: 'Europe',
-    defaultSelect2: 'Paris',
-    seletedLand: '',
 
     form: {
       content: ''
@@ -335,8 +346,10 @@ export default {
           method: "get",
           url: 'index.php?option=com_emundus&controller=settings&task=getTimeZone',
         }).then((rep) => {
+          console.log('jojo')
+          console.log(rep.data.all);
           this.timeZoneLand= rep.data.data1;
-          this.timeZoneCity= rep.data.data2;
+
         });
 
         resolve(true);
@@ -344,6 +357,7 @@ export default {
     },
     selectLand(event){
       let aTimeZone = event.target.value;
+      this.selectedOffset = aTimeZone;
       this.ListOfOptions = this.timeZoneCity[aTimeZone];
       this.seletedLand = aTimeZone;
     },
