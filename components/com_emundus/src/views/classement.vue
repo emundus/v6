@@ -220,7 +220,7 @@
         </template>
         <template v-slot:files-to-compare-with>
           <classement :key="subRankingKey" @other-selected-file="onSelectOtherFile" :hierarchy_id="hierarchy_id"
-                      :user="user" context="modal"></classement>
+                      :user="user" context="modal" :showOtherHierarchies="false"></classement>
         </template>
       </compare-files>
     </transition>
@@ -299,7 +299,11 @@ export default {
     specificTabs: {
       type: String,
       default: ''
-    }
+    },
+    showOtherHierarchies: {
+      type: Boolean,
+      default: true
+    },
   },
   mixins: [translate],
   data() {
@@ -471,25 +475,27 @@ export default {
       });
     },
     getOtherHierarchyRankings() {
-      rankingService.getOtherHierarchyRankings().then(response => {
-        if (response.status) {
-          this.rankings.otherRankings = response.data;
+      if (this.showOtherHierarchies) {
+        rankingService.getOtherHierarchyRankings().then(response => {
+          if (response.status) {
+            this.rankings.otherRankings = response.data;
 
-          // create a list of the files with all ranking values for each hierarchy
-          let rankingGroupedByFiles = {};
-          response.data.forEach(hierarchy => {
-            hierarchy.files.forEach(file => {
-              if (!rankingGroupedByFiles[file.id]) {
-                rankingGroupedByFiles[file.id] = {};
-              }
+            // create a list of the files with all ranking values for each hierarchy
+            let rankingGroupedByFiles = {};
+            response.data.forEach(hierarchy => {
+              hierarchy.files.forEach(file => {
+                if (!rankingGroupedByFiles[file.id]) {
+                  rankingGroupedByFiles[file.id] = {};
+                }
 
-              rankingGroupedByFiles[file.id][hierarchy.hierarchy_id] = file;
+                rankingGroupedByFiles[file.id][hierarchy.hierarchy_id] = file;
+              });
             });
-          });
 
-          this.rankings.otherRankings.groupedByFiles = rankingGroupedByFiles;
-        }
-      });
+            this.rankings.otherRankings.groupedByFiles = rankingGroupedByFiles;
+          }
+        });
+      }
     },
     onChangeRankValue(file) {
       if (file.locked == 1) {
