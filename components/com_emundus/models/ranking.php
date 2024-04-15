@@ -686,11 +686,11 @@ class EmundusModelRanking extends JModelList
                 $this->db->setQuery($query);
                 $ranking = $this->db->loadAssoc();
 
-                if ($ranking['locked'] == 1) {
+                if (!empty($ranking) && $ranking['locked'] == 1) {
                     throw new Exception(Text::_('COM_EMUNDUS_RANKING_UPDATE_RANKING_ERROR_LOCKED'));
                 }
 
-                $old_rank = !empty($ranking['rank']) && $ranking['rank'] > 0 ? $ranking['rank'] : -1;
+                $old_rank = !empty($ranking) && !empty($ranking['rank']) && $ranking['rank'] > 0 ? $ranking['rank'] : -1;
 
                 if ($old_rank == $new_rank) {
                     $updated = true;
