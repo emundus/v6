@@ -40,14 +40,17 @@ export default {
             });
         },
 
-        async swalParameter(title,callback = null)
+        async swalParameter(title , textDesc ,callback = null)
         {
             let options = {
                 title: title,
                 type: 'warning',
+
+                html: `<div class="flex items-center">${textDesc}<i class="material-icons-outlined scale-150" style="user-select: none;">north_east</i></div>`,
                 reverseButtons: true,
                 customClass: {
                     title: 'em-swal-title',
+
                 },
             };
 

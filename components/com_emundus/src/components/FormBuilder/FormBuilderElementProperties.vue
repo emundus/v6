@@ -105,8 +105,7 @@ export default {
     },
     tabindex: {
       type: Number,
-      required: false,
-      default: 0
+      required: true,
     }
   },
   mixins: [formBuilderMixin],
@@ -142,12 +141,12 @@ export default {
     };
 
   },
+
   mounted() {
     this.getDatabases();
     this.paramsAvailable();
-    this.showParameters();
-
   },
+
   methods: {
     getDatabases(){
       formBuilderService.getDatabases().then(response => {
@@ -215,7 +214,7 @@ export default {
       tab.active = true;
     },
     paramsAvailable(){
-      //console.log(elementParams[this.element.plugin]);
+
       if(typeof elementParams[this.element.plugin] !== 'undefined'){
         this.tabs[1].published = true;
         this.params = elementParams[this.element.plugin];
@@ -226,14 +225,15 @@ export default {
       }
     },
     showParameters(){
-      console.log("showElement");
-      console.log(this.element)
-
-      if(this.tabindex == 1){
+      if(this.tabindex === 0){
+        this.tabs[0].active = true;
+        this.tabs[1].active = false;
+      } else
+      if(this.tabindex === 1){
         this.tabs[1].active = true;
         this.tabs[0].active = false;
       }
-    }
+    },
   },
   computed: {
     componentType() {
@@ -280,7 +280,10 @@ export default {
 
     'element.id': function(value){
       this.paramsAvailable();
-    }
+    },
+    tabindex: function(){
+      this.showParameters();
+    },
   }
 }
 </script>

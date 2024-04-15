@@ -114,7 +114,7 @@
 	                v-if="showInRightPanel === 'element-properties'"
 	                @close="onCloseElementProperties"
 	                :element="selectedElement"
-                  :tabindex="tabIndex"
+                  :tabindex=this.tabIndex
 	                :profile_id="parseInt(profile_id)"
 	            ></form-builder-element-properties>
 	            <form-builder-section-properties
@@ -195,7 +195,7 @@ export default {
       selectedPage: 0,
       selectedSection: null,
       selectedElement: null,
-      tabIndex: 0,
+      tabIndex: null,
       optionsSelectedElement: false,
       selectedDocument: null,
 	    rightPanel: {
@@ -271,11 +271,24 @@ export default {
     this.$modal.show('formBuilder');
   },
   methods: {
-    updateRightPanel(tab,element, index, id ) {
-      this.showInRightPanel = tab;
-      this.selectedElement = element;
-      this.tabIndex = index;
-      this.profile_id = id;
+    updateRightPanel(tab, id ) {
+      formService.getPageObject(this.selectedPage).then(response => {
+            if (response.status && response.data != '') {
+              //parcour all the Groups of response.data and search for the element "element$id"
+              const groups = Object.values(response.data.Groups);
+              for (let i = 0; i < groups.length; i++) {
+                let elements = Object.values(groups[i].elements);
+                for (let j = 0; j < elements.length; j++) {
+                  if (elements[j].id == id) {
+                    this.selectedElement = elements[j];
+                    this.showInRightPanel = tab;
+                    this.tabIndex = 1;
+                  }
+                }
+            }
+      }
+      }
+      );
     },
     getFormTitle() {
 			if (this.profile_id) {
@@ -358,6 +371,7 @@ export default {
         }
           this.optionsSelectedElement = false;
       }
+      this.tabIndex=0;
       this.showInRightPanel = 'element-properties';
     },
 	  onUpdateDocument()
