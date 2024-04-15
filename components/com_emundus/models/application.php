@@ -451,45 +451,39 @@ class EmundusModelApplication extends JModelList
         return $res;
     }
 
+    /**
+     * @param $row
+     * @return int new comment id
+     * @throws Exception
+     */
     public function addComment($row)
     {
-        // Log the comment in the eMundus logging system.
-        $logsStd = new stdClass();
-        // Log only the body if there is no title
-        if (empty($row['reason'])) {
-            $logsStd->element = '[' . JText::_('COM_EMUNDUS_COMMENT_NO_TITLE') . ']';
-            $logsStd->details = $row['comment_body'];
-        } else {
-            $logsStd->element = '[' . $row['reason'] . ']';
-            $logsStd->details = $row['comment_body'];
-        }
+        $comment_id = 0;
 
-        //$logsStd->details =  $row['comment_body'];
-
-        $logsParams = array('created' => [$logsStd]);
-        EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($row['fnum'], -7), $row['fnum'], 10, 'c', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
-
-	    $now = EmundusHelperDate::getNow();
-
-        $query = 'INSERT INTO `#__emundus_comments` (applicant_id, user_id, reason, date, comment_body, fnum)
-                VALUES('.$row['applicant_id'].','.$row['user_id'].','.$this->_db->Quote($row['reason']).',"'.$now.'",'.$this->_db->Quote($row['comment_body']).','.$this->_db->Quote(@$row['fnum']).')';
-        $this->_db->setQuery($query);
+        $query = $this->_db->getQuery(true);
+        $query->insert($this->_db->quoteName('#__emundus_comments'))
+            ->columns('applicant_id, user_id, reason, date, comment_body, fnum')
+            ->values($row['applicant_id'] . ', ' . $row['user_id']. ', ' . $this->_db->quote($row['reason']) . ', ' .  $this->_db->quote(EmundusHelperDate::getNow()) . ', ' . $this->_db->quote($row['comment_body']). ', ' . $this->_db->quote($row['fnum']));
 
         try {
-            $this->_db->execute();
-            return $this->_db->insertid();
+            $this->_db->setQuery($query);
+            $inserted = $this->_db->execute();
+            if ($inserted) {
+                $comment_id = $this->_db->insertid();
+
+                if (!empty($comment_id)) {
+                    $logsStd = new stdClass();
+                    $logsStd->element = empty($row['reason']) ? '[' . JText::_('COM_EMUNDUS_COMMENT_NO_TITLE') . ']' : '[' . $row['reason'] . ']';
+                    $logsStd->details = $row['comment_body'];
+                    $logsParams = array('created' => [$logsStd]);
+                    EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($row['fnum'], -7), $row['fnum'], 10, 'c', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+                }
+            }
         } catch (Exception $e) {
-            JLog::add('Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
-            return null;
+            JLog::add('Failed to insert comment ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
         }
-    }
 
-    public function deleteData($id, $table)
-    {
-        $query = 'DELETE FROM `' . $table . '` WHERE id=' . $id;
-        $this->_db->setQuery($query);
-
-        return $this->_db->Query();
+        return $comment_id;
     }
 
     public function deleteAttachment($id)

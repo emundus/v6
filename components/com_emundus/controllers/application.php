@@ -345,29 +345,6 @@ class EmundusControllerApplication extends JControllerLegacy
         exit;
     }
 
-    public function deletetraining(){
-        $user = JFactory::getUser();
-
-        if(!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) die(JText::_("ACCESS_DENIED"));
-
-        $view = JRequest::getVar('view', null, 'GET', 'none',0);
-        $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
-
-        $id = JRequest::getVar('id', null, 'GET', 'none',0);
-        $sid = JRequest::getVar('sid', null, 'GET', 'none',0);
-        $table = JRequest::getVar('t', null, 'GET', 'none',0);
-
-        $m_application = new EmundusModelApplication();
-        $result = $m_application->deleteData($id, $table);
-
-        $row['applicant_id'] = $sid;
-        $row['user_id'] = $user->id;
-        $row['reason'] = JText::_('COM_EMUNDUS_APPLICATION_DATA_DELETED');
-        $row['comment_body'] = JText::_('COM_EMUNDUS_APPLICATION_LINE').' '.$id.' '.JText::_('COM_EMUNDUS_APPLICATION_FROM').' '.$table;
-        $m_application->addComment($row);
-
-        echo $result;
-    }
     /*
      * Get Menu for application file
      */
@@ -380,7 +357,7 @@ class EmundusControllerApplication extends JControllerLegacy
         $jinput = JFactory::getApplication()->input;
         $fnum = $jinput->get('fnum', null, 'STRING');
 
-	    require_once (JPATH_COMPONENT.DS.'models'.DS.'application.php');
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'application.php');
         $m_application = new EmundusModelApplication();
         $menus = $m_application->getApplicationMenu();
         $res = false;
@@ -392,18 +369,18 @@ class EmundusControllerApplication extends JControllerLegacy
                 $i=0;
 
                 foreach($menus as $k => $menu) {
-					$access = false;
-					$actions_for_access = explode(',', $menu['note']);
-					
-					foreach ($actions_for_access as $action_for_access) {
-						$action = explode('|', $action_for_access);
-						$action_id = $action[0];
-						
-						if (EmundusHelperAccess::asAccessAction($action[0], $action[1], $user->id, $fnum)) {
-							$access = true;
-							break;
-						}
-					}
+                    $access = false;
+                    $actions_for_access = explode(',', $menu['note']);
+
+                    foreach ($actions_for_access as $action_for_access) {
+                        $action = explode('|', $action_for_access);
+                        $action_id = $action[0];
+
+                        if (EmundusHelperAccess::asAccessAction($action[0], $action[1], $user->id, $fnum)) {
+                            $access = true;
+                            break;
+                        }
+                    }
 
                     if ($access) {
                         if($action_id == 36){
