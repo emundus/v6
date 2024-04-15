@@ -3527,7 +3527,7 @@ class EmundusModelFormbuilder extends JModelList {
 
         include_once(JPATH_SITE.'/components/com_emundus/helpers/files.php');
 
-        $fnum = @EmundusHelperFiles::createFnum($cid, $uid);
+        $fnum = EmundusHelperFiles::createFnum($cid, $uid);
 
         try {
             $query->insert($db->quoteName('#__emundus_campaign_candidature'));

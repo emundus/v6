@@ -43,7 +43,7 @@ class EmundusModelRankingTest extends TestCase
         $sys_hierarchy = $this->m_ranking->createHierarchy('Hiérarchie Admin', 0, 1);
         $this->assertIsInt($sys_hierarchy);
 
-        $coord_hierarchy = $this->m_ranking->createHierarchy('Hiérarchie coord', 1, 2, $sys_hierarchy);
+        $coord_hierarchy = $this->m_ranking->createHierarchy('Hiérarchie coord', 0, 2, $sys_hierarchy);
         $this->assertIsInt($coord_hierarchy);
 
         $this->expectException(Exception::class); // i should not be able to create on false profile
@@ -91,22 +91,25 @@ class EmundusModelRankingTest extends TestCase
         $this->assertTrue($updated, "I should be able to rank a file that I did not apply for.");
 
         $fnum_2 = $this->h_sample->createSampleFile($campaign_id, $another_user, true, true);
+        $this->assertNotEmpty($fnum_2);
+
         $updated = $this->m_ranking->updateFileRanking($fnum_2, $ranker_user, 1, $ranker_hierarchy);
         $this->assertTrue($updated, "I should be able to rank a file that I did not apply for and place it on a position that has already been attributed.");
 
-        $old_first_position_new_rank = $this->m_ranking->getFileRank($fnum_1);
+        $old_first_position_new_rank = $this->m_ranking->getFileRanking($fnum_1, $ranker_user, $ranker_hierarchy);
         $this->assertEquals(2, $old_first_position_new_rank, "The file that was first should now be second.");
 
         $fnum_3 = $this->h_sample->createSampleFile($campaign_id, $another_user, true, true);
+        $this->assertNotEmpty($fnum_3);
         $updated = $this->m_ranking->updateFileRanking($fnum_3, $ranker_user, 3, $ranker_hierarchy);
         $this->assertTrue($updated, "I should be able to rank a file that I did not apply for and place it on a new position");
-        $third_position = $this->m_ranking->getFileRank($fnum_3);
-        $this->assertEquals($third_position, "Posiotion is coherent");
+        $third_position = $this->m_ranking->getFileRanking($fnum_3, $ranker_user, $ranker_hierarchy);
+        $this->assertEquals($third_position, $third_position, "Position is coherent");
 
         $updated = $this->m_ranking->updateFileRanking($fnum_1, $ranker_user, -1, $ranker_hierarchy);
         $this->assertTrue($updated, "I should be able to unrank a file that I did not apply for.");
 
-        $old_third_position_new_rank = $this->m_ranking->getFileRank($fnum_3);
+        $old_third_position_new_rank = $this->m_ranking->getFileRanking($fnum_3, $ranker_user, $ranker_hierarchy);
         $this->assertEquals(2, $old_third_position_new_rank, "The file that was third should now be second, because previous second one has been unranked.");
 
         // Create a file for ranker user, and try to rank it

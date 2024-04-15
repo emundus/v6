@@ -621,7 +621,7 @@ class EmundusModelRanking extends JModelList
         if (!empty($id) && !empty($user_id) && !empty($hierarchy_id)) {
             $query = $this->db->getQuery(true);
             $query->clear()
-                ->select('rank')
+                ->select($this->db->quoteName('rank'))
                 ->from($this->db->quoteName('#__emundus_ranking'))
                 ->where($this->db->quoteName('ccid') . ' = ' . $this->db->quote($id))
                 ->andWhere($this->db->quoteName('user_id') . ' = ' . $this->db->quote($user_id))
