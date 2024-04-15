@@ -44,8 +44,8 @@
               <th @click="reorder('default')">
                 <div class="flex flex-row items-center">
                   <span>{{ translate('COM_EMUNDUS_CLASSEMENT_YOUR_RANKING') }}</span>
-                  <div v-if="ordering.orderBy == 'default'">
-                    <span class="material-icons-outlined" v-if="ordering.order == 'ASC'">arrow_drop_up</span>
+                  <div v-if="ordering.orderBy === 'default'">
+                    <span class="material-icons-outlined" v-if="ordering.order === 'ASC'">arrow_drop_up</span>
                     <span class="material-icons-outlined" v-else>arrow_drop_down</span>
                   </div>
                 </div>
@@ -220,7 +220,7 @@
         </template>
         <template v-slot:files-to-compare-with>
           <classement :key="subRankingKey" @other-selected-file="onSelectOtherFile" :hierarchy_id="hierarchy_id"
-                      :user="user" context="modal"></classement>
+                      :user="user" context="modal" :showOtherHierarchies="false"></classement>
         </template>
       </compare-files>
     </transition>
@@ -299,7 +299,11 @@ export default {
     specificTabs: {
       type: String,
       default: ''
-    }
+    },
+    showOtherHierarchies: {
+      type: Boolean,
+      default: true
+    },
   },
   mixins: [translate],
   data() {
@@ -471,25 +475,27 @@ export default {
       });
     },
     getOtherHierarchyRankings() {
-      rankingService.getOtherHierarchyRankings().then(response => {
-        if (response.status) {
-          this.rankings.otherRankings = response.data;
+      if (this.showOtherHierarchies) {
+        rankingService.getOtherHierarchyRankings().then(response => {
+          if (response.status) {
+            this.rankings.otherRankings = response.data;
 
-          // create a list of the files with all ranking values for each hierarchy
-          let rankingGroupedByFiles = {};
-          response.data.forEach(hierarchy => {
-            hierarchy.files.forEach(file => {
-              if (!rankingGroupedByFiles[file.id]) {
-                rankingGroupedByFiles[file.id] = {};
-              }
+            // create a list of the files with all ranking values for each hierarchy
+            let rankingGroupedByFiles = {};
+            response.data.forEach(hierarchy => {
+              hierarchy.files.forEach(file => {
+                if (!rankingGroupedByFiles[file.id]) {
+                  rankingGroupedByFiles[file.id] = {};
+                }
 
-              rankingGroupedByFiles[file.id][hierarchy.hierarchy_id] = file;
+                rankingGroupedByFiles[file.id][hierarchy.hierarchy_id] = file;
+              });
             });
-          });
 
-          this.rankings.otherRankings.groupedByFiles = rankingGroupedByFiles;
-        }
-      });
+            this.rankings.otherRankings.groupedByFiles = rankingGroupedByFiles;
+          }
+        });
+      }
     },
     onChangeRankValue(file) {
       if (file.locked == 1) {
@@ -612,8 +618,12 @@ export default {
         window.dispatchEvent(new CustomEvent('openSecondaryFile', {detail: {file: file}}));
         this.$emit('other-selected-file', file);
       } else {
+
         this.defaultFile = file;
-        this.$modal.show('compareFiles');
+        // wait for defaultFile to be set
+        setTimeout(() => {
+          this.$modal.show('compareFiles');
+        }, 100);
       }
     },
     onSelectOtherFile(file) {
