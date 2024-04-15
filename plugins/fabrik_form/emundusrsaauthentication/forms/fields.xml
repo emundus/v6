@@ -3,6 +3,15 @@
     <fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
         <fieldset name="plg-form-emundusrsaauhtentication" label="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_FIELDS">
 
+            <field name="emundusrsaauhtentication_event_to_run"
+                   type="list"
+                   default="onBeforeLoad"
+                   description="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_EVENT_TO_RUN_DESC"
+                   label="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_EVENT_TO_RUN_LABEL">
+                <option value="onBeforeLoad">onBeforeLoad</option>
+                <option value="onAfterProcess">onAfterProcess</option>
+            </field>
+
             <field name="emundusrsaauhtentication_public_key" type="text" default=""
                    description="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_PUBLIC_KEY_DESC"
                    label="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_PUBLIC_KEY_LABEL"/>

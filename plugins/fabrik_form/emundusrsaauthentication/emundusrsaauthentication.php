@@ -80,6 +80,25 @@ class PlgFabrik_FormEmundusRsaauthentication extends plgFabrik_Form
 
 	public function onBeforeLoad()
 	{
+		if($this->getParam('emundusrsaauhtentication_event_to_run', 'onBeforeLoad') == 'onBeforeLoad')
+		{
+			$this->manageRSAAuthentication();
+		}
+	}
+
+	public function onAfterProcess()
+	{
+		if($this->getParam('emundusrsaauhtentication_event_to_run', 'onBeforeLoad') == 'onAfterProcess')
+		{
+			$data = $this->getProcessData();
+			$table_name = $this->getModel()->getTableName();
+			$new_email = $data[$table_name . '___email'];
+			$this->manageRSAAuthentication($new_email);
+		}
+	}
+
+	private function manageRSAAuthentication($new_email = null)
+	{
 		$app         = Factory::getApplication();
 		$current_url = Uri::getInstance()->toString();
 
@@ -116,7 +135,7 @@ class PlgFabrik_FormEmundusRsaauthentication extends plgFabrik_Form
 						$decrypted = array();
 						throw new Exception('PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_DECRYPT_DATAS_ERROR', 500);
 					}
-					
+
 					$username         = (string) $decrypted[$this->getParam('emundusrsaauhtentication_attributes_id', 'id')];
 					$firstname        = $decrypted[$this->getParam('emundusrsaauhtentication_attributes_firstname', 'firstname')];
 					$lastname         = $decrypted[$this->getParam('emundusrsaauhtentication_attributes_lastname', 'lastname')];
@@ -163,13 +182,19 @@ class PlgFabrik_FormEmundusRsaauthentication extends plgFabrik_Form
 					}
 
 					// Then we check if username corresponding to existing email if we have no username
-					if (empty(UserHelper::getUserId($username)))
+					if (empty(UserHelper::getUserId($username)) && empty($new_email))
 					{
 						$query->select('username')
 							->from('#__users')
 							->where('email = ' . $db->quote($email));
 						$db->setQuery($query);
 						$existing_username = $db->loadResult();
+
+						if($existing_username != $email && $existing_username != $username)
+						{
+							$app->enqueueMessage(Text::_('PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_EMAIL_ALREADY_USED'), 'error');
+							$app->redirect('modifier-mon-adresse-email?data=' . $app->input->getString($datas_key, ''));
+						}
 
 						if (!empty($existing_username))
 						{
@@ -182,7 +207,7 @@ class PlgFabrik_FormEmundusRsaauthentication extends plgFabrik_Form
 						$user                 = new User();
 						$user->name           = $lastname . ' ' . $firstname;
 						$user->username       = (string) $username;
-						$user->email          = $email;
+						$user->email          = !empty($new_email) ? $new_email : $email;
 						$user->password_clear = '';
 						$user->password       = '';
 						$user->block          = 0;
