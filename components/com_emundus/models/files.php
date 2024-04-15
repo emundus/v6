@@ -1571,7 +1571,11 @@ class EmundusModelFiles extends JModelLegacy
 
                 if (empty($user_id)) {
                     $user = JFactory::getUser();
-                    $user_id = !empty($user->id) ? $user->id : 62;
+                    if (empty($user->id)) {
+                        $eMConfig = JComponentHelper::getParams('com_emundus');
+                        $automated_task_user = $eMConfig->get('automated_task_user', 62);
+                        $user_id = $automated_task_user;
+                    }
                 }
 
                 foreach ($fnums as $fnum) {
