@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="module" version="3.1" client="site" method="upgrade">
+	<name>MOD_EMUNDUS_SETUP_XML</name>
+	<author>eMundus</author>
+	<creationDate>April 2024</creationDate>
+	<copyright>Copyright (C) 2005 - 2024 Open Source Matters. All rights reserved.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>admin@joomla.org</authorEmail>
+	<authorUrl>www.joomla.org</authorUrl>
+	<version>1.39.0</version>
+	<description>MOD_EMUNDUS_SETUP_XML_DESCRIPTION</description>
+	<files>
+		<folder>tmpl</folder>
+		<filename>mod_emundus_cas.xml</filename>
+		<filename module="mod_emundus_cas">mod_emundus_cas.php</filename>
+		<filename>index.html</filename>
+		<folder>tmpl</folder>
+		<folder>language</folder>
+	</files>
+	<config>
+		<fields name="params">
+			<fieldset name="basic"
+				addfieldpath="/administrator/components/com_menus/models/fields"
+			>
+				<field type="list" name="layout" label="MOD_EMUNDUS_SETUP_XML_FIELD_LAYOUT">
+					<option value="referent">MOD_EMUNDUS_SETUP_XML_FIELD_LAYOUT_REFERENT</option>
+				</field>
+				<field
+						name="intro"
+						type="editor" filter="safehtml" hide="readmore,pagebreak"
+						label="MOD_EMUNDUS_SETUP_XML_FIELD_INTRO_LABEL"
+						rows="3"
+				/>
+
+				<field	showon="layout:referent"
+						name="referent_paths"
+						type="checkboxes"
+						label="MOD_EMUNDUS_SETUP_XML_FIELD_REFERENT_PATHS_LABEL"
+				>
+					<option value="1">MOD_EMUNDUS_SETUP_XML_FIELD_REFERENT_PATH_CLASSIC</option>
+					<option value="2">MOD_EMUNDUS_SETUP_XML_FIELD_REFERENT_PATH_FORM_WITHOUT_LETTER</option>
+					<option value="3">MOD_EMUNDUS_SETUP_XML_FIELD_REFERENT_PATH_APPLICANT</option>
+				</field>
+
+				<field showon="referent_paths:3"
+					   name="referent_attachments"
+					   type="sql"
+					   default=""
+					   multiple="true"
+					   label="MOD_EMUNDUS_SETUP_XML_FIELD_REFERENT_ATTACHMENTS"
+					   query="SELECT id, value FROM #__emundus_setup_attachments"
+					   key_field="id"
+					   value_field="value"
+				/>
+			</fieldset>
+		</fields>
+	</config>
+</extension>
