@@ -53,9 +53,23 @@
               <h2>{{ translate(option.label) }}</h2>
               <hr>
             </div>
+
             <div v-else-if="option.type ==='subSection'">
-              <a>test </a>
+              <div @click="handleSubSectionClick(index2)">
+                <a :id="'SubSectionTile'+index2" class="em-font-size-16">{{ translate(option.label) }}</a>
+                <i class="material-icons-outlined scale-150" :id="'SubSectionArrow'+index2" name="SubSectionArrows"
+                   style="transform-origin: unset">expand_more</i>
+              </div>
+              <div :id="'SubSection-'+index2" name="SubSectionContent" style="display: none" class="flex flex-col ">
+                <div v-for="(option,index3) in option.elements">
+                  <div class="flex flex-col" v-if="option.type_field === 'component'">
+                    <component :is="option.component" v-bind="option.props"></component>
+                  </div>
+                </div>
+              </div>
             </div>
+
+
             <div v-else class="block text-xl ">
               {{ translate(option.label) }}
             </div>
@@ -223,6 +237,7 @@ export default {
 
     MenuisClicked: [],
     SubMenuisClicked: [],
+    SubSectionisClicked: [],
     indexMenuClick: null,
     aMenu: [],
     Menus: [],
@@ -230,7 +245,7 @@ export default {
     YNButtons: [],
 
     selectedOffset: null,
-    timeZoneLand:null,
+    timeZoneLand: null,
     baseTimeZone: null,
 
     form: {
@@ -299,6 +314,11 @@ export default {
       this.toggleSubMenuButton(index);
     },
 
+    handleSubSectionClick(index) {
+      this.resetSubSectionStyles();
+      this.toggleSubSectionButton(index);
+    },
+
     resetSubMenuButtons(index) {
       if (this.SubMenuisClicked[index]) {
         this.SubMenuisClicked.fill(false);
@@ -320,6 +340,19 @@ export default {
         document.getElementById('SubtitleArrow' + index).style.rotate = '-180deg';
         document.getElementById('SubMenu-' + index).style.display = 'flex';
       }
+    },
+
+    toggleSubSectionButton(index) {
+      this.SubSectionisClicked[index] = !this.SubSectionisClicked[index];
+      if (this.SubMenuisClicked[index]) {
+        document.getElementById('SubSectionArrow' + index).style.rotate = '-180deg';
+        document.getElementById('SubSection-' + index).style.display = 'flex';
+      }
+    },
+
+    resetSubSectionStyles() {
+      document.getElementsByName("SubSectionArrows").forEach(element => element.style.rotate = '0deg');
+      document.getElementsByName("SubSectionContent").forEach(element => element.style.display = 'none');
     },
 
     clickYN(bool, index) {
@@ -348,7 +381,7 @@ export default {
           url: 'index.php?option=com_emundus&controller=settings&task=getTimeZone',
         }).then((rep) => {
           this.baseTimeZone = rep.data.baseData;
-          this.timeZoneLand= rep.data.data1;
+          this.timeZoneLand = rep.data.data1;
         });
 
         resolve(true);
