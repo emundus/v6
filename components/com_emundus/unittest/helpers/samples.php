@@ -150,6 +150,7 @@ class EmundusUnittestHelperSamples
 
 		if (empty($fnum)) {
 			$m_formbuilder = new EmundusModelFormbuilder;
+            sleep(1); // to avoid duplicate fnum
 			$fnum = $m_formbuilder->createTestingFile($cid, $uid);
 		}
 
