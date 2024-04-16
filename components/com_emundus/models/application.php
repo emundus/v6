@@ -760,11 +760,11 @@ class EmundusModelApplication extends JModelList
      */
 	public function getAttachmentsProgress($fnums = null)
 	{
-		$progress = 0;
+		$progress = 0.0;
 		$return_array = true;
 
 		if (empty($fnums) || (!is_array($fnums) && !is_numeric($fnums))) {
-			$progress = 0;
+			$progress = 0.0;
 		} else {
 			$session = JFactory::getSession();
 			$current_user = $session->get('emundusUser');
