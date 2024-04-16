@@ -1349,18 +1349,23 @@ class EmundusModelFiles extends JModelLegacy
      */
     public function getAllStatus()
     {
-        $query = 'select * from #__emundus_setup_status order by ordering';
-        $db = $this->getDbo();
+        $status = [];
 
-        try
-        {
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('*')
+            ->from('#__emundus_setup_status')
+            ->order('ordering');
+
+        try {
             $db->setQuery($query);
-            return $db->loadAssocList();
-        }
-        catch(Exception $e)
-        {
+            $status = $db->loadAssocList();
+        } catch(Exception $e) {
             throw $e;
         }
+
+        return $status;
     }
 
     /**

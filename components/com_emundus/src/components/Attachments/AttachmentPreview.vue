@@ -24,11 +24,15 @@ export default {
 		user: {
 			type: Number,
 			required: true,
-		}
+		},
+    defaultAttachment: {
+      type: Object,
+      default: null,
+    }
 	},
 	data() {
 		return {
-			attachment: this.$store.state.attachment.selectedAttachment,
+			attachment: null,
 			preview: "",
 			overflowX: false,
 			overflowY: false,
@@ -42,7 +46,7 @@ export default {
 		if (typeof this.$refs["a-preview"].attachShadow === 'function') {
 			this.$refs["a-preview"].attachShadow({ mode: "open" });
 		}
-    this.attachment = this.$store.state.attachment.selectedAttachment;
+    this.attachment = this.defaultAttachment;
 		this.getPreview();
 	},
 	methods: {
@@ -179,19 +183,7 @@ export default {
 				wrapper.style.overflow = "hidden";
 			}
 		},
-	},
-	watch: {
-		"$store.state.attachment.selectedAttachment": function () {
-			// check if selected attchment is not an empty object
-			const keys = Object.keys(this.$store.state.attachment.selectedAttachment);
-
-			if (keys.length !== 0) {
-				this.attachment = this.$store.state.attachment.selectedAttachment;
-				this.openMsg = false;
-				this.getPreview();
-			}
-		},
-	},
+	}
 };
 </script>
 

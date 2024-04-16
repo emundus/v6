@@ -50,6 +50,7 @@
                   </div>
                 </div>
               </th>
+              <th>{{ translate('COM_EMUNDUS_RANKING_FILE_STATUS') }}</th>
             </tr>
           </thead>
           <!-- only ranked files -->
@@ -85,21 +86,9 @@
                 <span v-if="file.rank > 0">{{ file.rank }}</span>
                 <span v-else> {{ translate('COM_EMUNDUS_CLASSEMENT_NOT_RANKED') }} </span>
               </td>
+              <td><span v-html="getStatusTag(file.status)"></span></td>
             </tr>
           </draggable>
-        </table>
-        <!-- non ranked files -->
-        <table id="unranked-files">
-          <thead>
-            <tr>
-              <th>
-                <span class="material-icons-outlined" v-if="ismyRankingLocked">lock</span>
-                <span class="material-icons-outlined" v-else>lock_open</span>
-              </th>
-              <th>{{ translate('COM_EMUNDUS_CLASSEMENT_FILE') }}</th>
-              <th>{{ translate('COM_EMUNDUS_CLASSEMENT_YOUR_RANKING') }}</th>
-            </tr>
-          </thead>
           <draggable
               v-model="unrankedFiles"
               tag="tbody"
@@ -129,6 +118,7 @@
               <td v-else>
                 {{ translate('COM_EMUNDUS_CLASSEMENT_NOT_RANKED') }}
               </td>
+              <td><span v-html="getStatusTag(file.status)"></span></td>
             </tr>
           </draggable>
         </table>
@@ -271,6 +261,8 @@
 <script>
 import translate from "../mixins/translate";
 import rankingService from "../services/ranking.js";
+import fileService from "../services/file.js";
+
 import CompareFiles from "../components/Files/CompareFiles.vue";
 import draggable from "vuedraggable";
 import Multiselect from "vue-multiselect";
@@ -331,7 +323,8 @@ export default {
       ordering: {
         orderBy: 'default',
         order: 'ASC'
-      }
+      },
+      emundusStatus: []
     }
   },
   created() {
@@ -345,6 +338,7 @@ export default {
       }
     }
 
+    this.getEmundusStatus();
     this.getRankings();
     this.getOtherHierarchyRankings();
     this.addFilterEventListener();
@@ -457,6 +451,16 @@ export default {
 
       this.getRankings();
     },
+
+    /**
+     *
+     */
+    getEmundusStatus() {
+      fileService.getAllStatus().then((response) => {
+        this.emundusStatus = response.states
+      });
+    },
+
     /**
      * @param resetPage {boolean} - if true, reset the page to 1, needed when changing the number of files per page
      * @returns {Promise<void>}
@@ -499,17 +503,16 @@ export default {
     },
     onChangeRankValue(file) {
       if (file.locked == 1) {
-        if (!response.status) {
-          Swal.fire({
-            title: this.translate('COM_EMUNDUS_RANKING_UPDATE_RANKING_ERROR_TITLE'),
-            text: this.translate('COM_EMUNDUS_RANKING_UPDATE_RANKING_ERROR_LOCKED'),
-            icon: 'error',
-            customClass: {
-              title: 'em-swal-title',
-              confirmButton: 'em-swal-confirm-button',
-            },
-          });
-        }
+        Swal.fire({
+          title: this.translate('COM_EMUNDUS_RANKING_UPDATE_RANKING_ERROR_TITLE'),
+          text: this.translate('COM_EMUNDUS_RANKING_UPDATE_RANKING_ERROR_LOCKED'),
+          icon: 'error',
+          customClass: {
+            title: 'em-swal-title',
+            confirmButton: 'em-swal-confirm-button',
+          },
+        });
+        this.getRankings();
       } else {
         this.subRankingKey++;
         rankingService.updateRanking(file.id, file.rank, this.hierarchy_id).then(response => {
@@ -669,6 +672,15 @@ export default {
           }
         }
       }
+    },
+    getStatusTag(statusId) {
+      let status = this.emundusStatus.find(s => s.step == statusId);
+
+      if (status) {
+        return `<span class="label label-${status.class}">${status.value}</span>`;
+      }
+
+      return '';
     }
   },
   computed: {
@@ -771,14 +783,6 @@ export default {
 
     }
 
-    table#unranked-files {
-      border-top: 0;
-
-      thead {
-        display: none;
-      }
-    }
-
     #my-ranking-list, #other-ranking-lists {
       border-radius: 4px;
       border-spacing: 0;
@@ -850,11 +854,11 @@ export default {
     cursor: grabbing;
   }
 
-  .dragging #ranked-files tbody {
+  .dragging #ranked-files tbody#ranked-files-list {
     border: 4px dashed var(--main-200);
   }
 
-  .dragging #unranked-files td {
+  .dragging #unranked-files-list td {
     background-color: var(--grey-bg-color) !important;
   }
 }
