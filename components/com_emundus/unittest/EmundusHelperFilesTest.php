@@ -127,6 +127,27 @@ class EmundusHelperFilesTest extends TestCase {
 		$query_condition = $this->h_files->writeQueryWithOperator('ecc.fnum', ['24343432323', '24334234234234'], 'superior');
 		$this->assertSame('(ecc.fnum > \'24343432323\' AND ecc.fnum > \'24334234234234\')', $query_condition, 'Write query with superior operator and multiple values for default filter type works');
 
+        $query_condition = $this->h_files->writeQueryWithOperator('ecc.fnum', '24343432323', 'superior');
+        $this->assertSame('ecc.fnum > \'24343432323\'', $query_condition, 'Write query with superior operator and single for default filter type works');
+
+        $query_condition = $this->h_files->writeQueryWithOperator('ecc.fnum', ['24343432323', '24334234234234'], 'inferior');
+        $this->assertSame('(ecc.fnum < \'24343432323\' AND ecc.fnum < \'24334234234234\')', $query_condition, 'Write query with inferior operator and multiple values for default filter type works');
+
+        $query_condition = $this->h_files->writeQueryWithOperator('ecc.fnum', '24343432323', 'inferior');
+        $this->assertSame('ecc.fnum < \'24343432323\'', $query_condition, 'Write query with inferior operator and single for default filter type works');
+
+        $query_condition = $this->h_files->writeQueryWithOperator('ecc.fnum', ['24343432323', '24334234234234'], 'superior_or_equal');
+        $this->assertSame('(ecc.fnum >= \'24343432323\' AND ecc.fnum >= \'24334234234234\')', $query_condition, 'Write query with superior_or_equal operator and multiple values for default filter type works');
+
+        $query_condition = $this->h_files->writeQueryWithOperator('ecc.fnum', '24343432323', 'superior_or_equal');
+        $this->assertSame('ecc.fnum >= \'24343432323\'', $query_condition, 'Write query with superior_or_equal operator and single for default filter type works');
+
+        $query_condition = $this->h_files->writeQueryWithOperator('ecc.fnum', ['24343432323', '24334234234234'], 'inferior_or_equal');
+        $this->assertSame('(ecc.fnum <= \'24343432323\' AND ecc.fnum <= \'24334234234234\')', $query_condition, 'Write query with inferior_or_equal operator and multiple values for default filter type works');
+
+        $query_condition = $this->h_files->writeQueryWithOperator('ecc.fnum', '24343432323', 'inferior_or_equal');
+        $this->assertSame('ecc.fnum <= \'24343432323\'', $query_condition, 'Write query with inferior_or_equal operator and single for default filter type works');
+
         $query_condition = $this->h_files->writeQueryWithOperator('ecc.id', '1', 'superior');
         $this->assertSame('ecc.id > \'1\'', $query_condition, 'Write query with superior operator and single for default filter type works');
 
