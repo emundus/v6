@@ -320,7 +320,7 @@ class EmundusModelApplicationTest extends TestCase
 	public function testgetAttachmentsProgress() {
 		$db = Factory::getDbo();
 
-		$this->assertSame($this->m_application->getAttachmentsProgress([]), 0, 'getAttachmentsProgress should return 0 if application file does not exist');
+		$this->assertSame($this->m_application->getAttachmentsProgress([]), 0.0, 'getAttachmentsProgress should return 0 if application file does not exist');
 
 		$program = $this->h_sample->createSampleProgram();
 		$campaign = $this->h_sample->createSampleCampaign($program);
