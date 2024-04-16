@@ -2,7 +2,7 @@
 <extension type="plugin" version="2.5" method="upgrade" group="system">
     <name>Emundus - Send attachments to eParapheur</name>
     <creationDate>Jaunary 2024</creationDate>
-    <version>0.0.1</version>
+    <version>1.39.0</version>
     <author>eMundus</author>
     <authorEmail>dev@emundus.fr</authorEmail>
     <authorUrl>https://www.emundus.fr</authorUrl>

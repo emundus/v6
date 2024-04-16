@@ -124,6 +124,7 @@ class PlgFabrik_Cronemunduseparapheur extends PlgFabrik_Cron {
 									'attachment_id' => $file_request->attachment_id,
 									'filename' => $nom,
 									'can_be_deleted' => 0,
+									'can_be_viewed' => 1,
 									'size' => filesize($path),
 								];
 								$upload = (object) $upload;
