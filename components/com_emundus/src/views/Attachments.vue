@@ -146,7 +146,7 @@
       </section>
     </div>
 
-    <modal id="edit-modal" name="edit" :resizable="true" :draggable="true"
+    <modal id="edit-modal" :name="modalName" :resizable="true" :draggable="true"
         styles="display:flex;flex-direction:column;justify-content:center;align-items:center;">
       <div class="modal-head em-w-100 em-flex-row em-flex-space-between">
         <div id="actions-left" class="em-flex-row em-flex-start"><span>{{ selectedAttachment.filename }}</span></div>
@@ -181,7 +181,7 @@
       </div>
       <transition :name="slideTransition" @before-leave="beforeLeaveSlide">
         <div v-if="!modalLoading && displayedUser.user_id && displayedFnum" class="modal-body em-flex-row" :class="{'only-preview': onlyPreview}">
-          <AttachmentPreview @fileNotFound="canDownload = false" @canDownload="canDownload = true" :user="displayedUser.user_id"></AttachmentPreview>
+          <AttachmentPreview @fileNotFound="canDownload = false" @canDownload="canDownload = true" :user="displayedUser.user_id" :default-attachment="selectedAttachment"></AttachmentPreview>
           <AttachmentEdit v-if="displayEdit" :fnum="displayedFnum" :is-displayed="!onlyPreview" @closeModal="closeModal" @saveChanges="updateAttachment" @update-displayed="toggleOnlyPreview"></AttachmentEdit>
         </div>
       </transition>
@@ -239,6 +239,7 @@ export default {
   mixins: [mixin],
   data() {
     return {
+      modalName: 'edit-' + Math.random().toString(36).substring(2, 9),
       loading: true,
       attachments: [],
       categories: {},
@@ -631,13 +632,14 @@ export default {
 	  },
     openModal(attachment) {
       if (this.displayedUser.user_id && this.displayedFnum) {
-        this.$modal.show('edit');
+
+        this.$modal.show(this.modalName);
         this.selectedAttachment = attachment;
         this.$store.dispatch('attachment/setSelectedAttachment', attachment);
       }
     },
     closeModal() {
-      this.$modal.hide('edit');
+      this.$modal.hide(this.modalName);
       this.selectedAttachment = {};
       this.$store.dispatch('attachment/setSelectedAttachment', {});
     },

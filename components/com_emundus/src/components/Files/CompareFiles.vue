@@ -31,7 +31,7 @@
             <div class="scrollable">
               <slot name="before-default-file-tabs">
               </slot>
-              <application-tabs :key="defaultFile.id" :user="user" :file="defaultFile" :access="access" :tabs="tabs"></application-tabs>
+              <application-tabs id="comparison-wrapper-left" :key="defaultFile.id" :user="user" :file="defaultFile" :access="access" :tabs="tabs"></application-tabs>
             </div>
           </div>
           <div v-if="selectedFileToCompareWith == null" id="files-to-compare-with-container" class="right-view em-w-50">
@@ -64,7 +64,7 @@
             <div class="scrollable">
               <slot name="before-compare-file-tabs">
               </slot>
-              <application-tabs :key="selectedFileToCompareWith.id" :user="user" :file="selectedFileToCompareWith" :access="access" :tabs="tabs"></application-tabs>
+              <application-tabs id="comparison-wrapper-right" :key="selectedFileToCompareWith.id" :user="user" :file="selectedFileToCompareWith" :access="access" :tabs="tabs"></application-tabs>
             </div>
         </div>
       </div>
@@ -132,6 +132,9 @@ export default {
     }
   },
   created() {
+    const root = document.querySelector(':root');
+    root.style.setProperty('--attachment-width', '50%');
+
     usersService.getAllAccessRights().then((response) => {
       this.access = response.data;
     });
@@ -243,4 +246,24 @@ export default {
 #files-to-compare-with-container {
   height: calc(100% - 54px);
 }
+
+#comparison-wrapper-left, #comparison-wrapper-right {
+  #edit-modal, .v--modal-box.v--modal {
+    width: 50vw !important;
+    height: calc(100% - 108px) !important;
+    top: 108px !important;
+  }
+
+  #edit-modal .modal-body, #em-attachment-preview {
+    width: 100% !important;
+  }
+}
+
+#comparison-wrapper-right {
+  #edit-modal.v--modal-overlay, #edit-modal .v--modal-box.v--modal {
+    right: 0 !important;
+    left: unset !important;
+  }
+}
+
 </style>
