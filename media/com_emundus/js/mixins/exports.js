@@ -51,10 +51,6 @@ function export_excel(fnums, letter) {
     });
     options = JSON.stringify(options);
 
-    if ($('#view').val() == 'evaluation') {
-        methode = 0;
-    }
-
     $('#data').hide();
 
     $('div').remove('#chargement');
@@ -866,9 +862,14 @@ function generate_letter() {
                             '<tbody>';
 
                         files.forEach(file => {
+                            const regex = /images\/emundus\/files\//g;
+                            const subst = `index.php?option=com_emundus&task=getfile&u=images/emundus/files/`;
+
+                            const getfile_url = file.url.replace(regex, subst);
+
                             table += '<tr id="' + file.upload + '">' +
                                 '<td>' + file.filename +
-                                '<a id="em_download_doc_' + file.upload + '" target="_blank" class="em-p-8" href="' + file.url + file.filename + '">' +
+                                '<a id="em_download_doc_' + file.upload + '" target="_blank" class="em-p-8" href="' + getfile_url + file.filename + '">' +
                                 '<span class="material-icons">file_download</span>' +
                                 '</a>' +
                                 '</td>' +

@@ -232,7 +232,7 @@ class plgUserEmundus extends JPlugin
                     }
                 }
             }
-            if (JPluginHelper::getPlugin('authentication', 'externallogin') && ($option !== 'com_emundus' && $controller !== 'users' && $task !== 'adduser')) {
+            elseif (JPluginHelper::getPlugin('authentication', 'externallogin') && ($option !== 'com_emundus' && $controller !== 'users' && $task !== 'adduser')) {
                 $username = explode(' ', $user["name"]);
                 $name = '';
                 if (count($username) > 2) {
@@ -247,7 +247,7 @@ class plgUserEmundus extends JPlugin
                 $details['emundus_profile']['lastname'] = $name;
                 $details['firstname'] = $username[0];
             }
-            if (JPluginHelper::getPlugin('authentication', 'miniorangesaml') && ($option !== 'com_emundus' && $controller !== 'users' && $task !== 'adduser')) {
+            elseif (JPluginHelper::getPlugin('authentication', 'miniorangesaml') && ($option !== 'com_emundus' && $controller !== 'users' && $task !== 'adduser')) {
                 $o_user = JFactory::getUser($user['id']);
 
                 $username = explode(' ', $user["name"]);
@@ -273,6 +273,21 @@ class plgUserEmundus extends JPlugin
 
                 $eMConfig = JComponentHelper::getParams('com_emundus');
                 $profile = $eMConfig->get('saml_default_profile', 1000);
+            }
+            elseif($option !== 'com_emundus' && $controller !== 'users' && $task !== 'adduser') {
+	            $username = explode(' ', $user["name"]);
+	            $name = '';
+	            if (count($username) > 2) {
+		            for ($i = 1; $i > count($username); $i++) {
+			            $name .= ' ' . $username[$i];
+		            }
+	            } else {
+		            $name = $username[1];
+	            }
+
+	            $details['name'] = $name;
+	            $details['emundus_profile']['lastname'] = $name;
+	            $details['firstname'] = $username[0];
             }
         }
 
