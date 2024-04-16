@@ -97,66 +97,70 @@ class EmundusModelMessenger extends JModelList
 		return $messages;
     }
 
-    function sendMessage($message, $fnum){
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+    function sendMessage($message, $fnum) {
+		$result = new stdClass();
 
         $user = JFactory::getSession()->get('emundusUser');
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $notifications_on_send = $eMConfig->get('messenger_notifications_on_send', '1');
 
-        $m_messages = new EmundusModelMessages;
-        $m_files = new EmundusModelFiles;
+	    require_once (JPATH_SITE . '/components/com_emundus/models/files.php');
+	    $m_files = new EmundusModelFiles;
 
         $fnum_detail = $m_files->getFnumInfos($fnum);
 
-        try {
-            $query->select('id')
-                ->from($db->quoteName('#__emundus_chatroom'))
-                ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
-            $db->setQuery($query);
-            $chatroom = $db->loadResult();
+		if (!empty($fnum_detail)) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
 
-            if(empty($chatroom)){
-                $chatroom = $m_messages->createChatroom($fnum);
-            }
+			try {
+				$query->select('id')
+					->from($db->quoteName('#__emundus_chatroom'))
+					->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+				$db->setQuery($query);
+				$chatroom = $db->loadResult();
 
-            $query->insert($db->quoteName('#__messages'))
-                ->set($db->quoteName('user_id_from') . ' = ' . $db->quote($user->id))
-                ->set($db->quoteName('folder_id') . ' = 2')
-                ->set($db->quoteName('date_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
-                ->set($db->quoteName('state') . ' = 0')
-                ->set($db->quoteName('message') . ' = ' . $db->quote($message))
-                ->set($db->quoteName('page') . ' = ' . $db->quote($chatroom));
-            $db->setQuery($query);
-            $db->execute();
+				if(empty($chatroom)){
+					require_once (JPATH_SITE . '/components/com_emundus/models/messages.php');
+					$m_messages = new EmundusModelMessages;
+					$chatroom = $m_messages->createChatroom($fnum);
+				}
 
-            $new_message = $db->insertid();
+				if (!empty($chatroom)) {
+					$query->insert($db->quoteName('#__messages'))
+						->set($db->quoteName('user_id_from') . ' = ' . $db->quote($user->id))
+						->set($db->quoteName('folder_id') . ' = 2')
+						->set($db->quoteName('date_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+						->set($db->quoteName('state') . ' = 0')
+						->set($db->quoteName('message') . ' = ' . $db->quote($message))
+						->set($db->quoteName('page') . ' = ' . $db->quote($chatroom));
+					$db->setQuery($query);
+					$db->execute();
 
-            $notify_applicant = 0;
-            if($fnum_detail['applicant_id'] != $user->id){
-                $notify_applicant = 1;
-            }
+					$new_message = $db->insertid();
 
-            $message = $this->getMessageById($new_message);
+					$notify_applicant = 0;
+					if($fnum_detail['applicant_id'] != $user->id){
+						$notify_applicant = 1;
+					}
 
-            try {
-                if ($notifications_on_send == 1) {
-                    $this->notifyByMail($fnum,$notify_applicant);
-                }
-            } catch (Exception $e) {
-                JLog::add('component/com_emundus_messages/models/messages | Error when try to notify by mail : '. $user->id . preg_replace("/[\r\n]/"," ",$e->getMessage()), JLog::ERROR, 'com_emundus');
-                return $message;
-            }
+					$result = $this->getMessageById($new_message);
 
-            return $message;
-        } catch (Exception $e){
-            JLog::add('component/com_emundus_messages/models/messages | Error when try to get messages associated to user : '. $user->id . ' with query : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return new stdClass();
-        }
+					try {
+						if ($notifications_on_send == 1) {
+							$this->notifyByMail($fnum, $notify_applicant);
+						}
+					} catch (Exception $e) {
+						JLog::add('component/com_emundus_messages/models/messages | Error when try to notify by mail : '. $user->id . preg_replace("/[\r\n]/"," ",$e->getMessage()), JLog::ERROR, 'com_emundus');
+					}
+				}
+			} catch (Exception $e) {
+				JLog::add('component/com_emundus_messages/models/messages | Error when try to get messages associated to user : '. $user->id . ' with query : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		return $result;
     }
 
     function getMessageById($id){
@@ -415,7 +419,7 @@ class EmundusModelMessenger extends JModelList
         return $moved;
     }
 
-    function notifyByMail($applicant_fnum,$notify_applicant = 0) {
+    function notifyByMail($applicant_fnum, $notify_applicant = 0) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
@@ -491,7 +495,7 @@ class EmundusModelMessenger extends JModelList
                 ->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
                 ->leftJoin($db->quoteName('#__emundus_users_assoc', 'eua').' ON '.$db->quoteName('eua.fnum').' LIKE ' . $db->quoteName('cc.fnum'))
                 ->innerJoin($db->quoteName('#__users', 'u').' ON '.$db->quoteName('u.id').' = '.$db->quoteName('eua.user_id'))
-                ->where($db->quoteName('cc.fnum').' LIKE '.$db->quote($chatroom->fnum))
+                ->where($db->quoteName('cc.fnum').' LIKE '.$db->quote($applicant_fnum))
                 ->group($db->quoteName('cc.fnum'));
             $db->setQuery($query);
             $users_associated = $db->loadColumn();
@@ -502,6 +506,18 @@ class EmundusModelMessenger extends JModelList
 
             // Merge all users list and add the list of users to notify defined in the messenger configuration
             $users_to_send = array_filter(array_unique(array_merge($users_associated_programs,$groups_associated,$users_associated,$notify_users)));
+
+            // Check groups to notify
+            if (!empty($notify_groups)) {
+                $query->clear()
+                    ->select('DISTINCT user_id')
+                    ->from('#__emundus_groups')
+                    ->where('gr.group_id IN ('.$notify_groups.')');
+                $db->setQuery($query);
+                $users_notify_groups = $db->loadColumn();
+
+                $users_to_send = array_filter(array_unique(array_merge($users_notify_groups,$users_to_send)));
+            }
 
             // If no users found to notify send to coordinators
             if (empty($users_to_send)) {

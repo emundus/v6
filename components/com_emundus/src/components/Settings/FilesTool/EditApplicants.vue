@@ -2,12 +2,17 @@
   <div class="em-settings-menu">
     <div class="em-w-80" v-if="!loading">
 
-      <div class="form-group em-flex-center em-w-100 em-mb-16" v-for="(param, index) in params" :key="index">
-        <label :for="'param_' + index">{{ translate(param.label) }}</label>
-        <select v-if="param.options" class="dropdown-toggle w-select" :id="'param_' + index" v-model="param.value" style="margin-bottom: 0" @change="saveEmundusParam(param)">
+      <div class="form-group em-flex-center em-w-100 em-mb-16" v-for="(param) in displayedParams" :key="param.param">
+          <label :for="'param_' + param.param" class="flex items-center">
+            {{ translate(param.label) }}
+            <span v-if="param.helptext" class="material-icons-outlined ml-2" @click="displayHelp(param.helptext)">help_outline</span>
+          </label>
+
+
+        <select v-if="param.options" class="dropdown-toggle w-select" :id="'param_' + param.param" v-model="param.value" style="margin-bottom: 0" @change="saveEmundusParam(param)">
           <option v-for="option in param.options" :key="option.value" :value="option.value">{{ translate(option.label) }}</option>
         </select>
-        <input v-else type="text" class="form-control" :id="'param_' + index" v-model="param.value" :maxlength="param.maxlength" style="margin-bottom: 0" @change="saveEmundusParam(param)">
+        <input v-else type="text" class="form-control" :id="'param_' + param.param" v-model="param.value" :maxlength="param.maxlength" style="margin-bottom: 0" @change="saveEmundusParam(param)">
       </div>
 
     </div>
@@ -20,6 +25,7 @@
 import axios from "axios";
 
 import mixin from "com_emundus/src/mixins/mixin";
+import Swal from "sweetalert2";
 
 const qs = require("qs");
 
@@ -80,7 +86,29 @@ export default {
         this.$emit('updateLastSaving',this.formattedDate('','LT'));
       });
     },
+
+    displayHelp(message) {
+      Swal.fire({
+        title: this.translate("COM_EMUNDUS_SWAL_HELP_TITLE"),
+        text: this.translate(message),
+        showCancelButton: false,
+        confirmButtonText: this.translate("COM_EMUNDUS_SWAL_OK_BUTTON"),
+        reverseButtons: true,
+        customClass: {
+          title: 'em-swal-title',
+          confirmButton: 'em-swal-confirm-button',
+          actions: "em-swal-single-action",
+        },
+      });
+    }
   },
+	computed: {
+		displayedParams() {
+			return Object.values(this.params).filter((param) => {
+				return param.displayed;
+			});
+		}
+	}
 };
 </script>
 <style scoped>

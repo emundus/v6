@@ -802,7 +802,7 @@ class EmundusModelProfile extends JModelList {
 
             $query = 'SELECT DISTINCT (esc.profile_id) AS pid,
                         jesp.label, jesp.description, jesp.published, jesp.schoolyear, jesp.candidature_start, jesp.candidature_end, jesp.menutype, 
-                        jesp.acl_aro_groups, jesp.is_evaluator, jesp.evaluation_start, jesp.evaluation_end, jesp.evaluation, jesp.status, jesp.class, null AS step, null AS phase, null AS lbl
+                        jesp.acl_aro_groups, jesp.is_evaluator, jesp.evaluation_start, jesp.evaluation_end, jesp.evaluation, jesp.status, jesp.class, null AS step, 1 AS phase, null AS lbl
 
                         FROM  #__emundus_setup_campaigns AS esc 
                         LEFT JOIN #__emundus_setup_profiles AS jesp ON jesp.id = esc.profile_id

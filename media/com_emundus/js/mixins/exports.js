@@ -51,10 +51,6 @@ function export_excel(fnums, letter) {
     });
     options = JSON.stringify(options);
 
-    if ($('#view').val() == 'evaluation') {
-        methode = 0;
-    }
-
     $('#data').hide();
 
     $('div').remove('#chargement');
@@ -290,7 +286,7 @@ function generate_csv(json, eltJson, objJson, options, objclass, letter) {
     }
 }
 
-function export_pdf(fnums,ids) {
+function export_pdf(fnums, ids, default_export = false) {
     var start = 0;
     var limit = 2;
     var forms = 0;
@@ -305,9 +301,6 @@ function export_pdf(fnums,ids) {
 
     var elements = null;
 
-    /// if at least one is checked --> forms = 1
-    forms = $('[id^=felts] input:checked').length > 0 ?  1 : 0;
-
     let pdf_elements = {
         profiles: [],
         tables: [],
@@ -315,67 +308,85 @@ function export_pdf(fnums,ids) {
         elements: []
     };
 
-    /// save all profiles
-    let profiles = [];
-    $('[id^=felts]').each(function (flt) {
-        if($(this).find($('[id^=emundus_elm_]')).is(':checked') == true) {
-            let id = $(this).attr('id').split('felts')[1];
-            pdf_elements['profiles'].push(id);
-        }
-    });
+    if (default_export === false) {
+        /// if at least one is checked --> forms = 1
+        forms = $('[id^=felts] input:checked').length > 0 ?  1 : 0;
 
-    /// save all tables
-    let tables = [];
-    $('[id^=emundus_table_]').each(function (flt) {
-        if($(this).find($('[id^=emundus_elm_]')).is(':checked') == true) {
-            let id = $(this).attr('id').split('emundus_table_')[1];
-            pdf_elements['tables'].push(id);
-        }
-    });
-
-    /// save all groups
-    let groups = [];
-    $('[id^=emundus_grp_]').each(function (flt) {
-        if($(this).find($('[id^=emundus_elm_]')).is(':checked') == true) {
-            let id = $(this).attr('id').split('emundus_grp_')[1];
-            pdf_elements['groups'].push(id);
-        }
-    });
-
-    let eltsObject = $('[id^=emundus_elm_]');
-    let eltsArray = Array.prototype.slice.call(eltsObject);
-    eltsArray.forEach(elt => {
-        if (elt.checked == true) {
-            pdf_elements['elements'].push(elt.value);
-        }
-    });
-
-    $('#aelts input:checked').each(function() {
-        attach_checked.push($(this).val());
-        attachment = 0;
-    });
-
-    if ($('#em-ex-forms').is(":checked"))
-        forms = 1;
-    if ($('#em-ex-attachment').is(":checked"))
-        attachment = 1;
-    if ($('#em-ex-assessment').is(":checked"))
-        assessment = 1;
-    if ($('#em-ex-decision').is(":checked"))
-        decision = 1;
-    if ($('#em-ex-admission').is(":checked"))
-        admission = 1;
-    if ($('#em-add-header').is(":checked")) {
-        $('#em-export-opt option:selected').each(function() {
-            options.push($(this).val());
+        /// save all profiles
+        let profiles = [];
+        $('[id^=felts]').each(function (flt) {
+            if($(this).find($('[id^=emundus_elm_]')).is(':checked') == true) {
+                let id = $(this).attr('id').split('felts')[1];
+                pdf_elements['profiles'].push(id);
+            }
         });
+
+        /// save all tables
+        let tables = [];
+        $('[id^=emundus_table_]').each(function (flt) {
+            if($(this).find($('[id^=emundus_elm_]')).is(':checked') == true) {
+                let id = $(this).attr('id').split('emundus_table_')[1];
+                pdf_elements['tables'].push(id);
+            }
+        });
+
+        /// save all groups
+        let groups = [];
+        $('[id^=emundus_grp_]').each(function (flt) {
+            if($(this).find($('[id^=emundus_elm_]')).is(':checked') == true) {
+                let id = $(this).attr('id').split('emundus_grp_')[1];
+                pdf_elements['groups'].push(id);
+            }
+        });
+
+        let eltsObject = $('[id^=emundus_elm_]');
+        let eltsArray = Array.prototype.slice.call(eltsObject);
+        eltsArray.forEach(elt => {
+            if (elt.checked == true) {
+                pdf_elements['elements'].push(elt.value);
+            }
+        });
+
+        $('#aelts input:checked').each(function() {
+            attach_checked.push($(this).val());
+            attachment = 0;
+        });
+
+        if ($('#em-ex-forms').is(":checked"))
+            forms = 1;
+        if ($('#em-ex-attachment').is(":checked"))
+            attachment = 1;
+        if ($('#em-ex-assessment').is(":checked"))
+            assessment = 1;
+        if ($('#em-ex-decision').is(":checked"))
+            decision = 1;
+        if ($('#em-ex-admission').is(":checked"))
+            admission = 1;
+        if ($('#em-add-header').is(":checked")) {
+            $('#em-export-opt option:selected').each(function() {
+                options.push($(this).val());
+            });
+        } else {
+            options.push("0");
+        }
+
+        $('#data').hide();
+
+        $('div').remove('#chargement');
     } else {
-        options.push("0");
+        forms = 1;
+        options = [
+            "aid",
+            "afnum",
+            "aemail",
+            "aapp-sent",
+            "adoc-print",
+            "tags",
+            "status",
+            "upload"
+        ];
     }
 
-    $('#data').hide();
-
-    $('div').remove('#chargement');
 
     var swal_container_class = '';
     var swal_popup_class = '';
@@ -851,9 +862,14 @@ function generate_letter() {
                             '<tbody>';
 
                         files.forEach(file => {
+                            const regex = /images\/emundus\/files\//g;
+                            const subst = `index.php?option=com_emundus&task=getfile&u=images/emundus/files/`;
+
+                            const getfile_url = file.url.replace(regex, subst);
+
                             table += '<tr id="' + file.upload + '">' +
                                 '<td>' + file.filename +
-                                '<a id="em_download_doc_' + file.upload + '" target="_blank" class="em-p-8" href="' + file.url + file.filename + '">' +
+                                '<a id="em_download_doc_' + file.upload + '" target="_blank" class="em-p-8" href="' + getfile_url + file.filename + '">' +
                                 '<span class="material-icons">file_download</span>' +
                                 '</a>' +
                                 '</td>' +

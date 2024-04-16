@@ -1,11 +1,13 @@
 {
   "sitename": {
+    "displayed": true,
     "component": "joomla",
     "label": "COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SITENAME",
     "param": "sitename",
     "maxlength": 50
   },
   "list_limit": {
+    "displayed": true,
     "component": "joomla",
     "label": "COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_LIST_LIMIT",
     "param": "list_limit",
@@ -50,9 +52,11 @@
     "value": 20
   },
   "display_other_user_editing_same_file": {
+    "displayed": true,
     "component": "emundus",
     "label": "COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_OTHER_USER_EDITING_SAME_FILE",
     "param": "display_other_user_editing_same_file",
+    "helptext": "COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_OTHER_USER_EDITING_SAME_FILE_HELPTEXT",
     "options": [
       {
         "label": "JNO",
@@ -64,5 +68,51 @@
       }
     ],
     "value": 1
+  },
+  "attachment_storage": {
+    "displayed": false,
+    "component": "emundus",
+    "label": "COM_EMUNDUS_MODULES_ATTACHMENT_STORAGE",
+    "param": "attachment_storage",
+    "options": [
+      {
+        "label": "JNO",
+        "value": 0
+      },
+      {
+        "label": "JYES",
+        "value": 1
+      }
+    ]
+  },
+  "external_storage_ged_alfresco_integration": {
+    "displayed": false,
+    "component": "emundus",
+    "label": "COM_EMUNDUS_MODULES_EXTERNAL_STORAGE_GED_ALFRESCO_INTEGRATION",
+    "param": "external_storage_ged_alfresco_integration",
+    "options": [
+      {
+        "label": "JNO",
+        "value": 0
+      },
+      {
+        "label": "JYES",
+        "value": 1
+      }
+    ]
+  },
+  "external_storage_ged_alfresco_site": {
+    "displayed": false,
+    "component": "emundus",
+    "label": "COM_EMUNDUS_MODULES_EXTERNAL_STORAGE_GED_ALFRESCO_SITE",
+    "param": "external_storage_ged_alfresco_site",
+    "maxlength": 255
+  },
+  "external_storage_ged_alfresco_max_level": {
+    "displayed": false,
+    "component": "emundus",
+    "label": "COM_EMUNDUS_MODULES_EXTERNAL_STORAGE_GED_ALFRESCO_MAX_LEVEL",
+    "param": "external_storage_ged_alfresco_max_level",
+    "maxlength": 50
   }
 }

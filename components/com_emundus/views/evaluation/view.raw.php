@@ -53,6 +53,7 @@ class EmundusViewEvaluation extends JViewLegacy
 		$menu_params = $menu->getParams($current_menu->id);
 
 		$columnSupl = explode(',', $menu_params->get('em_other_columns'));
+        $show_evaluator = $menu_params->get('em_show_evaluator',1);
 		$jinput = JFactory::getApplication()->input;
 		$layout = $jinput->getString('layout', 0);
 
@@ -116,8 +117,12 @@ class EmundusViewEvaluation extends JViewLegacy
 				// Do not display photos unless specified in params
 				$displayPhoto = false;
 
-				// get applications files
-				$users = $m_evaluation->getUsers($cfnum);
+                if(!empty($m_evaluation->fnum_assoc) || !empty($m_evaluation->code)) {
+                    // get applications files
+                    $users = $m_evaluation->getUsers($cfnum);
+                } else {
+                    $users = array();
+                }
 
 				// Get elements from model and proccess them to get an easy to use array containing the element type
 				$elements = $m_evaluation->getElementsVar();
@@ -141,7 +146,9 @@ class EmundusViewEvaluation extends JViewLegacy
 				$defaultElements = $this->get('DefaultElements');
 				$datas = array(array('check' => '#', 'name' => JText::_('COM_EMUNDUS_FILES_APPLICATION_FILES'), 'c.status' => JText::_('COM_EMUNDUS_STATUS')));
 				$fl = array();
-                $fl['jos_emundus_evaluations.user'] = JText::_('COM_EMUNDUS_EVALUATION_EVALUATOR');
+                if ($show_evaluator) {
+                    $fl['jos_emundus_evaluations.user'] = JText::_('COM_EMUNDUS_EVALUATION_EVALUATOR');
+                }
 			    // Get eval crieterion
 				if (count($defaultElements) > 0) {
 					foreach ($defaultElements as $key => $elt) {
@@ -240,7 +247,7 @@ class EmundusViewEvaluation extends JViewLegacy
 
 							} elseif ($key == 'name' || $key == 'status_class' || $key == 'step' || $key == 'code') {
 								continue;
-							} elseif ($key == 'evaluator') {
+                            } elseif ($key == 'evaluator' && $show_evaluator) {
 
 								if ($formid > 0 && !empty($value)) {
 
@@ -307,6 +314,9 @@ class EmundusViewEvaluation extends JViewLegacy
 							}
 						}
 						$datas[$line['fnum']->val.'-'.$i] = $line;
+                        if (!$show_evaluator) {
+                            unset($datas[$line['fnum']->val.'-'.$i]['evaluator']);
+                        }
 						$i++;
 					}
 

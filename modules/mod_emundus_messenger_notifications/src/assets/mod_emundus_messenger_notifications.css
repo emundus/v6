@@ -7,9 +7,8 @@
 }
 
 .notifications__counter{
-  position: absolute;
-  top: 12px;
-  right: 164px;
+  position: static;
+  margin-bottom: 24px;
   background: var(--red-500);
   padding: 8px;
   border-radius: 50%;
@@ -36,6 +35,9 @@ span[class*="material-icons"].em-messages-modal {
   .notifications__counter {
     left: 52px;
     right: inherit;
+    position: absolute;
+    top: 12px;
+    margin-bottom: 0;
   }
 }
 
@@ -43,5 +45,10 @@ span[class*="material-icons"].em-messages-modal {
   .notifications__counter {
     left: 102px;
     right: inherit;
+    position: absolute;
+    top: 12px;
+    margin-bottom: 0;
   }
+
+
 }

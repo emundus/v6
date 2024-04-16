@@ -185,4 +185,9 @@ class EmundusModelSettingsTest extends TestCase
 		$this->assertFalse($this->m_settings->updateEmundusParam('joomla', 'unallowed_parameter_name', 'test'), 'La modification ne peut pas se faire si le paramètre n\'est pas autorisé, ou n\'existe pas');
 		$this->assertFalse($this->m_settings->updateEmundusParam('emundus', 'addpipe_api_key', 'test'), 'La modification de la clé API Addpipe n\'est pas autorisée et devrait donc renvoyer false');
 	}
+
+	public function testGetFavicon() {
+		$favicon = $this->m_settings->getFavicon();
+		$this->assertNotEmpty($favicon, 'La récupération du favicon fonctionne');
+	}
 }

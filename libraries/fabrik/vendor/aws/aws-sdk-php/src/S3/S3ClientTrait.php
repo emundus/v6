@@ -1,7 +1,6 @@
 <?php
 namespace Aws\S3;
 
-use Aws\Api\Parser\PayloadParserTrait;
 use Aws\CommandInterface;
 use Aws\Exception\AwsException;
 use Aws\HandlerList;
@@ -9,7 +8,6 @@ use Aws\ResultInterface;
 use Aws\S3\Exception\S3Exception;
 use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Promise\RejectedPromise;
-use Psr\Http\Message\ResponseInterface;
 
 /**
  * A trait providing S3-specific functionality. This is meant to be used in
@@ -17,8 +15,6 @@ use Psr\Http\Message\ResponseInterface;
  */
 trait S3ClientTrait
 {
-    use PayloadParserTrait;
-
     /**
      * @see S3ClientInterface::upload()
      */
@@ -217,37 +213,13 @@ trait S3ClientTrait
         return $handler($command)
             ->then(static function (ResultInterface $result) {
                 return $result['@metadata']['headers']['x-amz-bucket-region'];
-            }, function (AwsException $e) {
-                $response = $e->getResponse();
+            }, static function (AwsException $exception) {
+                $response = $exception->getResponse();
                 if ($response === null) {
-                    throw $e;
+                    throw $exception;
                 }
-
-                if ($e->getAwsErrorCode() === 'AuthorizationHeaderMalformed') {
-                    $region = $this->determineBucketRegionFromExceptionBody(
-                        $response
-                    );
-                    if (!empty($region)) {
-                        return $region;
-                    }
-                    throw $e;
-                }
-
                 return $response->getHeaderLine('x-amz-bucket-region');
             });
-    }
-
-    private function determineBucketRegionFromExceptionBody(ResponseInterface $response)
-    {
-        try {
-            $element = $this->parseXml($response->getBody(), $response);
-            if (!empty($element->Region)) {
-                return (string)$element->Region;
-            }
-        } catch (\Exception $e) {
-            // Fallthrough on exceptions from parsing
-        }
-        return false;
     }
 
     /**

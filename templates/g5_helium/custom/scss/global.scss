@@ -126,6 +126,10 @@ p,
   padding-top: 40px !important;
 }
 
+.mon-profil .plg-databasejoin.span12 .chzn-container.chzn-container-single {
+  width: 100% !important;
+}
+
 #g-container-main .g-container {
   padding: 0 20px;
 }
@@ -240,6 +244,11 @@ div#frame.outline {
   &:hover {
     text-decoration: none;
   }
+}
+
+
+.view-article div[itemprop="articleBody"] a:hover:not(.btn) {
+  text-decoration: none;
 }
 
 /* HOMEPAGE */
@@ -459,7 +468,7 @@ div#frame.outline {
       display: flex;
       flex-direction: row;
       justify-content: flex-end;
-      align-items: center;
+      align-items: center !important;
 
       .platform-content {
         margin: 0 0 0 16px;
@@ -490,6 +499,7 @@ div#frame.outline {
     align-items: center;
     transition: all 0.3s ease-in-out;
     max-height: 40px;
+    left: 70px;
   }
 }
 
@@ -594,9 +604,7 @@ footer#g-footer > .g-container {
   margin: auto auto 0 auto;
 
   a {
-    color: darken($link-regular, 10%);
-    text-decoration: underline;
-
+    color: $link-regular;
     &:hover {
       color: $link-hover;
     }
@@ -611,6 +619,13 @@ footer#g-footer > .g-container {
 }
 
 /*  FORMULAIRE INSCRIPTION */
+
+.view-registration.em-formRegistrationCenter a:not([class*="btn"]):not([class*="button"]):not([class*="chzn"]) {
+    text-decoration: underline;
+  &:hover {
+    text-decoration: none;
+  }
+}
 
 .view-registration, .view-login, .view-reset, .view-form.em-formRegistrationCenter {
   #g-navigation .g-container {
@@ -1357,6 +1372,14 @@ footer#g-footer > .g-container {
 
     tbody tr > td {
       color: var(--night-blue);
+
+      &:first-child {
+        width: auto !important;
+      }
+
+      select[multiple] {
+        width: auto;
+      }
     }
   }
 
@@ -1447,6 +1470,10 @@ footer#g-footer > .g-container {
   background: var(--neutral-200) !important;
 }
 
+.table-hover tbody tr:nth-child(2n) > td .sticker .circle {
+    background-color: var(--neutral-200);
+}
+
 .table-hover tbody tr,
 .table-hover tbody tr {
   a {
@@ -1463,6 +1490,26 @@ footer#g-footer > .g-container {
   cursor: pointer;
 }
 
+/* NEW STYLE */
+.view-list .fabrikFilterContainer .table.filtertable .fabrik_filter_container .input-append {
+  button.btn.calendarbutton {
+    height: 40px;
+    border-radius: 0 4px 4px 0 !important;
+    background: var(--neutral-0);
+    color: var(--neutral-900);
+    border: 1px solid #e0e0e5;
+
+    &:hover {
+      background: var(--neutral-100);
+    }
+  }
+  input[id*="range"].fabrik_filter {
+    border-radius: 4px 0 0 4px !important;
+  }
+
+}
+
+/* OLD STYLE */
 .view-list .table .fabrikFilterContainer .fabrikDateListFilterRange button.btn.calendarbutton {
   height: 40px;
   border-radius: 0 4px 4px 0 !important;
@@ -1844,7 +1891,6 @@ tr.fabrikFilterContainer {
 
 .fabrikForm .plg-calc span {
   border: none !important;
-  padding: 15px 0;
 }
 
 .form-actions .row-fluid .span4 .btn-group .register {
@@ -3512,6 +3558,9 @@ div#em-appli-block {
 
     .comment-name, .comment-date a {
       color: var(--neutral-900);
+      &:hover, &:active, &:focus {
+        text-decoration: none;
+      }
     }
 
     .list-group-item .ctext {
@@ -3522,7 +3571,7 @@ div#em-appli-block {
       color: var(--night-blue);
     }
 
-    .em-list-status-date {
+    .mic-info.comment-date {
       padding: 10px 0;
     }
 
@@ -3887,6 +3936,15 @@ div#em-appli-block {
     left: 237px;
     pointer-events: none;
     border-bottom-right-radius: 14px;
+    mask-image: url('/modules/mod_emundus_campaign/assets/fond-clair.svg');
+    -webkit-mask-image: url('/modules/mod_emundus_campaign/assets/fond-clair.svg');
+    background: var(--em-profile-color);
+    mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-position: center;
+    mask-size: contain;
+    -webkit-mask-size: contain;
   }
 }
 
@@ -3915,6 +3973,11 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
   z-index: 1;
 }
 
+/* CHOSEN */
+.chzn-container-multi .chzn-choices li.search-choice .search-choice-close:hover {
+  transition: inherit;
+}
+
 /* VIEW FORM - FORMULAIRE */
 
 .view-form:not(.com_emundus),
@@ -3939,7 +4002,7 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
   .span12 {
 
     /* INTRO FORMULAIRE */
-    .emundus-form {
+    &> .emundus-form, .mon-profil .emundus-form, div:not(.view-registration) > .emundus-form {
       margin-top: 0;
       margin-bottom: 64px;
       border-radius: var(--em-form-br-block) !important;
@@ -4162,6 +4225,18 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
   .fabrikLabel {
     color: var(--neutral-700);
     font-family: var(--em-coordinator-font);
+  }
+
+  ul {
+    padding-left: 20px;
+  }
+
+  a {
+    text-decoration: underline;
+    &:hover {
+        text-decoration: none;
+
+    }
   }
 }
 
@@ -5146,6 +5221,7 @@ screen and (max-height: 769px) {
 
     .emundus-form {
       margin-top: 0 !important;
+      padding-top: 0;
     }
   }
 
@@ -5437,7 +5513,7 @@ screen and (max-height: 769px) {
   #g-container-main {
     padding: 20px 20px 20px 20px;
   }
-  .gantry.view-form:not(.applicant-form) #g-container-main {
+  .gantry.view-form:not(.applicant-form):not(.view-registration):not(.mon-profil) #g-container-main {
     padding-right: 0;
   }
 }
@@ -6650,10 +6726,12 @@ tbody .el-table__row:nth-child(odd){
   display: flex;
   justify-content: center;
   align-items: center;
+  pointer-events: none;
   .selected-rows-tip__content{
     padding: 10px 12px;
     border-radius: 8px;
     background: var(--main-900);
+    pointer-events: all;
     span{
       color: var(--neutral-300);
     }
@@ -6798,4 +6876,19 @@ tbody .el-table__row:nth-child(odd){
 
 .emundus-form .p-6 {
   background: magenta !important;
+}
+
+/* MCE WYSIWYG COLOR PICKER */
+
+.mce-container-body.mce-abs-layout {
+  overflow: visible !important;
+}
+.mce-container .mce-textbox.mce-abs-layout-item.mce-last {
+  width: 60px !important;
+  height: 20px !important;
+}
+
+/* SUPPRESSION POPOVER FORM EVAL */
+.popover.fade.top.in {
+  display: none !important;
 }

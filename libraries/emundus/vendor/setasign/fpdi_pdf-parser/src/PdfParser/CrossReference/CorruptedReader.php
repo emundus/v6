@@ -4,7 +4,7 @@
  * This file is part of FPDI PDF-Parser
  *
  * @package   setasign\FpdiPdfParser
- * @copyright Copyright (c) 2021 Setasign GmbH & Co. KG (https://www.setasign.com)
+ * @copyright Copyright (c) 2023 Setasign GmbH & Co. KG (https://www.setasign.com)
  * @license   FPDI PDF-Parser Commercial Developer License Agreement (see LICENSE.txt file within this package)
  */
 
@@ -20,10 +20,15 @@ use setasign\Fpdi\PdfParser\Type\PdfTypeException;
  * Class CorruptedReader
  *
  * This class tries to get object numbers and their positions from the whole PDF content.
- * It doesn't uses a cross-reference at all.
+ * It doesn't use a cross-reference at all.
  */
 class CorruptedReader implements ReaderInterface
 {
+    /**
+     * @var int
+     */
+    protected $fileHeaderOffset = 0;
+
     /**
      * @var PdfParser
      */
@@ -43,11 +48,13 @@ class CorruptedReader implements ReaderInterface
      * CorruptedReader constructor.
      *
      * @param PdfParser $parser
+     * @param int $fileHeaderOffset
      * @throws CrossReferenceException
      * @throws PdfTypeException
      */
-    public function __construct(PdfParser $parser)
+    public function __construct(PdfParser $parser, $fileHeaderOffset = 0)
     {
+        $this->fileHeaderOffset = $fileHeaderOffset;
         $this->parser = $parser;
         $this->read();
     }
@@ -74,10 +81,10 @@ class CorruptedReader implements ReaderInterface
             $lastFound = 0;
             $lengthOfLastFound = ($bufferLen / 2);
             foreach ($match as $foundObj) {
-                $lastFound = $foundObj[0][1];
+                $lastFound = (int)$foundObj[0][1];
                 $lengthOfLastFound = \strlen($foundObj[0][0]);
-                $objectNumber = $foundObj[1][0];
-                $this->offsets[$objectNumber] = $start + $lastFound;
+                $objectNumber = (int)$foundObj[1][0];
+                $this->offsets[$objectNumber] = $start + $lastFound - $this->fileHeaderOffset;
             }
 
             $pos = \strpos($buffer, 'trailer');
@@ -128,7 +135,7 @@ class CorruptedReader implements ReaderInterface
     }
 
     /**
-     * Get the trailer related to this cross reference.
+     * Get the trailer related to this cross-reference.
      *
      * @return PdfDictionary
      */

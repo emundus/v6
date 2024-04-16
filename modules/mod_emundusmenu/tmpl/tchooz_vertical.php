@@ -77,7 +77,7 @@ defined('_JEXEC') or die;
 
     /*** Sublevel parent ***/
     ul.tchooz-vertical-toplevel > li.active.tchooz-vertical-item > a.item::before{
-        background: var(--neutral-900);
+        background: var(--em-profile-color);
         width: 3px;
         height: 100%;
         content: "";
@@ -117,7 +117,7 @@ defined('_JEXEC') or die;
 
     .g-menu-item.g-standard.tchooz-vertical-item.tchooz-vertical-logo.tchooz-vertical-item.tchooz-vertical-logo img {
         width: 30px;
-        height: fit-content;
+        height: 30px;
     }
 
     #g-navigation .g-main-nav .g-sublevel > li:not(:last-child) > .g-menu-item-container{
@@ -245,23 +245,14 @@ defined('_JEXEC') or die;
 
         <li class="g-menu-item g-standard tchooz-vertical-item">
             <a class="item" onclick="enableTitles()">
-                <img src="http://localhost/images/emundus/menus/menu.png" style="width: 30px">
+                <span class="material-icons-outlined" style="padding: 5px; font-size: 24px; color: black">menu</span>
                 <span class="image-title" style="display: block; opacity: 1;"><?php echo JText::_('MOD_EMUNDUSMENU_ITEM_MENU') ?></span>
             </a>
         </li>
 
         <?php
 
-        $target_dir = "images/custom/";
-        $filename = 'favicon';
-        $favicon = glob("{$target_dir}{$filename}.*");
-
-        if(file_exists(JPATH_SITE . '/' . $favicon[0])){
-            $favicon = JURI::base().'/' . $favicon[0];
-        } else {
-            $favicon = JURI::base().'/images/emundus/tchooz_favicon.png';
-        }
-        echo '<li class="g-menu-item g-standard tchooz-vertical-item tchooz-vertical-logo"><a class="item" title="'.JText::_('MOD_EMUNDUSMENU_HOME').'" href="'.$favicon_link.'"><img src="'.$favicon.'" alt="'.JText::_('MOD_EMUNDUSMENU_HOME').'"></a>
+        echo '<li class="g-menu-item g-standard tchooz-vertical-item tchooz-vertical-logo"><a class="item" title="'.JText::_('MOD_EMUNDUSMENU_HOME').'" href="'.$favicon_link.'"><img src="'.JURI::base().'/'.$favicon.'" alt="'.JText::_('MOD_EMUNDUSMENU_HOME').'"></a>
         </li>';
 
         if ($display_tchooz) :
@@ -546,15 +537,7 @@ defined('_JEXEC') or die;
                 jQuery("#footer-rgpd").css("padding-left", "280px");
                 jQuery("#g-container-main").css("padding-left", "280px");
                 jQuery("#header-a").css("opacity", "1");
-                jQuery(".logo").css("position", "absolute");
                 jQuery(".tchooz-vertical-logo").css("opacity", "0");
-
-                let elmnt = document.getElementById("g-top");
-                if(elmnt !== null) {
-                    jQuery(".logo").css("top", "-37px");
-                } else {
-                    jQuery(".logo").css("top", "7px");
-                }
             }
             setTimeout(() =>{
                 jQuery(".image-title").css("display","block");
@@ -623,7 +606,5 @@ defined('_JEXEC') or die;
         }
     });
 
-    window.onload = function () {
-        this.enableTitles(localStorage.getItem('menu'));
-    }
+    this.enableTitles(localStorage.getItem('menu'));
 </script>

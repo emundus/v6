@@ -338,6 +338,7 @@ die("<script>
 
     static function prepareElementParameters($plugin, $notempty = true, $attachementId = 0) {
 
+	    $plugin_no_required = ['display','panel'];
 		$plugin_to_setup = '';
         if ($plugin == 'nom' || $plugin == 'prenom' || $plugin == 'email') {
 	        $plugin_to_setup = $plugin;
@@ -415,7 +416,7 @@ die("<script>
             'validations' => array(),
         );
 
-        if($notempty && $plugin != 'display'){
+        if($notempty && !in_array($plugin, $plugin_no_required)){
             $params['validations'] = array(
                 'plugin' => array(
                     "notempty",
@@ -672,13 +673,25 @@ die("<script>
             $object = (object) [
                 'iso3' => 'EUR',
                 'minimal_value' => '0.00',
-                'maximal_value' => '10000.00',
+                'maximal_value' => '1000000.00',
                 'thousand_separator' => ' ',
                 'decimal_separator' => ',',
                 'decimal_numbers' => '2'
             ];
             $params['all_currencies_options']['all_currencies_options0'] = $object;
         }
+
+		if($plugin == 'emundus_phonenumber') {
+			$params['default_country'] = 'FR';
+		}
+
+	    if($plugin == 'panel'){
+		    $params['type'] = '1';
+		    $params['accordion'] = '0';
+		    $params['title'] = '';
+		    $params['store_in_db'] = 0;
+	    }
+
         return $params;
     }
 
@@ -713,8 +726,8 @@ die("<script>
 
         if ($plugin == 'email') {
             $label = array(
-                'fr' => 'Email',
-                'en' => 'Email',
+                'fr' => 'Adresse email',
+                'en' => 'Email address',
             );
         }
 
@@ -809,7 +822,8 @@ die("<script>
             $params['validations']['must_validate'][] = '0';
             $params['validations']['show_icon'][] = '1';
 
-            $query->update($db->quoteName('#__fabrik_elements'))
+            $query->clear()
+	            ->update($db->quoteName('#__fabrik_elements'))
                 ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
                 ->where($db->quoteName('id') . ' = ' . $db->quote($eid));
             $db->setQuery($query);

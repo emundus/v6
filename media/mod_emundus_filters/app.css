@@ -96,6 +96,10 @@ span.label[data-v-565be899] {
 	height: 42px;
 	overflow-y: auto;
 }
+.global-search-scope button {
+	white-space: break-spaces;
+	text-align: left;
+}
 #current-global-search {
 	border: none;
 	border-radius: 0;

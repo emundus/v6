@@ -173,10 +173,11 @@
   position: relative;
   z-index: 1;
   border-radius: 16px;
+  overflow: hidden;
+  min-height: 140px;
 }
 
 .profile_widget .profile_widget-container  {
-  opacity: 0.2;
   background: var(--em-profile-color);
   padding: 32px !important;
   margin: 0 !important;
@@ -193,15 +194,13 @@
   padding: var(--p-32);
   display: flex;
   flex-direction: column !important;
-  border: 1px solid var(--em-profile-color);
   border-radius: 16px;
   margin: 0 !important;
-
 }
 
 .profile_widget-text h1,
 .profile_widget-text h1 span {
-  color: var(--em-profile-color);
+  color: var(--neutral-0);
   font-family: var(--em-coordinator-font-title);
   font-size: var(--em-coordinator-h1);
   font-style: normal;
@@ -210,6 +209,70 @@
 }
 
 .profile_widget p {
-  color: var(--neutral-600);
+  color: var(--neutral-0);
   font-size: var(--em-coordinator-h6);
 }
+
+.profile_widget #background-shapes {
+  mask-image: url('/modules/mod_emundus_campaign/assets/fond-fonce.svg');
+  -webkit-mask-image: url('/modules/mod_emundus_campaign/assets/fond-fonce.svg');
+  background: var(--neutral-0);
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  mask-size: 500px;
+  -webkit-mask-size: 500px;
+  mask-origin: border-box;
+  -webkit-mask-origin: border-box;
+  mask-position: center;
+  -webkit-mask-position: center;
+  z-index: 3;
+  transform: rotate(180deg);
+  position: absolute;
+  left: 0;
+  opacity: 0.5;
+  height: 100%;
+  top: 0;
+  width: 463px !important;
+}
+
+.profile_widget-text-container {
+    margin-bottom: 0 !important;
+}
+
+.profile_widget-text-container #background-tchoozy {
+  mask-image: url('/media/com_emundus/images/tchoozy/complex-illustrations/tchoozy-gestionnaire.svg');
+  -webkit-mask-image: url('/media/com_emundus/images/tchoozy/complex-illustrations/tchoozy-gestionnaire.svg');
+  background: var(--neutral-0);
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  mask-size: 160px;
+  -webkit-mask-size: 160px;
+  mask-position: center;
+  -webkit-mask-position: center;
+  mask-origin: border-box;
+  -webkit-mask-origin: border-box;
+  z-index: 3;
+  position: absolute;
+  height: 100%;
+  bottom: 0;
+  opacity: 0.5;
+  right: 0;
+  top: 0;
+  width: 228px;
+}
+
+.profile_widget-desc {
+  max-width: 84%;
+  word-break: break-word;
+}
+
+@media all and (max-width: 959px) {
+  .profile_widget-text-container #background-tchoozy {
+    display: none;
+  }
+
+  .profile_widget #background-shapes {
+    display: none;
+  }
+}
+

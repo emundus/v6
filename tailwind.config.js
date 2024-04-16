@@ -7,6 +7,8 @@ module.exports = {
         "./modules/**/src/*.{html,js,php}",
         "./modules/**/tmpl/*.{html,js,php}",
         "./plugins/fabrik_element/**/*.{html,js,php}",
+        "./components/com_emundus/helpers/**/*.{html,js,php,vue}",
+        "./components/com_emundus/models/**/*.{html,js,php,vue}",
         "./components/com_emundus/src/**/*.{html,js,php,vue}",
         "./components/com_emundus/views/**/*.{html,js,php,vue}",
         "./components/com_fabrik/layouts/**/*.{html,js,php}",
@@ -15,6 +17,9 @@ module.exports = {
     safelist: [
         {
             pattern: /label-/
+        },
+        {
+            pattern: /(py|px|p)-/
         }
     ],
     theme: {

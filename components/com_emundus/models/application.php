@@ -469,8 +469,10 @@ class EmundusModelApplication extends JModelList
         $logsParams = array('created' => [$logsStd]);
         EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($row['fnum'], -7), $row['fnum'], 10, 'c', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 
+	    $now = EmundusHelperDate::getNow();
+
         $query = 'INSERT INTO `#__emundus_comments` (applicant_id, user_id, reason, date, comment_body, fnum)
-                VALUES('.$row['applicant_id'].','.$row['user_id'].','.$this->_db->Quote($row['reason']).',"'.date("Y.m.d H:i:s").'",'.$this->_db->Quote($row['comment_body']).','.$this->_db->Quote(@$row['fnum']).')';
+                VALUES('.$row['applicant_id'].','.$row['user_id'].','.$this->_db->Quote($row['reason']).',"'.$now.'",'.$this->_db->Quote($row['comment_body']).','.$this->_db->Quote(@$row['fnum']).')';
         $this->_db->setQuery($query);
 
         try {
@@ -1565,16 +1567,6 @@ class EmundusModelApplication extends JModelList
                     foreach ($groupes as $itemg) {
                         $g_params = json_decode($itemg->params);
 
-                        if (($allowed_groups !== true && !in_array($itemg->group_id, $allowed_groups)) || !EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, (int)$g_params->access)) {
-                            $forms .= '<fieldset class="em-personalDetail">
-											<h6 class="em-font-weight-400">' . JText::_($itemg->label) . '</h6>
-											<table class="em-restricted-group">
-												<thead><tr><td>' . JText::_('COM_EMUNDUS_CANNOT_SEE_GROUP') . '</td></tr></thead>
-											</table>
-										</fieldset>';
-                            continue;
-                        }
-
 	                    $query = $this->_db->getQuery(true);
 	                    $query->select('fe.id,fe.name,fe.label,fe.plugin,fe.params,fe.default,fe.eval')
 		                    ->from($this->_db->quoteName('#__fabrik_elements','fe'))
@@ -1583,15 +1575,24 @@ class EmundusModelApplication extends JModelList
 		                    ->where($this->_db->quoteName('fe.group_id') . ' = ' . $this->_db->quote($itemg->group_id))
 		                    ->order($this->_db->quoteName('fe.ordering'));
 
-                        try {
-                            $this->_db->setQuery($query);
-                            $elements = $this->_db->loadObjectList();
-                        } catch (Exception $e) {
-                            JLog::add('Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
-                            throw $e;
-                        }
+	                    try {
+		                    $this->_db->setQuery($query);
+		                    $elements = $this->_db->loadObjectList();
+	                    } catch (Exception $e) {
+		                    JLog::add('Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
+		                    throw $e;
+	                    }
 
-                        if (count($elements) > 0) {
+	                    if (count($elements) > 0) {
+	                        if (($allowed_groups !== true && !in_array($itemg->group_id, $allowed_groups)) || !EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, (int)$g_params->access)) {
+	                            $forms .= '<fieldset class="em-personalDetail">
+												<h6 class="em-font-weight-400">' . JText::_($itemg->label) . '</h6>
+												<table class="em-restricted-group mt-4 mb-4">
+													<thead><tr><td>' . JText::_('COM_EMUNDUS_CANNOT_SEE_GROUP') . '</td></tr></thead>
+												</table>
+											</fieldset>';
+	                            continue;
+	                        }
 
                             if ((int)$g_params->repeated === 1 || (int)$g_params->repeat_group_button === 1 || (int)$itemg->is_join === 1) {
 
@@ -1839,6 +1840,13 @@ class EmundusModelApplication extends JModelList
 													{
                                                         $elements[$j]->content = empty($elements[$j]->eval) ? $elements[$j]->default : $r_elt;
                                                         $elt = JText::_($elements[$j]->content);
+                                                    } elseif ($elements[$j]->plugin == 'calc') {
+	                                                    $elt = JText::_($r_elt);
+
+	                                                    $stripped = strip_tags($elt);
+	                                                    if ($stripped != $elt) {
+		                                                    $elt = strip_tags($elt, ['p', 'a', 'div', 'ul', 'li', 'br']);
+	                                                    }
                                                     } elseif ($elements[$j]->plugin == 'emundus_phonenumber') {
                                                         $elt = substr($r_elt, 2, strlen($r_elt));
                                                     } else {
@@ -1907,7 +1915,7 @@ class EmundusModelApplication extends JModelList
                                             }
 
                                             // Do not display elements with no value inside them.
-                                            if ($show_empty_fields == 0 && (trim($element->content) == '' || trim($element->content_id) == -1)) {
+                                            if ($show_empty_fields == 0 && (trim($element->content) == '' || trim($element->content_id) == -1) && $element->plugin != 'emundus_fileupload') {
                                                 continue;
                                             }
 
@@ -2113,7 +2121,13 @@ class EmundusModelApplication extends JModelList
                                                 $elt = substr($element->content, 2, strlen($element->content));
                                             }
                                             elseif ($element->plugin == 'textarea') {
-	                                            $elt = nl2br($element->content);
+                                                $params = json_decode($element->params);
+
+                                                if (!empty($params) && $params->use_wysiwyg == 1) {
+                                                    $elt = $element->content;
+                                                } else {
+                                                    $elt = nl2br($element->content);
+                                                }
                                             }
 											else
 											{
@@ -2545,7 +2559,7 @@ class EmundusModelApplication extends JModelList
                                                         $this->_db->setQuery($query);
                                                         $elt = JText::_($this->_db->loadResult());
                                                     }
-                                                } elseif (@$elements[$j]->plugin == 'cascadingdropdown') {
+                                                } elseif ($elements[$j]->plugin == 'cascadingdropdown') {
                                                     $params = json_decode($elements[$j]->params);
                                                     $cascadingdropdown_id = $params->cascadingdropdown_id;
                                                     $r1 = explode('___', $cascadingdropdown_id);
@@ -2586,7 +2600,7 @@ class EmundusModelApplication extends JModelList
                                                         $elt .= '<li>'.JText::_($val).'</li>';
                                                     }
                                                     $elt .= "</ul>";
-                                                } elseif ($elements[$j]->plugin == 'dropdown' || @$elements[$j] == 'radiobutton') {
+                                                } elseif ($elements[$j]->plugin == 'dropdown' || $elements[$j]->plugin == 'radiobutton') {
                                                     $params = json_decode($elements[$j]->params);
                                                     $index = array_search($r_elt, $params->sub_options->sub_values);
                                                     if (strlen($index) > 0) {
@@ -2612,8 +2626,15 @@ class EmundusModelApplication extends JModelList
                                                     $elt = ($r_elt == 1) ? JText::_("JYES") : JText::_("JNO");
                                                 } elseif ($elements[$j]->plugin == 'display') {
                                                     $elt = empty($elements[$j]->eval) ? $elements[$j]->default : $r_elt;
-                                                } elseif ($elements[$j]->plugin == 'emundus_phonenumber'){
-                                                    $elt = substr($r_elt, 2, strlen($r_elt));
+                                                } elseif ($elements[$j]->plugin == 'emundus_phonenumber') {
+	                                                $elt = substr($r_elt, 2, strlen($r_elt));
+                                                } else if ($elements[$j]->plugin == 'calc') {
+	                                                $elt = JText::_($r_elt);
+
+	                                                $stripped = strip_tags($elt);
+	                                                if ($stripped != $elt) {
+		                                                $elt = strip_tags($elt, ['p', 'a', 'div', 'ul', 'li', 'br']);
+	                                                }
                                                 } else {
                                                     $elt = JText::_($r_elt);
                                                 }
@@ -2622,7 +2643,18 @@ class EmundusModelApplication extends JModelList
                                                     if ($elements[$j]->plugin == 'display') {
                                                         $forms .= '<tr><td colspan="2" style="background-color: var(--neutral-200);"><span style="color: #000000;">' . (!empty($params->display_showlabel) && !empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '') . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">' . $elt . '</span></td></tr><br/>';
                                                     } elseif ($elements[$j]->plugin == 'textarea') {
-                                                        $forms .= '<tr><td colspan="2" style="background-color: var(--neutral-200);"><span style="color: #000000;">' .  (!empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '')  . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">    ' . JText::_($elt) . '</span></td></tr>';
+                                                        $forms .= '</table>';
+                                                        $forms .= '<div style="width: 93.5%;padding: 8px 16px;">';
+                                                        $forms .= '<div style="width: 100%; padding: 4px 8px;background-color: #F3F3F3;color: #000000;border: solid 1px #A4A4A4;border-bottom: unset;font-size: 12px">' .  (!empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '')  . '</div>';
+
+                                                        $params = json_decode($elements[$j]->params);
+                                                        if (!empty($params) && $params->use_wysiwyg == 1) {
+                                                            $forms .= '<div style="width: 100%; padding: 4px 8px;color: #000000;border: solid 1px #A4A4A4;font-size: 12px">' . preg_replace('/<br\s*\/?>/','',JText::_($elt)) . '</div>';
+                                                        } else {
+                                                            $forms .= '<div style="width: 100%; padding: 4px 8px;color: #000000;border: solid 1px #A4A4A4;font-size: 12px">' . JText::_($elt) . '</div>';
+                                                        }
+                                                        $forms .= '</div>';
+                                                        $forms .= '<table class="pdf-forms">';
                                                     } else {
                                                         $forms .= '<tr><td colspan="1" style="background-color: var(--neutral-200);"><span style="color: #000000;">' . (!empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '') . '</span></td> <td> ' . (($elements[$j]->plugin != 'field') ? JText::_($elt) : $elt) . '</td></tr>';
                                                     }
@@ -2817,6 +2849,13 @@ class EmundusModelApplication extends JModelList
                                                 }
                                             } elseif ($element->plugin == 'emundus_phonenumber'){
                                                 $elt = substr($element->content, 2, strlen($element->content));
+                                            } else if ($element->plugin == 'calc') {
+	                                            $elt = JText::_($element->content);
+
+	                                            $stripped = strip_tags($elt);
+	                                            if ($stripped != $elt) {
+		                                            $elt = strip_tags($elt, ['p', 'a', 'div', 'ul', 'li', 'br']);
+	                                            }
                                             } else {
                                                 $elt = JText::_($element->content);
                                             }
@@ -2824,7 +2863,18 @@ class EmundusModelApplication extends JModelList
                                             if ($element->plugin == 'display') {
                                                 $forms .= '<tr><td colspan="2"><span style="color: #000000;">' . (!empty($params->display_showlabel) && !empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '') . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">' . $elt . '</span></td></tr><br/>';
                                             } elseif ($element->plugin == 'textarea') {
-                                                $forms .= '<tr><td colspan="2" style="background-color: var(--neutral-200);"><span style="color: #000000;">' .  (!empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '')  . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">  ' . JText::_($elt) . '</span></td></tr>';
+                                                $params = json_decode($element->params);
+
+                                                $forms .= '</table>';
+	                                            $forms .= '<div style="width: 93.5%;padding: 8px 16px;">';
+	                                            $forms .= '<div style="width: 100%; padding: 4px 8px;background-color: #F3F3F3;color: #000000;border: solid 1px #A4A4A4;border-bottom: unset;font-size: 12px">' .  (!empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '')  . '</div>';
+                                                if (!empty($params) && $params->use_wysiwyg == 1) {
+                                                    $forms .= '<div style="width: 100%; padding: 4px 8px;color: #000000;border: solid 1px #A4A4A4;font-size: 12px">' . preg_replace('/<br\s*\/?>/','',JText::_($elt)) . '</div>';
+                                                } else {
+                                                    $forms .= '<div style="width: 100%; padding: 4px 8px;color: #000000;border: solid 1px #A4A4A4;font-size: 12px">' . JText::_($elt) . '</div>';
+                                                }
+	                                            $forms .= '</div>';
+	                                            $forms .= '<table class="pdf-forms">';
                                             } else {
                                                 $forms .= '<tr><td colspan="1" style="background-color: var(--neutral-200);"><span style="color: #000000;">' . (!empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '') . '</span></td> <td> ' . (($element->plugin != 'field') ? JText::_($elt) : $elt) . '</td></tr>';
                                             }
@@ -2854,6 +2904,7 @@ class EmundusModelApplication extends JModelList
             $forms .= $list_upload_files;
 			$forms .= '</div>';
         }
+		
         return $forms;
     }
 
@@ -3259,9 +3310,7 @@ class EmundusModelApplication extends JModelList
             $query = "SELECT DISTINCT eu.*, sa.value 
                         FROM #__emundus_uploads as eu
                         LEFT JOIN #__emundus_setup_attachments as sa ON sa.id = eu.attachment_id
-                        LEFT JOIN #__emundus_setup_attachment_profiles as sap ON sap.id  = (
-                        SELECT id FROM #__emundus_setup_attachment_profiles sap2 WHERE sap2.attachment_id = sa.id and sap2.profile_id IN (".implode(',',$profiles_by_campaign).")
-                        )
+                        LEFT JOIN #__emundus_setup_attachment_profiles as sap ON sap.attachment_id = sa.id AND sap.profile_id IN (".implode(',',$profiles_by_campaign).")
                         WHERE fnum like ".$this->_db->quote($fnum);
 
             if (isset($attachment_id) && !empty($attachment_id)){
@@ -3305,7 +3354,10 @@ class EmundusModelApplication extends JModelList
 
     public function getAccessFnum($fnum)
     {
-        $query = "SELECT jecc.fnum, jesg.label as gname, jea.*, jesa.label as aname FROM #__emundus_campaign_candidature as jecc
+        $access = [];
+
+        if (!empty($fnum)) {
+            $query = "SELECT jecc.fnum, jesg.label as gname, jea.*, jesa.label as aname FROM #__emundus_campaign_candidature as jecc
                     LEFT JOIN #__emundus_setup_campaigns as jesc on jesc.id = jecc.campaign_id
                     LEFT JOIN #__emundus_setup_programmes as jesp on jesp.code = jesc.training
                     LEFT JOIN #__emundus_setup_groups_repeat_course as jesgrc on jesgrc.course = jesp.code
@@ -3314,24 +3366,24 @@ class EmundusModelApplication extends JModelList
                     LEFT JOIN #__emundus_setup_actions as jesa on jesa.id = jea.action_id
                     WHERE jecc.fnum like '".$fnum."' and jesa.status = 1 order by jecc.fnum, jea.group_id, jea.action_id";
 
-        try
-        {
-            $db = $this->getDbo();
-            $db->setQuery($query);
-            $res = $db->loadAssocList();
-            $access = array();
-            foreach($res as $r)
+            try
             {
-                $access['groups'][$r['group_id']]['gname'] = $r['gname'];
-                $access['groups'][$r['group_id']]['isAssoc'] = false;
-                $access['groups'][$r['group_id']]['isACL'] = true;
-                $access['groups'][$r['group_id']]['actions'][$r['action_id']]['aname'] = $r['aname'];
-                $access['groups'][$r['group_id']]['actions'][$r['action_id']]['c'] = $r['c'];
-                $access['groups'][$r['group_id']]['actions'][$r['action_id']]['r'] = $r['r'];
-                $access['groups'][$r['group_id']]['actions'][$r['action_id']]['u'] = $r['u'];
-                $access['groups'][$r['group_id']]['actions'][$r['action_id']]['d'] = $r['d'];
-            }
-            $query = "SELECT jeacl.group_id, jeacl.action_id as acl_action_id, jeacl.c as acl_c, jeacl.r as acl_r, jeacl.u as acl_u, jeacl.d as acl_d,
+                $db = $this->getDbo();
+                $db->setQuery($query);
+                $res = $db->loadAssocList();
+
+                foreach($res as $r)
+                {
+                    $access['groups'][$r['group_id']]['gname'] = $r['gname'];
+                    $access['groups'][$r['group_id']]['isAssoc'] = false;
+                    $access['groups'][$r['group_id']]['isACL'] = true;
+                    $access['groups'][$r['group_id']]['actions'][$r['action_id']]['aname'] = $r['aname'];
+                    $access['groups'][$r['group_id']]['actions'][$r['action_id']]['c'] = $r['c'];
+                    $access['groups'][$r['group_id']]['actions'][$r['action_id']]['r'] = $r['r'];
+                    $access['groups'][$r['group_id']]['actions'][$r['action_id']]['u'] = $r['u'];
+                    $access['groups'][$r['group_id']]['actions'][$r['action_id']]['d'] = $r['d'];
+                }
+                $query = "SELECT jeacl.group_id, jeacl.action_id as acl_action_id, jeacl.c as acl_c, jeacl.r as acl_r, jeacl.u as acl_u, jeacl.d as acl_d,
                         jega.fnum, jega.action_id, jega.c, jega.r, jega.u, jega.d, jesa.label as aname,
                         jesg.label as gname
                         FROM jos_emundus_acl as jeacl
@@ -3340,67 +3392,64 @@ class EmundusModelApplication extends JModelList
                         LEFT JOIN jos_emundus_group_assoc as jega on jega.group_id=jesg.id
                         WHERE  jega.fnum like ".$db->quote($fnum)." and jesa.status = 1
                         ORDER BY jega.fnum, jega.group_id, jega.action_id";
-            $db->setQuery($query);
-            $res = $db->loadAssocList();
-            foreach($res as $r)
-            {
-                $ovverideAction = ($r['acl_action_id'] == $r['action_id']) ? true : false;
-                if(isset($access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]))
+                $db->setQuery($query);
+                $res = $db->loadAssocList();
+                foreach($res as $r)
                 {
-                    $access['groups'][$r['group_id']]['isAssoc'] = true;
-                    $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['c'] += ($ovverideAction) ? (($r['acl_c']==-2 || $r['c']==-2) ? -2 : max($r['acl_c'], $r['c'])) : $r['acl_c'];
-                    $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['r'] += ($ovverideAction) ? (($r['acl_r']==-2 || $r['r']==-2) ? -2 : max($r['acl_r'], $r['r'])) : $r['acl_r'];
-                    $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['u'] += ($ovverideAction) ? (($r['acl_u']==-2 || $r['u']==-2) ? -2 : max($r['acl_u'], $r['u'])) : $r['acl_u'];
-                    $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['d'] += ($ovverideAction) ? (($r['acl_d']==-2 || $r['d']==-2) ? -2 : max($r['acl_d'], $r['d'])) : $r['acl_d'];
+                    $overrideAction = ($r['acl_action_id'] == $r['action_id']) ? true : false;
+                    if(isset($access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]))
+                    {
+                        $access['groups'][$r['group_id']]['isAssoc'] = true;
+                        $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['c'] += ($overrideAction) ? (($r['acl_c']==-2 || $r['c']==-2) ? -2 : max($r['acl_c'], $r['c'])) : $r['acl_c'];
+                        $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['r'] += ($overrideAction) ? (($r['acl_r']==-2 || $r['r']==-2) ? -2 : max($r['acl_r'], $r['r'])) : $r['acl_r'];
+                        $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['u'] += ($overrideAction) ? (($r['acl_u']==-2 || $r['u']==-2) ? -2 : max($r['acl_u'], $r['u'])) : $r['acl_u'];
+                        $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['d'] += ($overrideAction) ? (($r['acl_d']==-2 || $r['d']==-2) ? -2 : max($r['acl_d'], $r['d'])) : $r['acl_d'];
+                    }
+                    else
+                    {
+                        $access['groups'][$r['group_id']]['gname'] = $r['gname'];
+                        $access['groups'][$r['group_id']]['isAssoc'] = true;
+                        $access['groups'][$r['group_id']]['isACL'] = false;
+                        $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['aname'] = $r['aname'];
+                        $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['c'] = ($overrideAction) ? (($r['acl_c']==-2 || $r['c']==-2) ? -2 : max($r['acl_c'], $r['c'])) : $r['acl_c'];
+                        $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['r'] = ($overrideAction) ? (($r['acl_r']==-2 || $r['r']==-2) ? -2 : max($r['acl_r'], $r['r'])) : $r['acl_r'];
+                        $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['u'] = ($overrideAction) ? (($r['acl_u']==-2 || $r['u']==-2) ? -2 : max($r['acl_u'], $r['u'])) : $r['acl_u'];
+                        $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['d'] = ($overrideAction) ? (($r['acl_d']==-2 || $r['d']==-2) ? -2 : max($r['acl_d'], $r['d'])) : $r['acl_d'];
+                    }
                 }
-                else
-                {
-                    $access['groups'][$r['group_id']]['gname'] = $r['gname'];
-                    $access['groups'][$r['group_id']]['isAssoc'] = true;
-                    $access['groups'][$r['group_id']]['isACL'] = false;
-                    $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['aname'] = $r['aname'];
-                    $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['c'] = ($ovverideAction) ? (($r['acl_c']==-2 || $r['c']==-2) ? -2 : max($r['acl_c'], $r['c'])) : $r['acl_c'];
-                    $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['r'] = ($ovverideAction) ? (($r['acl_r']==-2 || $r['r']==-2) ? -2 : max($r['acl_r'], $r['r'])) : $r['acl_r'];
-                    $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['u'] = ($ovverideAction) ? (($r['acl_u']==-2 || $r['u']==-2) ? -2 : max($r['acl_u'], $r['u'])) : $r['acl_u'];
-                    $access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['d'] = ($ovverideAction) ? (($r['acl_d']==-2 || $r['d']==-2) ? -2 : max($r['acl_d'], $r['d'])) : $r['acl_d'];
-                }
-            }
 
-            $query = "SELECT jeua.*, ju.name as uname, jesa.label as aname
+                $query = "SELECT jeua.*, ju.name as uname, jesa.label as aname
                         FROM #__emundus_users_assoc as jeua
                         LEFT JOIN #__users as ju on ju.id = jeua.user_id
                         LEFT JOIN   #__emundus_setup_actions as jesa on jesa.id = jeua.action_id
                         where  jeua.fnum like '".$fnum."' and jesa.status = 1
                         ORDER BY jeua.fnum, jeua.user_id, jeua.action_id";
-            $db->setQuery($query);
-            $res = $db->loadAssocList();
-            foreach($res as $r)
-            {
-                if(isset($access['groups'][$r['user_id']]['actions'][$r['action_id']]))
+                $db->setQuery($query);
+                $res = $db->loadAssocList();
+                foreach($res as $r)
                 {
-                    $access['users'][$r['user_id']]['actions'][$r['action_id']]['c'] += $r['c'];
-                    $access['users'][$r['user_id']]['actions'][$r['action_id']]['r'] += $r['r'];
-                    $access['users'][$r['user_id']]['actions'][$r['action_id']]['u'] += $r['u'];
-                    $access['users'][$r['user_id']]['actions'][$r['action_id']]['d'] += $r['d'];
+                    if(isset($access['groups'][$r['user_id']]['actions'][$r['action_id']])) {
+                        $access['users'][$r['user_id']]['actions'][$r['action_id']]['c'] += $r['c'];
+                        $access['users'][$r['user_id']]['actions'][$r['action_id']]['r'] += $r['r'];
+                        $access['users'][$r['user_id']]['actions'][$r['action_id']]['u'] += $r['u'];
+                        $access['users'][$r['user_id']]['actions'][$r['action_id']]['d'] += $r['d'];
+                    } else {
+                        $access['users'][$r['user_id']]['uname'] = $r['uname'];
+                        $access['users'][$r['user_id']]['actions'][$r['action_id']]['aname'] = $r['aname'];
+                        $access['users'][$r['user_id']]['actions'][$r['action_id']]['c'] = $r['c'];
+                        $access['users'][$r['user_id']]['actions'][$r['action_id']]['r'] = $r['r'];
+                        $access['users'][$r['user_id']]['actions'][$r['action_id']]['u'] = $r['u'];
+                        $access['users'][$r['user_id']]['actions'][$r['action_id']]['d'] = $r['d'];
+                    }
                 }
-                else
-                {
-                    $access['users'][$r['user_id']]['uname'] = $r['uname'];
-                    $access['users'][$r['user_id']]['actions'][$r['action_id']]['aname'] = $r['aname'];
-                    $access['users'][$r['user_id']]['actions'][$r['action_id']]['c'] = $r['c'];
-                    $access['users'][$r['user_id']]['actions'][$r['action_id']]['r'] = $r['r'];
-                    $access['users'][$r['user_id']]['actions'][$r['action_id']]['u'] = $r['u'];
-                    $access['users'][$r['user_id']]['actions'][$r['action_id']]['d'] = $r['d'];
-                }
-
             }
-            return $access;
+            catch(Exception $e)
+            {
+                error_log($e->getMessage(), 0);
+            }   
         }
-        catch(Exception $e)
-        {
-            error_log($e->getMessage(), 0);
-            return false;
-        }
+
+        return $access;
     }
 
     public function getActions()
@@ -4095,7 +4144,7 @@ class EmundusModelApplication extends JModelList
                 $db->setQuery($query);
                 $stored = $db->loadAssoc();
 
-                if (count($stored) > 0) {
+                if (!empty($stored)) {
                     // update form data
                     $parent_id = $stored['id'];
                     unset($stored['id']);
@@ -4571,20 +4620,18 @@ class EmundusModelApplication extends JModelList
                 return $redirect;
             }
 
-            $query->select(['id','link'])
+            $query->select('CONCAT(link,"&Itemid=", id) as link')
                 ->from($db->quoteName('#__menu'))
                 ->where($db->quoteName('published').'=1 AND '.$db->quoteName('menutype').' LIKE '.$db->quote($user->menutype).' AND '.$db->quoteName('link').' <> "" AND '.$db->quoteName('link').' <> "#"')
                 ->order($db->quoteName('lft').' ASC');
 
             try {
                 $db->setQuery($query);
-                $res = $db->loadObject();
-                return $res->link.'&Itemid='.$res->id;
+	            return $db->loadResult();
             } catch (Exception $e) {
                 JLog::add('Error getting first page of application at model/application in query : '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
                 return $redirect;
             }
-
         }
     }
 
@@ -4776,20 +4823,27 @@ class EmundusModelApplication extends JModelList
 			{
 				$res = $db->loadAssoc();
 
-				$elements = array_map(function($arr) {
-					if (is_numeric($arr)) {
-						return (empty(floatval($arr)));
-					} else {
-						if ($arr == "0000-00-00 00:00:00") {
-							return true;
+				$at_least_one_visible = false;
+				foreach($res as $element_name => $element_value) {
+					$current_fb_element = array_filter($elements, function($el) use ($element_name) {return $el->name === $element_name;});
+					$current_fb_element = current($current_fb_element);
+
+					if (!empty($current_fb_element)) {
+						if ($current_fb_element->plugin === 'yesno' && !is_null($element_value) && $element_value !== '') {
+							$at_least_one_visible = true;
 						}
 
-						return empty($arr);
+						if (is_numeric($element_value)) {
+							if (!empty(floatval($element_value))) {
+								$at_least_one_visible = true;
+							}
+						} else if ($element_value !== "0000-00-00 00:00:00" && !empty($element_value)) {
+							$at_least_one_visible = true;
+						}
 					}
-				}, $res);
+				}
 
-				$elements = array_filter($elements, function($el) {return $el === false;});
-				return !empty($elements);
+				return $at_least_one_visible;
 			}
 			elseif ($db->getNumRows() > 1)
 			{
@@ -5344,8 +5398,18 @@ class EmundusModelApplication extends JModelList
                     break;
                 case 'checkbox':
                     $elm = array();
-                    $index = array_intersect(json_decode(@$value), $params->sub_options->sub_values);
-                    foreach ($index as $sub_value) {
+	                $index = $params->sub_options->sub_values;
+	                if (!empty($value)) {
+		                $value_as_array = json_decode($value, true);
+
+		                if (!empty($value_as_array)) {
+			                $index = array_intersect($value_as_array, $params->sub_options->sub_values);
+		                } else {
+			                $index = $params->sub_options->sub_values;
+		                }
+	                }
+
+					foreach ($index as $sub_value) {
                         $key = array_search($sub_value,$params->sub_options->sub_values);
                         $elm[] = ' - ' . JText::_($params->sub_options->sub_labels[$key]);
                     }
@@ -5356,7 +5420,7 @@ class EmundusModelApplication extends JModelList
                     $index = array_search($value, $params->sub_options->sub_values, false);
 
                     if ($index !== false) {
-						if($value == 0){
+						if($value == '0'){
 							$elt = '';
 						} else {
 							$elt = JText::_($params->sub_options->sub_labels[$index]);

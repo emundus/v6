@@ -19,8 +19,8 @@
         }
     ],
     "require": {
-        "phpoffice/phpspreadsheet": "^1.26.0",
-        "phpoffice/phpword": "^0.18.3",
+        "phpoffice/phpspreadsheet": "1.26.0",
+        "phpoffice/phpword": "1.2.0",
         "setasign/fpdf": "1.8.*",
         "setasign/fpdi": "^2.3",
         "tecnickcom/tcpdf": "6.3.*",
