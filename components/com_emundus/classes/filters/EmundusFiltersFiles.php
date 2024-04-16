@@ -551,6 +551,39 @@ class EmundusFiltersFiles extends EmundusFilters
                 ];
             }
 
+            if ($config['filter_users']) {
+                $query->clear()
+                    ->select('ju.id as value, CONCAT(ju.name, " ", ju.email ) as label')
+                    ->from('#__users as ju')
+                    ->leftJoin('#__emundus_users_assoc as jeua ON ju.id = jeua.user_id')
+                    ->leftJoin('#__emundus_campaign_candidature AS jecc ON jeua.fnum = jecc.fnum')
+                    ->leftJoin('#__emundus_setup_campaigns AS jesc ON jecc.campaign_id = jesc.id')
+                    ->leftJoin('#__emundus_setup_programmes AS jesp ON jesc.training = jesp.code')
+                    ->where('jeua.action_id = 1')
+                    ->andWhere('jecc.campaign_id IN ' . '(' . implode(',', $this->user_campaigns) . ') OR jesp.id IN ' . '(' . implode(',', $this->user_programs) . ')')
+                    ->andWhere('ju.block = 0')
+                    ->group('ju.id');
+
+                try {
+                    $db->setQuery($query);
+                    $users = $db->loadAssocList();
+                } catch (Exception $e) {
+                    JLog::add('Failed to get users associated to profiles that current' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
+                }
+
+                $this->applied_filters[] = [
+                    'uid' => 'users_assoc',
+                    'id' => 'users_assoc',
+                    'label' => JText::_('MOD_EMUNDUS_FILTERS_USERS_ASSOC'),
+                    'type' => 'select',
+                    'values' => $users,
+                    'value' => ['all'],
+                    'default' => true,
+                    'available' => true,
+                    'order' => $config['filter_users_order']
+                ];
+            }
+
             if (!empty($config['more_filter_elements']))
 			{
 				$config['more_filter_elements'] = json_decode($config['more_filter_elements'], true);
