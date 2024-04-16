@@ -76,7 +76,7 @@
 
 
                 <multiselect
-                    v-model="$data.timeZoneLand"
+                    v-model="$data.baseTimeZone"
                     label="label"
                     track-by="value"
                     :options="$data.timeZoneLand"
@@ -230,7 +230,8 @@ export default {
     YNButtons: [],
 
     selectedOffset: null,
-    timeZoneLand:[],
+    timeZoneLand:null,
+    baseTimeZone: null,
 
     form: {
       content: ''
@@ -346,27 +347,14 @@ export default {
           method: "get",
           url: 'index.php?option=com_emundus&controller=settings&task=getTimeZone',
         }).then((rep) => {
-          console.log('jojo')
-          console.log(rep.data.all);
+          this.baseTimeZone = rep.data.baseData;
           this.timeZoneLand= rep.data.data1;
-
         });
 
         resolve(true);
       });
     },
-    selectLand(event){
-      let aTimeZone = event.target.value;
-      this.selectedOffset = aTimeZone;
-      this.ListOfOptions = this.timeZoneCity[aTimeZone];
-      this.seletedLand = aTimeZone;
-    },
-    finalSelect(event, land){
-
-      let result = land + '/' + event.target.value;
-      //console.log(result);
-      //TODO push into adminisatrator
-    }
+    // todo handling of the select
   },
   computed: {},
   watch: {}
