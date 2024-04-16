@@ -1351,7 +1351,6 @@ class EmundusControllerUsers extends JControllerLegacy {
 
         fclose($csvFile);
 
-        // Télécharger le fichier CSV
         header('Content-type: text/csv');
         header('Content-Disposition: attachment; filename=' . $csvFileName);
         header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');

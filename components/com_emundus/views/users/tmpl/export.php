@@ -1,8 +1,20 @@
 <?php
 
 $modelUsers = new EmundusModelUsers();
+$jinput = JFactory::getApplication()->input;
 
-$userDetails = $modelUsers->getColumnsForm();
+$users = $jinput->getString('user');
+
+if($users == 'em-check-all')
+{
+    $allUsers = $modelUsers->getUsers(0,0);
+    $userDetails = $modelUsers->getAllInformationsToExport($allUsers[0]->id);
+
+}
+else
+{
+    $userDetails = $modelUsers->getAllInformationsToExport($users);
+}
 
 ?>
 
