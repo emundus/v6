@@ -35,5 +35,17 @@ export default {
                 message: e.message
             };
         }
+    },
+    async getAllStatus() {
+        try {
+            const response = await client().get('index.php?option=com_emundus&controller=files&task=getstate');
+
+            return response.data;
+        } catch (e) {
+            return {
+                status: false,
+                message: e.message
+            };
+        }
     }
 }

@@ -841,13 +841,22 @@ class EmundusControllerFiles extends JControllerLegacy
      *
      */
     public function getstate() {
-        $m_files = new EmundusModelFiles();
-        $states = $m_files->getAllStatus();
+        $response = ['status' => false, 'msg'=> JText::_('ACCESS_DENIED')];
+        $user = JFactory::getUser();
 
-        echo json_encode((object)(array('status' => true,
-            'states' => $states,
-            'state' => JText::_('COM_EMUNDUS_STATE'),
-            'select_state' => JText::_('PLEASE_SELECT_STATE'))));
+        if (!$user->guest) {
+            $m_files = new EmundusModelFiles();
+            $states = $m_files->getAllStatus();
+
+            $response = [
+                'status' => true,
+                'states' => $states,
+                'state' => JText::_('COM_EMUNDUS_STATE'),
+                'select_state' => JText::_('PLEASE_SELECT_STATE')
+            ];
+        }
+
+        echo json_encode((object)$response);
         exit;
     }
 

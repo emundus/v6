@@ -976,7 +976,6 @@ class EmundusModelRanking extends JModelList
         $toggled = false;
 
         if (!empty($hierarchy_id) && !empty($user_id)) {
-
             $query = $this->db->getQuery(true);
 
             $query->clear()
