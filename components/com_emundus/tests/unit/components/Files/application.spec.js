@@ -42,7 +42,7 @@ describe('Vue scindée simple', () => {
     });
 
     it ('evaluation grid should exists', () => {
-        expect(wrapper.find('#evaluation-grid').exists()).toBeTruthy();
+        expect(wrapper.find('#modal-evaluationgrid').exists()).toBeTruthy();
     });
 });
 
