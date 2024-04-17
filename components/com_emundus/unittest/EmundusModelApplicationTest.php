@@ -354,7 +354,9 @@ class EmundusModelApplicationTest extends TestCase
 		$mandatory_attachments = $db->loadResult();
 		$percentage = 1/$mandatory_attachments * 100;
 
-		$this->assertSame($this->m_application->getAttachmentsProgress($fnum), floor($percentage), 'getAttachmentsProgress should return exactly '.$percentage.' if one mandatory attachment is found');
+        $progress = $this->m_application->getAttachmentsProgress($fnum);
+        $this->assertIsFloat($progress, 'getAttachmentsProgress should return a float if only one fnun is passed');
+		$this->assertSame($progress, floor($percentage), 'getAttachmentsProgress should return exactly '.$percentage.' if one mandatory attachment is found');
 
 		$this->assertIsArray($this->m_application->getAttachmentsProgress([$fnum]), 'getAttachmentsProgress should return an array if fnum is an array');
 
