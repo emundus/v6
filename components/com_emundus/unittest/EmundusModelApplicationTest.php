@@ -339,19 +339,18 @@ class EmundusModelApplicationTest extends TestCase
         $shared = $m_files->shareUsers([$user_id], [1 => ['id' => 1, 'r' => 1, 'c' => 0, 'd' => 0, 'u' => 0]], [$fnum]);
         $this->assertTrue($shared);
 
-
         if (!class_exists('EmundusHelperAccess')) {
             include_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
         }
 
         $has_access = EmundusHelperAccess::asAccessAction(1, 'r', $user_id, $fnum);
-        $this->assertTrue($has_access);
+        $this->assertTrue($has_access, 'User should have access to file');
 
         $deleted = $this->m_application->deleteUserAccess($fnum, $user_id, 95);
-        $this->assertTrue($deleted);
+        $this->assertTrue($deleted, 'User access should be deleted');
 
         $has_access = EmundusHelperAccess::asAccessAction(1, 'r', $user_id, $fnum);
-        $this->assertFalse($has_access);
+        $this->assertFalse($has_access, 'User should no longer have access to file');
     }
 }
 
