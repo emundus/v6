@@ -89,7 +89,6 @@ export default {
       default: 1
     },
     name: {
-      type: Number,
       default: null
     }
   },

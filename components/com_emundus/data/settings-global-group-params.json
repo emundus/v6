@@ -273,6 +273,7 @@
       },
       {
         "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_RGPD",
+        "notify": 1,
         "type": "section",
         "helptext": "Veuillez compléter les différentes sections ci-dessous afin de respecter le reglement général sur la protection des données. Pour en savoir plus sur les mentions obligatoires qui doivent figurer sur votre compagne, consultez le site de la CNIL.",
         "options": [
@@ -284,6 +285,7 @@
             "placeholder": "",
             "elements": [
               {
+                "important": 1,
                 "type_field": "component",
                 "component": "EditArticle",
                 "props": {
@@ -305,6 +307,7 @@
             "placeholder": "",
             "elements": [
               {
+                "important": 1,
                 "type_field": "component",
                 "component": "EditArticle",
                 "props": {
@@ -326,6 +329,7 @@
             "placeholder": "",
             "elements": [
               {
+                "important": 1,
                 "type_field": "component",
                 "component": "EditArticle",
                 "props": {
@@ -347,6 +351,7 @@
             "placeholder": "cookie : petit fichier qui conserve les informations sur votre navigation pour une futur connexion",
             "elements": [
               {
+                "important": 1,
                 "type_field": "component",
                 "component": "EditArticle",
                 "props": {

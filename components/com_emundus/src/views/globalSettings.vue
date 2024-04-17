@@ -38,9 +38,14 @@
            style="box-shadow:0.1em 0.05em 0.05em grey;">
         <div @click="handleSubMenuClick(index1)">
           <h1 id="accordion-collapse-heading-1" class="flex flex-row justify-between">
-            <span :id="'Subtile'+index1" class="em-font-size-24 ">{{
+            <div class="flex flex-row">
+              <span :id="'Subtile'+index1" class="em-font-size-24 ">{{
                 translate(SubMenus[indexMenuClick][index1].label)
               }}</span>
+              <div v-if="SubMenus[indexMenuClick][index1].notify === 1 ">
+                <div class="inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-2 -end-2 ">{{this.notifRemain}}</div>
+              </div>
+            </div>
             <i class="material-icons-outlined scale-150" :id="'SubtitleArrow'+index1" name="SubtitleArrows"
                style="transform-origin: unset">expand_more</i>
           </h1>
@@ -56,14 +61,14 @@
 
             <div v-else-if="option.type ==='subSection'">
               <div @click="handleSubSectionClick(index2)">
-                <a :id="'SubSectionTile'+index2" class="em-font-size-16">{{ translate(option.label) }}</a>
+                <span :id="'SubSectionTile'+index2" class="em-font-size-16">{{ translate(option.label) }}</span>
                 <i class="material-icons-outlined scale-150" :id="'SubSectionArrow'+index2" name="SubSectionArrows"
                    style="transform-origin: unset">expand_more</i>
               </div>
               <div :id="'SubSection-'+index2" name="SubSectionContent" style="display: none" class="flex flex-col ">
-                <div v-for="(option,index3) in option.elements">
-                  <div class="flex flex-col" v-if="option.type_field === 'component'">
-                    <component :is="option.component" v-bind="option.props"></component>
+                <div v-for="(option1,index3) in option.elements">
+                  <div class="flex flex-col" v-if="option1.type_field === 'component'">
+                    <component :is="option1.component" v-bind="option1.props"></component>
                   </div>
                 </div>
               </div>
@@ -231,6 +236,7 @@ export default {
 
   data: () => ({
     langue: 0,
+    notifRemain: 0,
     saving: false,
     endSaving: false,
     loading: null,
@@ -248,10 +254,10 @@ export default {
     timeZoneLand: null,
     baseTimeZone: null,
 
+
     form: {
       content: ''
     },
-
   }),
 
   created() {
@@ -261,12 +267,48 @@ export default {
     this.getTimeZone();
     this.loading = false;
   },
+  mounted() {
+
+    this.notifRemain = this.countNotif();
+  },
 
   methods: {
     changeCSS() {
       document.getElementById("header-b").style.display = "none";
       document.getElementById("g-navigation").style.display = "none";
     },
+
+    countNotif(){
+     let data = SettingParam;
+
+function countImportant(obj) {
+    let count = 0;
+
+    // Check if the current object is an array
+    if (Array.isArray(obj)) {
+        // If it's an array, iterate over its elements
+        obj.forEach(item => {
+            count += countImportant(item);
+        });
+    } else if (typeof obj === 'object' && obj !== null) {
+        // If it's an object, iterate over its properties
+        Object.keys(obj).forEach(key => {
+            if (key === 'important' || obj[key] === 'important') {
+                count++;
+            }
+            count += countImportant(obj[key]);
+        });
+    }
+
+    return count;
+}
+
+// Call the function with your JSON data
+const importantCount = countImportant(data);
+return importantCount;
+
+    },
+
     getParamFromjson() {
       return new Promise((resolve) => {
         SettingParam.forEach(i => {
@@ -315,7 +357,7 @@ export default {
     },
 
     handleSubSectionClick(index) {
-      this.resetSubSectionStyles();
+      this.resetSubSectionButtons(index);
       this.toggleSubSectionButton(index);
     },
 
@@ -327,6 +369,16 @@ export default {
         this.SubMenuisClicked.fill(false);
       }
       this.resetSubMenuStyles();
+    },
+
+    resetSubSectionButtons(index) {
+      if (this.SubSectionisClicked[index]) {
+        this.SubSectionisClicked.fill(false);
+        this.SubSectionisClicked[index] = true;
+      } else {
+        this.SubSectionisClicked.fill(false);
+      }
+      this.resetSubSectionStyles();
     },
 
     resetSubMenuStyles() {
@@ -344,7 +396,7 @@ export default {
 
     toggleSubSectionButton(index) {
       this.SubSectionisClicked[index] = !this.SubSectionisClicked[index];
-      if (this.SubMenuisClicked[index]) {
+      if (this.SubSectionisClicked[index]) {
         document.getElementById('SubSectionArrow' + index).style.rotate = '-180deg';
         document.getElementById('SubSection-' + index).style.display = 'flex';
       }
@@ -389,6 +441,7 @@ export default {
     },
     // todo handling of the select
   },
+
   computed: {},
   watch: {}
 };
