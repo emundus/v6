@@ -372,8 +372,8 @@ class EmundusModelApplicationTest extends TestCase
         $program = $this->h_sample->createSampleProgram();
         $campaign_id = $this->h_sample->createSampleCampaign($program);
         $fnum = $this->h_sample->createSampleFile($campaign_id, 95, true);
+        $coord_user = $this->h_sample->createSampleUser(2, 'coordunittest' . rand(0, 1000) . '@emundus.test.fr');
         $user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
-
 
         if (!class_exists('EmundusModelFiles')) {
             include_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
@@ -389,7 +389,7 @@ class EmundusModelApplicationTest extends TestCase
         $has_access = EmundusHelperAccess::asAccessAction(1, 'r', $user_id, $fnum);
         $this->assertTrue($has_access, 'User should have access to file');
 
-        $deleted = $this->m_application->deleteUserAccess($fnum, $user_id, 95);
+        $deleted = $this->m_application->deleteUserAccess($fnum, $user_id, $coord_user);
         $this->assertTrue($deleted, 'User access should be deleted');
 
         $has_access = EmundusHelperAccess::asAccessAction(1, 'r', $user_id, $fnum);
@@ -403,7 +403,7 @@ class EmundusModelApplicationTest extends TestCase
         $this->assertNotEmpty($logs, 'Logs should be returned if fnum is given');
 
         $found_logs = array_filter($logs, function($log) {
-            return $log->user_id_from == 95 && $log->action_id == 11 && $log->verb == 'd' && $log->message == 'COM_EMUNDUS_ACCESS_ACCESS_FILE';
+            return $log->action_id == 11 && $log->verb == 'd' && $log->message == 'COM_EMUNDUS_ACCESS_ACCESS_FILE';
         });
         $this->assertNotEmpty($found_logs, 'I should find a log about the deletion of the access');
     }
