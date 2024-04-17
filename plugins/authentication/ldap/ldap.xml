@@ -158,7 +158,7 @@
 						type="text"
 						label="PLG_LDAP_FIELD_FIRSTNAME_LABEL"
 						description="PLG_LDAP_FIELD_FIRSTNAME_DESC"
-						default="firstName"
+						default="sn"
 						size="20"
 				/>
 
@@ -167,7 +167,7 @@
 						type="text"
 						label="PLG_LDAP_FIELD_LASTNAME_LABEL"
 						description="PLG_LDAP_FIELD_LASTNAME_DESC"
-						default="lastName"
+						default="givenName"
 						size="20"
 				/>
 

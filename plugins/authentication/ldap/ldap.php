@@ -177,7 +177,7 @@ class PlgAuthenticationLdap extends JPlugin
 
             if (isset($userdetails[0][$ldap_firstname][0]) && isset($userdetails[0][$ldap_lastname][0]))
             {
-                $response->fullname = $userdetails[0][$ldap_firstname][0] . ' ' . $userdetails[0][$ldap_lastname][0];
+                $response->fullname = $userdetails[0][$ldap_lastname][0] . ' ' . $userdetails[0][$ldap_firstname][0];
             }
 			else
 			{
