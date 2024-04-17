@@ -40,10 +40,13 @@
           <h1 id="accordion-collapse-heading-1" class="flex flex-row justify-between">
             <div class="flex flex-row">
               <span :id="'Subtile'+index1" class="em-font-size-24 ">{{
-                translate(SubMenus[indexMenuClick][index1].label)
-              }}</span>
+                  translate(SubMenus[indexMenuClick][index1].label)
+                }}</span>
               <div v-if="SubMenus[indexMenuClick][index1].notify === 1 ">
-                <div class="inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-2 -end-2 ">{{this.notifRemain}}</div>
+                <div v-if="$data.notifRemain"
+                     class="inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-2 -end-2 ">
+                  {{ $data.notifRemain }}
+                </div>
               </div>
             </div>
             <i class="material-icons-outlined scale-150" :id="'SubtitleArrow'+index1" name="SubtitleArrows"
@@ -64,6 +67,10 @@
                 <span :id="'SubSectionTile'+index2" class="em-font-size-16">{{ translate(option.label) }}</span>
                 <i class="material-icons-outlined scale-150" :id="'SubSectionArrow'+index2" name="SubSectionArrows"
                    style="transform-origin: unset">expand_more</i>
+                <div v-if="$data.notifCheck[index2]===1"
+                     class="inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-2 -end-2 ">
+                  {{ option.important }}
+                </div>
               </div>
               <div :id="'SubSection-'+index2" name="SubSectionContent" style="display: none" class="flex flex-col ">
                 <div v-for="(option1,index3) in option.elements">
@@ -92,8 +99,6 @@
 
             <div class="flex flex-col" v-if="option.type_field === 'sqldropdown'">
               <div v-if="option.name === 'offset'">
-
-
                 <multiselect
                     v-model="$data.baseTimeZone"
                     label="label"
@@ -196,6 +201,7 @@ import EditorQuill from "@/components/editorQuill.vue";
 import axios from "axios";
 
 import Multiselect from 'vue-multiselect';
+import {forEach} from "lodash";
 
 
 export default {
@@ -236,7 +242,7 @@ export default {
 
   data: () => ({
     langue: 0,
-    notifRemain: 0,
+
     saving: false,
     endSaving: false,
     loading: null,
@@ -249,6 +255,9 @@ export default {
     Menus: [],
     SubMenus: [],
     YNButtons: [],
+
+    notifRemain: 0,
+    notifCheck: [],
 
     selectedOffset: null,
     timeZoneLand: null,
@@ -270,6 +279,7 @@ export default {
   mounted() {
 
     this.notifRemain = this.countNotif();
+    this.notifCheck = new Array(this.notifRemain).fill(1);
   },
 
   methods: {
@@ -278,34 +288,34 @@ export default {
       document.getElementById("g-navigation").style.display = "none";
     },
 
-    countNotif(){
-     let data = SettingParam;
+    countNotif() {
+      let data = SettingParam;
 
-function countImportant(obj) {
-    let count = 0;
+      function countImportant(obj) {
+        let count = 0;
 
-    // Check if the current object is an array
-    if (Array.isArray(obj)) {
-        // If it's an array, iterate over its elements
-        obj.forEach(item => {
+        // Check if the current object is an array
+        if (Array.isArray(obj)) {
+          // If it's an array, iterate over its elements
+          obj.forEach(item => {
             count += countImportant(item);
-        });
-    } else if (typeof obj === 'object' && obj !== null) {
-        // If it's an object, iterate over its properties
-        Object.keys(obj).forEach(key => {
+          });
+        } else if (typeof obj === 'object' && obj !== null) {
+          // If it's an object, iterate over its properties
+          Object.keys(obj).forEach(key => {
             if (key === 'important' || obj[key] === 'important') {
-                count++;
+              count++;
             }
             count += countImportant(obj[key]);
-        });
-    }
+          });
+        }
 
-    return count;
-}
+        return count;
+      }
 
 // Call the function with your JSON data
-const importantCount = countImportant(data);
-return importantCount;
+      const importantCount = countImportant(data);
+      return importantCount;
 
     },
 
@@ -350,15 +360,27 @@ return importantCount;
     },
 
 
+
     handleSubMenuClick(index) {
 
       this.resetSubMenuButtons(index);
       this.toggleSubMenuButton(index);
     },
 
+    checkNotif(index) {
+      this.notifCheck[index] = 0;
+      let count = 0;
+      forEach(this.notifCheck, function(value) {
+        count += value;
+      });
+      this.notifRemain = count;
+    },
+
     handleSubSectionClick(index) {
       this.resetSubSectionButtons(index);
       this.toggleSubSectionButton(index);
+      this.checkNotif(index);
+
     },
 
     resetSubMenuButtons(index) {

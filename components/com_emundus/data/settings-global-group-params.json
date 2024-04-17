@@ -283,9 +283,9 @@
             "type": "subSection",
             "helptext": "",
             "placeholder": "",
+            "important": 1,
             "elements": [
               {
-                "important": 1,
                 "type_field": "component",
                 "component": "EditArticle",
                 "props": {
@@ -305,9 +305,9 @@
             "type": "subSection",
             "helptext": "",
             "placeholder": "",
+            "important": 1,
             "elements": [
               {
-                "important": 1,
                 "type_field": "component",
                 "component": "EditArticle",
                 "props": {
@@ -327,9 +327,9 @@
             "type": "subSection",
             "helptext": "",
             "placeholder": "",
+            "important": 1,
             "elements": [
               {
-                "important": 1,
                 "type_field": "component",
                 "component": "EditArticle",
                 "props": {
@@ -347,11 +347,11 @@
             "name": "cookies_management",
             "label": "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_COOKIES",
             "type": "subSection",
-            "helptext": "",
-            "placeholder": "cookie : petit fichier qui conserve les informations sur votre navigation pour une futur connexion",
+            "helptext": "cookie : petit fichier qui conserve les informations sur votre navigation pour une futur connexion",
+            "placeholder": "",
+            "important": 1,
             "elements": [
               {
-                "important": 1,
                 "type_field": "component",
                 "component": "EditArticle",
                 "props": {
