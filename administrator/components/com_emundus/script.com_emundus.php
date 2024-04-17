@@ -4159,6 +4159,12 @@ if(in_array($applicant,$exceptions)){
 				$db->setQuery($query);
 				$db->execute();
 			}
+
+			if (version_compare($cache_version, '1.39.0', '<=') || $firstrun) {
+				$succeed['get_attachments_for_profile_event_added'] = EmundusHelperUpdate::addCustomEvents([
+					['label' => 'onAfterGetAttachmentsForProfile', 'category' => 'Files']
+				]);
+			}
 		}
 
 		return $succeed;
