@@ -65,7 +65,8 @@ class EmundusFilters
 					'group_label' => $element['element_form_label'],
 					'group_id' => $element['element_form_id'],
 					'available' => true,
-                    'plugin' => $element['plugin']
+                    'plugin' => $element['plugin'],
+                    'operator' => '='
                 ];
 
 				switch ($element['plugin']) {
@@ -75,6 +76,7 @@ class EmundusFilters
 					case 'databasejoin':
 						$filter['type'] = 'select';
 						$filter['values'] = [];
+                        $filter['operator'] = 'IN';
 						break;
 					case 'yesno':
 						$filter['type'] = 'select';
@@ -93,6 +95,8 @@ class EmundusFilters
 						$filter['type'] = 'time';
 						$filter['value'] = ['', ''];
 						break;
+                    default:
+                        $filter['operator'] = 'LIKE';
 				}
 
 				$created_filters[] = $filter;
