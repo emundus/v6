@@ -1107,14 +1107,6 @@ $(document).ready(function () {
 		}
 	});
 
-	function download(fileUrl, fileName) {
-		var a = document.createElement("a");
-		a.href = fileUrl;
-		console.log(fileUrl);
-		a.setAttribute("download", fileName);
-		a.setAttribute('href', "/tmp/" + fileName);
-		a.click();
-	}
 	function runAction(id, url = '', option = '') {
 
 		if ($('#em-check-all').is(':checked')) {
@@ -1183,29 +1175,26 @@ $(document).ready(function () {
 						var response = JSON.parse(result);
 						var fileName = response.fileName;
 
-						var downloadButton = $('<a>').attr('href', "/tmp/" + fileName)
-							.attr('download', fileName)
-							.text('Télécharger le fichier CSV')
-							.css({
-								'display': 'block',
-								'margin': '0 auto',
-								'text-align': 'center',
-								'max-width': '80%'
-							});
-
 						Swal.fire({
 							position: 'center',
 							type: 'success',
-							title: 'Téléchargement prêt',
-							html: downloadButton,
+							title: Joomla.JText._('COM_EMUNDUS_ATTACHMENTS_DOWNLOAD_READY'),
+							showCancelButton: true,
 							showConfirmButton: true,
-							confirmButtonText: 'Télécharger',
+							confirmButtonText: Joomla.JText._('COM_EMUNDUS_ATTACHMENTS_DOWNLOAD'),
+							reverseButtons: true,
+							allowOutsideClick: false,
 							customClass: {
-								title: 'w-full justify-center'
+								cancelButton : 'em-swal-cancel-button',
+								confirmButton: 'em-swal-confirm-button btn btn-success',
+								title: 'w-full justify-center',
 							}
 						}).then((result) => {
 							if (result.value) {
 								download("/tmp/" + fileName, fileName);
+							}
+							// Avoid deleting the file before being download
+							setTimeout(function() {
 								$.ajax({
 									type: 'POST',
 									url: 'index.php?option=com_emundus&controller=users&task=deleteusersfile&Itemid=' + itemId,
@@ -1216,8 +1205,8 @@ $(document).ready(function () {
 									error: function(jqXHR, textStatus, errorThrown) {
 										console.error(textStatus, errorThrown);
 									}
-								});
-							}
+									});
+								}, 1000);
 						});
 					},
 
@@ -1227,8 +1216,6 @@ $(document).ready(function () {
 					}
 				});
 				break;
-
-
 
 
 			case 19:
@@ -1729,3 +1716,12 @@ function createScrollbarForElement(element, id) {
 	};
 	element.parentNode.insertBefore(new_scrollbar, element);
 }
+
+function download(fileUrl, fileName) {
+	var a = document.createElement("a");
+	a.href = fileUrl;
+	a.setAttribute("download", fileName);
+	a.click();
+}
+
+
