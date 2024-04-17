@@ -3589,6 +3589,12 @@ class EmundusModelApplication extends JModelList
         }
     }
 
+    /**
+     * @param $fnum string
+     * @param $gid int
+     * @param $current_user int If null, the current user will be used
+     * @return false|mixed
+     */
     public function deleteGroupAccess($fnum, $gid, $current_user = null)
     {
         $deleted = false;
@@ -3629,6 +3635,12 @@ class EmundusModelApplication extends JModelList
         return $deleted;
     }
 
+    /**
+     * @param $fnum string
+     * @param $uid int
+     * @param $current_user int if null, the current user will be used
+     * @return false|mixed
+     */
     public function deleteUserAccess($fnum, $uid, $current_user = null)
     {
         $deleted = false;

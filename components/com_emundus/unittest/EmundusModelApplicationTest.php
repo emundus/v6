@@ -315,5 +315,43 @@ class EmundusModelApplicationTest extends TestCase
 			$this->assertContains($campaign->id, $all_user_campaigns, 'getUserCampaigns should return all campaigns attached to the applicant');
 		}
 	}
+
+
+    public function deleteGroupAccess($fnum, $gid, $current_user = null)
+    {
+
+    }
+
+    public function testdeleteUserAccess() {
+        $deleted = $this->m_application->deleteUserAccess(0, 0, 95);
+        $this->assertFalse($deleted);
+
+        $program = $this->h_sample->createSampleProgram();
+        $campaign_id = $this->h_sample->createSampleCampaign($program);
+        $fnum = $this->h_sample->createSampleFile($campaign_id, 95, false);
+        $user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+
+
+        if (!class_exists('EmundusModelFiles')) {
+            include_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
+        }
+        $m_files = new EmundusModelFiles;
+        $shared = $m_files->shareUsers([$user_id], [1 => ['id' => 1, 'r' => 1, 'c' => 0, 'd' => 0, 'u' => 0]], [$fnum]);
+        $this->assertTrue($shared);
+
+
+        if (!class_exists('EmundusHelperAccess')) {
+            include_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
+        }
+
+        $has_access = EmundusHelperAccess::asAccessAction(1, 'r', $user_id, $fnum);
+        $this->assertTrue($has_access);
+
+        $deleted = $this->m_application->deleteUserAccess($fnum, $user_id, 95);
+        $this->assertTrue($deleted);
+
+        $has_access = EmundusHelperAccess::asAccessAction(1, 'r', $user_id, $fnum);
+        $this->assertFalse($has_access);
+    }
 }
 
