@@ -250,7 +250,7 @@ class EmundusModelLogs extends JModelList {
 
             $user_from = is_array($user_from) ? implode(',', $user_from) : $user_from;
             $action = is_array($action) ? implode(',', $action) : $action;
-            $crud = is_array($crud) ? implode(',', $db->quote($crud)) : $crud;
+            $crud = is_array($crud) ? implode(',', $db->quote($crud)) : $db->quote($crud);
 
             $eMConfig = JComponentHelper::getParams('com_emundus');
             $showTimeFormat = $eMConfig->get('log_show_timeformat', 0);
@@ -274,11 +274,9 @@ class EmundusModelLogs extends JModelList {
             if(!is_null($offset)) {
                 $query->setLimit($limit, $offset);
             }
-
             try {
                 $db->setQuery($query);
                 $results = $db->loadObjectList();
-
                 foreach ($results as $result) {
                     $result->date = EmundusHelperDate::displayDate($result->timestamp,'DATE_FORMAT_LC2',(int)$showTimeFormat);
                 }
