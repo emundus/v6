@@ -169,7 +169,11 @@ class plgUserEmundus_registration_email extends JPlugin {
 
         // if saving user's data was successful
         if ($result && !$error) {
-            // for anonym sessions
+	        // Set the user table instance to include the new token.
+	        $table = JTable::getInstance('user', 'JTable');
+	        $table->load($userId);
+
+			// for anonym sessions
             $allow_anonym_files = $eMConfig->get('allow_anonym_files', 0);
             if ($allow_anonym_files && preg_match('/^fake.*@emundus\.io$/', $user->email)) {
                 $user->setParam('skip_activation', true);
@@ -198,20 +202,20 @@ class plgUserEmundus_registration_email extends JPlugin {
 
                 // Block the user (until he activates).
                 $table->block = $eMConfig->get('block_user', 1);
-            }
 
-            // Save user data
-            if (!$table->store()) {
-                throw new RuntimeException($table->getError());
-            }
+	            // Save user data
+	            if (!$table->store()) {
+		            throw new RuntimeException($table->getError());
+	            }
 
-            // Send activation email
-            if ($this->sendActivationEmail($user->getProperties(), $activation)) {
-                //Force user logout
-                if ($this->params->get('logout', null) && $userId === (int) JFactory::getUser()->id) {
-                    $app->logout();
-                    $app->redirect(JRoute::_(''), false);
-                }
+	            // Send activation email
+	            if ($this->sendActivationEmail($user->getProperties(), $activation)) {
+		            //Force user logout
+		            if ($this->params->get('logout', null) && $userId === (int) JFactory::getUser()->id) {
+			            $app->logout();
+			            $app->redirect(JRoute::_(''), false);
+		            }
+	            }
             }
 
             $this->onUserAfterLogin($new);
