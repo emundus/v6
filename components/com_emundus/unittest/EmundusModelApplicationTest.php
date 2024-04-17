@@ -325,11 +325,16 @@ class EmundusModelApplicationTest extends TestCase
 		$program = $this->h_sample->createSampleProgram();
 		$campaign = $this->h_sample->createSampleCampaign($program);
 		$fnum = $this->h_sample->createSampleFile($campaign, 95);
+        $this->assertNotEmpty($fnum);
 
 		$this->assertSame($this->m_application->getAttachmentsProgress($fnum), 0.0, 'getAttachmentsProgress should return 0.0 if no attachments are found');
 
 		$attachment = $this->h_sample->createSampleAttachment();
-		$this->h_sample->createSampleUpload($fnum, $campaign, 95, $attachment);
+        $this->assertGreaterThan(0, $attachment);
+
+		$upload_created = $this->h_sample->createSampleUpload($fnum, $campaign, 95, $attachment);
+        $this->assertTrue($upload_created);
+
 		$insert = [
 			'profile_id' => 9,
 			'attachment_id' => $attachment,
