@@ -355,7 +355,7 @@ class EmundusModelApplicationTest extends TestCase
 
 		$fnum_2 = $this->h_sample->createSampleFile($campaign, 95);
 
-		$this->assertEquals(count($this->m_application->getAttachmentsProgress([$fnum, $fnum_2])),2, 'getAttachmentsProgress should return 2 entries');
+		$this->assertSame(count($this->m_application->getAttachmentsProgress([$fnum, $fnum_2])),2, 'getAttachmentsProgress should return 2 entries');
 	}
 }
 

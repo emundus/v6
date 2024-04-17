@@ -780,6 +780,8 @@ class EmundusModelApplication extends JModelList
 
 			$result = array();
 			foreach ($fnums as $f) {
+				$result[$f] = 0.0;
+
 				$profile_by_status = $m_profile->getProfileByStatus($f);
 
 				if (empty($profile_by_status["profile"])) {
@@ -791,50 +793,64 @@ class EmundusModelApplication extends JModelList
 					$profile_by_status = $this->_db->loadAssoc();
 				}
 
-				$profile_id = !empty($profile_by_status["profile_id"]) ? $profile_by_status["profile_id"] : $profile_by_status["profile"];
-				$campaign_id = $profile_by_status["campaign_id"];
+				if(!empty($profile_by_status))
+				{
+					$profile_id  = !empty($profile_by_status["profile_id"]) ? $profile_by_status["profile_id"] : $profile_by_status["profile"];
+					$campaign_id = $profile_by_status["campaign_id"];
 
-				$attachments = $m_checklist->getAttachmentsForProfile($profile_id, $campaign_id);
+					$attachments = $m_checklist->getAttachmentsForProfile($profile_id, $campaign_id);
 
-				// verify
-				// check how many attachments are completed
-				$completion = 0;
+					// verify
+					// check how many attachments are completed
+					$completion = 0;
 
-				if (!empty($attachments)) {
-					$nb_mandatory_attachments = 0;
-					foreach ($attachments as $attachment) {
-						if ($attachment->mandatory == 1) {
-							$nb_mandatory_attachments++;
+					if (!empty($attachments))
+					{
+						$nb_mandatory_attachments = 0;
+						foreach ($attachments as $attachment)
+						{
+							if ($attachment->mandatory == 1)
+							{
+								$nb_mandatory_attachments++;
+							}
 						}
-					}
 
-					if ($nb_mandatory_attachments > 0) {
-						foreach ($attachments as $attachment) {
-							if ($attachment->mandatory == 1) {
-								$query = $this->_db->getQuery(true);
+						if ($nb_mandatory_attachments > 0)
+						{
+							foreach ($attachments as $attachment)
+							{
+								if ($attachment->mandatory == 1)
+								{
+									$query = $this->_db->getQuery(true);
 
-								$query->select('count(*)')
-									->from($this->_db->quoteName('#__emundus_uploads'))
-									->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($f))
-									->andWhere($this->_db->quoteName('attachment_id') . ' = ' . $attachment->id);
-								$this->_db->setQuery($query);
-								$nb = $this->_db->loadResult();
+									$query->select('count(*)')
+										->from($this->_db->quoteName('#__emundus_uploads'))
+										->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($f))
+										->andWhere($this->_db->quoteName('attachment_id') . ' = ' . $attachment->id);
+									$this->_db->setQuery($query);
+									$nb = $this->_db->loadResult();
 
-								if ($nb > 0) {
-									$completion += 100 / $nb_mandatory_attachments;
+									if ($nb > 0)
+									{
+										$completion += 100 / $nb_mandatory_attachments;
+									}
 								}
 							}
 						}
-					} else {
+						else
+						{
+							$completion = 100;
+						}
+					}
+					else
+					{
 						$completion = 100;
 					}
-				} else {
-					$completion = 100;
+
+
+					$this->updateAttachmentProgressByFnum(floor($completion), $f);
+					$result[$f] = floor($completion);
 				}
-
-
-				$this->updateAttachmentProgressByFnum(floor($completion), $f);
-				$result[$f] = floor($completion);
 			}
 			$progress = $result;
 		}
