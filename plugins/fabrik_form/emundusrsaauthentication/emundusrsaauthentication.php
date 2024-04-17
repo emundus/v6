@@ -190,7 +190,7 @@ class PlgFabrik_FormEmundusRsaauthentication extends plgFabrik_Form
 						$db->setQuery($query);
 						$existing_username = $db->loadResult();
 
-						if($existing_username != $email && $existing_username != $username)
+						if(!empty($existing_username) && $existing_username != $email && $existing_username != $username)
 						{
 							$app->enqueueMessage(Text::_('PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_EMAIL_ALREADY_USED'), 'error');
 							$app->redirect('modifier-mon-adresse-email?data=' . $app->input->getString($datas_key, ''));
