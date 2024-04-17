@@ -1107,6 +1107,14 @@ $(document).ready(function () {
 		}
 	});
 
+	function download(fileUrl, fileName) {
+		var a = document.createElement("a");
+		a.href = fileUrl;
+		console.log(fileUrl);
+		a.setAttribute("download", fileName);
+		a.setAttribute('href', "/tmp/" + fileName);
+		a.click();
+	}
 	function runAction(id, url = '', option = '') {
 
 		if ($('#em-check-all').is(':checked')) {
@@ -1149,8 +1157,7 @@ $(document).ready(function () {
 				var allChecked = $('#checkbox-all').prop('checked');
 
 				$('input[type="checkbox"]').each(function() {
-					if ($(this).attr('value') !== 'all')
-					{
+					if ($(this).attr('value') !== 'all') {
 						var checkboxValue = $(this).attr('value');
 						checkBoxesProps[checkboxValue] = allChecked ? true : $(this).prop('checked');
 					}
@@ -1186,29 +1193,31 @@ $(document).ready(function () {
 								'max-width': '80%'
 							});
 
-						var swalInstance = Swal.fire({
+						Swal.fire({
 							position: 'center',
 							type: 'success',
 							title: 'Téléchargement prêt',
 							html: downloadButton,
-							showConfirmButton: false,
+							showConfirmButton: true,
+							confirmButtonText: 'Télécharger',
 							customClass: {
 								title: 'w-full justify-center'
 							}
-						});
-
-						swalInstance.then(() => {
-							$.ajax({
-								type: 'POST',
-								url: 'index.php?option=com_emundus&controller=users&task=deleteusersfile&Itemid=' + itemId,
-								data: { fileName: fileName },
-								success: function(response) {
-									// console.log(response);
-								},
-								error: function(jqXHR, textStatus, errorThrown) {
-									console.error(textStatus, errorThrown);
-								}
-							});
+						}).then((result) => {
+							if (result.value) {
+								download("/tmp/" + fileName, fileName);
+								$.ajax({
+									type: 'POST',
+									url: 'index.php?option=com_emundus&controller=users&task=deleteusersfile&Itemid=' + itemId,
+									data: { fileName: fileName },
+									success: function(response) {
+										// console.log(response);
+									},
+									error: function(jqXHR, textStatus, errorThrown) {
+										console.error(textStatus, errorThrown);
+									}
+								});
+							}
 						});
 					},
 
@@ -1218,6 +1227,7 @@ $(document).ready(function () {
 					}
 				});
 				break;
+
 
 
 
