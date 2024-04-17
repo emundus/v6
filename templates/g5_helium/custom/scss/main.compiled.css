@@ -325,7 +325,7 @@
   background : gray;
   border: 3px solid yellow;
 }*/
-/* ! tailwindcss v3.3.3 | MIT License | https://tailwindcss.com */
+/* ! tailwindcss v3.3.2 | MIT License | https://tailwindcss.com */
 /*
 1. Prevent padding and border from affecting element width. (https://github.com/mozdevs/cssremedy/issues/4)
 2. Allow adding a border to an element by just adding a border-width. (https://github.com/tailwindcss/tailwindcss/pull/116)
@@ -465,8 +465,6 @@ optgroup,
 select,
 textarea {
   font-family: inherit; /* 1 */
-  font-feature-settings: inherit; /* 1 */
-  font-variation-settings: inherit; /* 1 */
   font-size: 100%; /* 1 */
   font-weight: inherit; /* 1 */
   line-height: inherit; /* 1 */
@@ -576,12 +574,6 @@ ul,
 menu {
   list-style: none;
   margin: 0;
-  padding: 0;
-}
-/*
-Reset default styling for dialogs.
-*/
-dialog {
   padding: 0;
 }
 /*
@@ -1669,16 +1661,9 @@ form.fabrikForm .currencyElement input:focus + select,form.fabrikForm .currencyE
 form.fabrikForm .control-group.error label {
         color: var(--em-form-label-color-error);
       }
-form.fabrikForm .control-group.\!error label {
-        color: var(--em-form-label-color-error) !important;
-      }
 form.fabrikForm .control-group.error input,form.fabrikForm .control-group.error textarea,form.fabrikForm .control-group.error select {
         border-color: var(--em-form-bc-error);
         color: var(--em-default-text-color-1);
-      }
-form.fabrikForm .control-group.\!error input,form.fabrikForm .control-group.\!error textarea,form.fabrikForm .control-group.\!error select {
-        border-color: var(--em-form-bc-error) !important;
-        color: var(--em-default-text-color-1) !important;
       }
 form.fabrikForm .fabrikError.plg-checkbox .fabrikElement .fabrikSubElementContainer {
           border-color: var(--em-form-checkbox-bc-error);
@@ -2159,6 +2144,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .-top-px {
   top: -1px;
 }
+.start-2 {
+  inset-inline-start: var(--em-spacing-2);
+}
 .top-0 {
   top: 0px;
 }
@@ -2288,9 +2276,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .top-px {
   top: 1px;
 }
-.isolate {
-  isolation: isolate;
-}
 .float-right {
   float: right;
 }
@@ -2331,7 +2316,8 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
   margin-bottom: var(--em-spacing-9);
 }
 .me-1 {
-  margin-inline-end: var(--em-spacing-1);
+  -webkit-margin-end: var(--em-spacing-1);
+          margin-inline-end: var(--em-spacing-1);
 }
 .ml-0 {
   margin-left: 0px;
@@ -2447,9 +2433,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .inline-block {
   display: inline-block;
 }
-.\!inline {
-  display: inline !important;
-}
 .inline {
   display: inline;
 }
@@ -2505,6 +2488,12 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .w-full {
   width: 100%;
+}
+.max-w-\[150px\] {
+  max-width: 150px;
+}
+.max-w-\[200px\] {
+  max-width: 200px;
 }
 .shrink {
   flex-shrink: 1;
@@ -3395,6 +3384,10 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .bg-transparent {
   background-color: transparent;
+}
+.bg-white {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
 }
 .bg-clip-border {
   background-clip: border-box;
@@ -4727,18 +4720,14 @@ button.swal2-cancel.goback-btn:hover,
         flex-basis: 8px;
         height: 8px;
         border-radius: 50%;
-        margin-right: 8px;
         flex-grow: 0;
-        margin-top: 4px;
         flex-shrink: 0;
     }
 .sticker {
-        border: solid 1px;
-        border-radius: 4px 8px 8px 4px;
+        border-radius: 20px 8px 8px 20px;
         padding: 4px 8px;
         margin: 4px 0;
         font-size: 14px;
-        max-width: 200px;
         white-space: break-spaces;
     }
 .label-default, .label-null, .label- {

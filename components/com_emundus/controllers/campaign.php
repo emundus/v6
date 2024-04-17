@@ -290,10 +290,22 @@ class EmundusControllerCampaign extends JControllerLegacy {
                 'published' => 1
             ]);
 
+            require_once JPATH_ROOT . '/components/com_emundus/models/profile.php';
+            $m_profile = new EmundusModelProfile();
+            $current_profile = $m_profile->getProfileById(JFactory::getSession()->get('emundusUser')->profile);
             $menu = $app->getMenu();
-            $items = $menu->getItems('link', 'index.php?option=com_emundus&view=files', true);
-            if (!empty($items)) {
-                $app->redirect('/' . $items->alias);
+            
+            $items = $menu->getItems('link', 'index.php?option=com_emundus&view=files');
+
+            $redirect_item = $items[0];
+            foreach ($items as $item) {
+                if($item->menutype == $current_profile['menutype']) {
+                    $redirect_item = $item;
+                }
+            }
+
+            if (!empty($redirect_item)) {
+                $app->redirect('/' . $redirect_item->route);
             } else {
                 $response['msg'] = JText::_('NO_FILES_VIEW_AVAILABLE');
             }

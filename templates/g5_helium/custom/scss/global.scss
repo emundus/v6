@@ -1470,6 +1470,10 @@ footer#g-footer > .g-container {
   background: var(--neutral-200) !important;
 }
 
+.table-hover tbody tr:nth-child(2n) > td .sticker .circle {
+    background-color: var(--neutral-200);
+}
+
 .table-hover tbody tr,
 .table-hover tbody tr {
   a {
@@ -4222,6 +4226,18 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
     color: var(--neutral-700);
     font-family: var(--em-coordinator-font);
   }
+
+  ul {
+    padding-left: 20px;
+  }
+
+  a {
+    text-decoration: underline;
+    &:hover {
+        text-decoration: none;
+
+    }
+  }
 }
 
 /* EVAL / DECISION */
@@ -6870,4 +6886,9 @@ tbody .el-table__row:nth-child(odd){
 .mce-container .mce-textbox.mce-abs-layout-item.mce-last {
   width: 60px !important;
   height: 20px !important;
+}
+
+/* SUPPRESSION POPOVER FORM EVAL */
+.popover.fade.top.in {
+  display: none !important;
 }

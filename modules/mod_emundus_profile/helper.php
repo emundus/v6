@@ -27,7 +27,7 @@ class modEmundusProfileHelper {
             $pp = $db->loadResult();
 
 			if(empty($pp)) {
-				$pp = '/media/com_emundus/images/profile/default-profile.jpg';
+				$pp = '';
 			}
 
         } catch(Exception $e) {

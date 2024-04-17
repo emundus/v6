@@ -37,6 +37,17 @@ if (in_array('past', $mod_em_campaign_list_tab) && !empty($pastCampaign))
 
 if (sizeof($tmp_campaigns) > 0)
 {
+	foreach ($tmp_campaigns as $key => $campaign)
+	{
+		if ($campaign->pinned == 1)
+		{
+			$campaigns_pinned[] = $campaign;
+            unset($tmp_campaigns[$key]);
+		}
+	}
+
+    $tmp_campaigns = array_values($tmp_campaigns);
+
 	if ($group_by == 'program')
 	{
 		usort($tmp_campaigns, function ($a, $b) {
@@ -70,24 +81,17 @@ if (sizeof($tmp_campaigns) > 0)
 
 		foreach ($tmp_campaigns as $campaign)
 		{
-			$campaigns[$campaign->month][]        = $campaign;
 			$month                                = explode('-', $campaign->month_name);
 			$month_name                           = JText::_(strtoupper($month[0]));
 			$month_year                           = $month[1];
-			$campaigns[$campaign->month]['label'] = $month_name . ' - ' . $month_year;
+
+			$campaigns[$campaign->month.'_'.$month_year][]        = $campaign;
+			$campaigns[$campaign->month.'_'.$month_year]['label'] = $month_name . ' - ' . $month_year;
 		}
 	}
 	else
 	{
 		$campaigns['campaigns'] = $tmp_campaigns;
-	}
-
-	foreach ($tmp_campaigns as $campaign)
-	{
-		if ($campaign->pinned == 1)
-		{
-			$campaigns_pinned[] = $campaign;
-		}
 	}
 }
 
@@ -333,10 +337,12 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 											{
 												$redirect_url = 'index.php?option=com_users&view=registration';
 											}
-											$register_url = $redirect_url . '&course=' . $campaign_pinned->code . '&cid=' . $campaign_pinned->id . '&Itemid=' . $mod_em_campaign_itemid;
 										}
-										else
-										{
+
+
+										if (strpos($redirect_url, '?') !== false) {
+											$register_url = $redirect_url . '&course=' . $campaign_pinned->code . '&cid=' . $campaign_pinned->id . '&Itemid=' . $mod_em_campaign_itemid;
+										} else {
 											$register_url = $redirect_url . '?course=' . $campaign_pinned->code . '&cid=' . $campaign_pinned->id . '&Itemid=' . $mod_em_campaign_itemid;
 										}
 
@@ -815,10 +821,11 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 												{
 													$redirect_url = 'index.php?option=com_users&view=registration';
 												}
-												$register_url = $redirect_url . '&course=' . $result->code . '&cid=' . $result->id . '&Itemid=' . $mod_em_campaign_itemid;
 											}
-											else
-											{
+
+											if (strpos($redirect_url, '?') !== false) {
+												$register_url = $redirect_url . '&course=' . $result->code . '&cid=' . $result->id . '&Itemid=' . $mod_em_campaign_itemid;
+											} else {
 												$register_url = $redirect_url . '?course=' . $result->code . '&cid=' . $result->id . '&Itemid=' . $mod_em_campaign_itemid;
 											}
 
