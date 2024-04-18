@@ -1,6 +1,5 @@
 <?php
 
-
 defined('JPATH_BASE') or die;
 
     // Add span with id so that element fxs work.
@@ -16,9 +15,6 @@ defined('JPATH_BASE') or die;
 
     $allowed_types = '';
     $nb_max = 0;
-
-
-
 
 
     $db = JFactory::getDBO();

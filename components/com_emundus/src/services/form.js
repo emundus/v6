@@ -26,7 +26,8 @@ export default {
             return response;
         } catch (error) {
             return {
-                status: false, error: error
+                status: false,
+                error: error
             };
         }
     },
