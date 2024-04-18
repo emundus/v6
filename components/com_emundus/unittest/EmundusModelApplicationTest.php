@@ -454,6 +454,18 @@ class EmundusModelApplicationTest extends TestCase
 
         $has_access = EmundusHelperAccess::asAccessAction(1, 'r', $user_id, $fnum);
         $this->assertFalse($has_access, 'User ' . $user_id . ' should no longer have access to file '. $fnum);
+
+        if (!class_exists('EmundusModelLogs')) {
+            include_once(JPATH_ROOT . '/components/com_emundus/models/logs.php');
+        }
+        $m_logs = new EmundusModelLogs();
+        $logs = $m_logs->getActionsOnFnum($fnum, null, 11, 'd');
+        $this->assertNotEmpty($logs, 'Logs should be returned if fnum is given');
+
+        $found_logs = array_filter($logs, function($log) {
+            return $log->action_id == 11 && $log->verb == 'd' && $log->message == 'COM_EMUNDUS_ACCESS_ACCESS_FILE';
+        });
+        $this->assertNotEmpty($found_logs, 'I should find a log about the deletion of the access');
     }
 }
 
