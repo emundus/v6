@@ -1863,10 +1863,15 @@ class EmundusModelFiles extends JModelLegacy
      * @param $fnum
      * @return bool|mixed
      */
-    public static function getFnumInfos($fnum) {
+    public static function getFnumInfos($fnum, $current_user_id = null)
+    {
 		$fnumInfos = false;
 
 		if (!empty($fnum)) {
+            if (empty($current_user_id)) {
+                $current_user_id = JFactory::getUser()->id;
+            }
+
 			try {
 				$db = JFactory::getDBO();
 				$query = $db->getQuery(true);
@@ -1883,14 +1888,14 @@ class EmundusModelFiles extends JModelLegacy
 					require_once(JPATH_ROOT.'/components/com_emundus/helpers/access.php');
 				}
 
-				$anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+				$anonymize_data = EmundusHelperAccess::isDataAnonymized($current_user_id);
 				if ($anonymize_data) {
 					$fnumInfos['name'] = $fnum;
 					$fnumInfos['email'] = $fnum;
 				}
 			} catch (Exception $e) {
 				echo $e->getMessage();
-				JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+				JLog::add(JUri::getInstance().' :: USER ID : '.$current_user_id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
 			}
 		}
 

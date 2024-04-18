@@ -183,7 +183,7 @@
 	outline:none;
 }
 .edit {
-	width:20%;
+	width: 100%;
 }
 .move {
 	cursor:grab;
