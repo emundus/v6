@@ -4137,36 +4137,110 @@ if(in_array($applicant,$exceptions)){
                 $db->setQuery($query);
                 $db->execute();
 
-                $query->clear()
-                    ->update($db->quoteName('#__fabrik_elements', 'fe'))
-                    ->leftJoin($db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $db->quoteName('fe.group_id') . ' = ' . $db->quoteName('ffg.group_id'))
-                    ->leftJoin($db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $db->quoteName('ffg.form_id') . ' = ' . $db->quoteName('fl.form_id'))
-                    ->set($db->quoteName('fe.plugin') . ' = ' . $db->quote('emundus_colorpicker'))
-                    ->set($db->quoteName('fe.params') . ' = ' . $db->quote('{"rgaa":"1","save_label":"0","show_in_rss_feed":"0","show_label_in_rss_feed":"0","use_as_rss_enclosure":"0","rollover":"","tipseval":"0","tiplocation":"top-left","labelindetails":"0","labelinlist":"0","comment":"","edit_access":"1","edit_access_user":"","view_access":"1","view_access_user":"","list_view_access":"1","encrypt":"0","store_in_db":"1","default_on_copy":"0","can_order":"0","alt_list_heading":"","custom_link":"","custom_link_target":"","custom_link_indetails":"1","use_as_row_class":"0","include_in_list_query":"1","always_render":"0","icon_folder":"0","icon_hovertext":"1","icon_file":"","icon_subdir":"","filter_length":"20","filter_access":"1","full_words_only":"0","filter_required":"0","filter_build_method":"0","filter_groupby":"text","inc_in_adv_search":"1","filter_class":"input-medium","filter_responsive_class":"","tablecss_header_class":"","tablecss_header":"","tablecss_cell_class":"","tablecss_cell":"","sum_on":"0","sum_label":"Sum","sum_access":"8","sum_split":"","avg_on":"0","avg_label":"Average","avg_access":"8","avg_round":"0","avg_split":"","median_on":"0","median_label":"Median","median_access":"8","median_split":"","count_on":"0","count_label":"Count","count_condition":"","count_access":"8","count_split":"","custom_calc_on":"0","custom_calc_label":"Custom","custom_calc_query":"","custom_calc_access":"1","custom_calc_split":"","custom_calc_php":"","validations":[]}'))
-                    ->where($db->quoteName('fe.plugin') . ' LIKE ' . $db->quote('dropdown'))
-                    ->where($db->quoteName('fe.name') . ' LIKE ' . $db->quote('class'))
-                    ->where($db->quoteName('fl.db_table_name') . ' = ' . $db->quote('jos_emundus_setup_status'));
-                $db->setQuery($query);
-                $db->execute();
-            }
+				$query->clear()
+					->update($db->quoteName('#__fabrik_elements','fe'))
+					->leftJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('fe.group_id').' = '.$db->quoteName('ffg.group_id'))
+					->leftJoin($db->quoteName('#__fabrik_lists','fl').' ON '.$db->quoteName('ffg.form_id').' = '.$db->quoteName('fl.form_id'))
+					->set($db->quoteName('fe.plugin') . ' = ' . $db->quote('emundus_colorpicker'))
+					->set($db->quoteName('fe.params') . ' = ' . $db->quote('{"rgaa":"1","save_label":"0","show_in_rss_feed":"0","show_label_in_rss_feed":"0","use_as_rss_enclosure":"0","rollover":"","tipseval":"0","tiplocation":"top-left","labelindetails":"0","labelinlist":"0","comment":"","edit_access":"1","edit_access_user":"","view_access":"1","view_access_user":"","list_view_access":"1","encrypt":"0","store_in_db":"1","default_on_copy":"0","can_order":"0","alt_list_heading":"","custom_link":"","custom_link_target":"","custom_link_indetails":"1","use_as_row_class":"0","include_in_list_query":"1","always_render":"0","icon_folder":"0","icon_hovertext":"1","icon_file":"","icon_subdir":"","filter_length":"20","filter_access":"1","full_words_only":"0","filter_required":"0","filter_build_method":"0","filter_groupby":"text","inc_in_adv_search":"1","filter_class":"input-medium","filter_responsive_class":"","tablecss_header_class":"","tablecss_header":"","tablecss_cell_class":"","tablecss_cell":"","sum_on":"0","sum_label":"Sum","sum_access":"8","sum_split":"","avg_on":"0","avg_label":"Average","avg_access":"8","avg_round":"0","avg_split":"","median_on":"0","median_label":"Median","median_access":"8","median_split":"","count_on":"0","count_label":"Count","count_condition":"","count_access":"8","count_split":"","custom_calc_on":"0","custom_calc_label":"Custom","custom_calc_query":"","custom_calc_access":"1","custom_calc_split":"","custom_calc_php":"","validations":[]}'))
+					->where($db->quoteName('fe.plugin') . ' LIKE ' . $db->quote('dropdown'))
+					->where($db->quoteName('fe.name') . ' LIKE ' . $db->quote('class'))
+					->where($db->quoteName('fl.db_table_name') . ' = ' . $db->quote('jos_emundus_setup_status'));
+				$db->setQuery($query);
+				$db->execute();
+			}
 
-            if (version_compare($cache_version, '1.39.0', '<=') || $firstrun) {
-                $id_OtherDocument = EmundusHelperUpdate::checkTypeDocumentAttachement();
-                if (isset($id_OtherDocument)) {
-                    // $id_OtherDocument is set and is not NULL
-                    //echo " - Type document OtherDocument already exists\n".$id_OtherDocument;
-                } else {
-                    // $id_OtherDocument is not set or is NULL
-                    EmundusHelperUpdate::createTypeDocumentAttachement("_OtherDocument","Other_documents","base type of document for the componant fileupload","pdf;jpg;jpeg;doc;docx;odt;zip",5,20,1,NULL,1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,0,NULL,NULL,NULL);
+			if (version_compare($cache_version, '1.39.0', '<=') || $firstrun) {
+				$succeed['get_attachments_for_profile_event_added'] = EmundusHelperUpdate::addCustomEvents([
+					['label' => 'onAfterGetAttachmentsForProfile', 'category' => 'Files']
+				]);
+
+
+                EmundusHelperUpdate::addColumn('jos_emundus_setup_groups', 'filter_status', 'INT',1,1,'0');
+                EmundusHelperUpdate::addColumn('jos_emundus_setup_groups', 'status', 'INT',11,1);
+
+                $columns       = [
+                    [
+                        'name'   => 'parent_id',
+                        'type'   => 'int',
+                        'length' => 11,
+                        'null'   => 0,
+                    ],
+                    [
+                        'name'   => 'status',
+                        'type'   => 'int',
+                        'length' => 11,
+                        'null'   => 0,
+                    ],
+                    [
+                        'name'   => 'params',
+                        'type'   => 'varchar',
+                        'length' => 255,
+                        'null'   => 1,
+                    ]
+                ];
+                $repeat_status = EmundusHelperUpdate::createTable('jos_emundus_setup_groups_repeat_status', $columns);
+
+                $query->clear()
+                    ->select('ffg.group_id,fl.id')
+                    ->from($db->quoteName('#__fabrik_lists','fl'))
+                    ->leftJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffg.form_id').' = '.$db->quoteName('fl.form_id'))
+                    ->where($db->quoteName('fl.db_table_name') . ' LIKE ' . $db->quote('jos_emundus_setup_groups'))
+                    ->where($db->quoteName('fl.label') . ' LIKE ' . $db->quote('TABLE_SETUP_GROUPS'));
+                $db->setQuery($query);
+                $setup_groups = $db->loadAssoc();
+
+                if(!empty($setup_groups['group_id']))
+                {
+                    $datas  = [
+                        'name'                 => 'filter_status',
+                        'group_id'             => $setup_groups['group_id'],
+                        'plugin'               => 'yesno',
+                        'label'                => 'SETUP_GROUPS_FILTER_STATUS',
+                        'show_in_list_summary' => 1
+                    ];
+                    EmundusHelperUpdate::addFabrikElement($datas);
+
+                    $datas  = [
+                        'name'                 => 'status',
+                        'group_id'             => $setup_groups['group_id'],
+                        'plugin'               => 'databasejoin',
+                        'label'                => 'SETUP_GROUPS_AVAILABLE_STATUS',
+                        'show_in_list_summary' => 1
+                    ];
+                    $params = [
+                        'database_join_display_type' => 'multilist',
+                        'join_db_name' => 'jos_emundus_setup_status',
+                        'join_key_column' => 'step',
+                        'join_val_column' => 'value',
+                        'advanced_behavior' => 1
+                    ];
+                    $status_elt = EmundusHelperUpdate::addFabrikElement($datas, $params, false)['id'];
+
+                    $datas = [
+                        'list_id' => $setup_groups['id'],
+                        'element_id' => $status_elt,
+                        'join_from_table' => 'jos_emundus_setup_groups',
+                        'table_join' => 'jos_emundus_setup_groups_repeat_status',
+                        'table_key' => 'status',
+                        'table_join_key' => 'parent_id',
+                        'join_type' => 'left',
+                        'group_id' => 0,
+                    ];
+                    $params = [
+                        'type' => 'repeatElement',
+                        'pk' => '`jos_emundus_setup_groups_repeat_status`.`id`'
+                    ];
+                    EmundusHelperUpdate::addFabrikJoin($datas,$params);
+
+                    EmundusHelperUpdate::insertTranslationsTag('SETUP_GROUPS_FILTER_STATUS', 'Restreindre l\'accès à certains statuts');
+                    EmundusHelperUpdate::insertTranslationsTag('SETUP_GROUPS_FILTER_STATUS', 'Restricting access to certain statuses', 'override', null, null, null, 'en-GB');
+
+                    EmundusHelperUpdate::insertTranslationsTag('SETUP_GROUPS_AVAILABLE_STATUS', 'Statuts');
+                    EmundusHelperUpdate::insertTranslationsTag('SETUP_GROUPS_AVAILABLE_STATUS', 'Statuses', 'override', null, null, null, 'en-GB');
                 }
-                //pas sûr si c'est utile de faire ça
-                /*
-                EmundusHelperUpdate::cleanFalangContent(NULL,"emundus_setup_attachments",NULL);
-                $allIndexAttachement = EmundusHelperUpdate::getAllIndexAttachement();
-                EmundusHelperUpdate::cleanFalangContent($allIndexAttachement,"emundus_setup_attachments",NULL);
-                */
-            }
-        }
+			}
+		}
 
         return $succeed;
     }

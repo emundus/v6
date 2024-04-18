@@ -16,12 +16,13 @@
           :classes="'vue-notification-custom'"
       />
       <header class="em-flex-row em-flex-space-between">
-        <div class="right-actions">
+        <div class="right-actions em-p-12-16 em-flex-row em-pointer"
+             @click="clickGoBack">
           <span id="go-back"
-                class="material-icons-outlined em-p-12-16 em-pointer"
-                @click="clickGoBack">
+                class="material-icons-outlined">
             navigate_before
           </span>
+          <span class="em-ml-8 em-text-neutral-900" >{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
         </div>
           <span
             class="em-font-size-14  em-font-weight-600 editable-data"
