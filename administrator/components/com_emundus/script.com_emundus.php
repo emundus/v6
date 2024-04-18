@@ -4161,7 +4161,13 @@ if(in_array($applicant,$exceptions)){
 			}
 
 			if (version_compare($cache_version, '1.39.0', '<=') || $firstrun) {
-				EmundusHelperUpdate::addColumn('jos_fabrik_form_sessions', 'fnum', 'VARCHAR', 28);
+				$succeed['get_attachments_for_profile_event_added'] = EmundusHelperUpdate::addCustomEvents([
+					['label' => 'onAfterGetAttachmentsForProfile', 'category' => 'Files']
+				]);
+
+
+                // Sharing files feature
+                EmundusHelperUpdate::addColumn('jos_fabrik_form_sessions', 'fnum', 'VARCHAR', 28);
 
 				$query = 'ALTER TABLE `jos_fabrik_form_sessions` MODIFY `referring_url` VARCHAR(255) NULL';
 				$db->setQuery($query);
@@ -4175,7 +4181,6 @@ if(in_array($applicant,$exceptions)){
 				$db->setQuery($query);
 				$db->execute();
 
-				// Sharing files feature
 				require_once JPATH_ADMINISTRATOR . '/components/com_emundus/scripts/SharingFilesInstall.php';
 				$sharing_files_install   = new scripts\SharingFilesInstall();
 				$sharing_files_installed = $sharing_files_install->install();

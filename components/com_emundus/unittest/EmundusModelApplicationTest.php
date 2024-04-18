@@ -92,7 +92,7 @@ class EmundusModelApplicationTest extends TestCase
 		$this->assertNotEmpty($attachments);
 		$this->assertSame($attachments[0]->value, $search);
 		$this->assertSame(count($attachments), 1);
-		
+
 		// If i'am an applicant i should not be able to see attachments with can_be_viewed = 0
 		$attachments = $this->m_application->getUserAttachmentsByFnum($fnum, '', null, true, $user_id);
 		foreach ($attachments as $attachment) {
@@ -466,6 +466,54 @@ class EmundusModelApplicationTest extends TestCase
 			->where('id = ' . $db->quote($user_id_2));
 		$db->setQuery($query);
 		$db->execute();
+	}
+
+	public function testgetAttachmentsProgress() {
+		$db = Factory::getDbo();
+
+		$this->assertSame($this->m_application->getAttachmentsProgress([]), 0.0, 'getAttachmentsProgress should return 0 if application file does not exist');
+
+		$program = $this->h_sample->createSampleProgram();
+		$campaign = $this->h_sample->createSampleCampaign($program);
+		$fnum = $this->h_sample->createSampleFile($campaign, 95);
+        $this->assertNotEmpty($fnum);
+
+		$this->assertSame($this->m_application->getAttachmentsProgress($fnum), 0.0, 'getAttachmentsProgress should return 0.0 if no attachments are found');
+
+		$attachment = $this->h_sample->createSampleAttachment();
+        $this->assertGreaterThan(0, $attachment);
+
+		$upload_created = $this->h_sample->createSampleUpload($fnum, $campaign, 95, $attachment);
+        $this->assertTrue($upload_created);
+
+		$insert = [
+			'profile_id' => 9,
+			'attachment_id' => $attachment,
+			'mandatory' => 1,
+		];
+		$insert = (object) $insert;
+		$db->insertObject('#__emundus_setup_attachment_profiles', $insert);
+
+		$this->assertGreaterThan(0.0, $this->m_application->getAttachmentsProgress($fnum), 'getAttachmentsProgress should return more than 0.0 if an attachment were found');
+
+		$query = $db->getQuery(true);
+		$query->select('count(id)')
+			->from('#__emundus_setup_attachment_profiles')
+			->where('profile_id = 9')
+			->where('mandatory = 1');
+		$db->setQuery($query);
+		$mandatory_attachments = $db->loadResult();
+		$percentage = 1/$mandatory_attachments * 100;
+
+        $progress = $this->m_application->getAttachmentsProgress($fnum);
+        $this->assertIsFloat($progress, 'getAttachmentsProgress should return a float if only one fnun is passed');
+		$this->assertSame($progress, floor($percentage), 'getAttachmentsProgress should return exactly '.$percentage.' if one mandatory attachment is found');
+
+		$this->assertIsArray($this->m_application->getAttachmentsProgress([$fnum]), 'getAttachmentsProgress should return an array if fnum is an array');
+
+		$fnum_2 = $this->h_sample->createSampleFile($campaign, 95);
+
+		$this->assertSame(count($this->m_application->getAttachmentsProgress([$fnum, $fnum_2])),2, 'getAttachmentsProgress should return 2 entries');
 	}
 }
 

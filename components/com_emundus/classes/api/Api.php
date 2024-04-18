@@ -178,13 +178,14 @@ class Api
 	}
 
 
-	public function patch($url, $query_body_in_json)
+	public function patch($url, $query_body_in_json = null)
 	{
 		$response = ['status' => 200, 'message' => '', 'data' => ''];
 
 		try
 		{
-			$request = $this->client->patch($url, ['body' => $query_body_in_json, 'headers' => $this->getHeaders()]);
+			$request = $query_body_in_json !== null ? $this->client->patch($this->baseUrl.'/'.$url, ['body' => $query_body_in_json, 'headers' => $this->getHeaders()]) : $this->client->patch($url, ['headers' => $this->getHeaders()]);
+
 			$response['status'] = $request->getStatusCode();
 			$response['data'] = json_decode($request->getBody());
 		}

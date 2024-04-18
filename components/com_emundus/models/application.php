@@ -772,104 +772,113 @@ class EmundusModelApplication extends JModelList
      *
      * @since version
      */
-    public function getAttachmentsProgress($fnum = null)
-    {
-        if (empty($fnum) || (!is_array($fnum) && !is_numeric($fnum))) {
-            return false;
-        }
+	public function getAttachmentsProgress($fnums = null)
+	{
+		$progress = 0.0;
+		$return_array = true;
 
-        $session = JFactory::getSession();
-        $current_user = $session->get('emundusUser');
-        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
-        $m_profile = new EmundusModelProfile;
+		if (empty($fnums) || (!is_array($fnums) && !is_numeric($fnums))) {
+			$progress = 0.0;
+		} else {
+			$session = JFactory::getSession();
+			$current_user = $session->get('emundusUser');
+			require_once(JPATH_ROOT . '/components/com_emundus/models/profile.php');
+			require_once(JPATH_ROOT . '/components/com_emundus/models/checklist.php');
+			$m_profile = new EmundusModelProfile;
+			$m_checklist = new EmundusModelChecklist;
 
-        if (!is_array($fnum)) {
-            $profile_by_status = $m_profile->getProfileByStatus($fnum);
+			if (!is_array($fnums)) {
+				$fnums = [$fnums];
+				$return_array = false;
+			}
 
-            if (empty($profile_by_status['profile'])) {
-                $query = 'SELECT esc.profile_id AS profile_id, ecc.campaign_id AS campaign_id
-                FROM #__emundus_setup_campaigns AS esc
-                LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.campaign_id = esc.id
-                WHERE ecc.fnum like ' . $this->_db->Quote($fnum);
-                $this->_db->setQuery($query);
+			$result = array();
+			foreach ($fnums as $f) {
+				$result[$f] = 0.0;
 
-                $profile_by_status = $this->_db->loadAssoc();
-            }
+				$profile_by_status = $m_profile->getProfileByStatus($f);
 
-            $profile = !empty($profile_by_status['profile_id']) ? $profile_by_status['profile_id'] : $profile_by_status['profile'];
-            $profile_id = (!empty($current_user->fnums[$fnum]) && $current_user->profile != $profile && $current_user->applicant === 1) ? $current_user->profile : $profile;
-
-            $query = 'SELECT COUNT(profiles.id)
-                FROM #__emundus_setup_attachment_profiles AS profiles
-                WHERE profiles.campaign_id = ' . intval($profile_by_status['campaign_id']) . ' AND profiles.displayed = 1';
-
-
-            $this->_db->setQuery($query);
-            $attachments = $this->_db->loadResult();
-
-            if (intval($attachments) == 0) {
-                $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
-                FROM #__emundus_setup_attachment_profiles AS profiles
-                LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.fnum like ' . $this->_db->Quote($fnum) . '
-                WHERE profiles.profile_id = ' . $profile_id . ' AND profiles.displayed = 1 AND profiles.mandatory = 1';
-            } else {
-                $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
-                FROM #__emundus_setup_attachment_profiles AS profiles
-                LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.fnum like ' . $this->_db->Quote($fnum) . '
-                WHERE profiles.campaign_id = ' . $profile_by_status["campaign_id"] . ' AND profiles.displayed = 1 AND profiles.mandatory = 1';
-            }
-
-            $this->_db->setQuery($query);
-            $doc_result = $this->_db->loadResult();
-            $this->updateAttachmentProgressByFnum(floor($doc_result), $fnum);
-            return floor($doc_result);
-
-        } else {
-            $result = array();
-            foreach ($fnum as $f) {
-                $profile_by_status = $m_profile->getProfileByStatus($f);
-
-                if (empty($profile_by_status["profile"])) {
-                    $query = 'SELECT esc.profile_id AS profile_id, ecc.campaign_id AS campaign_id
+				if (empty($profile_by_status["profile"])) {
+					$query = 'SELECT esc.profile_id AS profile_id, ecc.campaign_id AS campaign_id
                 FROM #__emundus_setup_campaigns AS esc
                 LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.campaign_id = esc.id
                 WHERE ecc.fnum like ' . $this->_db->Quote($f);
-                    $this->_db->setQuery($query);
+					$this->_db->setQuery($query);
+					$profile_by_status = $this->_db->loadAssoc();
+				}
 
-                    $profile_by_status = $this->_db->loadAssoc();
-                }
+				if(!empty($profile_by_status))
+				{
+					$profile_id  = !empty($profile_by_status["profile_id"]) ? $profile_by_status["profile_id"] : $profile_by_status["profile"];
+					$campaign_id = $profile_by_status["campaign_id"];
 
-                $profile_id = !empty($profile_by_status["profile_id"]) ? $profile_by_status["profile_id"] : $profile_by_status["profile"];
+					$attachments = $m_checklist->getAttachmentsForProfile($profile_id, $campaign_id);
 
-                $query = 'SELECT COUNT(profiles.id)
-                FROM #__emundus_setup_attachment_profiles AS profiles
-                WHERE profiles.campaign_id = ' . intval($profile_by_status["campaign_id"]) . ' AND profiles.displayed = 1';
+					// verify
+					// check how many attachments are completed
+					$completion = 0;
 
-                $this->_db->setQuery($query);
-                $attachments = $this->_db->loadResult();
+					if (!empty($attachments))
+					{
+						$nb_mandatory_attachments = 0;
+						foreach ($attachments as $attachment)
+						{
+							if ($attachment->mandatory == 1)
+							{
+								$nb_mandatory_attachments++;
+							}
+						}
 
-                if (intval($attachments) == 0) {
-                    $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
-                    FROM #__emundus_setup_attachment_profiles AS profiles
-                    LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.fnum like ' . $this->_db->Quote($f) . '
-                    WHERE profiles.profile_id = ' . $profile_id . ' AND profiles.displayed = 1 AND profiles.mandatory = 1';
-                } else {
-                    $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
-                    FROM #__emundus_setup_attachment_profiles AS profiles
-                    LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.fnum like ' . $this->_db->Quote($f) . '
-                    WHERE profiles.campaign_id = ' . $profile_by_status["campaign_id"] . ' AND profiles.displayed = 1 AND profiles.mandatory = 1';
-                }
+						if ($nb_mandatory_attachments > 0)
+						{
+							foreach ($attachments as $attachment)
+							{
+								if ($attachment->mandatory == 1)
+								{
+									$query = $this->_db->getQuery(true);
 
-                $this->_db->setQuery($query);
-                $doc_result = $this->_db->loadResult();
-                $this->updateAttachmentProgressByFnum(floor($doc_result), $f);
-                $result[$f] = floor($doc_result);
-            }
-            return $result;
-        }
-    }
+									$query->select('count(*)')
+										->from($this->_db->quoteName('#__emundus_uploads'))
+										->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($f))
+										->andWhere($this->_db->quoteName('attachment_id') . ' = ' . $attachment->id);
+									$this->_db->setQuery($query);
+									$nb = $this->_db->loadResult();
+
+									if ($nb > 0)
+									{
+										$completion += 100 / $nb_mandatory_attachments;
+									}
+								}
+							}
+						}
+						else
+						{
+							$completion = 100;
+						}
+					}
+					else
+					{
+						$completion = 100;
+					}
+
+
+					$this->updateAttachmentProgressByFnum(floor($completion), $f);
+					$result[$f] = floor($completion);
+				}
+			}
+			$progress = $result;
+		}
+
+		if (!$return_array && count($progress) == 1) {
+			$progress = $progress[$fnums[0]];
+		}
+
+		return $progress;
+	}
 
     /**
+     * @deprecated since version 1.38.0, use getAttachmentsProgress instead
+     *
      * @param $fnum
      *
      * @return array|bool|false|float
@@ -913,12 +922,23 @@ class EmundusModelApplication extends JModelList
 
     public function updateAttachmentProgressByFnum($result, $fnum)
     {
-        $query = $this->_db->getQuery(true);
-        $query->update($this->_db->quoteName('#__emundus_campaign_candidature'))
-            ->set($this->_db->quoteName('attachment_progress') . ' = ' . $this->_db->quote($result))
-            ->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
-        $this->_db->setQuery($query);
-        return $this->_db->execute();
+		$updated = false;
+
+		if (!empty($fnum)) {
+			$query = $this->_db->getQuery(true);
+			$query->update($this->_db->quoteName('#__emundus_campaign_candidature'))
+				->set($this->_db->quoteName('attachment_progress') . ' = ' . $this->_db->quote($result))
+				->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
+
+			try {
+				$this->_db->setQuery($query);
+				$updated = $this->_db->execute();
+			} catch (Exception $e) {
+				$updated = false;
+			}
+		}
+
+        return $updated;
     }
 
     public function  checkFabrikValidations($fnum, $redirect = false, $itemId = null) {
@@ -2192,7 +2212,13 @@ class EmundusModelApplication extends JModelList
                                                 $elt = substr($element->content, 2, strlen($element->content));
                                             }
                                             elseif ($element->plugin == 'textarea') {
-	                                            $elt = nl2br($element->content);
+                                                $params = json_decode($element->params);
+
+                                                if (!empty($params) && $params->use_wysiwyg == 1) {
+                                                    $elt = $element->content;
+                                                } else {
+                                                    $elt = nl2br($element->content);
+                                                }
                                             }
 											else
 											{
@@ -2798,7 +2824,18 @@ class EmundusModelApplication extends JModelList
                                                     if ($elements[$j]->plugin == 'display') {
                                                         $forms .= '<tr><td colspan="2" style="background-color: var(--neutral-200);"><span style="color: #000000;">' . (!empty($params->display_showlabel) && !empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '') . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">' . $elt . '</span></td></tr><br/>';
                                                     } elseif ($elements[$j]->plugin == 'textarea') {
-                                                        $forms .= '<tr><td colspan="2" style="background-color: var(--neutral-200);"><span style="color: #000000;">' .  (!empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '')  . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">    ' . JText::_($elt) . '</span></td></tr>';
+                                                        $forms .= '</table>';
+                                                        $forms .= '<div style="width: 93.5%;padding: 8px 16px;">';
+                                                        $forms .= '<div style="width: 100%; padding: 4px 8px;background-color: #F3F3F3;color: #000000;border: solid 1px #A4A4A4;border-bottom: unset;font-size: 12px">' .  (!empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '')  . '</div>';
+
+                                                        $params = json_decode($elements[$j]->params);
+                                                        if (!empty($params) && $params->use_wysiwyg == 1) {
+                                                            $forms .= '<div style="width: 100%; padding: 4px 8px;color: #000000;border: solid 1px #A4A4A4;font-size: 12px">' . preg_replace('/<br\s*\/?>/','',JText::_($elt)) . '</div>';
+                                                        } else {
+                                                            $forms .= '<div style="width: 100%; padding: 4px 8px;color: #000000;border: solid 1px #A4A4A4;font-size: 12px">' . JText::_($elt) . '</div>';
+                                                        }
+                                                        $forms .= '</div>';
+                                                        $forms .= '<table class="pdf-forms">';
                                                     } else {
                                                         $forms .= '<tr><td colspan="1" style="background-color: var(--neutral-200);"><span style="color: #000000;">' . (!empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '') . '</span></td> <td> ' . (($elements[$j]->plugin != 'field') ? JText::_($elt) : $elt) . '</td></tr>';
                                                     }
@@ -3051,7 +3088,18 @@ class EmundusModelApplication extends JModelList
                                             if ($element->plugin == 'display') {
                                                 $forms .= '<tr><td colspan="2"><span style="color: #000000;">' . (!empty($params->display_showlabel) && !empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '') . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">' . $elt . '</span></td></tr><br/>';
                                             } elseif ($element->plugin == 'textarea') {
-                                                $forms .= '<tr><td colspan="2" style="background-color: var(--neutral-200);"><span style="color: #000000;">' .  (!empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '')  . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">  ' . JText::_($elt) . '</span></td></tr>';
+                                                $params = json_decode($element->params);
+
+                                                $forms .= '</table>';
+	                                            $forms .= '<div style="width: 93.5%;padding: 8px 16px;">';
+	                                            $forms .= '<div style="width: 100%; padding: 4px 8px;background-color: #F3F3F3;color: #000000;border: solid 1px #A4A4A4;border-bottom: unset;font-size: 12px">' .  (!empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '')  . '</div>';
+                                                if (!empty($params) && $params->use_wysiwyg == 1) {
+                                                    $forms .= '<div style="width: 100%; padding: 4px 8px;color: #000000;border: solid 1px #A4A4A4;font-size: 12px">' . preg_replace('/<br\s*\/?>/','',JText::_($elt)) . '</div>';
+                                                } else {
+                                                    $forms .= '<div style="width: 100%; padding: 4px 8px;color: #000000;border: solid 1px #A4A4A4;font-size: 12px">' . JText::_($elt) . '</div>';
+                                                }
+	                                            $forms .= '</div>';
+	                                            $forms .= '<table class="pdf-forms">';
                                             } else {
                                                 $forms .= '<tr><td colspan="1" style="background-color: var(--neutral-200);"><span style="color: #000000;">' . (!empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '') . '</span></td> <td> ' . (($element->plugin != 'field') ? JText::_($elt) : $elt) . '</td></tr>';
                                             }
@@ -3081,6 +3129,7 @@ class EmundusModelApplication extends JModelList
             $forms .= $list_upload_files;
 			$forms .= '</div>';
         }
+		
         return $forms;
     }
 
@@ -3486,9 +3535,7 @@ class EmundusModelApplication extends JModelList
             $query = "SELECT DISTINCT eu.*, sa.value 
                         FROM #__emundus_uploads as eu
                         LEFT JOIN #__emundus_setup_attachments as sa ON sa.id = eu.attachment_id
-                        LEFT JOIN #__emundus_setup_attachment_profiles as sap ON sap.id  = (
-                        SELECT id FROM #__emundus_setup_attachment_profiles sap2 WHERE sap2.attachment_id = sa.id and sap2.profile_id IN (".implode(',',$profiles_by_campaign).")
-                        )
+                        LEFT JOIN #__emundus_setup_attachment_profiles as sap ON sap.attachment_id = sa.id AND sap.profile_id IN (".implode(',',$profiles_by_campaign).")
                         WHERE fnum like ".$this->_db->quote($fnum);
 
             if (isset($attachment_id) && !empty($attachment_id)){
