@@ -692,6 +692,7 @@ $(document).ready(function () {
 		const checkInput = getUserCheck();
 
 		/**
+		 * 6: export user CSV format
 		 * 19: create group
 		 * 20: create user
 		 * 21: activate
@@ -882,9 +883,6 @@ $(document).ready(function () {
 
 			case 6:
 				addLoader();
-				title = 'COM_EMUNDUS_CREATE_CSV';
-				swal_confirm_button = 'COM_EMUNDUS_EXPORTS_GENERATE_EXCEL';
-				preconfirm = "var atLeastOneChecked = false; $('.form-group input[type=\"checkbox\"]').each(function() { if ($(this).is(':checked')) { atLeastOneChecked = true; return false; } }); if (!atLeastOneChecked) { Swal.showValidationMessage(Joomla.JText._('COM_EMUNDUS_EXPORTS_SELECT_AT_LEAST_ONE_INFORMATION')); }";
 				await $.ajax({
 					type: 'get',
 					url: url,
@@ -896,8 +894,9 @@ $(document).ready(function () {
 						removeLoader();
 
 						swalForm = true;
-						title = 'COM_EMUNDUS_CREATE_CSV';
+						title = 'COM_EMUNDUS_EXPORT_USER';
 						swal_confirm_button = 'COM_EMUNDUS_EXPORTS_GENERATE_EXCEL';
+						preconfirm = "var atLeastOneChecked = false; $('.form-group input[type=\"checkbox\"], .all-boxes input[type=\"checkbox\"]').each(function() { if ($(this).is(':checked')) { atLeastOneChecked = true; return false; } }); if (!atLeastOneChecked) { Swal.showValidationMessage(Joomla.JText._('COM_EMUNDUS_EXPORTS_SELECT_AT_LEAST_ONE_INFORMATION')); }";
 						html = result;
 					},
 					error: function (jqXHR) {
@@ -1129,6 +1128,7 @@ $(document).ready(function () {
 		}
 
 		/**
+		 * 6: export user CSV format
 		 * 19: create group
 		 * 20: create user
 		 * 21: activate
@@ -1148,6 +1148,7 @@ $(document).ready(function () {
 				var checkBoxesProps = {};
 				var allChecked = $('#checkbox-all').prop('checked');
 
+				// First verify all checkboxes if it has been selected
 				$('input[type="checkbox"]').each(function() {
 					if ($(this).attr('value') !== 'all') {
 						var checkboxValue = $(this).attr('value');
@@ -1155,6 +1156,7 @@ $(document).ready(function () {
 					}
 				});
 
+				// Then keep only the ones selected in the array checkedBoxes
 				var checkedBoxes = {};
 				for (var key in checkBoxesProps) {
 					if (checkBoxesProps.hasOwnProperty(key) && checkBoxesProps[key]) {
@@ -1182,6 +1184,7 @@ $(document).ready(function () {
 							showCancelButton: true,
 							showConfirmButton: true,
 							confirmButtonText: Joomla.JText._('COM_EMUNDUS_ATTACHMENTS_DOWNLOAD'),
+							cancelButtonText: Joomla.JText._('JCANCEL'),
 							reverseButtons: true,
 							allowOutsideClick: false,
 							customClass: {
@@ -1717,6 +1720,9 @@ function createScrollbarForElement(element, id) {
 	element.parentNode.insertBefore(new_scrollbar, element);
 }
 
+/*
+ * Send the file in parameters to the browser to be download
+ */
 function download(fileUrl, fileName) {
 	var a = document.createElement("a");
 	a.href = fileUrl;
@@ -1724,4 +1730,27 @@ function download(fileUrl, fileName) {
 	a.click();
 }
 
+/*
+ * Check/Uncheck checkboxes according to the "all" checkbox
+ * (Only use in the file components/com_emundus/views/users/tmpl/export.php for now)
+ */
+function checkAllUserElement(checkbox) {
+	let allChecked = checkbox.checked;
+	var checkboxes = document.querySelectorAll('input[type=checkbox][id^=checkbox-]');
+	checkboxes.forEach(function (checkbox) {
+		checkbox.checked = allChecked;
+	});
+}
+
+/*
+ * Uncheck the "all" checkbox when an another checkbox is uncheck
+ * (Only use in the file components/com_emundus/views/users/tmpl/export.php for now)
+ */
+function uncheckCheckboxAllElement(checkbox)
+{
+	var allCheckbox = document.getElementById('checkbox-all');
+	if (!checkbox.checked && allCheckbox.checked) {
+		allCheckbox.checked = false;
+	}
+}
 

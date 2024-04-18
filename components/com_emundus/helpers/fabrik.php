@@ -1039,6 +1039,10 @@ die("<script>
         return $formattedValue;
     }
 
+    /*
+     * Format an element value
+     * Especially useful in a foreign key situation
+     */
     static function formatElementValue($elt_name, $raw_value)
     {
         $formatted_value = $raw_value;
@@ -1054,6 +1058,7 @@ die("<script>
 
         $params = json_decode($element->params, true);
 
+        // According to the plugin the treatment will be different
         switch ($element->plugin) {
             case($element->plugin == 'date'):
                 $date_format = $params['date_form_format'];
@@ -1067,11 +1072,14 @@ die("<script>
                 $formatted_value = self::getFormattedPhoneNumberValue($raw_value);
                 break;
 
-
+            // databasejoin indicate a foreign key situation
             case ($element->plugin == 'databasejoin'):
                 $db = JFactory::getDbo();
                 $query = $db->getQuery(true);
 
+                // We first check if we will use concatenation or not
+                // Then we look to the language of the user to translate into
+                // the good language
                 if (!empty($params['join_val_column_concat'])) {
                     $lang = substr(JFactory::getLanguage()->getTag(), 0, 2);
                     $params['join_val_column_concat'] = str_replace('{thistable}', $params['join_db_name'], $params['join_val_column_concat']);
@@ -1082,6 +1090,7 @@ die("<script>
                     $query->select($db->quoteName($params['join_val_column']));
                 }
 
+                // Finally we retrieve our value into the right table and column
                 $query->from($db->quoteName($params['join_db_name']))
                     ->where($db->quoteName($params['join_key_column']) . ' = ' . $db->quote($raw_value));
 

@@ -46,6 +46,7 @@ JLog::addLogger(
 JText::script('PLEASE_SELECT');
 JText::script('IN');
 JText::script('ALL');
+JText::script('ALL_FEMININE');
 JText::script('USERNAME');
 JText::script('EMAIL');
 JText::script('APPLICATION_CREATION_DATE');
@@ -258,6 +259,7 @@ JText::script('COM_EMUNDUS_ERROR_CSV_CAPACITY');
 JText::script('COM_EMUNDUS_XLS_GENERATION');
 JText::script('COM_EMUNDUS_EXPORT_FINISHED');
 JText::script('COM_EMUNDUS_ERROR_CAPACITY_XLS');
+JText::script('COM_EMUNDUS_EXPORT_USER');
 JText::script('COM_EMUNDUS_CREATE_CSV');
 JText::script('COM_EMUNDUS_ATTACHMENTS_DOWNLOAD');
 JText::script('COM_EMUNDUS_ATTACHMENTS_DOWNLOAD_READY');

@@ -3691,6 +3691,10 @@ class EmundusModelUsers extends JModelList {
         return str_shuffle($password);
     }
 
+    /*
+     * Return all data of a user in jos_users table
+     * User's id is necessaray
+     */
     public function getJosUsersById($uid)
     {
         $db = JFactory::getDbo();
@@ -3704,6 +3708,10 @@ class EmundusModelUsers extends JModelList {
         return $db->loadObject();
     }
 
+    /*
+     * Return all data of a profile in jos_emundus_setup_profiles table
+     * Profile's id is necessaray
+     */
     public function getProfileById($pid)
     {
         $db = JFactory::getDbo();
@@ -3718,7 +3726,11 @@ class EmundusModelUsers extends JModelList {
         return $db->loadObject();
     }
 
-    public function getGroupsById($uid)
+    /*
+     * Return all data of groupe(s)'s user in jos_emundus_setup_groupes table
+     * User's id is necessaray
+     */
+    public function getUserGroupsById($uid)
     {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -3733,6 +3745,9 @@ class EmundusModelUsers extends JModelList {
         return $db->loadObjectList();
     }
 
+    /*
+     * Return all columns of a profile form
+     */
     public function getColumnsForm() {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -3753,81 +3768,135 @@ class EmundusModelUsers extends JModelList {
 
     public function getAllInformationsToExport($uid)
     {
-        $columnsForm = $this->getColumnsForm();
+        // Retrieve all columns of profile form
+        $columns = $this->getColumnsForm();
+
+        // Configure the hour according to the location
+        $config = JFactory::getConfig();
+        $config_offset = $config->get('offset');
+        $offset = $config_offset ?: 'Europe/Paris';
+        $timezone = new DateTimeZone($offset);
+
+        // Necessary to retrieve data not available in the profile form
+        // (email, username, registerDate of the user, last connexion date of a user, profile and groups)
         $user = $this->getUserById($uid);
-
         $userProfile = $this->getProfileById($user[0]->profile);
-        $userGroups = $this->getGroupsById($uid);
-
+        $userGroups = $this->getUserGroupsById($uid);
         $josUser = $this->getJosUsersById($uid);
 
         $email = isset($josUser->email) ? $josUser->email : '';
         $username = isset($josUser->username) ? $josUser->username : '';
+        $registerDate = isset($josUser->registerDate) ? $josUser->registerDate : '';
+        $lastvisitDate = isset($josUser->lastvisitDate) ? $josUser->lastvisitDate : '';
         $profile = isset($userProfile->description) ? $userProfile->description : '';
 
+        // Set the right format date according to the location
+        $registerDate = EmundusHelperDate::displayDate($registerDate, 'COM_EMUNDUS_DATE_FORMAT', $timezone === 'UTC' ? 1 : 0);
+        $lastvisitDate = EmundusHelperDate::displayDate($lastvisitDate, 'COM_EMUNDUS_DATE_FORMAT', $timezone === 'UTC' ? 1 : 0);
+
+        // We only need the labal of each group
         $groups = array();
         foreach ($userGroups as $group) {
             $groups[] = $group->label;
         }
 
-        $columns = $columnsForm;
+        // Create an array with array of each data not in the profile form
+        // Necessary to be coherent with the data in the profile form
+        // We indeed need id, name, plugin, label and value at least for each
+        $userData = array(
+            'email' => (object)array(
+                'id' => null,
+                'name' => 'email',
+                'plugin' => null,
+                'label' => 'COM_EMUNDUS_EMAIL',
+                'value' => $email
+            ),
+            'username' => (object)array(
+                'id' => null,
+                'name' => 'username',
+                'plugin' => null,
+                'label' => 'COM_EMUNDUS_USERNAME',
+                'value' => $username
+            ),
+            'profile' => (object)array(
+                'id' => null,
+                'name' => 'profil',
+                'plugin' => null,
+                'label' => 'COM_EMUNDUS_PROFILE',
+                'value' => $profile
+            ),
+            'groups' => (object)array(
+                'id' => null,
+                'name' => 'groupes',
+                'plugin' => null,
+                'label' => 'COM_EMUNDUS_GROUPE',
+                'value' => implode(', ', $groups) // In case the user has multiple groups
+            ),
+            'registerDate' => (object)array(
+                'id' => null,
+                'name' => 'registerDate',
+                'plugin' => null,
+                'label' => 'COM_EMUNDUS_REGISTERDATE',
+                'value' => $registerDate
+            ),
+            'lastvisitDate' => (object)array(
+                'id' => null,
+                'name' => 'lastvisitDate',
+                'plugin' => null,
+                'label' => 'COM_EMUNDUS_LASTVISITDATE',
+                'value' => $lastvisitDate
+            )
+        );
 
-        $emailColumn = new stdClass();
-        $emailColumn->id = null;
-        $emailColumn->name = 'email';
-        $emailColumn->plugin = null;
-        $emailColumn->label = 'COM_EMUNDUS_EMAIL';
-        $emailColumn->value = $email;
-        $columns[] = $emailColumn;
 
-        $usernameColumn = new stdClass();
-        $usernameColumn->id = null;
-        $usernameColumn->name = 'username';
-        $usernameColumn->plugin = null;
-        $usernameColumn->label = 'COM_EMUNDUS_USERNAME';
-        $usernameColumn->value = $username;
-        $columns[] = $usernameColumn;
+        // Create a complete array with all the data we want
+        $data = array(
+            'columns' => $columns,
+            'user_data' => $userData
+        );
 
-        $profileColumn = new stdClass();
-        $profileColumn->id = null;
-        $profileColumn->name = 'profil';
-        $profileColumn->plugin = null;
-        $profileColumn->label = 'COM_EMUNDUS_PROFILE';
-        $profileColumn->value = $profile;
-        $columns[] = $profileColumn;
-
-        $groupsColumn = new stdClass();
-        $groupsColumn->id = null;
-        $groupsColumn->name = 'groupes';
-        $groupsColumn->plugin = null;
-        $groupsColumn->label = 'COM_EMUNDUS_GROUPE';
-        $groupsColumn->value = implode(', ', $groups);
-        $columns[] = $groupsColumn;
-
-        usort($columns, function($a, $b) {
+        // Sort alphabetically all the columns
+        usort($data['columns'], function($a, $b) {
             return strcmp(JText::_($a->label), JText::_($b->label));
         });
 
-        return $columns;
+        usort($data['user_data'], function($a, $b) {
+            return strcmp(JText::_($a->label), JText::_($b->label));
+        });
+
+        return $data;
     }
 
 
+
+    /*
+     * Return an array of user data without foreign key
+     */
     public function getUserDetails($uid) {
-
         $columns = $this->getAllInformationsToExport($uid);
-
         $user = $this->getUserById($uid);
 
-        foreach ($columns as $column) {
-            if($column->value == null)
-            {
-                $userDetails[$column->label] = EmundusHelperFabrik::formatElementValue($column->name, $user[0]->{$column->name});
-            }
-            else{
-                $userDetails[$column->label] = $column->value;
+        $userDetails = array();
+
+        foreach ($columns['columns'] as $column) {
+            if ($column->value == null) {
+                // If necessary, call a function that will "translate" a foreign key into the true value
+                // For example, nationality is indicated with a foreign key, so the formatElementValue() function is needed
+                $userDetails[$column->name] = EmundusHelperFabrik::formatElementValue($column->name, $user[0]->{$column->name});
+            } else {
+                $userDetails[$column->name] = $column->value;
             }
         }
+
+        foreach ($columns['user_data'] as $field) {
+            // Not profile form data doesn't need an if/else situation because we already indicated their value in the
+            // getAllInformationsToExport() function
+                $userDetails[$field->name] = $field->value;
+        }
+
         return $userDetails;
     }
+
+
 
 }
