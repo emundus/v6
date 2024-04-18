@@ -1562,7 +1562,7 @@ class EmundusModelFiles extends JModelLegacy
                 $user = JFactory::getUser();
                 $user_id = !empty($user->id) ? $user->id : 62;
             }
-            $all_status = $this->getAllStatus($user_id);
+            $all_status = $this->getAllStatus($user_id, 'step');
 
             if (isset($all_status[$state])) {
                 $db = $this->getDbo();
