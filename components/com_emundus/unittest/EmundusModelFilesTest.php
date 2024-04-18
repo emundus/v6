@@ -98,14 +98,15 @@ class EmundusModelFilesTest extends TestCase{
         $this->assertIsArray($fnums, 'getusers returns an array');
 
         $user_id = $this->h_sample->createSampleUser(9, 'unit-test-candidat-' . rand(0, 1000) . '@emundus.test.fr');
-        $program = $this->h_sample->createSampleProgram();
+        $program = $this->h_sample->createSampleProgram('Nouveau programme');
 	    $campaign_id = $this->h_sample->createSampleCampaign($program);
         $fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
+        $this->assertNotEmpty($fnum);
 
 	    $session = JFactory::getSession();
 	    $session->set('filt_params', ['programme' => [$program['programme_code']]]);
 
-	    $fnums = $this->m_files->getAllFnums();
+	    $fnums = $this->m_files->getAllFnums(false, 62);
 	    $this->assertNotEmpty($fnums, 'if a fnum exists, by default get users should return a value');
 		$this->assertTrue(in_array($fnum, $fnums), 'If a fnum is associated to me. I should see it.');
     }

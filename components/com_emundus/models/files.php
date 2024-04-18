@@ -2038,17 +2038,19 @@ class EmundusModelFiles extends JModelLegacy
      * @return bool|mixed
      * @throws Exception
      */
-    public function getAllFnums($assoc_tab_fnums = false) {
+    public function getAllFnums($assoc_tab_fnums = false, $current_user_id = null) {
         include_once(JPATH_SITE.'/components/com_emundus/models/users.php');
         $m_users = new EmundusModelUsers;
 
-        $current_user = JFactory::getUser();
+        if (empty($current_user_id)) {
+            $current_user_id = JFactory::getUser()->id;
+        }
 
-        $this->code = $m_users->getUserGroupsProgrammeAssoc($current_user->id);
+        $this->code = $m_users->getUserGroupsProgrammeAssoc($current_user_id);
 
-        $groups = $m_users->getUserGroups($current_user->id, 'Column');
+        $groups = $m_users->getUserGroups($current_user_id, 'Column');
         $fnum_assoc_to_groups = $m_users->getApplicationsAssocToGroups($groups);
-        $fnum_assoc_to_user = $m_users->getApplicantsAssoc($current_user->id);
+        $fnum_assoc_to_user = $m_users->getApplicantsAssoc($current_user_id);
         $this->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc_to_user);
 
         $files = $this->getAllUsers(0, 0);
