@@ -1180,7 +1180,7 @@ class EmundusControllersettings extends JControllerLegacy
                 $timezone_id = $timezone['timezone_id'];
                 if (!empty($city)) {
                     $cities_offsets[$timezone_id] = array(
-                        "label" => $city . ' : ' . $offset . ' h UTC',
+                        "label" => $city . ' : ' . $offset . 'h UTC',
                         "value" => $value
                     );
                 }

@@ -31,22 +31,25 @@
       </h1>
       <div id="accordion-collapse" v-for="(x, index1) in SubMenus[indexMenuClick]"
            v-if="SubMenus[indexMenuClick][index1].type!=='Tile'"
-
            class="flex flex-col justify-between w-full p-5 font-medium rtl:text-right text-black border border-gray-200 rounded bg-white mb-3 hover:bg-gray-100 gap-3 "
            data-accordion-target="#accordion-collapse-body-1" aria-expanded="true"
            aria-controls="accordion-collapse-body-1"
            style="box-shadow:0.1em 0.05em 0.05em grey;">
         <div @click="handleSubMenuClick(index1)">
-          <h1 id="accordion-collapse-heading-1" class="flex flex-row justify-between">
+          <h1 id="accordion-collapse-heading-1" class="flex flex-row justify-between cursor-pointer">
             <div class="flex flex-row">
               <span :id="'Subtile'+index1" class="em-font-size-24 ">{{
                   translate(SubMenus[indexMenuClick][index1].label)
                 }}</span>
               <div v-if="SubMenus[indexMenuClick][index1].notify === 1 ">
-                <div v-if="$data.notifRemain"
+                <div v-if="$data.notifRemain > -1"
                      class="inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-2 -end-2 ">
-                  {{ $data.notifRemain }}
+                  <div v-if="$data.notifRemain >0">{{ $data.notifRemain }}</div>
                 </div>
+
+              </div>
+              <div v-if="SubMenus[indexMenuClick][index1].helptext !== '' ">
+                <span class="material-icons-outlined scale-150 ml-2 mt-2">info</span>
               </div>
             </div>
             <i class="material-icons-outlined scale-150" :id="'SubtitleArrow'+index1" name="SubtitleArrows"
@@ -67,15 +70,15 @@
                 <span :id="'SubSectionTile'+index2" class="em-font-size-16">{{ translate(option.label) }}</span>
                 <i class="material-icons-outlined scale-150" :id="'SubSectionArrow'+index2" name="SubSectionArrows"
                    style="transform-origin: unset">expand_more</i>
-                <div v-if="$data.notifCheck[index2]===1"
-                     class="inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-2 -end-2 ">
-                  {{ option.important }}
+                <div v-if="$data.notifCheck[index2]===true"
+                     class="inline-flex w-6 h-6 bg-red-500 border-2 border-white rounded-full -top-2 -end-2 ">
                 </div>
               </div>
               <div :id="'SubSection-'+index2" name="SubSectionContent" style="display: none" class="flex flex-col ">
                 <div v-for="(option1,index3) in option.elements">
                   <div class="flex flex-col" v-if="option1.type_field === 'component'">
-                    <component :is="option1.component" v-bind="option1.props"></component>
+                    <component :is="option1.component" v-bind="option1.props"
+                               @NeedNotify="value =>countNotif(value,index2)"></component>
                   </div>
                 </div>
               </div>
@@ -100,6 +103,7 @@
             <div class="flex flex-col" v-if="option.type_field === 'sqldropdown'">
               <div v-if="option.name === 'offset'">
                 <multiselect
+                    :filteredOptions=[]
                     v-model="$data.baseTimeZone"
                     label="label"
                     track-by="value"
@@ -198,7 +202,8 @@ import Translations from "@/components/Settings/TranslationTool/Translations.vue
 import Orphelins from "@/components/Settings/TranslationTool/Orphelins.vue";
 import EditArticle from "@/components/Settings/Content/EditArticle.vue";
 import EditorQuill from "@/components/editorQuill.vue";
-import axios from "axios";
+import axios from "axios"
+import GlobalLang from "@/components/Settings/TranslationTool/Global.vue";
 
 import Multiselect from 'vue-multiselect';
 import {forEach} from "lodash";
@@ -222,7 +227,7 @@ export default {
     EditStatus,
     EditTags,
     Multiselect,
-
+    GlobalLang,
 
   },
   props: {
@@ -260,7 +265,7 @@ export default {
     notifCheck: [],
 
     selectedOffset: null,
-    timeZoneLand: null,
+    timeZoneLand: [],
     baseTimeZone: null,
 
 
@@ -277,9 +282,7 @@ export default {
     this.loading = false;
   },
   mounted() {
-
-    this.notifRemain = this.countNotif();
-    this.notifCheck = new Array(this.notifRemain).fill(1);
+    this.URLMenu();
   },
 
   methods: {
@@ -287,38 +290,6 @@ export default {
       document.getElementById("header-b").style.display = "none";
       document.getElementById("g-navigation").style.display = "none";
     },
-
-    countNotif() {
-      let data = SettingParam;
-
-      function countImportant(obj) {
-        let count = 0;
-
-        // Check if the current object is an array
-        if (Array.isArray(obj)) {
-          // If it's an array, iterate over its elements
-          obj.forEach(item => {
-            count += countImportant(item);
-          });
-        } else if (typeof obj === 'object' && obj !== null) {
-          // If it's an object, iterate over its properties
-          Object.keys(obj).forEach(key => {
-            if (key === 'important' || obj[key] === 'important') {
-              count++;
-            }
-            count += countImportant(obj[key]);
-          });
-        }
-
-        return count;
-      }
-
-// Call the function with your JSON data
-      const importantCount = countImportant(data);
-      return importantCount;
-
-    },
-
     getParamFromjson() {
       return new Promise((resolve) => {
         SettingParam.forEach(i => {
@@ -329,24 +300,58 @@ export default {
       });
 
     },
+    getTimeZone() {
+      return new Promise((resolve) => {
+        axios({
+          method: "get",
+          url: 'index.php?option=com_emundus&controller=settings&task=getTimeZone',
+        }).then((rep) => {
+          this.baseTimeZone = rep.data.baseData;
+          this.timeZoneLand = rep.data.data1;
+        });
+
+        resolve(true);
+      });
+    },
+    // todo handling of the select of offset
+    URLMenu() {
+      const url = new URL(window.location.href);
+      if (url.search) {
+        const params = new URLSearchParams(url.search);
+        const menu = params.get("Menu");
+        const section = params.get("section");
+        const indexMenu = this.searchMenu(menu)
+        this.handleMenuButtonClick(indexMenu  , this.Menus[indexMenu]);
+        const indexSubSection = this.searchSubMenu(indexMenu, section);
+        //wait thant this.handleMenuButtonClick(indexMenu  , this.Menus[indexMenu]) is finished
+        if (indexSubSection !== -1) {
+          this.handleSubMenuClick(indexSubSection);
+        }
+      } else {
+        this.handleMenuButtonClick(0, this.Menus[0]);
+      }
+    },
+    searchMenu(menu) {
+      return this.Menus.findIndex(value => value.name === menu);
+    },
+    searchSubMenu(menu, section) {
+      return this.SubMenus[menu].findIndex(value => value.name === section);
+    },
     handleMenuButtonClick(index, item) {
       this.resetMenuButtons();
       this.toggleMenuButton(index, item);
     },
-
     resetMenuButtons() {
       this.MenuisClicked.fill(false);
       this.SubMenuisClicked.fill(false);
       this.resetStyles();
     },
-
     resetStyles() {
       document.getElementsByName("SubtitleArrows").forEach(element => element.style.rotate = '0deg');
       document.getElementsByName("bouton-Menu").forEach(element => element.classList.remove('green-Menubutton'));
       document.getElementsByName("SubMenuContent").forEach(element => element.style.display = 'none');
       document.getElementsByName("icon-Menu").forEach(element => element.style.color = '#000000');
     },
-
     toggleMenuButton(index, item) {
       this.aMenu = item;
       this.MenuisClicked[index] = !this.MenuisClicked[index];
@@ -358,31 +363,10 @@ export default {
         this.indexMenuClick = null;
       }
     },
-
-
-
     handleSubMenuClick(index) {
-
       this.resetSubMenuButtons(index);
       this.toggleSubMenuButton(index);
     },
-
-    checkNotif(index) {
-      this.notifCheck[index] = 0;
-      let count = 0;
-      forEach(this.notifCheck, function(value) {
-        count += value;
-      });
-      this.notifRemain = count;
-    },
-
-    handleSubSectionClick(index) {
-      this.resetSubSectionButtons(index);
-      this.toggleSubSectionButton(index);
-      this.checkNotif(index);
-
-    },
-
     resetSubMenuButtons(index) {
       if (this.SubMenuisClicked[index]) {
         this.SubMenuisClicked.fill(false);
@@ -390,9 +374,45 @@ export default {
       } else {
         this.SubMenuisClicked.fill(false);
       }
+
       this.resetSubMenuStyles();
     },
+    resetSubMenuStyles() {
+      document.getElementsByName("SubtitleArrows").forEach(element => element.style.rotate = '0deg');
+      document.getElementsByName("SubMenuContent").forEach(element => element.style.display = 'none');
+    },
 
+    toggleSubMenuButton(index) {
+      console.log("index" + index);
+      console.log("array subMenu");
+      console.log(this.SubMenuisClicked);
+      console.log(this.SubMenuisClicked[index]);
+      this.SubMenuisClicked[index] = !this.SubMenuisClicked[index];
+      if (this.SubMenuisClicked[index]) {
+        document.getElementById('SubtitleArrow' + index).style.rotate = '-180deg';
+        document.getElementById('SubMenu-' + index).style.display = 'flex';
+      }
+    },
+    countNotif(notif, index) {
+      if (notif === true) {
+        this.notifRemain += 1;
+        this.notifCheck[index] = true;
+      } else {
+        if (this.notifCheck[index] === true) {
+          this.notifRemain -= 1;
+          this.notifCheck[index] = false;
+        }
+      }
+      if (this.notifRemain === 0) {
+        this.notifRemain = -1;
+      }
+    },
+
+
+    handleSubSectionClick(index) {
+      this.resetSubSectionButtons(index);
+      this.toggleSubSectionButton(index);
+    },
     resetSubSectionButtons(index) {
       if (this.SubSectionisClicked[index]) {
         this.SubSectionisClicked.fill(false);
@@ -402,20 +422,6 @@ export default {
       }
       this.resetSubSectionStyles();
     },
-
-    resetSubMenuStyles() {
-      document.getElementsByName("SubtitleArrows").forEach(element => element.style.rotate = '0deg');
-      document.getElementsByName("SubMenuContent").forEach(element => element.style.display = 'none');
-    },
-
-    toggleSubMenuButton(index) {
-      this.SubMenuisClicked[index] = !this.SubMenuisClicked[index];
-      if (this.SubMenuisClicked[index]) {
-        document.getElementById('SubtitleArrow' + index).style.rotate = '-180deg';
-        document.getElementById('SubMenu-' + index).style.display = 'flex';
-      }
-    },
-
     toggleSubSectionButton(index) {
       this.SubSectionisClicked[index] = !this.SubSectionisClicked[index];
       if (this.SubSectionisClicked[index]) {
@@ -423,7 +429,6 @@ export default {
         document.getElementById('SubSection-' + index).style.display = 'flex';
       }
     },
-
     resetSubSectionStyles() {
       document.getElementsByName("SubSectionArrows").forEach(element => element.style.rotate = '0deg');
       document.getElementsByName("SubSectionContent").forEach(element => element.style.display = 'none');
@@ -448,20 +453,7 @@ export default {
        */
       window.location.href = link;
     },
-    getTimeZone() {
-      return new Promise((resolve) => {
-        axios({
-          method: "get",
-          url: 'index.php?option=com_emundus&controller=settings&task=getTimeZone',
-        }).then((rep) => {
-          this.baseTimeZone = rep.data.baseData;
-          this.timeZoneLand = rep.data.data1;
-        });
 
-        resolve(true);
-      });
-    },
-    // todo handling of the select
   },
 
   computed: {},

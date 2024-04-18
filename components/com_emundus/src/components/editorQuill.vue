@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div :class="'editor_'+this.$attrs.id"></div>
+    <div @focusout="saveText()" :class="'editor_'+this.$attrs.id"></div>
   </div>
 </template>
 
@@ -164,6 +164,10 @@ export default {
     });
   },
   methods: {
+    saveText () {
+      console.log('focusout');
+      this.$emit('Edit-Out');
+    },
     async imageHandler() {
       const input = document.createElement('input');
 

@@ -556,11 +556,12 @@ class EmundusModelsettings extends JModelList {
      * @param $article_id
      * @param $article_alias
      * @param $reference_field
+     * @param string $note
      * @return false|mixed
      *
      * @since 1.29.0
      */
-    function updateArticle($content,$lang_code,$article_id = 0,$article_alias = '',$reference_field = 'introtext') {
+    function updateArticle($content,$lang_code,$article_id = 0,$article_alias = '',$reference_field = 'introtext' , $note = '') {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -601,6 +602,7 @@ class EmundusModelsettings extends JModelList {
                 $query->clear()
                     ->update($db->quoteName('#__content'))
                     ->set($db->quoteName('introtext') . ' = ' . $db->quote($content))
+                    ->set($db->quoteName('note') . ' = ' . $db->quote($note))
                     ->where($db->quoteName('id') . ' = ' . $article->id);
                 $db->setQuery($query);
                 return $db->execute();

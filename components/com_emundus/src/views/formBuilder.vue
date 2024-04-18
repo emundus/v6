@@ -222,12 +222,13 @@ export default {
             active: false,
             displayed: false
           },
+            //todo
           {
             title: 'Translations',
             icon: 'translate',
             active: false,
             displayed: true,
-            url: '/parametres-globaux?layout=translation&default_menu=2&object=emundus_setup_profiles'
+            url: '/parametres-globaux?Menu=translate&section=translations'
           },
         ],
       },
@@ -244,7 +245,7 @@ export default {
 	  this.campaign_id = data.cid.value;
 
 	  if (data && data.settingsmenualias && data.settingsmenualias.value) {
-		  this.leftPanel.tabs[2].url = '/' + data.settingsmenualias.value + '?layout=translation&default_menu=2&object=emundus_setup_profiles';
+		  //this.leftPanel.tabs[2].url = '/' + data.settingsmenualias.value + '?layout=translation&default_menu=2&object=emundus_setup_profiles';
 	  }
 
 	  if (data && data.mode && data.mode.value) {
@@ -259,7 +260,7 @@ export default {
 		}
 
 	  if (this.profile_id > 0) {
-		  this.leftPanel.tabs[2].url += '&data=' + this.profile_id;
+		  //this.leftPanel.tabs[2].url += '&data=' + this.profile_id;
 	  }
 
 	  this.getFormTitle();

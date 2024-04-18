@@ -39,7 +39,8 @@
       </div>
 
       <div class="form-group controls">
-        <editor-quill :height="'30em'" :text="form.content" :enable_variables="false" :id="'editor_'+this.name" :key="dynamicComponent" v-model="form.content" @focusout="saveContent"></editor-quill>
+        <editor-quill :height="'30em'" :text="form.content" :enable_variables="false" :id="'editor_'+this.name"
+                      :key="dynamicComponent" v-model="form.content" @Edit-Out="saveContent"></editor-quill>
       </div>
     </div>
 
@@ -105,7 +106,8 @@ export default {
 
       form: {
         published: this.$props.published,
-        content: ''
+        content: '',
+        need_notify: false,
       },
     };
   },
@@ -137,15 +139,25 @@ export default {
       await client().get("index.php?option=com_emundus&controller=settings&task=getarticle", {
         params: params
       }).then(response => {
+        if (response.data.data.note === 'need to modify')
+        {
+          this.form.need_notify = true
+          this.$emit('NeedNotify', true);
+        }else {
+          this.form.need_notify = false
+          this.$emit('NeedNotify', false);
+        }
         this.form.content = response.data.data.introtext;
         this.dynamicComponent++;
       });
     },
 
     async saveContent() {
-      this.$emit('updateSaving',true);
+      this.$emit('NeedNotify', false);
+      this.$emit('updateSaving', true);
 
       const formData = new FormData();
+
       formData.append('content', this.form.content);
       formData.append('lang', this.lang.lang_code);
       if (this.$props.article_alias !== null) {
@@ -154,7 +166,7 @@ export default {
         formData.append('article_id', this.$props.article_id);
       }
       formData.append('field', 'introtext');
-
+      formData.append('note', '');
       await client().post(`index.php?option=com_emundus&controller=settings&task=updatearticle`,
           formData,
           {
@@ -163,8 +175,8 @@ export default {
             }
           }
       ).then(() => {
-        this.$emit('updateSaving',false);
-        this.$emit('updateLastSaving',this.formattedDate('','LT'));
+        this.$emit('updateSaving', false);
+        this.$emit('updateLastSaving', this.formattedDate('', 'LT'));
       });
     },
 
@@ -176,7 +188,7 @@ export default {
     },
 
     async publishArticle() {
-      this.$emit('updateSaving',true);
+      this.$emit('updateSaving', true);
 
       const formData = new FormData();
       formData.append('publish', this.form.published);
@@ -194,15 +206,15 @@ export default {
             }
           }
       ).then(() => {
-        this.$emit('updateSaving',false);
-        this.$emit('updateLastSaving',this.formattedDate('','LT'));
-        this.$emit('updatePublished',this.form.published);
+        this.$emit('updateSaving', false);
+        this.$emit('updateLastSaving', this.formattedDate('', 'LT'));
+        this.$emit('updatePublished', this.form.published);
       });
     },
   },
 
   watch: {
-    lang: function() {
+    lang: function () {
       if (this.lang !== null) {
         this.getArticle();
       } else {

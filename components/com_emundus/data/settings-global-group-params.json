@@ -17,29 +17,6 @@
             "value": "tchooz"
           },
           {
-            "name": "default_language",
-            "label": "COM_EMUNDUS_GLOBAL_PARMAS_SITE_LANG_PRIM",
-            "type_field": "sqldropdown",
-            "table": "jos_languages",
-            "primary_key": "lang_id",
-            "display_key": "lang_title",
-            "filter": "lang_published = 1",
-            "helptext": "",
-            "placeholder": ""
-          },
-          {
-            "name": "other_languages",
-            "label": "COM_EMUNDUS_GLOBAL_PARMAS_SITE_OTHER_LANG",
-            "type_field": "sqldropdown",
-            "table": "jos_languages",
-            "primary_key": "lang_id",
-            "display_key": "lang_title",
-            "filter": "lang_id != {default_language}",
-            "helptext": "",
-            "placeholder": "",
-            "multiple": true
-          },
-          {
             "name": "site_desc",
             "label": "COM_EMUNDUS_GLOBAL_PARMAS_SITE_DESC",
             "type_field": "textarea",
@@ -52,6 +29,11 @@
             "type_field": "sqldropdown",
             "helptext": "",
             "placeholder": ""
+          },
+          {
+            "type_field": "component",
+            "component": "GlobalLang",
+            "props": {}
           },
           {
             "label": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_FORMAT",
@@ -273,8 +255,8 @@
       },
       {
         "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_RGPD",
-        "notify": 1,
         "type": "section",
+        "notify": 1,
         "helptext": "Veuillez compléter les différentes sections ci-dessous afin de respecter le reglement général sur la protection des données. Pour en savoir plus sur les mentions obligatoires qui doivent figurer sur votre compagne, consultez le site de la CNIL.",
         "options": [
           {
@@ -283,7 +265,7 @@
             "type": "subSection",
             "helptext": "",
             "placeholder": "",
-            "important": 1,
+
             "elements": [
               {
                 "type_field": "component",
@@ -305,7 +287,7 @@
             "type": "subSection",
             "helptext": "",
             "placeholder": "",
-            "important": 1,
+
             "elements": [
               {
                 "type_field": "component",
@@ -327,7 +309,7 @@
             "type": "subSection",
             "helptext": "",
             "placeholder": "",
-            "important": 1,
+
             "elements": [
               {
                 "type_field": "component",
@@ -349,7 +331,6 @@
             "type": "subSection",
             "helptext": "cookie : petit fichier qui conserve les informations sur votre navigation pour une futur connexion",
             "placeholder": "",
-            "important": 1,
             "elements": [
               {
                 "type_field": "component",
@@ -603,11 +584,13 @@
   },
   {
     "label": "COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS",
+    "name": "translate",
     "icon": "translate",
     "published": true,
     "sections": [
       {
         "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_TRANSLATIONS",
+        "name": "translations",
         "type": "section",
         "helptext": "",
         "options": [
