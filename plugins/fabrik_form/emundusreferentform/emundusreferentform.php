@@ -319,7 +319,6 @@ class PlgFabrik_FormEmundusReferentForm extends plgFabrik_Form
 				$mailer = Factory::getMailer();
 				$mailer->setSender($sender);
 				$mailer->addReplyTo($from, $fromname);
-				//$mailer->addRecipient(array($recipient, 'admissions@mines-albi.fr'));
 				$mailer->addRecipient(array($recipient));
 				$mailer->setSubject($subject);
 				$mailer->isHTML(true);
