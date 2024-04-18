@@ -407,5 +407,53 @@ class EmundusModelApplicationTest extends TestCase
         });
         $this->assertNotEmpty($found_logs, 'I should find a log about the deletion of the access');
     }
+
+    public function testdeleteGroupAccess()
+    {
+        $deleted = $this->m_application->deleteGroupAccess(0, 0, 95);
+        $this->assertFalse($deleted);
+
+        $another_program = $this->h_sample->createSampleProgram('Programme groupe associé');
+        // get the group id
+        if (!class_exists('EmundusModelGroups')) {
+            include_once(JPATH_ROOT . '/components/com_emundus/models/groups.php');
+        }
+        $m_groups = new EmundusModelGroups;
+        $group_id = $m_groups->getGroupsIdByCourse($another_program['programme_code']);
+        $this->assertNotEmpty($group_id, 'Group id should be found');
+        $group_id = (int)$group_id[0]['id'];
+
+        $program = $this->h_sample->createSampleProgram();
+        $campaign_id = $this->h_sample->createSampleCampaign($program);
+        $fnum = $this->h_sample->createSampleFile($campaign_id, 95, true);
+
+        $coord_user = $this->h_sample->createSampleUser(2, 'coordunittest' . rand(0, 1000) . '@emundus.test.fr');
+        $user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+        if (!class_exists('EmundusModelUsers')) {
+            include_once(JPATH_ROOT . '/components/com_emundus/models/users.php');
+        }
+        $m_users = new EmundusModelUsers;
+        $affected = $m_users->affectToGroups([['user_id' => $user_id]], [$group_id]);
+        $this->assertTrue($affected, 'User should be affected to group');
+
+        if (!class_exists('EmundusModelFiles')) {
+            include_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
+        }
+        $m_files = new EmundusModelFiles;
+        $shared = $m_files->shareGroups([$group_id], [1 => ['id' => 1, 'r' => 1, 'c' => 0, 'd' => 0, 'u' => 0]], [$fnum]);
+        $this->assertTrue($shared, 'File should be shared with group');
+
+        if (!class_exists('EmundusHelperAccess')) {
+            include_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
+        }
+        $has_access = EmundusHelperAccess::asAccessAction(1, 'r', $user_id, $fnum);
+        $this->assertTrue($has_access, 'User ' . $user_id . ' should have access to file ' . $fnum . ' , now that they have groups in common');
+
+        $deleted = $this->m_application->deleteGroupAccess($fnum, $group_id, $coord_user);
+        $this->assertTrue($deleted, 'Group access should be deleted');
+
+        $has_access = EmundusHelperAccess::asAccessAction(1, 'r', $user_id, $fnum);
+        $this->assertFalse($has_access, 'User ' . $user_id . ' should no longer have access to file '. $fnum);
+    }
 }
 
