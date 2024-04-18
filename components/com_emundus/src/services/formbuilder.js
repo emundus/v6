@@ -18,7 +18,6 @@ export default {
                 this.toggleElementPublishValue(response.data.data);
             }
 
-
             return response.data;
         } catch (e) {
             return {
