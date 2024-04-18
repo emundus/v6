@@ -4759,7 +4759,7 @@ if(in_array($applicant,$exceptions)){
 			chmod(JPATH_SITE . '/.git/hooks/pre-commit', 0755);
 
 			echo ' - Git pre-commit hook installed' . PHP_EOL;
-		}*/
+		}
 
 		// if payment is activated, remove cookie samesite line in .htaccess file, else add it
 		$eMConfig          = JComponentHelper::getParams('com_emundus');
