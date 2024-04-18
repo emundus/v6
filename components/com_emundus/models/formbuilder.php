@@ -1425,15 +1425,7 @@ class EmundusModelFormbuilder extends JModelList {
 				}
 
 				// Prepare parameters
-                if ($plugin == 'emundus_fileupload' && empty($attachementId)) {
-                    $query->clear()
-                        ->select('id')
-                        ->from($db->quoteName('#__emundus_setup_attachments'))
-                        ->where($db->quoteName('lbl') . ' = ' . $db->quote('_OtherDocument'));
-                    $db->setQuery($query);
-                    $attachementId = $db->loadResult();
-                }
-				$params = $this->h_fabrik->prepareElementParameters($plugin, true, $attachementId);
+				$params = $this->h_fabrik->prepareElementParameters($plugin);
 				//
 
 				// Prepare ordering
@@ -1913,9 +1905,9 @@ class EmundusModelFormbuilder extends JModelList {
             }
 
             // Filter by plugin
-            if ($element['plugin'] === 'checkbox' || $element['plugin'] === 'radiobutton' || $element['plugin'] === 'dropdown' || $element['plugin'] === 'databasejoin') {
-                $old_params = json_decode($db_element->params, true);
+	        $old_params = json_decode($db_element->params, true);
 
+	        if ($element['plugin'] === 'checkbox' || $element['plugin'] === 'radiobutton' || $element['plugin'] === 'dropdown' || $element['plugin'] === 'databasejoin') {
                 if (isset($element['params']['join_db_name'])) {
                     $query->clear()
                         ->select('*')
@@ -2018,6 +2010,11 @@ class EmundusModelFormbuilder extends JModelList {
                 $db->quoteName('modified_by') . ' = ' . $db->quote($user),
                 $db->quoteName('modified') . ' = ' . $db->quote($date),
             );
+
+			if($element['plugin'] === 'emundus_fileupload' && $old_params['attachmentId'] == 0) {
+				$fields[] = $db->quoteName('published') . ' = 1';
+			}
+
             $query->clear()
                 ->update($db->quoteName('#__fabrik_elements'))
                 ->set($fields)

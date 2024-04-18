@@ -22,14 +22,19 @@
       <div v-if="tabs[0].active" id="element-parameters" class="em-p-16">
         <label for="element-label">{{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_LABEL') }}</label>
         <input id="element-label" name="element-label" class="em-w-100" type="text" v-model="element.label[shortDefaultLang]"/>
-        <div class="em-flex-row em-flex-space-between em-w-100 em-pt-16 em-pb-16">
-          <span>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_UNPUBLISH") }}</span>
-          <div class="em-toggle">
-            <input type="checkbox" class="em-toggle-check" v-model="isPublished" @click="togglePublish">
-            <strong class="b em-toggle-switch"></strong>
-            <strong class="b em-toggle-track"></strong>
+
+        <div :class="{'py-1 px-3 bg-neutral-300	rounded-md mt-2': typeof element.params['attachmentId'] !== 'undefined' && element.params['attachmentId'] == 0}">
+          <div class="em-flex-row em-flex-space-between em-w-100 em-pt-16 em-pb-16">
+            <span>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_UNPUBLISH") }}</span>
+            <div class="em-toggle">
+              <input type="checkbox" class="em-toggle-check" :disabled="typeof element.params['attachmentId'] !== 'undefined' && element.params['attachmentId'] == 0" v-model="isPublished" @click="togglePublish">
+              <strong class="b em-toggle-switch"></strong>
+              <strong class="b em-toggle-track"></strong>
+            </div>
           </div>
+          <p v-if="typeof element.params['attachmentId'] !== 'undefined' && element.params['attachmentId'] == 0">{{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_FILEUPLOAD_PLEASE_SELECT_ATTACHMENT') }}</p>
         </div>
+
 
         <div class="em-flex-row em-flex-space-between em-w-100 em-pt-16 em-pb-16" v-show="!['display','panel'].includes(this.element.plugin)">
           <span>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_REQUIRED") }}</span>
