@@ -48,7 +48,7 @@ if($currentCampaign->apply_online == 0){
 <div class="mod_emundus_campaign__grid em-mt-24 em-mb-64" style="grid-gap: 64px">
     <div>
         <div class="em-flex-row em-mb-12 em-pointer em-w-max-content" onclick="history.go(-1)">
-            <span class="material-icons">arrow_back</span><span class="em-ml-8"><?php echo JText::_('MOD_EM_CAMPAIGN_BACK'); ?></span>
+            <span class="material-icons">navigate_before</span><span class="em-ml-8 em-text-neutral-900"><?php echo JText::_('MOD_EM_CAMPAIGN_BACK'); ?></span>
         </div>
         <?php if($mod_em_campaign_details_show_programme == 1) : ?>
             <?php
