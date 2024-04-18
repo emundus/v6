@@ -242,7 +242,8 @@ class EmundusHelperEvents {
             if (!empty($current_phase) && !empty($current_phase->entry_status)) {
                 $edit_status = $current_phase->entry_status;
             } else {
-                $edit_status = array_unique(array_merge(['0'], explode(',',$eMConfig->get('status_for_send', '0'))));
+				$status_for_send = explode(',',$eMConfig->get('status_for_send', '0'));
+                $edit_status = array_unique(array_merge(['0'], $status_for_send));
             }
 
             $is_app_sent = !in_array(@$user->status, $edit_status);

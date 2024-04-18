@@ -4221,6 +4221,7 @@ if(in_array($applicant,$exceptions)){
                         $group_id = $code_prog_element->group_id;
                     }
                 }
+
                 $datas  = [
                     'name'     => 'id_prog',
                     'group_id' => $group_id,
@@ -4234,12 +4235,15 @@ if(in_array($applicant,$exceptions)){
                 ];
                 EmundusHelperUpdate::addFabrikElement($datas, $params);
 
-                $query->clear()
-                    ->update('#__fabrik_elements')
-                    ->set('published = 0')
-                    ->where('id = '.$element_id);
-                $db->setQuery($query);
-                $db->execute();
+				if(!empty($element_id))
+				{
+					$query->clear()
+						->update('#__fabrik_elements')
+						->set('published = 0')
+						->where('id = ' . $element_id);
+					$db->setQuery($query);
+					$db->execute();
+				}
 
                 // Insert data from the code table to the id table, but only if id table is empty
                 $query->clear()
