@@ -4161,89 +4161,94 @@ if(in_array($applicant,$exceptions)){
 			}
 
 			if (version_compare($cache_version, '1.39.0', '<=') || $firstrun) {
-				EmundusHelperUpdate::addColumn('jos_emundus_setup_groups', 'filter_status', 'INT',1,1,'0');
-				EmundusHelperUpdate::addColumn('jos_emundus_setup_groups', 'status', 'INT',11,1);
+				$succeed['get_attachments_for_profile_event_added'] = EmundusHelperUpdate::addCustomEvents([
+					['label' => 'onAfterGetAttachmentsForProfile', 'category' => 'Files']
+				]);
 
-				$columns       = [
-					[
-						'name'   => 'parent_id',
-						'type'   => 'int',
-						'length' => 11,
-						'null'   => 0,
-					],
-					[
-						'name'   => 'status',
-						'type'   => 'int',
-						'length' => 11,
-						'null'   => 0,
-					],
-					[
-						'name'   => 'params',
-						'type'   => 'varchar',
-						'length' => 255,
-						'null'   => 1,
-					]
-				];
-				$repeat_status = EmundusHelperUpdate::createTable('jos_emundus_setup_groups_repeat_status', $columns);
 
-				$query->clear()
-					->select('ffg.group_id,fl.id')
-					->from($db->quoteName('#__fabrik_lists','fl'))
-					->leftJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffg.form_id').' = '.$db->quoteName('fl.form_id'))
-					->where($db->quoteName('fl.db_table_name') . ' LIKE ' . $db->quote('jos_emundus_setup_groups'))
-					->where($db->quoteName('fl.label') . ' LIKE ' . $db->quote('TABLE_SETUP_GROUPS'));
-				$db->setQuery($query);
-				$setup_groups = $db->loadAssoc();
+                EmundusHelperUpdate::addColumn('jos_emundus_setup_groups', 'filter_status', 'INT',1,1,'0');
+                EmundusHelperUpdate::addColumn('jos_emundus_setup_groups', 'status', 'INT',11,1);
 
-				if(!empty($setup_groups['group_id']))
-				{
-					$datas  = [
-						'name'                 => 'filter_status',
-						'group_id'             => $setup_groups['group_id'],
-						'plugin'               => 'yesno',
-						'label'                => 'SETUP_GROUPS_FILTER_STATUS',
-						'show_in_list_summary' => 1
-					];
-					EmundusHelperUpdate::addFabrikElement($datas);
+                $columns       = [
+                    [
+                        'name'   => 'parent_id',
+                        'type'   => 'int',
+                        'length' => 11,
+                        'null'   => 0,
+                    ],
+                    [
+                        'name'   => 'status',
+                        'type'   => 'int',
+                        'length' => 11,
+                        'null'   => 0,
+                    ],
+                    [
+                        'name'   => 'params',
+                        'type'   => 'varchar',
+                        'length' => 255,
+                        'null'   => 1,
+                    ]
+                ];
+                $repeat_status = EmundusHelperUpdate::createTable('jos_emundus_setup_groups_repeat_status', $columns);
 
-					$datas  = [
-						'name'                 => 'status',
-						'group_id'             => $setup_groups['group_id'],
-						'plugin'               => 'databasejoin',
-						'label'                => 'SETUP_GROUPS_AVAILABLE_STATUS',
-						'show_in_list_summary' => 1
-					];
-					$params = [
-						'database_join_display_type' => 'multilist',
-						'join_db_name' => 'jos_emundus_setup_status',
-						'join_key_column' => 'step',
-						'join_val_column' => 'value',
-						'advanced_behavior' => 1
-					];
-					$status_elt = EmundusHelperUpdate::addFabrikElement($datas, $params, false)['id'];
+                $query->clear()
+                    ->select('ffg.group_id,fl.id')
+                    ->from($db->quoteName('#__fabrik_lists','fl'))
+                    ->leftJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffg.form_id').' = '.$db->quoteName('fl.form_id'))
+                    ->where($db->quoteName('fl.db_table_name') . ' LIKE ' . $db->quote('jos_emundus_setup_groups'))
+                    ->where($db->quoteName('fl.label') . ' LIKE ' . $db->quote('TABLE_SETUP_GROUPS'));
+                $db->setQuery($query);
+                $setup_groups = $db->loadAssoc();
 
-					$datas = [
-						'list_id' => $setup_groups['id'],
-						'element_id' => $status_elt,
-						'join_from_table' => 'jos_emundus_setup_groups',
-						'table_join' => 'jos_emundus_setup_groups_repeat_status',
-						'table_key' => 'status',
-						'table_join_key' => 'parent_id',
-						'join_type' => 'left',
-						'group_id' => 0,
-					];
-					$params = [
-						'type' => 'repeatElement',
-						'pk' => '`jos_emundus_setup_groups_repeat_status`.`id`'
-					];
-					EmundusHelperUpdate::addFabrikJoin($datas,$params);
+                if(!empty($setup_groups['group_id']))
+                {
+                    $datas  = [
+                        'name'                 => 'filter_status',
+                        'group_id'             => $setup_groups['group_id'],
+                        'plugin'               => 'yesno',
+                        'label'                => 'SETUP_GROUPS_FILTER_STATUS',
+                        'show_in_list_summary' => 1
+                    ];
+                    EmundusHelperUpdate::addFabrikElement($datas);
 
-					EmundusHelperUpdate::insertTranslationsTag('SETUP_GROUPS_FILTER_STATUS', 'Restreindre l\'accès à certains statuts');
-					EmundusHelperUpdate::insertTranslationsTag('SETUP_GROUPS_FILTER_STATUS', 'Restricting access to certain statuses', 'override', null, null, null, 'en-GB');
+                    $datas  = [
+                        'name'                 => 'status',
+                        'group_id'             => $setup_groups['group_id'],
+                        'plugin'               => 'databasejoin',
+                        'label'                => 'SETUP_GROUPS_AVAILABLE_STATUS',
+                        'show_in_list_summary' => 1
+                    ];
+                    $params = [
+                        'database_join_display_type' => 'multilist',
+                        'join_db_name' => 'jos_emundus_setup_status',
+                        'join_key_column' => 'step',
+                        'join_val_column' => 'value',
+                        'advanced_behavior' => 1
+                    ];
+                    $status_elt = EmundusHelperUpdate::addFabrikElement($datas, $params, false)['id'];
 
-					EmundusHelperUpdate::insertTranslationsTag('SETUP_GROUPS_AVAILABLE_STATUS', 'Statuts');
-					EmundusHelperUpdate::insertTranslationsTag('SETUP_GROUPS_AVAILABLE_STATUS', 'Statuses', 'override', null, null, null, 'en-GB');
-				}
+                    $datas = [
+                        'list_id' => $setup_groups['id'],
+                        'element_id' => $status_elt,
+                        'join_from_table' => 'jos_emundus_setup_groups',
+                        'table_join' => 'jos_emundus_setup_groups_repeat_status',
+                        'table_key' => 'status',
+                        'table_join_key' => 'parent_id',
+                        'join_type' => 'left',
+                        'group_id' => 0,
+                    ];
+                    $params = [
+                        'type' => 'repeatElement',
+                        'pk' => '`jos_emundus_setup_groups_repeat_status`.`id`'
+                    ];
+                    EmundusHelperUpdate::addFabrikJoin($datas,$params);
+
+                    EmundusHelperUpdate::insertTranslationsTag('SETUP_GROUPS_FILTER_STATUS', 'Restreindre l\'accès à certains statuts');
+                    EmundusHelperUpdate::insertTranslationsTag('SETUP_GROUPS_FILTER_STATUS', 'Restricting access to certain statuses', 'override', null, null, null, 'en-GB');
+
+                    EmundusHelperUpdate::insertTranslationsTag('SETUP_GROUPS_AVAILABLE_STATUS', 'Statuts');
+                    EmundusHelperUpdate::insertTranslationsTag('SETUP_GROUPS_AVAILABLE_STATUS', 'Statuses', 'override', null, null, null, 'en-GB');
+                }
 			}
 		}
 
