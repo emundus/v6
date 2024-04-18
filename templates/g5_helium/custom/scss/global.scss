@@ -118,13 +118,28 @@ p,
   transition: all ease-in-out 0.3s;
 }
 
-.gantry:not(.applicant-form):not(.files-board) #g-container-main,
+.gantry:not(.applicant-form):not(.files-board):not(.view-contacts):not(.com_dropfiles) #g-container-main,
 .gantry.view-form #g-utility,
 .gantry.view-checklist #g-utility,
 .gantry.view-details #g-utility,
 .gantry.mon-profil #g-container-main {
-  padding-top: 40px !important;
+  padding-top: 32px !important;
 }
+
+.gantry:not(.applicant-form):not(.files-board) {
+  &.view-campaigns, &.view-form.com_emundus, &.view-emails, &.view-settings {
+    #g-container-main {
+      padding-top: 26px !important;
+      .g-container {
+        padding: 0 32px;
+      }
+    }
+  }
+   &.view-settings #g-container-main {
+     padding-top: 32px !important;
+   }
+}
+
 
 .mon-profil .plg-databasejoin.span12 .chzn-container.chzn-container-single {
   width: 100% !important;
@@ -132,6 +147,10 @@ p,
 
 #g-container-main .g-container {
   padding: 0 20px;
+}
+
+.view-syncs #g-container-main .g-container.g-flushed {
+  padding: 0 32px !important;
 }
 
 .view-form.com_fabrik:not(.applicant-form):not(.mon-profil):not(.view-registration) #g-container-main .g-container {
@@ -244,6 +263,11 @@ div#frame.outline {
   &:hover {
     text-decoration: none;
   }
+}
+
+
+.view-article div[itemprop="articleBody"] a:hover:not(.btn) {
+  text-decoration: none;
 }
 
 /* HOMEPAGE */
@@ -599,9 +623,7 @@ footer#g-footer > .g-container {
   margin: auto auto 0 auto;
 
   a {
-    color: darken($link-regular, 10%);
-    text-decoration: underline;
-
+    color: $link-regular;
     &:hover {
       color: $link-hover;
     }
@@ -616,6 +638,13 @@ footer#g-footer > .g-container {
 }
 
 /*  FORMULAIRE INSCRIPTION */
+
+.view-registration.em-formRegistrationCenter a:not([class*="btn"]):not([class*="button"]):not([class*="chzn"]) {
+    text-decoration: underline;
+  &:hover {
+    text-decoration: none;
+  }
+}
 
 .view-registration, .view-login, .view-reset, .view-form.em-formRegistrationCenter {
   #g-navigation .g-container {
@@ -1362,6 +1391,14 @@ footer#g-footer > .g-container {
 
     tbody tr > td {
       color: var(--night-blue);
+
+      &:first-child {
+        width: auto !important;
+      }
+
+      select[multiple] {
+        width: auto;
+      }
     }
   }
 
@@ -1452,6 +1489,10 @@ footer#g-footer > .g-container {
   background: var(--neutral-200) !important;
 }
 
+.table-hover tbody tr:nth-child(2n) > td .sticker .circle {
+    background-color: var(--neutral-200);
+}
+
 .table-hover tbody tr,
 .table-hover tbody tr {
   a {
@@ -1468,6 +1509,26 @@ footer#g-footer > .g-container {
   cursor: pointer;
 }
 
+/* NEW STYLE */
+.view-list .fabrikFilterContainer .table.filtertable .fabrik_filter_container .input-append {
+  button.btn.calendarbutton {
+    height: 40px;
+    border-radius: 0 4px 4px 0 !important;
+    background: var(--neutral-0);
+    color: var(--neutral-900);
+    border: 1px solid #e0e0e5;
+
+    &:hover {
+      background: var(--neutral-100);
+    }
+  }
+  input[id*="range"].fabrik_filter {
+    border-radius: 4px 0 0 4px !important;
+  }
+
+}
+
+/* OLD STYLE */
 .view-list .table .fabrikFilterContainer .fabrikDateListFilterRange button.btn.calendarbutton {
   height: 40px;
   border-radius: 0 4px 4px 0 !important;
@@ -1524,8 +1585,7 @@ footer#g-footer > .g-container {
 }
 
 .view-list #g-container-main .g-container {
-  padding-left: 5%;
-  padding-right: 5%;
+  padding: 0 32px;
 }
 
 .row-fluid .span3 {
@@ -1548,7 +1608,7 @@ footer#g-footer > .g-container {
 
 .view-list:not(.g-back-office-emundus-tableau) #g-container-main .g-container {
   position: relative;
-  width: calc(100% - 76px);
+  width: 100%;
 }
 
 .view-list, .g-back-office-emundus-tableau {
@@ -1849,7 +1909,6 @@ tr.fabrikFilterContainer {
 
 .fabrikForm .plg-calc span {
   border: none !important;
-  padding: 15px 0;
 }
 
 .form-actions .row-fluid .span4 .btn-group .register {
@@ -3083,6 +3142,10 @@ ul.unstyled.em-linkForgot li a {
   }
 }
 
+.toggle-editor .btn .icon-eye {
+  margin-right: 4px;
+}
+
 .files-board .dropdown-menu > li > a:not(.logout-button-user):focus,
 .files-board .dropdown-submenu:hover > a:not(.logout-button-user),
 .files-board .dropdown-submenu:focus > a:not(.logout-button-user) {
@@ -4185,6 +4248,18 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
   .fabrikLabel {
     color: var(--neutral-700);
     font-family: var(--em-coordinator-font);
+  }
+
+  ul {
+    padding-left: 20px;
+  }
+
+  a {
+    text-decoration: underline;
+    &:hover {
+        text-decoration: none;
+
+    }
   }
 }
 
@@ -6824,4 +6899,19 @@ tbody .el-table__row:nth-child(odd){
 
 .emundus-form .p-6 {
   background: magenta !important;
+}
+
+/* MCE WYSIWYG COLOR PICKER */
+
+.mce-container-body.mce-abs-layout {
+  overflow: visible !important;
+}
+.mce-container .mce-textbox.mce-abs-layout-item.mce-last {
+  width: 60px !important;
+  height: 20px !important;
+}
+
+/* SUPPRESSION POPOVER FORM EVAL */
+.popover.fade.top.in {
+  display: none !important;
 }

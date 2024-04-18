@@ -14,7 +14,30 @@
 defined('_JEXEC') or die('Restricted access');
 
 $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+
+$eMConfig = JComponentHelper::getParams('com_emundus');
+$fix_header = $eMConfig->get('fix_file_header', 0);
 ?>
+<style>
+    .em-double-scroll-bar {
+        position: sticky;
+        padding: 0 !important;
+        z-index: 999;
+    }
+    div.top-scrollbars::-webkit-scrollbar, .em-double-scroll-bar::-webkit-scrollbar {
+        -webkit-appearance: none;
+        width: 7px;
+        height: 10px;
+        background-color: white !important;
+    }
+
+    div.top-scrollbars::-webkit-scrollbar-thumb, .em-double-scroll-bar::-webkit-scrollbar-thumb {
+        border-radius: 8px;
+        background-color: var(--neutral-400);
+        box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+    }
+</style>
+
 <input type="hidden" id="view" name="view" value="decision">
 <div class="panel panel-default em-data">
 	<?php if (is_array($this->datas)) :?>
@@ -40,7 +63,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
             <?php echo $this->pageNavigation ?>
             <div id="countCheckedCheckbox" class="countCheckedCheckbox" style="display: none"></div>
     </div>
-		<div class="em-data-container" style="padding-bottom: unset">
+		<div class="em-data-container top-scrollbars" style="padding-bottom: unset">
 			<table class="table table-striped table-hover" id="em-data">
 			<thead>
 			<tr>
@@ -211,6 +234,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
         containerResult = document.querySelector('.container-result');
         setTimeout(() => {
             $('.container-result').css('top', (headerNav.offsetHeight + menuAction.offsetHeight) + 'px');
+            $('.em-double-scroll-bar').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight - 2) + 'px');
             $('#em-data th').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight) + 'px');
         },2000);
 
@@ -343,7 +367,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 
             if (countCheckedCheckbox !== 0) {
                 displayCount();
-                countFiles.innerHTML = '<p>' + Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + countCheckedCheckbox + ' ' + files + '. <a class="em-pointer" onclick="checkAllFiles()">'+Joomla.JText._('COM_EMUNDUS_FILES_SELECT_ALL_FILES')+'</a></p>';
+                countFiles.innerHTML = '<p>' + Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + countCheckedCheckbox + ' ' + files + '. <a class="em-pointer em-text-underline em-profile-color" onclick="checkAllFiles()">'+Joomla.JText._('COM_EMUNDUS_FILES_SELECT_ALL_FILES')+'</a></p>';
             } else {
                 hideCount();
                 countFiles.innerHTML = '';
@@ -374,10 +398,23 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 
         if (countCheckedCheckbox !== 0) {
             displayCount();
-            countFiles.innerHTML ='<p>' + Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + countCheckedCheckbox + ' ' + files + '. <a class="em-pointer" onclick="checkAllFiles()">'+Joomla.JText._('COM_EMUNDUS_FILES_SELECT_ALL_FILES')+'</a></p>';
+            countFiles.innerHTML ='<p>' + Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + countCheckedCheckbox + ' ' + files + '. <a class="em-pointer em-text-underline em-profile-color" onclick="checkAllFiles()">'+Joomla.JText._('COM_EMUNDUS_FILES_SELECT_ALL_FILES')+'</a></p>';
         } else {
             hideCount();
             countFiles.innerHTML = '';
         }
     });
+
+    <?php if($fix_header == 1): ?>
+    document.addEventListener('scroll', function(e) {
+        if(window.scrollY > document.querySelector('.em-data-container table thead').offsetHeight) {
+            document.querySelector('.em-data-container table thead').style.position = 'relative';
+            let containerResult = document.querySelector('.container-result').offsetHeight;
+            document.querySelector('.em-data-container table thead').style.top = (window.scrollY - containerResult - 4) + 'px';
+        } else {
+            document.querySelector('.em-data-container table thead').style.position = 'static';
+            document.querySelector('.em-data-container table thead').style.top = '0px';
+        }
+    });
+    <?php endif; ?>
 </script>

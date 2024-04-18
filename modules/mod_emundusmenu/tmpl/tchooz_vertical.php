@@ -539,14 +539,7 @@ defined('_JEXEC') or die;
                 jQuery("#footer-rgpd").css("padding-left", "280px");
                 jQuery("#g-container-main").css("padding-left", "280px");
                 jQuery("#header-a").css("opacity", "1");
-                jQuery(".logo").css("position", "absolute");
                 jQuery(".tchooz-vertical-logo").css("opacity", "0");
-            }
-            let elmnt = document.getElementById("g-top");
-            if(elmnt !== null) {
-                jQuery(".logo").css("top", "-37px");
-            } else {
-                jQuery(".logo").css("top", "0");
             }
             setTimeout(() =>{
                 jQuery(".image-title").css("display","block");
@@ -615,7 +608,5 @@ defined('_JEXEC') or die;
         }
     });
 
-    window.onload = function () {
-        this.enableTitles(localStorage.getItem('menu'));
-    }
+    this.enableTitles(localStorage.getItem('menu'));
 </script>

@@ -412,7 +412,7 @@ div#userDropdown {
 }
 
 @media screen and (min-width: 768px) and (max-width: 959px) {
-     #background-shapes {
+     .header-c #background-shapes {
          display: none;
     }
 
@@ -434,7 +434,7 @@ div#userDropdown {
 }
 
 @media (max-width: 768px) {
-    #background-shapes {
+    .header-c #background-shapes {
         display: none;
     }
 }

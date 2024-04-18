@@ -144,7 +144,6 @@ class Periodic
      * Returns the Net Present Value of a cash flow series given a discount rate.
      *
      * @param mixed $rate
-     * @param array $args
      *
      * @return float
      */

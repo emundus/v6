@@ -135,15 +135,12 @@ class EmundusViewDecision extends JViewLegacy
 				// Do not display photos unless specified in params
 				$displayPhoto = false;
 
-				// get applications files
-				$users = $m_decision->getUsers($cfnum);
-
-			    // get evaluation form ID
-			    $formid = $m_decision->getDecisionFormByProgramme();
-			    $this->assignRef('formid', $formid);
-			    $form_url_view = 'index.php?option=com_fabrik&c=form&view=details&formid='.$formid.'&tmpl=component&iframe=1&rowid=';
-			    $form_url_edit = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&tmpl=component&iframe=1&rowid=';
-			    $this->assignRef('form_url_edit', $form_url_edit);
+                if(!empty($m_decision->fnum_assoc) || !empty($m_decision->code)) {
+                    // get applications files
+                    $users = $m_decision->getUsers($cfnum);
+                } else {
+                    $users = array();
+                }
 
 				if (!empty($users)) {
 					$taggedFile = $m_decision->getTaggedFile();
@@ -211,6 +208,13 @@ class EmundusViewDecision extends JViewLegacy
 						$usObj->val = 'X';
 						$fnumArray[] = $user['fnum'];
 						$line = array('check' => $usObj);
+
+                        // Get decision formid
+                        $training = $m_files->getFnumInfos($user['fnum'])['training'];
+                        $formid = $m_decision->getDecisionFormByProgramme($training);
+                        $this->assignRef('formid', $formid);
+                        $form_url_view = 'index.php?option=com_fabrik&c=form&view=details&formid='.$formid.'&tmpl=component&iframe=1&rowid=';
+                        $form_url_edit = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&tmpl=component&iframe=1&rowid=';
 
 						if (array_key_exists($user['fnum'], $taggedFile)) {
 

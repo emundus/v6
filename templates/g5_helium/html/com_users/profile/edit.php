@@ -18,8 +18,12 @@ JHtml::_('bootstrap.tooltip');
 // Load user_profile plugin language
 $lang = JFactory::getLanguage();
 $lang->load('plg_user_profile', JPATH_ADMINISTRATOR);
+
+require_once (JPATH_SITE.'/components/com_emundus/helpers/cache.php');
+$hash = EmundusHelperCache::getCurrentGitHash();
+
 $document = JFactory::getDocument();
-$document->addStyleSheet("templates/g5_helium/html/com_users/profile/style/com_users_profile.css");
+$document->addStyleSheet("templates/g5_helium/html/com_users/profile/style/com_users_profile.css?".$hash);
 
 $user_module = JModuleHelper::getModule('mod_emundus_user_dropdown');
 $back_url = '/';

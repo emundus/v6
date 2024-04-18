@@ -144,6 +144,11 @@ class PlgFabrik_ElementPanel extends PlgFabrik_Element
 				$displayData->iconColor = '#a60e15';
 				$displayData->icon = 'error';
 				break;
+			case 4:
+				$displayData->backgroundColor = 'transparent';
+				$displayData->iconColor = 'transparent';
+				$displayData->icon = '';
+				break;
 			default:
 				$displayData->backgroundColor = $params->get('panel_background', '#ebeefa');
 				$displayData->iconColor = $params->get('panel_icon_color', '#525b85');

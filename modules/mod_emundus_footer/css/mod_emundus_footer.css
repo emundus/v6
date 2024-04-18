@@ -107,19 +107,11 @@ hr.footer-separation {
 }
 
 .em-container-footer-gest .em-block-footer a {
-    color: #000;
+    color: var(--em-profile-color) !important;
     font-weight: 500 ;
 }
 
-
-
-.em-container-footer-cand .em-col-3-footer a:hover {
-    text-decoration: underline !important;
-}
-
 .em-container-footer-gest .em-block-footer a:hover {
-    color: var(--night-blue) !important;
-    text-decoration: underline !important;
     font-weight: 500;
 }
 
@@ -166,11 +158,6 @@ hr.footer-separation {
 .em-container-footer-gest .em-block-footer .platform-version, .em-container-footer-cand .platform-version {
     color: #000;
     text-decoration: none;
-}
-
-.em-container-footer-gest .em-block-footer .emundus-link, .em-container-footer-cand .emundus-link {
-    color: var(--em-profile-color);
-    text-decoration: underline;
 }
 
 /**************************

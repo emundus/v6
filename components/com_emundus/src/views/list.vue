@@ -1,7 +1,7 @@
 <template>
 	<div id="onboarding_list" class="w-full">
 		<skeleton v-if="loading.lists" height="40px" width="100%" class="mb-4 mt-4 rounded-lg"></skeleton>
-		<div v-else class="head flex justify-between mb-4 mt-4">
+		<div v-else class="head em-flex-row justify-between">
 			<h2>{{ translate(currentList.title) }}</h2>
 			<a v-if="addAction" id="add-action-btn" class="em-primary-button em-w-auto cursor-pointer" @click="onClickAction(addAction)">{{ translate(addAction.label) }}</a>
 		</div>
@@ -745,6 +745,11 @@ export default {
 </script>
 
 <style lang="scss">
+
+.head  {
+  padding: 0 0 20px 0;
+}
+
 #list-nav {
 	li {
 		transition: all .3s;

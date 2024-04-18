@@ -146,12 +146,13 @@ class EmundusControllerFiles extends JControllerLegacy
 					}
 				}
 				$session->set('adv_cols', $filter_fabrik_element_ids);
+                $session->set('last-filters-use-adavanced', true);
 
 				$response = ['status' => true, 'msg' => JText::_('FILTERS_APPLIED')];
 			} else {
 				$response['msg'] = JText::_('MISSING_PARAMS');
 			}
-		}
+        }
 
 		echo json_encode((object)$response);
 		exit;
@@ -196,6 +197,7 @@ class EmundusControllerFiles extends JControllerLegacy
             }
         }
 
+        $session->set('last-filters-use-adavanced', false);
         $session->set('filt_params', $params);
 
         echo json_encode((object)(array('status' => true)));
@@ -1060,21 +1062,31 @@ class EmundusControllerFiles extends JControllerLegacy
      *
      */
     public function getfnuminfos() {
-        $jinput = JFactory::getApplication()->input;
-        $fnum = $jinput->get->getString('fnum', null);
+		$response = ['status' => false, 'fnumInfos' => '', 'code' => 403, 'msg' => JText::_('ACCESS_DENIED')];
+		$user_id = JFactory::getUser()->id;
 
-        $res = false;
-        $fnumInfos = null;
+		if (!empty($user_id)) {
+			$jinput = JFactory::getApplication()->input;
+			$fnum = $jinput->getString('fnum', '');
 
-        if ($fnum != null) {
-            $m_files = new EmundusModelFiles();
-            $fnumInfos = $m_files->getFnumInfos($fnum);
-            if ($fnum !== false)
-                $res = true;
-        }
+			if (!empty($fnum) && EmundusHelperAccess::isUserAllowedToAccessFnum($user_id, $fnum)) {
+				$m_files = new EmundusModelFiles();
+				$response['fnumInfos'] = $m_files->getFnumInfos($fnum);
+				$response['code'] = 200;
+				if (!empty($response['fnumInfos'])) {
+					$response['status'] = true;
+					JFactory::getSession()->set('application_fnum', $fnum);
+				}
+			}
+		}
 
-        JFactory::getSession()->set('application_fnum', $fnum);
-        echo json_encode((object)(array('status' => $res, 'fnumInfos' => $fnumInfos)));
+	    if ($response['code'] == 403) {
+			header('HTTP/1.1 403 Forbidden');
+		    echo JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS');
+		    exit;
+		}
+
+        echo json_encode((object)($response));
         exit;
     }
 
@@ -1259,27 +1271,36 @@ class EmundusControllerFiles extends JControllerLegacy
      * @return String json
      */
     public function create_file_csv() {
-        $today  = date("MdYHis");
-        $name   = md5($today.rand(0,10));
-        $name   = $name.'.csv';
-        $chemin = JPATH_SITE.DS.'tmp'.DS.$name;
+	    $response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED'), 'code' => 403];
 
-        if (!$fichier_csv = fopen($chemin, 'w+')) {
-            $result = array('status' => false, 'msg' => JText::_('ERROR_CANNOT_OPEN_FILE').' : '.$chemin);
-            echo json_encode((object) $result);
-            exit();
-        }
+	    if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$response['code'] = 500;
+		    $today  = date("MdYHis");
+		    $name   = md5($today.rand(0,10));
+		    $name   = $name.'.csv';
+		    $chemin = JPATH_SITE.DS.'tmp'.DS.$name;
 
-        fprintf($fichier_csv, chr(0xEF).chr(0xBB).chr(0xBF));
-        if (!fclose($fichier_csv)) {
-            $result = array('status' => false, 'msg'=>JText::_('COM_EMUNDUS_EXPORTS_ERROR_CANNOT_CLOSE_CSV_FILE'));
-            echo json_encode((object) $result);
-            exit();
-        }
+		    if (!$fichier_csv = fopen($chemin, 'w+')) {
+			    $response['msg'] = JText::_('ERROR_CANNOT_OPEN_FILE').' : '.$chemin;
+		    } else {
+			    fprintf($fichier_csv, chr(0xEF).chr(0xBB).chr(0xBF));
+			    if (!fclose($fichier_csv)) {
+				    $response['msg'] = JText::_('COM_EMUNDUS_EXPORTS_ERROR_CANNOT_CLOSE_CSV_FILE');
+				} else {
+				    $response['code'] = 200;
+				    $response = array('status' => true, 'file' => $name);
+			    }
+		    }
+	    }
 
-        $result = array('status' => true, 'file' => $name);
-        echo json_encode((object) $result);
-        exit();
+		if ($response['code'] == 403) {
+			header('HTTP/1.1 403 Forbidden');
+			echo JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS');
+			exit;
+		}
+
+	    echo json_encode((object) $response);
+	    exit();
     }
 
     /**
@@ -1645,7 +1666,21 @@ class EmundusControllerFiles extends JControllerLegacy
 				// On met les en-têtes dans le CSV
 				$element_csv[] = $line;
 				$line = "";
-			}
+			} else {
+                // On définit les bons formats
+                $date_elements = [];
+                foreach ($ordered_elements as $fLine) {
+                    if ($fLine->element_plugin == 'date') {
+                        $params = json_decode($fLine->element_attribs);
+                        $date_elements[$fLine->tab_name.'___'.$fLine->element_name] = $params->date_form_format;
+                    }
+
+                    if ($fLine->element_plugin == 'textarea') {
+                        $params = json_decode($fLine->element_attribs);
+                        $textarea_elements[$fLine->tab_name.'___'.$fLine->element_name] = $params->use_wysiwyg;
+                    }
+                }
+            }
 
 
 			//check if evaluator can see others evaluators evaluations
@@ -1726,6 +1761,8 @@ class EmundusControllerFiles extends JControllerLegacy
 										}
 									} else {
 										if (!empty($date_elements[$k])) {
+											$v = str_replace("\\", '', $v); // if date contains \, remove it
+
 											if ($v === '0000-00-00 00:00:00') {
 												$v = '';
 											} else {
@@ -1932,6 +1969,9 @@ class EmundusControllerFiles extends JControllerLegacy
             }
         }
 
+        // Reindex array otherwise next for loop will not work properly if we did unset docs before
+        $docs = array_values($docs);
+
         if ($camp[0] != 0) {
             $campaign = $m_campaign->getCampaignsByCourseCampaign($code[0], $camp[0]);
         } else {
@@ -2097,11 +2137,32 @@ class EmundusControllerFiles extends JControllerLegacy
                         $files_export = EmundusHelperExport::getAttachmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id']);
                     }
                 }
+                $check_eval = $eMConfig->get('check_eval', 0);
+                $skip_eval = false;
+                if ($check_eval == 1){
+                    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
+                    $m_eval = new EmundusModelEvaluation();
+                    $eval = $m_eval->getEvaluationsFnum($fnum);
+                    if(empty($eval)){
+                        $skip_eval = true;
+                    }
+                }
 
-                if ($assessment)
+                $check_decision = $eMConfig->get('check_decision', 0);
+                $skip_decision = false;
+                if ($check_decision == 1){
+                    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'decision.php');
+                    $m_decision = new EmundusModelDecision();
+                    $getDecision = $m_decision->getDecisionFnum($fnum);
+                    if(empty($getDecision)){
+                        $skip_decision = true;
+                    }
+                }
+
+                if ($assessment && !$skip_eval)
                     $files_list[] = EmundusHelperExport::getEvalPDF($fnum, $options);
 
-                if ($decision)
+                if ($decision && !$skip_decision)
                     $files_list[] = EmundusHelperExport::getDecisionPDF($fnum, $options);
 
                 if ($admission)
@@ -2957,15 +3018,33 @@ class EmundusControllerFiles extends JControllerLegacy
                     }
                 }
 
+                $check_eval = $eMConfig->get('check_eval', 0);
+                $skip_eval = false;
+                if ($check_eval == 1){
+                    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
+                    $m_eval = new EmundusModelEvaluation();
+                    $eval = $m_eval->getEvaluationsFnum($fnum);
+                    if(empty($eval)){
+                        $skip_eval = true;
+                    }
+                }
 
+                $check_decision = $eMConfig->get('check_decision', 0);
+                $skip_decision = false;
+                if ($check_decision == 1){
+                    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'decision.php');
+                    $m_decision = new EmundusModelDecision();
+                    $getDecision = $m_decision->getDecisionFnum($fnum);
+                    if(empty($getDecision)){
+                        $skip_decision = true;
+                    }
+                }
 
-	            if ($assessment) {
+                if ($assessment && !$skip_eval)
                     $files_list[] = EmundusHelperExport::getEvalPDF($fnum, $options);
-                }
 
-                if ($decision) {
+                if ($decision && !$skip_decision)
                     $files_list[] = EmundusHelperExport::getDecisionPDF($fnum, $options);
-                }
 
                 if ($admission) {
 	                $admission_file = EmundusHelperExport::getAdmissionPDF($fnum, $options);

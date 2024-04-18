@@ -13,6 +13,10 @@
  */
 
 // No direct access
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Plugin\PluginHelper;
+
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'filters.php');
@@ -1090,49 +1094,46 @@ class EmundusModelUsers extends JModelList {
         return $db->loadColumn();
     }
 
-    public function login($uid) {
-        $app     = JFactory::getApplication();
-        $db      = JFactory::getDBO();
-        $session = JFactory::getSession();
+	public function login($uid) {
+		$app     = Factory::getApplication();
+		$db      = Factory::getDBO();
+		$session = Factory::getSession();
 
-        $instance   = JFactory::getUser($uid);
+		$instance   = Factory::getUser($uid);
 
-       // $userarray = array();
-        //$userarray['username'] = $instance->username;
-        //$userarray['password'] = $instance->password;
-        //$app->login($userarray);
+		$instance->set('guest', 0);
 
-        $instance->set('guest', 0);
+		// Register the needed session variables
+		$session->set('user', $instance);
 
-        // Register the needed session variables
-        $session->set('user', $instance);
+		// Check to see the the session already exists.
+		$app->checkSession();
 
-        // Check to see the the session already exists.
-        $app->checkSession();
-
-        // Update the user related fields for the Joomla sessions table.
-        $query = 'UPDATE #__session
+		// Update the user related fields for the Joomla sessions table.
+		$query = 'UPDATE #__session
                     SET guest='.$db->quote($instance->get('guest')).',
                         username = '.$db->quote($instance->get('username')).',
                         userid = '.(int) $instance->get('id').'
                         WHERE session_id like '.$db->quote($session->getId());
-        $db->setQuery($query);
-        $db->execute();
+		$db->setQuery($query);
+		$db->execute();
 
-        // Hit the user last visit field
-        $instance->setLastVisit();
+		// Hit the user last visit field
+		$instance->setLastVisit();
 
-        // Trigger OnUserLogin
-        JPluginHelper::importPlugin('user', 'emundus');
-        $dispatcher = JEventDispatcher::getInstance();
-        $options = array('action' => 'core.login.site', 'remember' => false);
+		// Trigger OnUserLogin
+		PluginHelper::importPlugin('user');
+		PluginHelper::importPlugin('emundus');
 
-        $dispatcher->trigger( 'onUserLogin', $instance );
-        $dispatcher->trigger('callEventHandler', ['onUserLogin', ['instance' => $instance]]);
+		$options = array();
+		$options['action'] = 'core.login.site';
 
-        return $instance;
+		$response['username'] = $instance->get('username');
+		$app->triggerEvent('onUserLogin', array($response, $options));
+		$app->triggerEvent('callEventHandler', ['onUserLogin', ['user_id' => $uid]]);
 
-    }
+		return $instance;
+	}
 
 
 	/**
@@ -3621,23 +3622,30 @@ class EmundusModelUsers extends JModelList {
     }
 
 	public function getIdentityPhoto($fnum,$applicant_id){
-		try {
-			$db = JFactory::getDbo();
-			$query = $db->getQuery(true);
+		$attachment_id = ComponentHelper::getParams('com_emundus')->get('photo_attachment', '');
 
-			$query->select('filename')
-				->from($db->quoteName('#__emundus_uploads'))
-				->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum))
-				->andWhere($db->quoteName('attachment_id') . ' = 10');
-			$db->setQuery($query);
-			$filename = $db->loadResult();
+		if(!empty($attachment_id)) {
+			try {
+				$db    = JFactory::getDbo();
+				$query = $db->getQuery(true);
 
-			if(!empty($filename)){
-				return EMUNDUS_PATH_REL . $applicant_id . '/' . $filename;
+				$query->select('filename')
+					->from($db->quoteName('#__emundus_uploads'))
+					->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum))
+					->andWhere($db->quoteName('attachment_id') . ' = ' . $attachment_id);
+				$db->setQuery($query);
+				$filename = $db->loadResult();
+
+				if (!empty($filename)) {
+					return EMUNDUS_PATH_REL . $applicant_id . '/' . $filename;
+				}
 			}
-		}
-		catch (Exception $e) {
-			JLog::add(' com_emundus/models/users.php | Failed to get identity photo : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			catch (Exception $e) {
+				JLog::add(' com_emundus/models/users.php | Failed to get identity photo : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+
+				return '';
+			}
+		} else {
 			return '';
 		}
 	}

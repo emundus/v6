@@ -12,10 +12,10 @@
 						  <span class="material-icons-outlined em-pointer" @click="removeGlobalSearchValue(value.value, value.scope)">clear</span>
 					  </div>
 				  </div>
-				  <input id="current-global-search" ref="globalSearchInput" class="em-border-radius-8" v-model="currentGlobalSearch" type="text" @keyup.enter="onGlobalSearchChange('everywhere')" :placeholder="globalSearchPlaceholder">
+				  <input id="current-global-search" ref="globalSearchInput" class="em-border-radius-8" v-model="currentGlobalSearch" type="text" @keyup.enter="(e) => {this.onGlobalSearchChange(e, 'everywhere')}" :placeholder="globalSearchPlaceholder">
 			  </div>
 			  <ul id="select-scopes" class="em-w-100 em-w-100 em-border-radius-8 em-white-bg em-border-neutral-400 em-box-shadow" :class="{'hidden': currentGlobalSearch.length < 1}">
-				  <li v-for="option in globalSearchScopes" :key="option.value" @click="onGlobalSearchChange(option.value)" class="em-pointer global-search-scope">
+				  <li v-for="option in globalSearchScopes" :key="option.value" @click="(e) => {this.onGlobalSearchChange(e, option.value)}" class="em-pointer global-search-scope">
 					  <button>{{ currentGlobalSearch }} {{ translate('MOD_EMUNDUS_FILTERS_SCOPE_IN') }}  {{ translate(option.label) }}</button>
 				  </li>
 			  </ul>
@@ -200,7 +200,7 @@ export default {
 
 				newFilter.uid = new Date().getTime();
 				newFilter.default = false;
-				newFilter.operator = '=';
+				newFilter.operator = newFilter.hasOwnProperty('operator') && newFilter.operator != '' ? newFilter.operator : '=';
 				newFilter.andorOperator = 'OR';
 
 				switch (newFilter.type) {
@@ -251,7 +251,6 @@ export default {
         }
 
         filtersService.getFiltersAvailable(this.moduleId).then((filters) => {
-          console.log(filters);
           this.filters = filters;
         }).catch((error) => {
           console.error(error);
@@ -263,7 +262,11 @@ export default {
 			this.globalSearch = [];
 			// reset applied filters values
 			this.appliedFilters = this.appliedFilters.map((filter) => {
-				if (filter.type === 'select') {
+				filter.operator = '=';
+
+        if (filter.type === 'select') {
+          filter.operator = 'IN';
+
 					// TODO: too specific to the published filter, should create a default_value field.
 					if (filter.uid === 'published') {
 						filter.value = [1];
@@ -367,7 +370,10 @@ export default {
 		onFilterChanged() {
 			this.applyFilters();
 		},
-		onGlobalSearchChange(scope = 'everywhere') {
+		onGlobalSearchChange(event, scope = 'everywhere') {
+			event.stopPropagation();
+			event.preventDefault();
+
 			if (this.currentGlobalSearch.length > 0) {
 				// if the current search is already in the list, no need to add it again
 				const foundSearch = this.globalSearch.find((search) => search.value === this.currentGlobalSearch && search.scope === scope);
@@ -462,6 +468,11 @@ export default {
 #global-search-values {
 	height: 42px;
 	overflow-y: auto;
+}
+
+.global-search-scope button {
+	white-space: break-spaces;
+	text-align: left;
 }
 
 #current-global-search {

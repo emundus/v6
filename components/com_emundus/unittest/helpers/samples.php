@@ -163,7 +163,9 @@ class EmundusUnittestHelperSamples
 
 			$db->setQuery($query);
 			$fnum = $db->loadResult();
-		}
+		} else {
+            sleep(1);
+        }
 
 		if (empty($fnum)) {
 			$m_formbuilder = new EmundusModelFormbuilder;
