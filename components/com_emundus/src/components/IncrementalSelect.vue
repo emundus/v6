@@ -78,8 +78,8 @@ export default {
         this.unselectExistingValue();
       } else {
         this.isNewVal = false;
-        let detachedValue = this.existingValues.find((test) => {
-          return test.id === this.selectedExistingValue;
+        let detachedValue = this.existingValues.find((value) => {
+          return value.id === this.selectedExistingValue;
         });
 
         if (detachedValue) {

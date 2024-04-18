@@ -330,18 +330,6 @@ export default {
 				this.hasPDFFormat();
 			}
     },
-    disabledAllFieldWhenSaved(){
-      document.getElementById('selectDoc').style.pointerEvents = 'none';
-      document.getElementById('descDoc').setAttribute('readonly', 'readonly');
-      let elements = document.getElementsByName("formatDocCheckbox");
-      for(let i = 0; i < elements.length; i++) {
-        elements[i].style.pointerEvents = 'none';
-      }
-      document.getElementById('nbmax').setAttribute('readonly', 'readonly');
-      let buttonSave =document.getElementById('saveFormCreateDoc')
-      buttonSave.classList.add('em-disabled');
-      buttonSave.disabled = true;
-    },
 	  saveDocument() {
 	    let empty_names = true;
 			Object.values(this.document.name).forEach((name) => {
@@ -408,7 +396,6 @@ export default {
         campaignService.updateDocument(data, true).then(response => {
           this.document.id = response.data.status;
           this.$emit('documents-updated', this.document);
-          this.disabledAllFieldWhenSaved()
         });
       } else {
 	      const data = {
@@ -437,7 +424,6 @@ export default {
 						if (response) {
 							formBuilderService.updateDocument(data).then(response => {
 								this.$emit('documents-updated');
-                this.disabledAllFieldWhenSaved();
 							});
 						}
 					});

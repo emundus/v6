@@ -4295,8 +4295,9 @@ class EmundusModelFormbuilder extends JModelList {
 				$query->select($key . ' as value, ' . $value . ' as label');
 			}
 
-            if($where != '')
-            {$query->where($where); }
+            if(!empty($where)) {
+				$query->where($where);
+			}
 
 			$query->from($db->quoteName($table));
 			$db->setQuery($query);

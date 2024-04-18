@@ -23,16 +23,16 @@
         <label for="element-label">{{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_LABEL') }}</label>
         <input id="element-label" name="element-label" class="em-w-100" type="text" v-model="element.label[shortDefaultLang]"/>
 
-        <div :class="{'py-1 px-3 bg-neutral-300	rounded-md mt-2': typeof element.params['attachmentId'] !== 'undefined' && element.params['attachmentId'] == 0}">
+        <div :class="{'py-1 px-3 bg-neutral-300	rounded-md mt-2': newFileUpload}">
           <div class="em-flex-row em-flex-space-between em-w-100 em-pt-16 em-pb-16">
             <span>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_UNPUBLISH") }}</span>
             <div class="em-toggle">
-              <input type="checkbox" class="em-toggle-check" :disabled="typeof element.params['attachmentId'] !== 'undefined' && element.params['attachmentId'] == 0" v-model="isPublished" @click="togglePublish">
+              <input type="checkbox" class="em-toggle-check" :disabled="newFileUpload" v-model="isPublished" @click="togglePublish">
               <strong class="b em-toggle-switch"></strong>
               <strong class="b em-toggle-track"></strong>
             </div>
           </div>
-          <p v-if="typeof element.params['attachmentId'] !== 'undefined' && element.params['attachmentId'] == 0">{{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_FILEUPLOAD_PLEASE_SELECT_ATTACHMENT') }}</p>
+          <p v-if="newFileUpload">{{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_FILEUPLOAD_PLEASE_SELECT_ATTACHMENT') }}</p>
         </div>
 
 
@@ -220,7 +220,6 @@ export default {
       tab.active = true;
     },
     paramsAvailable(){
-      //console.log(elementParams[this.element.plugin]);
       if(typeof elementParams[this.element.plugin] !== 'undefined'){
         this.tabs[1].published = true;
         this.params = elementParams[this.element.plugin];
@@ -274,7 +273,10 @@ export default {
       return this.tabs.filter((tab) => {
         return tab.published;
       });
-    }
+    },
+    newFileUpload() {
+      return typeof this.element.params !== 'undefined' && typeof this.element.params['attachmentId'] !== 'undefined' && this.element.params['attachmentId'] == 0
+    },
   },
   watch: {
     'element.eval': function(value){

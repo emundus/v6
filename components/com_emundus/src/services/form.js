@@ -14,10 +14,12 @@ export default {
             return response;
         } catch (error) {
             return {
-                status: false, error: error
+                status: false,
+                error: error
             };
         }
-    }, async getFilesByForm(id) {
+    },
+    async getFilesByForm(id) {
         try {
             const response = await client().get(baseUrl + '&task=getfilesbyform&pid=' + id);
 
@@ -27,7 +29,8 @@ export default {
                 status: false, error: error
             };
         }
-    }, async getSubmissionPage(id) {
+    },
+    async getSubmissionPage(id) {
         try {
             const response = await client().get(baseUrl + '&task=getsubmittionpage', {
                 params: {
@@ -41,7 +44,8 @@ export default {
                 status: false, error: error
             };
         }
-    }, async getFormsByProfileId(id) {
+    },
+    async getFormsByProfileId(id) {
         try {
             const response = await client().get(baseUrl + '&task=getFormsByProfileId', {
                 params: {
@@ -55,7 +59,8 @@ export default {
                 status: false, error: error
             };
         }
-    }, async getFormByFabrikId(id) {
+    },
+    async getFormByFabrikId(id) {
         try {
             const response = await client().get(baseUrl + '&task=getFormByFabrikId', {params: {form_id: id}});
             return response;
@@ -64,7 +69,8 @@ export default {
                 status: false, error: error
             };
         }
-    }, async getProfileLabelByProfileId(id) {
+    },
+    async getProfileLabelByProfileId(id) {
         const formData = new FormData();
         formData.append('profile_id', id);
 
@@ -77,7 +83,8 @@ export default {
                 status: false, error: error
             };
         }
-    }, async getDocuments(id) {
+    },
+    async getDocuments(id) {
         if (id > 0) {
             try {
                 const response = await client().get(baseUrl + '&task=getDocuments', {params: {pid: id}});
@@ -93,7 +100,8 @@ export default {
                 status: false, msg: 'Missing parameter'
             };
         }
-    }, async getDocumentModels(documentId = null) {
+    },
+    async getDocumentModels(documentId = null) {
         try {
             let data = {
                 status: false,
@@ -124,7 +132,8 @@ export default {
                 status: false, error: error
             };
         }
-    }, async getDocumentModelsUsage(documentIds) {
+    },
+    async getDocumentModelsUsage(documentIds) {
         const formData = new FormData();
         formData.append('documentIds', documentIds);
 
@@ -137,7 +146,8 @@ export default {
                 status: false, error: error
             };
         }
-    }, async getPageGroups(formId) {
+    },
+    async getPageGroups(formId) {
         if (typeof formId == 'number' && formId > 0) {
             try {
                 const response = await client().get(baseUrl + '&task=getpagegroups&form_id=' + formId);
@@ -153,7 +163,8 @@ export default {
                 status: false, msg: 'MISSING_PARAMS'
             };
         }
-    }, async reorderDocuments(documents) {
+    },
+    async reorderDocuments(documents) {
         try {
             const formData = new FormData();
             formData.append('documents', JSON.stringify(documents));
@@ -166,7 +177,8 @@ export default {
                 status: false, error: error
             };
         }
-    }, async addDocument(params) {
+    },
+    async addDocument(params) {
         const formData = new FormData();
         Object.keys(params).forEach(key => formData.append(key, params[key]));
 
@@ -179,7 +191,8 @@ export default {
                 status: false, error: error
             };
         }
-    }, async getAssociatedCampaigns(id) {
+    },
+    async getAssociatedCampaigns(id) {
         try {
             const response = client().get(baseUrl + '&task=getassociatedcampaign', {
                 params: {
@@ -193,7 +206,8 @@ export default {
                 status: false, error: error
             };
         }
-    }, async removeDocumentFromProfile(id) {
+    },
+    async removeDocumentFromProfile(id) {
         try {
             const response = await client().get(baseUrl + '&task=removeDocumentFromProfile', {
                 params: {
@@ -207,7 +221,8 @@ export default {
                 status: false, error: error
             };
         }
-    }, async getPageObject(formId) {
+    },
+    async getPageObject(formId) {
         try {
             const response = await client().get('index.php?option=com_emundus&view=form&formid=' + formId + '&format=vue_jsonclean');
 
@@ -221,7 +236,8 @@ export default {
                 status: false, msg: error
             };
         }
-    }, async checkIfDocumentCanBeDeletedForProfile(documentId, profileId) {
+    },
+    async checkIfDocumentCanBeDeletedForProfile(documentId, profileId) {
         try {
             const response = await client().get(baseUrl + '&task=checkcandocbedeleted&docid=' + documentId + '&prid=' + profileId);
 

@@ -11,8 +11,8 @@
         <select v-else-if="param.options && param.options.length > 0" v-model="element.params[param.name]" class="em-w-100">
           <option v-for="option in param.options" :value="option.value">{{ translate(option.label) }}</option>
         </select>
-        <div  v-if="element.plugin === 'emundus_fileupload'" class="green-SectionTypeDocument mt-2 rounded-lg p-2">
-          <button type="button" class=" flex items-center focus:outline-none" @click="EventNewDocForm" style="user-select: none">
+        <div  v-if="element.plugin === 'emundus_fileupload'" class="emundusfileupload-section mt-2 rounded-lg p-2">
+          <button type="button" class=" flex items-center focus:outline-none select-none" @click="toggleAttachmentForm">
             <label class="!mb-0 pl-3">{{translate('COM_EMUNDUS_FORM_BUILDER_CREATE_DOCUMENT_NAME')}}</label>
             <span class="material-icons-outlined" :class="[(isActive ? 'rotate-90' : '')]">chevron_right</span>
           </button>
@@ -129,7 +129,7 @@ export default {
 
     idElement: 0,
     loading: false,
-    //for adding fileupload type
+
     isActive: false
   }),
   created() {
@@ -211,18 +211,19 @@ export default {
         });
       }
     },
-    EventNewDocForm() {
+    toggleAttachmentForm() {
       this.isActive = !this.isActive;
       this.$emit('openNewDocForm');
     },
 
-    reloadComponent(document) {
-      if (document) {
+    reloadComponent(attachment) {
+      if (attachment) {
         this.params.forEach((param) => {
           this.updateSqlDropdownOptions(param);
         });
       }
-      this.EventNewDocForm();
+
+      this.toggleAttachmentForm();
     },
     addRepeatableField(param) {
       let index = Object.entries(this.element.params[param]).length;
@@ -250,43 +251,16 @@ export default {
 
 
 <style scoped>
-.collapsible {
-  background-color: #eee;
-  color: #444;
-  cursor: pointer;
-  padding: 18px;
-  width: 100%;
-  border: none;
-  text-align: left;
-  outline: none;
-  font-size: 15px;
-}
-
-.collapsible.active, .collapsible:hover {
-  background-color: #ccc;
-}
-
-.content {
-  padding: 0 18px;
-  display: none;
-  overflow: hidden;
-  background-color: #f1f1f1;
-}
-
-.content[style*="display: block"] {
-  display: block !important ;
-}
-
-.green-SectionTypeDocument {
+.emundusfileupload-section {
   font-weight: bold;
   background-color: #efeeee;
 }
 
 @supports (background-color: hsl(from white h s 90%)) {
-  .green-SectionTypeDocument {
+  .emundusfileupload-section {
     background-color: hsl(from var(--em-profile-color) h s 96%);
   }
-  .green-SectionTypeDocument label {
+  .emundusfileupload-section label {
     color: var(--em-profile-color);
   }
 }
