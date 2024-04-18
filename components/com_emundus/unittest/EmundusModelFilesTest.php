@@ -140,9 +140,54 @@ class EmundusModelFilesTest extends TestCase{
 	    $this->assertTrue($tagged, 'tagFile should returns true if tag is already associated to the file but not by the same user');
     }
 
+    public function testgetStatus()
+    {
+        $status = $this->m_files->getStatus();
+        $this->assertIsArray($status, 'getStatus returns an array');
+        $this->assertNotEmpty($status, 'getStatus returns a non-empty array');
+    }
+
+    public function testgetFnumsInfos()
+    {
+        $infos = $this->m_files->getFnumInfos('');
+        $this->assertEmpty($infos, 'getFnumInfos returns an empty array if no fnum is given');
+
+        $user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+        $program = $this->h_sample->createSampleProgram();
+        $campaign_id = $this->h_sample->createSampleCampaign($program);
+        $fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
+
+        $infos = $this->m_files->getFnumInfos($fnum);
+        $this->assertNotEmpty($infos, 'getFnumInfos returns an array of data');
+
+        $this->assertArrayHasKey('fnum', $infos, 'the data contains the fnum');
+        $this->assertEquals($fnum, $infos['fnum'], 'the fnum is the one passed as parameter');
+
+        $this->assertArrayHasKey('campaign_id', $infos, 'the data contains the campaign_id');
+        $this->assertEquals($campaign_id, $infos['campaign_id'], 'the campaign_id is the one passed as parameter');
+    }
+
     public function testUpdateState() {
         $updated = $this->m_files->updateState([], null);
         $this->assertFalse($updated, 'updateState returns false if no file and no new state is given');
+
+        $user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+        $program = $this->h_sample->createSampleProgram();
+        $campaign_id = $this->h_sample->createSampleCampaign($program);
+        $fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
+
+        $updated = $this->m_files->updateState([$fnum], null);
+        $this->assertFalse($updated, 'updateState returns false if no new state is given');
+
+        $updated = $this->m_files->updateState([], 1);
+        $this->assertFalse($updated, 'updateState returns false if no file is given');
+
+        $updated = $this->m_files->updateState([$fnum], 1);
+        $this->assertTrue($updated['status'], 'updateState returns true if a file and a new state are given');
+
+        $infos = $this->m_files->getFnumInfos($fnum);
+        $this->assertArrayHasKey('status', $infos, 'the data contains the state');
+        $this->assertEquals(1, $infos['status'], 'the state is the one passed as parameter');
     }
 
 	public function testgetFnumArray2() {
