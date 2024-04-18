@@ -273,14 +273,14 @@ class EmundusModelGallery extends JModelList
 							'group_id' => $group_id,
 							'plugin'   => 'internalid'
 						);
-						EmundusHelperUpdate::addFabrikElement($datas, [], $user);
+						EmundusHelperUpdate::addFabrikElement($datas, [], true, $user);
 
 						$datas = array(
 							'name'     => 'fnum',
 							'group_id' => $group_id,
 							'plugin'   => 'field'
 						);
-						EmundusHelperUpdate::addFabrikElement($datas, [], $user);
+						EmundusHelperUpdate::addFabrikElement($datas, [], true, $user);
 
 						$datas  = array(
 							'name'     => 'status',
@@ -294,14 +294,14 @@ class EmundusModelGallery extends JModelList
 							'join_key_column'            => 'step',
 							'join_val_column'            => 'value',
 						);
-						EmundusHelperUpdate::addFabrikElement($datas, $params, $user);
+						EmundusHelperUpdate::addFabrikElement($datas, $params,true, $user);
 
 						$datas = array(
 							'name'     => 'published',
 							'group_id' => $group_id,
 							'plugin'   => 'field'
 						);
-						EmundusHelperUpdate::addFabrikElement($datas, [], $user);
+						EmundusHelperUpdate::addFabrikElement($datas, [],true, $user);
 
 						$datas   = array(
 							'label'         => $label,
