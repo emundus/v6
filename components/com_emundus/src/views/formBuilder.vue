@@ -222,7 +222,6 @@ export default {
             active: false,
             displayed: false
           },
-            //todo
           {
             title: 'Translations',
             icon: 'translate',

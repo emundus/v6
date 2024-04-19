@@ -2,10 +2,13 @@
   {
     "label": "COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_GENERAL",
     "icon": "display_settings",
+    "type": "Menu",
+    "name": "general settings",
     "published": true,
     "sections": [
       {
         "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_PARAM_SITE",
+        "name": "site settings",
         "type": "section",
         "helptext": "",
         "options": [
@@ -74,6 +77,7 @@
       },
       {
         "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_IMG_SITE",
+        "name": "site images",
         "type": "section",
         "helptext": "",
         "options": [
@@ -86,6 +90,7 @@
       },
       {
         "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_THEME_SITE",
+        "name": "site theme",
         "type": "section",
         "helptext": "",
         "options": [
@@ -104,6 +109,7 @@
       },
       {
         "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_ANALATICS",
+        "name": "analytics",
         "type": "section",
         "helptext": "",
         "options": [
@@ -126,10 +132,13 @@
   {
     "label": "COM_EMUNDUS_GLOBAL_PARMAS_MENUS_EMAIL",
     "icon": "email",
+    "name": "email settings",
+    "type": "Menu",
     "published": true,
     "sections": [
       {
         "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_MANAG_SERVER_MAIL",
+        "name": "manage server mail",
         "type": "section",
         "helptext": "cela permet de pouvoir envoyer des mails au candidats",
         "options": [
@@ -163,10 +172,13 @@
   {
     "label": "COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_CONTENT",
     "icon": "notes",
+    "name": "content settings",
+    "type": "Menu",
     "published": true,
     "sections": [
       {
         "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CAMPAIGN_PAGE",
+        "name": "campaign page",
         "type": "section",
         "helptext": "",
         "options": [
@@ -243,6 +255,7 @@
       },
       {
         "label": "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_FOOTER",
+        "name": "footer",
         "type": "section",
         "helptext": "",
         "options": [
@@ -255,6 +268,7 @@
       },
       {
         "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_RGPD",
+        "name": "rgpd",
         "type": "section",
         "notify": 1,
         "helptext": "Veuillez compléter les différentes sections ci-dessous afin de respecter le reglement général sur la protection des données. Pour en savoir plus sur les mentions obligatoires qui doivent figurer sur votre compagne, consultez le site de la CNIL.",
@@ -350,6 +364,7 @@
       },
       {
         "label": "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_ACCESSIBILITY",
+        "name": "accessibility",
         "type": "section",
         "helptext": "",
         "options": [
@@ -371,11 +386,13 @@
   },
   {
     "label": "COM_EMUNDUS_GLOBAL_PARMAS_MENUS_MANAGE_FILES",
+    "name": "files management",
     "icon": "source",
     "published": true,
     "sections": [
       {
         "label": "COM_EMUNDUS_STATUS",
+        "name": "files status",
         "type": "section",
         "helptext": "",
         "options": [
@@ -390,6 +407,7 @@
       },
       {
         "label": "COM_EMUNDUS_TAGS",
+        "name": "files tags",
         "type": "section",
         "helptext": "",
         "options": [
@@ -404,6 +422,7 @@
       },
       {
         "label": "COM_EMUNDUS_ONBOARD_SETTINGS_FILES_TOOL",
+        "name": "files management",
         "type": "section",
         "helptext": "",
         "options": [
@@ -498,6 +517,7 @@
   },
   {
     "label": "COM_EMUNDUS_GLOBAL_PARMAS_MENUS_SUPPL_MOD",
+    "name": "add-on modules",
     "icon": "dashboard_customize",
     "published": true,
     "sections": [
@@ -537,6 +557,7 @@
   },
   {
     "label": "COM_EMUNDUS_GLOBAL_PARMAS_MENUS_INTEG",
+    "name": "integration",
     "icon": "lan",
     "published": true,
     "sections": [
@@ -602,7 +623,8 @@
         ]
       },
       {
-        "label": "Orphelins",
+        "label": "COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_ORPHELINS",
+        "name": "orphelins",
         "type": "section",
         "helptext": "",
         "options": [
