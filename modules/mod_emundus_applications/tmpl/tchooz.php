@@ -386,7 +386,7 @@ $current_tab = 0;
 											        <?php endif; ?>
                                                     <div class="em-w-100">
                                                         <div class="em-flex-row em-flex-space-between em-mb-12">
-                                                            <div>
+                                                            <div class="flex flex-row gap-2 items-center justify-content-center">
                                                                 <?php
                                                                 if (empty($application->class)) {
                                                                     $application->class = 'default';
@@ -412,6 +412,13 @@ $current_tab = 0;
                                                                 <?php if (!empty($application->order_status)): ?>
                                                                     <br>
                                                                     <p><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_ORDER_STATUS') ?> <span style="color: <?= $application->order_color; ?>"><?= JText::_(strtoupper($application->order_status)); ?></span></p>
+                                                                <?php endif; ?>
+
+                                                                <?php if ($application->show_shared_users): ?>
+                                                                    <div id="actions_button_collaborate" class="flex flex-row collaborators-icon-wrapper em-bg-main-500" onclick="shareApplication('<?php echo $application->fnum ?>','<?php echo $application->application_id ?>')">
+                                                                        <span id="actions_button_collaborate_icon" class="material-icons-outlined em-text-neutral-300">group</span>
+                                                                        <span id="actions_button_collaborate_nb" class="nb-collaborators em-profile-color em-border-main-500 em-font-size-12 em-bg-neutral-100"><?= sizeof($application->collaborators) ?></span>
+                                                                    </div>
                                                                 <?php endif; ?>
                                                             </div>
                                                             <div class="mod_emundus_applications__container">
@@ -998,12 +1005,14 @@ $current_tab = 0;
                 let view = url[url.length - 2];
 
                 actions = document.getElementById('actions_block_' + fnum + '_' + view + '_' + tab);
-                if (modal !== null) {
-                    actions.style.display = 'none';
-                } else if (actions.style.display === 'none') {
-                    actions.style.display = 'flex';
-                } else {
-                    actions.style.display = 'none';
+                if (actions) {
+                    if (modal !== null) {
+                        actions.style.display = 'none';
+                    } else if (actions.style.display === 'none') {
+                        actions.style.display = 'flex';
+                    } else {
+                        actions.style.display = 'none';
+                    }
                 }
             }
         }
@@ -1527,7 +1536,11 @@ $current_tab = 0;
         });
     }
 
-    async function shareApplication(fnum,ccid) {
+    async function shareApplication(fnum,ccid, event = null) {
+        if (event !== null) {
+            event.preventDefault();
+        }
+
         document.querySelector('.em-page-loader').style.display = 'block';
 
         fetch('index.php?option=com_emundus&view=application&layout=collaborate&format=raw&fnum='+fnum+'&ccid='+ccid, {

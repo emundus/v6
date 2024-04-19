@@ -850,6 +850,35 @@ circle.circle {
     margin-bottom: 12px;
 }
 
+/* Collaboration */
+
+.collaborators-icon-wrapper {
+    border-radius: 50%;
+    position: relative;
+    padding: 6px;
+
+    .material-icons-outlined {
+        width: 22px;
+        height: 22px;
+        text-align: center;
+    }
+
+    .nb-collaborators {
+        position: absolute;
+        top: -8px;
+        right: -15px;
+        padding: 5px;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        border-width: 2px;
+        text-align: center;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 90%;
+    }
+}
+
 /*******************
  * Fin peps tuiles
  *******************/

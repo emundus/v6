@@ -152,6 +152,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 	    $collaborate = in_array('collaborate',$actions);
         // We send the layout as a param because Hesam needs different information.
         $applications = modemundusApplicationsHelper::getApplications($layout, $query_order_by, $params,$collaborate);
+        modemundusApplicationsHelper::getCollaborators($applications);
 		$tabs = $m_application->getTabs(JFactory::getUser()->id);
     }
 
