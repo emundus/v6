@@ -20,6 +20,10 @@ JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus/models'); // 
 use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Helper\ModuleHelper;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Uri\Uri;
+
 
 class EmundusModelApplication extends JModelList
 {
@@ -6248,6 +6252,32 @@ class EmundusModelApplication extends JModelList
 
 		return $results;
 	}
+
+    public function getCollaborationAcceptionLink()
+    {
+        $collaboration_url = '';
+
+        $emundus_config = ComponentHelper::getParams('com_emundus');
+        $collaboration_id = $emundus_config->get('collaborate_link', 0);
+
+        if (!empty($collaboration_id)) {
+            $menu_item = Factory::getApplication()->getMenu()->getItems('id', $collaboration_id, true);
+
+            if ($menu_item->type === 'url' && strpos($menu_item->link, 'http') !== false) {
+                $collaboration_url = $menu_item->link;
+            } else {
+                $collaboration_url = Uri::base() . $menu_item->alias . '/';
+            }
+
+            if (strpos($collaboration_url, '?') !== false) {
+                $collaboration_url .= '&key=';
+            } else {
+                $collaboration_url .= '?key=';
+            }
+        }
+
+        return $collaboration_url;
+    }
 
 	public function removeSharedUser($request_id,$ccid,$user_id)
 	{

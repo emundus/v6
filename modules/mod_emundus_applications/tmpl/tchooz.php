@@ -1648,30 +1648,10 @@ $current_tab = 0;
                     formData.append('ccid', ccid);
                     formData.append('emails', document.querySelector('#collab_emails').value);
 
-                    fetch('index.php?option=com_emundus&controller=application&task=sharefilewith', {
-                        body: formData,
-                        method: 'post',
-                    }).then((response) => {
-                        if (response.ok) {
-                            return response.json();
-                        }
-                    }).then((res) => {
-                        if (res.status != true) {
-                            Swal.fire({
-                                title: "Une erreur est survenue",
-                                text: res.msg,
-                                type: "error",
-                                reverseButtons: true,
-                                confirmButtonText: "<?php echo JText::_('JYES');?>",
-                                timer: 3000
-                            });
-                        }
-                    });
-
                     Swal.fire({
                         title: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_SUCCESS'); ?>",
                         text: res.msg,
-                        iconHtml: "<img src='media/com_emundus/images/tchoozy/complex-illustrations/sending-message.svg' width='200px' class='mb-4' />",
+                        html: "<div class='align-center'><img src='media/com_emundus/images/tchoozy/complex-illustrations/sending-message.svg' width='200px' class='mb-4' /></div>",
                         showCancelButton: false,
                         showConfirmButton: false,
                         customClass: {
@@ -1681,6 +1661,51 @@ $current_tab = 0;
                             icon: 'border-0 w-full h-full mt-0',
                         },
                         timer: 3000
+                    });
+
+                    fetch('index.php?option=com_emundus&controller=application&task=sharefilewith', {
+                        body: formData,
+                        method: 'post',
+                    }).then((response) => {
+                        if (response.ok) {
+                            return response.json();
+                        } else {
+                            return response.text().then((text) => {
+                                throw new Error(text);
+                            });
+                        }
+                    }).then((res) => {
+                        if (res.status != true) {
+                            throw new Error(res.msg);
+                        } else {
+                            if (res.data.failed_emails.length > 0) {
+                                let failed_emails = res.data.failed_emails.join(', ');
+                                throw new Error('<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_ERROR_EMAILS'); ?> ' + failed_emails);
+                            } else {
+                                Swal.fire({
+                                    title: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_FINISH_SUCCESS'); ?>",
+                                    text: res.msg,
+                                    html: "<div class='align-center'><img src='media/com_emundus/images/tchoozy/complex-illustrations/message-sent.svg' width='200px' class='mb-4' /></div>",
+                                    showCancelButton: false,
+                                    showConfirmButton: false,
+                                    customClass: {
+                                        title: 'em-swal-title !text-center',
+                                        cancelButton: 'em-swal-cancel-button',
+                                        confirmButton: 'em-swal-confirm-button',
+                                        icon: 'border-0 w-full h-full mt-0',
+                                    },
+                                    //timer: 3000
+                                });
+                            }
+                        }
+                    }).catch((error) => {
+                        Swal.fire({
+                            title: "Une erreur est survenue",
+                            text: error,
+                            type: "error",
+                            reverseButtons: true,
+                            confirmButtonText: "<?php echo JText::_('JYES');?>"
+                        });
                     });
                 }
             });
