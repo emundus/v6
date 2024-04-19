@@ -856,6 +856,7 @@ circle.circle {
     border-radius: 50%;
     position: relative;
     padding: 6px;
+    opacity: 0.3;
 
     .material-icons-outlined {
         width: 22px;
