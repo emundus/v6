@@ -1329,8 +1329,7 @@ class EmundusControllerUsers extends JControllerLegacy {
         // (one element of the array is also an array of one user's data)
         $allUsersDetails = array();
         foreach ($userIds as $userId) {
-            $userDetails = $modelUsers->getUserDetails($userId);
-            $allUsersDetails[] = $userDetails;
+            $allUsersDetails[] = $modelUsers->getUserDetails($userId);
         }
 
         // Prepare the writing in the file
@@ -1375,7 +1374,6 @@ class EmundusControllerUsers extends JControllerLegacy {
         header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
         header('Cache-Control: no-store, no-cache, must-revalidate');
         header('Cache-Control: pre-check=0, post-check=0, max-age=0');
-        header('Pragma: anytextexeptno-cache', true);
         header('Cache-control: private');
         header('Expires: 0');
 

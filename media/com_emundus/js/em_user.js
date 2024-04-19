@@ -1734,8 +1734,8 @@ function download(fileUrl, fileName) {
  * Check/Uncheck checkboxes according to the "all" checkbox
  * (Only use in the file components/com_emundus/views/users/tmpl/export.php for now)
  */
-function checkAllUserElement(checkbox) {
-	let allChecked = checkbox.checked;
+function checkAllUserElement(checkboxAll){
+	let allChecked = checkboxAll.checked;
 	var checkboxes = document.querySelectorAll('input[type=checkbox][id^=checkbox-]');
 	checkboxes.forEach(function (checkbox) {
 		checkbox.checked = allChecked;
@@ -1748,9 +1748,9 @@ function checkAllUserElement(checkbox) {
  */
 function uncheckCheckboxAllElement(checkbox)
 {
-	var allCheckbox = document.getElementById('checkbox-all');
-	if (!checkbox.checked && allCheckbox.checked) {
-		allCheckbox.checked = false;
+	var checkboxAll = document.getElementById('checkbox-all');
+	if (!checkbox.checked && checkboxAll.checked) {
+		checkboxAll.checked = false;
 	}
 }
 

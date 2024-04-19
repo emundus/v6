@@ -3910,8 +3910,6 @@ class EmundusModelUsers extends JModelList {
         return $data;
     }
 
-
-
     /*
      * Return an array of user data without foreign key
      */

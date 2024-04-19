@@ -75,4 +75,37 @@ class EmundusHelperFabrikTest extends TestCase
         $formatted_phone_number = $this->h_fabrik->getFormattedPhoneNumberValue($unformatted_phone_number, 2);
         $this->assertEmpty($formatted_phone_number, 'Incorrect phone number returns empty string');
     }
+
+    /*
+     * Test the formatElementValue() method
+     * Should return the value formatted in a good way
+     */
+    public function testformatElementValue()
+    {
+        $this->assertEquals('', $this->h_fabrik->formatElementValue('', ''), 'Passing an empty element name and raw value should return nothing');
+        $this->assertEquals('', $this->h_fabrik->formatElementValue('name', ''), 'Passing an empty raw value should return nothing');
+        $this->assertEquals('element', $this->h_fabrik->formatElementValue('', 'element'), 'Passing an empty element nam should return raw_value');
+
+        // Test case with a date
+        $this->assertEquals('04/04/2024', $this->h_fabrik->formatElementValue('end_date', "2024-04-04"));
+
+        // Test cases with radiobutton, checkbox and dropdown
+        $this->assertEquals('option1', $this->h_fabrik->formatElementValue('checkbox', "1"));
+        $this->assertEquals('option2', $this->h_fabrik->formatElementValue('dropdown', "2"));
+        $this->assertEquals('option1', $this->h_fabrik->formatElementValue('radiobutton', "1"));
+
+        // Test cases with yes/no
+        $this->assertEquals('No', $this->h_fabrik->formatElementValue('yesno', "0"));
+        $this->assertEquals('Yes', $this->h_fabrik->formatElementValue('yesno', "1"));
+
+        // Test case with textarea
+        $this->assertEquals("Beautiful text.<br />\n        It is awesome !", $this->h_fabrik->formatElementValue('textarea', "Beautiful text.
+        It is awesome !"));
+
+        // Test cases with databasejoin
+        $this->assertEquals('Argentina, Argentine Republic', $this->h_fabrik->formatElementValue('country', "10"));
+        $this->assertEquals('Bissau-guinean', $this->h_fabrik->formatElementValue('nationality', "24"));
+        $this->assertEquals('Accepté', $this->h_fabrik->formatElementValue('status', "3"));
+        $this->assertEquals('1 paiement / campagne', $this->h_fabrik->formatElementValue('payment_type', "1"));
+    }
 }
