@@ -3675,7 +3675,7 @@ class EmundusModelApplication extends JModelList
             catch(Exception $e)
             {
                 error_log($e->getMessage(), 0);
-            }   
+            }
         }
 
         return $access;
@@ -6135,123 +6135,133 @@ class EmundusModelApplication extends JModelList
 	}
 
     public function shareFileWith($emails, $ccid, $user_id = null, $auto_accept = 0)
-	{
-		$default_rights = [
-			'r',
-			'u',
-			'show_history',
-			'show_shared_users',
-		];
-		$application_module = ModuleHelper::getModule('mod_emundus_applications');
-		if(!empty($application_module->id)) {
-			$params = json_decode($application_module->params);
+    {
+        $default_rights = [
+            'r',
+            'u',
+            'show_history',
+            'show_shared_users',
+        ];
+        $application_module = ModuleHelper::getModule('mod_emundus_applications');
+        if (!empty($application_module->id)) {
+            $params = json_decode($application_module->params);
 
-			if(!empty($params->mod_emundus_applications_collaborate_default_rights)) {
-				$default_rights = $params->mod_emundus_applications_collaborate_default_rights;
-			}
-		}
+            if (!empty($params->mod_emundus_applications_collaborate_default_rights)) {
+                $default_rights = $params->mod_emundus_applications_collaborate_default_rights;
+            }
+        }
 
-		$results = ['status' => true, 'emails' => [], 'failed_emails' => []];
-		if(empty($user_id)) {
-			$user_id = $this->_user->id;
-		}
+        $results = ['status' => true, 'emails' => [], 'failed_emails' => []];
+        if (empty($user_id)) {
+            $user_id = $this->_user->id;
+        }
 
-		$shared_users = $this->getSharedFileUsers($ccid);
-		foreach($shared_users as $shared_user) {
-			$index_to_remove = array_search($shared_user->email,$emails);
-			if($index_to_remove !== false) {
-				unset($emails[$index_to_remove]);
-			}
-		}
+        $shared_users = $this->getSharedFileUsers($ccid);
+        foreach ($shared_users as $shared_user) {
+            $index_to_remove = array_search($shared_user->email, $emails);
+            if ($index_to_remove !== false) {
+                unset($emails[$index_to_remove]);
+            }
+        }
 
-		if(!empty($emails)) {
-			$query = $this->_db->getQuery(true);
+        if (!empty($emails)) {
+            $query = $this->_db->getQuery(true);
 
-			$query->select('fnum,applicant_id,campaign_id')
-				->from($this->_db->quoteName('#__emundus_campaign_candidature'))
-				->where($this->_db->quoteName('id') . ' = ' . $ccid);
-			$this->_db->setQuery($query);
-			$file_info = $this->_db->loadObject();
+            $query->select('fnum,applicant_id,campaign_id')
+                ->from($this->_db->quoteName('#__emundus_campaign_candidature'))
+                ->where($this->_db->quoteName('id') . ' = ' . $ccid);
+            $this->_db->setQuery($query);
+            $file_info = $this->_db->loadObject();
 
-			foreach($emails as $email) {
-				$query->clear()
-					->select('id')
-					->from($this->_db->quoteName('#__users'))
-					->where($this->_db->quoteName('email') . ' = ' . $this->_db->quote($email));
-				$this->_db->setQuery($query);
-				$shared_user_id = $this->_db->loadResult();
+            foreach ($emails as $email) {
+                $query->clear()
+                    ->select('id')
+                    ->from($this->_db->quoteName('#__users'))
+                    ->where($this->_db->quoteName('email') . ' = ' . $this->_db->quote($email));
+                $this->_db->setQuery($query);
+                $shared_user_id = $this->_db->loadResult();
 
-				if(!empty($shared_user_id)) {
-					$query->clear()
-						->select('firstname,lastname')
-						->from($this->_db->quoteName('#__emundus_users'))
-						->where($this->_db->quoteName('user_id') . ' = ' . $shared_user_id);
-					$this->_db->setQuery($query);
-					$shared_user_infos = $this->_db->loadObject();
-				}
+                if (!empty($shared_user_id)) {
+                    $query->clear()
+                        ->select('firstname,lastname')
+                        ->from($this->_db->quoteName('#__emundus_users'))
+                        ->where($this->_db->quoteName('user_id') . ' = ' . $shared_user_id);
+                    $this->_db->setQuery($query);
+                    $shared_user_infos = $this->_db->loadObject();
+                }
 
-				$columns = [
-					'time_date',
-					'student_id',
-					'fnum',
-					'keyid',
-					'campaign_id',
-					'email',
-					'ccid',
-					'user_id',
-					'r',
-					'u',
-					'show_history',
-					'show_shared_users',
+                $columns = [
+                    'time_date',
+                    'student_id',
+                    'fnum',
+                    'keyid',
+                    'campaign_id',
+                    'email',
+                    'ccid',
+                    'user_id',
+                    'r',
+                    'u',
+                    'show_history',
+                    'show_shared_users',
                     'uploaded'
                 ];
 
-				$key = md5(date('Y-m-d h:m:i') . '::' . $file_info->fnum . '::' . $file_info->applicant_id . '::' . $email . '::' . rand());
-				$values = [
-					$this->_db->quote(EmundusHelperDate::getNow()),
-					$file_info->applicant_id,
-					$this->_db->quote($file_info->fnum),
-					$this->_db->quote($key),
-					$file_info->campaign_id,
-					$this->_db->quote($email),
-					$ccid,
-					(int)$shared_user_id,
-					in_array('r',$default_rights) ? 1 : 0,
-					in_array('u',$default_rights) ? 1 : 0,
-					in_array('show_history',$default_rights) ? 1 : 0,
-					in_array('show_shared_users',$default_rights) ? 1 : 0,
+                $key = md5(date('Y-m-d h:m:i') . '::' . $file_info->fnum . '::' . $file_info->applicant_id . '::' . $email . '::' . rand());
+                $values = [
+                    $this->_db->quote(EmundusHelperDate::getNow()),
+                    $file_info->applicant_id,
+                    $this->_db->quote($file_info->fnum),
+                    $this->_db->quote($key),
+                    $file_info->campaign_id,
+                    $this->_db->quote($email),
+                    $ccid,
+                    (int)$shared_user_id,
+                    in_array('r', $default_rights) ? 1 : 0,
+                    in_array('u', $default_rights) ? 1 : 0,
+                    in_array('show_history', $default_rights) ? 1 : 0,
+                    in_array('show_shared_users', $default_rights) ? 1 : 0,
                     $auto_accept
                 ];
 
-				$query->clear()
-					->insert($this->_db->quoteName('#__emundus_files_request'))
-					->columns($columns)
-					->values(implode(',',$values));
+                $query->clear()
+                    ->insert($this->_db->quoteName('#__emundus_files_request'))
+                    ->columns($columns)
+                    ->values(implode(',', $values));
 
-				try {
-					$this->_db->setQuery($query);
-					$shared = $this->_db->execute();
+                try {
+                    $this->_db->setQuery($query);
+                    $shared = $this->_db->execute();
 
-					if($shared) {
-						$results['emails'][$email] = $key;
-					} else {
-						$results['failed_emails'][] = $email;
-					}
+                    if ($shared) {
+                        $results['emails'][$email] = $key;
 
-					//TODO: Log this action
-				}
-				catch (Exception $e) {
-					$results['status'] = false;
-					Log::add('Failed to share file with ccid ' . $ccid . ' with error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
-				}
-			}
+                        $dispatcher = JEventDispatcher::getInstance();
+                        $dispatcher->trigger('callEventHandler', array(
+                                'onAfterShareFileWith',
+                                [
+                                    'email' => $email,
+                                    'fnum' => $file_info->fnum,
+                                    'applicant_id' => $file_info->applicant_id,
+                                    'ccid' => $ccid,
+                                    'shared_user_infos' => $shared_user_infos
+                                ]
+                            )
+                        );
+                    } else {
+                        $results['failed_emails'][] = $email;
+                    }
+                } catch (Exception $e) {
+                    $results['status'] = false;
+                    Log::add('Failed to share file with ccid ' . $ccid . ' with error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+                }
+            }
 
-			$cache_key      = 'shared_file_users_' . $ccid;
-			$this->h_cache->set($cache_key,[]);
-		}
+            $cache_key = 'shared_file_users_' . $ccid;
+            $this->h_cache->set($cache_key, []);
+        }
 
-		return $results;
-	}
+        return $results;
+    }
 
     public function getCollaborationAcceptionLink()
     {
