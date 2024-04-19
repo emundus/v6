@@ -123,6 +123,7 @@
     </div>
 
     <div class="em-p-16">
+      //todo context === 'element'
       <button class="em-primary-button" id="saveFormCreateDoc" @click="saveDocument">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_DOCUMENT_SAVE') }}</button>
     </div>
   </div>
