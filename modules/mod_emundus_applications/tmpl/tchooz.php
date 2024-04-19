@@ -1680,7 +1680,7 @@ $current_tab = 0;
                         } else {
                             if (res.data.failed_emails.length > 0) {
                                 let failed_emails = res.data.failed_emails.join(', ');
-                                throw new Error('<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_ERROR_EMAILS'); ?> ' + failed_emails);
+                                throw new Error("<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_ERROR_EMAILS'); ?> " + failed_emails);
                             } else {
                                 Swal.fire({
                                     title: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_FINISH_SUCCESS'); ?>",
@@ -1694,7 +1694,7 @@ $current_tab = 0;
                                         confirmButton: 'em-swal-confirm-button',
                                         icon: 'border-0 w-full h-full mt-0',
                                     },
-                                    //timer: 3000
+                                    timer: 3000
                                 });
                             }
                         }
