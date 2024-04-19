@@ -597,7 +597,7 @@
           {
             "type_field": "component",
             "component": "Translations",
-            "props": []
+            "props": {}
           }
         ]
       },
@@ -609,7 +609,7 @@
           {
             "type_field": "component",
             "component": "Orphelins",
-            "props": []
+            "props": {}
           }
         ]
       }

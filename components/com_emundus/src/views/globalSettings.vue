@@ -323,9 +323,11 @@ export default {
         const indexMenu = this.searchMenu(menu)
         this.handleMenuButtonClick(indexMenu  , this.Menus[indexMenu]);
         const indexSubSection = this.searchSubMenu(indexMenu, section);
-        //wait thant this.handleMenuButtonClick(indexMenu  , this.Menus[indexMenu]) is finished
+
         if (indexSubSection !== -1) {
+          setTimeout(() => {
           this.handleSubMenuClick(indexSubSection);
+          }, 10);//wait thant this.handleMenuButtonClick(indexMenu  , this.Menus[indexMenu]) is finished
         }
       } else {
         this.handleMenuButtonClick(0, this.Menus[0]);
@@ -383,15 +385,15 @@ export default {
     },
 
     toggleSubMenuButton(index) {
-      console.log("index" + index);
-      console.log("array subMenu");
-      console.log(this.SubMenuisClicked);
-      console.log(this.SubMenuisClicked[index]);
+      if(this.SubMenuisClicked[index] === undefined){
+        this.SubMenuisClicked[index] = false;
+      }
       this.SubMenuisClicked[index] = !this.SubMenuisClicked[index];
       if (this.SubMenuisClicked[index]) {
         document.getElementById('SubtitleArrow' + index).style.rotate = '-180deg';
         document.getElementById('SubMenu-' + index).style.display = 'flex';
       }
+
     },
     countNotif(notif, index) {
       if (notif === true) {
