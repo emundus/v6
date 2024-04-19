@@ -3692,63 +3692,93 @@ class EmundusModelUsers extends JModelList {
     }
 
     /*
-     * Return all data of a user in jos_users table
+     * Return email, username, register date and last connection date of a user in jos_users table
      * User's id is necessaray
      */
     public function getJosUsersById($uid)
     {
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $josUser = null;
 
-        $query->select('u.*')
-            ->from($db->quoteName('#__users', 'u'))
-            ->where($db->quoteName('u.id') . ' = ' .$uid);
+        if (!empty($uid)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
 
-        $db->setQuery($query);
-        return $db->loadObject();
+            $query->select('u.email as email, u.username as username, u.registerDate as registerDate, u.lastvisitDate as lastvisitDate')
+                ->from($db->quoteName('#__users', 'u'))
+                ->where($db->quoteName('u.id') . ' = ' . $uid);
+
+            try {
+                $db->setQuery($query);
+                $josUser = $db->loadObject();
+            } catch (Exception $e) {
+                JLog::add('component/com_emundus/models/users | Error when try to get jos user details : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.error');
+            }
+        }
+        return $josUser;
     }
 
     /*
-     * Return all data of a profile in jos_emundus_setup_profiles table
+     * Return the description of a profile in jos_emundus_setup_profiles table
      * Profile's id is necessaray
      */
-    public function getProfileById($pid)
+    public function getProfileDescriptionById($pid)
     {
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $profileDescription = null;
 
-        $query->select('esp.*')
-            ->from($db->quoteName('#__emundus_setup_profiles', 'esp'))
-            ->where($db->quoteName('esp.id') . ' = ' . $pid);
+        if (!empty($pid)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
 
-        $db->setQuery($query);
+            $query->select('esp.description as description')
+                ->from($db->quoteName('#__emundus_setup_profiles', 'esp'))
+                ->where($db->quoteName('esp.id') . ' = ' . $pid);
 
-        return $db->loadObject();
+            try {
+
+                $db->setQuery($query);
+                $profileDescription = $db->loadObject();;
+            } catch (Exception $e) {
+                JLog::add('component/com_emundus/models/users | Error when try to get profile description : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.error');
+            }
+        }
+        return $profileDescription;
     }
 
     /*
-     * Return all data of groupe(s)'s user in jos_emundus_setup_groupes table
+     * Return the label of group(s)'s user in jos_emundus_setup_groupes table
      * User's id is necessaray
      */
-    public function getUserGroupsById($uid)
+    public function getUserGroupsLabelById($uid)
     {
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $groupLabel = null;
 
-        $query->select('esg.*')
-            ->from($db->quoteName('#__emundus_setup_groups', 'esg'))
-            ->leftJoin($db->quoteName('#__emundus_groups', 'eg') . ' ON eg.group_id = esg.id')
-            ->where($db->quoteName('eg.user_id') . ' = ' . $uid);
+        if (!empty($uid)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
 
-        $db->setQuery($query);
+            $query->select('esg.label as label')
+                ->from($db->quoteName('#__emundus_setup_groups', 'esg'))
+                ->leftJoin($db->quoteName('#__emundus_groups', 'eg') . ' ON eg.group_id = esg.id')
+                ->where($db->quoteName('eg.user_id') . ' = ' . $uid);
 
-        return $db->loadObjectList();
+            try {
+                $db->setQuery($query);
+                $groupLabel = $db->loadObjectList();
+
+            } catch (Exception $e) {
+                JLog::add('component/com_emundus/models/users | Error when try to get group(s) label : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.error');
+            }
+        }
+        return $groupLabel;
     }
 
     /*
      * Return all columns of a profile form
      */
     public function getColumnsForm() {
+
+        $columns = null;
+
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
@@ -3759,110 +3789,123 @@ class EmundusModelUsers extends JModelList {
             ->andWhere($db->quoteName('fe.hidden') . ' = ' . '0')
             ->andWhere($db->quoteName('fe.published') . ' = ' . '1')
             ->andWhere($db->quoteName('fe.name') . ' != ' . $db->quote('DEFAULT_LANGUAGE'));
-        $db->setQuery($query);
 
-        $columns = $db->loadObjectList();
+        try{
+            $db->setQuery($query);
+            $columns = $db->loadObjectList();
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus/models/users | Error when try to get form\'s columns : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.error');
+        }
 
         return $columns;
     }
 
+    /*
+     * Return an array of 2 elements
+     * First element concerns the columns form profile
+     * Second element concerns data available on the user list table (email, etc...)
+     */
     public function getAllInformationsToExport($uid)
     {
-        // Retrieve all columns of profile form
-        $columns = $this->getColumnsForm();
+        $data = null;
 
-        // Configure the hour according to the location
-        $config = JFactory::getConfig();
-        $config_offset = $config->get('offset');
-        $offset = $config_offset ?: 'Europe/Paris';
-        $timezone = new DateTimeZone($offset);
+        if(!empty($uid)) {
+            // Retrieve all columns of profile form
+            $columns = $this->getColumnsForm();
 
-        // Necessary to retrieve data not available in the profile form
-        // (email, username, registerDate of the user, last connexion date of a user, profile and groups)
-        $user = $this->getUserById($uid);
-        $userProfile = $this->getProfileById($user[0]->profile);
-        $userGroups = $this->getUserGroupsById($uid);
-        $josUser = $this->getJosUsersById($uid);
+            // Configure the hour according to the location
+            $config = JFactory::getConfig();
+            $config_offset = $config->get('offset');
+            $offset = $config_offset ?: 'Europe/Paris';
+            $timezone = new DateTimeZone($offset);
 
-        $email = isset($josUser->email) ? $josUser->email : '';
-        $username = isset($josUser->username) ? $josUser->username : '';
-        $registerDate = isset($josUser->registerDate) ? $josUser->registerDate : '';
-        $lastvisitDate = isset($josUser->lastvisitDate) ? $josUser->lastvisitDate : '';
-        $profile = isset($userProfile->description) ? $userProfile->description : '';
+            // Necessary to retrieve data not available in the profile form
+            // (email, username, registerDate of the user, last connexion date of a user, profile and groups)
+            $user = $this->getUserById($uid);
+            $userProfile = $this->getProfileDescriptionById($user[0]->profile);
+            $userGroups = $this->getUserGroupsLabelById($uid);
+            $josUser = $this->getJosUsersById($uid);
 
-        // Set the right format date according to the location
-        $registerDate = EmundusHelperDate::displayDate($registerDate, 'COM_EMUNDUS_DATE_FORMAT', $timezone === 'UTC' ? 1 : 0);
-        $lastvisitDate = EmundusHelperDate::displayDate($lastvisitDate, 'COM_EMUNDUS_DATE_FORMAT', $timezone === 'UTC' ? 1 : 0);
+            $email = isset($josUser->email) ? $josUser->email : '';
+            $username = isset($josUser->username) ? $josUser->username : '';
+            $registerDate = isset($josUser->registerDate) ? $josUser->registerDate : '';
+            $lastvisitDate = isset($josUser->lastvisitDate) ? $josUser->lastvisitDate : '';
+            $profile = isset($userProfile->description) ? $userProfile->description : '';
 
-        // We only need the labal of each group
-        $groups = array();
-        foreach ($userGroups as $group) {
-            $groups[] = $group->label;
+            // Set the right format date according to the location
+            $registerDate = EmundusHelperDate::displayDate($registerDate, 'COM_EMUNDUS_DATE_FORMAT', $timezone === 'UTC' ? 1 : 0);
+            $lastvisitDate = EmundusHelperDate::displayDate($lastvisitDate, 'COM_EMUNDUS_DATE_FORMAT', $timezone === 'UTC' ? 1 : 0);
+
+            // We only need the labal of each group
+            $groups = array();
+            foreach ($userGroups as $group) {
+                $groups[] = $group->label;
+            }
+
+            // Create an array with array of each data not in the profile form
+            // Necessary to be coherent with the data in the profile form
+            // We indeed need id, name, plugin, label and value at least for each
+            $userData = array(
+                'email' => (object)array(
+                    'id' => null,
+                    'name' => 'email',
+                    'plugin' => null,
+                    'label' => 'COM_EMUNDUS_EMAIL',
+                    'value' => $email
+                ),
+                'username' => (object)array(
+                    'id' => null,
+                    'name' => 'username',
+                    'plugin' => null,
+                    'label' => 'COM_EMUNDUS_USERNAME',
+                    'value' => $username
+                ),
+                'profile' => (object)array(
+                    'id' => null,
+                    'name' => 'profil',
+                    'plugin' => null,
+                    'label' => 'COM_EMUNDUS_PROFILE',
+                    'value' => $profile
+                ),
+                'groups' => (object)array(
+                    'id' => null,
+                    'name' => 'groupes',
+                    'plugin' => null,
+                    'label' => 'COM_EMUNDUS_GROUPE',
+                    'value' => implode(', ', $groups) // In case the user has multiple groups
+                ),
+                'registerDate' => (object)array(
+                    'id' => null,
+                    'name' => 'registerDate',
+                    'plugin' => null,
+                    'label' => 'COM_EMUNDUS_REGISTERDATE',
+                    'value' => $registerDate
+                ),
+                'lastvisitDate' => (object)array(
+                    'id' => null,
+                    'name' => 'lastvisitDate',
+                    'plugin' => null,
+                    'label' => 'COM_EMUNDUS_LASTVISITDATE',
+                    'value' => $lastvisitDate
+                )
+            );
+
+
+            // Create a complete array with all the data we want
+            $data = array(
+                'columns' => $columns,
+                'user_data' => $userData
+            );
+
+            // Sort alphabetically all the columns
+            usort($data['columns'], function($a, $b) {
+                return strcmp(JText::_($a->label), JText::_($b->label));
+            });
+
+            usort($data['user_data'], function($a, $b) {
+                return strcmp(JText::_($a->label), JText::_($b->label));
+            });
         }
-
-        // Create an array with array of each data not in the profile form
-        // Necessary to be coherent with the data in the profile form
-        // We indeed need id, name, plugin, label and value at least for each
-        $userData = array(
-            'email' => (object)array(
-                'id' => null,
-                'name' => 'email',
-                'plugin' => null,
-                'label' => 'COM_EMUNDUS_EMAIL',
-                'value' => $email
-            ),
-            'username' => (object)array(
-                'id' => null,
-                'name' => 'username',
-                'plugin' => null,
-                'label' => 'COM_EMUNDUS_USERNAME',
-                'value' => $username
-            ),
-            'profile' => (object)array(
-                'id' => null,
-                'name' => 'profil',
-                'plugin' => null,
-                'label' => 'COM_EMUNDUS_PROFILE',
-                'value' => $profile
-            ),
-            'groups' => (object)array(
-                'id' => null,
-                'name' => 'groupes',
-                'plugin' => null,
-                'label' => 'COM_EMUNDUS_GROUPE',
-                'value' => implode(', ', $groups) // In case the user has multiple groups
-            ),
-            'registerDate' => (object)array(
-                'id' => null,
-                'name' => 'registerDate',
-                'plugin' => null,
-                'label' => 'COM_EMUNDUS_REGISTERDATE',
-                'value' => $registerDate
-            ),
-            'lastvisitDate' => (object)array(
-                'id' => null,
-                'name' => 'lastvisitDate',
-                'plugin' => null,
-                'label' => 'COM_EMUNDUS_LASTVISITDATE',
-                'value' => $lastvisitDate
-            )
-        );
-
-
-        // Create a complete array with all the data we want
-        $data = array(
-            'columns' => $columns,
-            'user_data' => $userData
-        );
-
-        // Sort alphabetically all the columns
-        usort($data['columns'], function($a, $b) {
-            return strcmp(JText::_($a->label), JText::_($b->label));
-        });
-
-        usort($data['user_data'], function($a, $b) {
-            return strcmp(JText::_($a->label), JText::_($b->label));
-        });
 
         return $data;
     }
@@ -3873,30 +3916,32 @@ class EmundusModelUsers extends JModelList {
      * Return an array of user data without foreign key
      */
     public function getUserDetails($uid) {
-        $columns = $this->getAllInformationsToExport($uid);
-        $user = $this->getUserById($uid);
 
-        $userDetails = array();
+        $userDetails = null;
 
-        foreach ($columns['columns'] as $column) {
-            if ($column->value == null) {
-                // If necessary, call a function that will "translate" a foreign key into the true value
-                // For example, nationality is indicated with a foreign key, so the formatElementValue() function is needed
-                $userDetails[$column->name] = EmundusHelperFabrik::formatElementValue($column->name, $user[0]->{$column->name});
-            } else {
-                $userDetails[$column->name] = $column->value;
+        if(!empty($uid)) {
+            $columns = $this->getAllInformationsToExport($uid);
+            $user = $this->getUserById($uid);
+
+            $userDetails = array();
+
+            foreach ($columns['columns'] as $column) {
+                if ($column->value == null) {
+                    // If necessary, call a function that will "translate" a foreign key into the true value
+                    // For example, nationality is indicated with a foreign key, so the formatElementValue() function is needed
+                    $userDetails[$column->name] = EmundusHelperFabrik::formatElementValue($column->name, $user[0]->{$column->name});
+                } else {
+                    $userDetails[$column->name] = $column->value;
+                }
+            }
+
+            foreach ($columns['user_data'] as $field) {
+                // Not profile form data doesn't need an if/else situation because we already indicated their value in the
+                // getAllInformationsToExport() function
+                $userDetails[$field->name] = $field->value;
             }
         }
-
-        foreach ($columns['user_data'] as $field) {
-            // Not profile form data doesn't need an if/else situation because we already indicated their value in the
-            // getAllInformationsToExport() function
-                $userDetails[$field->name] = $field->value;
-        }
-
         return $userDetails;
     }
-
-
 
 }

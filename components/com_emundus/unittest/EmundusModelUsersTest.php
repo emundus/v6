@@ -97,4 +97,134 @@ class EmundusModelUsersTest extends TestCase
 		$this->assertObjectHasAttribute('label', $profile, 'Profile details should contain label');
 		$this->assertObjectHasAttribute('class', $profile, 'Profile details should contain class');
 	}
+
+    /*
+     * Test the getJosUsersById() method
+     * Should return an email, an username, a register date and a last connection date (maybe null)
+     */
+    public function testgetJosUsersById() {
+
+        $this->assertEmpty($this->m_users->getJosUsersById(0), 'Passing an incorrect user id should return null');
+        $josUser = $this->m_users->getJosUsersById(95);
+        $this->assertNotEmpty($josUser, 'Passing a correct user id should return an array of profile details');
+        $this->assertObjectHasAttribute('email', $josUser, 'Profile details should contain email');
+        $this->assertObjectHasAttribute('username', $josUser, 'Profile details should contain username');
+        $this->assertObjectHasAttribute('registerDate', $josUser, 'Profile details should contain register date');
+        $this->assertObjectHasAttribute('lastvisitDate', $josUser, 'Profile details should contain last connection date (if there is one');
+        $this->assertObjectNotHasAttribute('password', $josUser, 'Profile details should not contain password !');
+    }
+
+    /*
+     * Test the getProfileDescriptionById() method
+     * Should return a description
+     */
+    public function testgetProfileDescriptionById() {
+
+        $this->assertEmpty($this->m_users->getProfileDescriptionById(0), 'Passing an incorrect user id should return null');
+        $profile = $this->m_users->getProfileDescriptionById(9);
+        $this->assertNotEmpty($profile, 'Passing a correct profile id should return an array of profile details');
+        $this->assertObjectHasAttribute('description', $profile, 'Profile details should contain description');
+        $this->assertObjectNotHasAttribute('label', $profile, 'Profile details should not contain label !');
+    }
+
+    /*
+     * Test the getUserGroupsLabelById() method
+     * Should return a label
+     */
+    public function testgetUserGroupsLabelById() {
+
+        $this->assertEmpty($this->m_users->getUserGroupsLabelById(0), 'Passing an incorrect user id should return null');
+        $groups = $this->m_users->getUserGroupsLabelById(95);
+        $this->assertNotEmpty($groups, 'Passing a correct user id should return an array of profile details');
+        foreach ($groups as $group)
+        {
+            $this->assertObjectHasAttribute('label', $group, 'Group(s) details should contain label');
+            $this->assertObjectNotHasAttribute('description', $group, 'Group(s) details should not contain description !');
+        }
+    }
+
+    /*
+     * Test the getColumnsForm() method
+     * Should return an id, name, plugin and label
+     */
+    public function testgetColumnsForm() {
+
+        $columns = $this->m_users->getColumnsForm();
+        foreach ($columns as $column)
+        {
+            $this->assertObjectHasAttribute('id', $column, 'Columns form details should contain id');
+            $this->assertObjectHasAttribute('name', $column, 'Columns form details should contain name');
+            $this->assertObjectHasAttribute('plugin', $column, 'Columns form details should contain plugin');
+            $this->assertObjectHasAttribute('label', $column, 'Columns form details should contain label');
+            $this->assertObjectNotHasAttribute('group_id', $column, 'Columns form details should not contain group form id !');
+        }
+    }
+
+    /*
+     * Test the getAllInformationsToExport() method
+     * Should return an array of 2 array (each element of both array containing an array too)
+     */
+    public function testgetAllInformationsToExport()
+    {
+
+        $this->assertEmpty($this->m_users->getAllInformationsToExport(0), 'Passing an incorrect user id should return null');
+        $data = $this->m_users->getAllInformationsToExport(95);
+        $this->assertNotEmpty($data, 'Passing a correct user id should return an array of data');
+        $this->assertCount(2, $data, 'Data array should contain 2 elements');
+        foreach ($data as $key => $dataType) {
+            foreach ($dataType as $element) {
+                $this->assertObjectHasAttribute('id', $element, 'Data array details should contain id');
+                $this->assertObjectHasAttribute('name', $element, 'Data array details should contain name');
+                $this->assertObjectHasAttribute('plugin', $element, 'Data array details should contain plugin');
+                $this->assertObjectHasAttribute('label', $element, 'Data array details should contain label');
+                $this->assertObjectNotHasAttribute('group_id', $element, 'Data array details should not contain group form id !');
+
+                if ($key === 'user_data') {
+                    $this->assertObjectHasAttribute('value', $element, 'user_data array details should contain value');
+                }
+
+                // element->value returns something like C+0200Apr_EApr17135104795Fri1713510479th_FriAMCESTE_April+0200RAprAMCEST
+                // In consequence the test doesn't pass
+                if ($element->name == 'registerDate' || $element->name == 'lastvisitDate') {
+                    $expectedDateFormat = '/^\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}$/'; // Format "d/m/Y H:i"
+
+                    $this->assertMatchesRegularExpression($expectedDateFormat, $element->value, 'Register date does not match expected format');
+                    $this->assertMatchesRegularExpression($expectedDateFormat, $element->value, 'Last connection date does not match expected format');
+                }
+                // Check if it is sorted alphabetically
+                for ($i = 1; $i < count($dataType); $i++) {
+                    $currentLabel = JText::_($dataType[$i]->label);
+                    $previousLabel = JText::_($dataType[$i - 1]->label);
+                    $this->assertLessThanOrEqual(true, strcmp($previousLabel, $currentLabel));
+
+                }
+            }
+        }
+    }
+
+    /*
+     * Test the getUserDetails() method
+     * Should return an array with all columns
+     */
+    public function testgetUserDetails() {
+
+        $this->assertEmpty($this->m_users->getUserDetails(0), 'Passing an incorrect user id should return null');
+        $data = $this->m_users->getUserDetails(95);
+        $this->assertNotEmpty($data, 'Passing a correct user id should return an array of data');
+        $dataBefore = $this->m_users->getAllInformationsToExport(95);
+        $numberColumns = 0;
+        $arrayName = array();
+        foreach ($dataBefore as $dataType){
+            foreach ($dataType as $element){
+                $arrayName[] = $element->name;
+                $numberColumns += 1;
+            }
+        }
+        foreach ($arrayName as $name) {
+            $this->assertArrayHasKey($name, $data, "Key '$name' not found in data array");
+        }
+
+        $this->assertCount($numberColumns, $data,'Not the number of columns expected');
+    }
 }
+
