@@ -1536,11 +1536,7 @@ $current_tab = 0;
         });
     }
 
-    async function shareApplication(fnum,ccid, event = null) {
-        if (event !== null) {
-            event.preventDefault();
-        }
-
+    async function shareApplication(fnum,ccid) {
         document.querySelector('.em-page-loader').style.display = 'block';
 
         fetch('index.php?option=com_emundus&view=application&layout=collaborate&format=raw&fnum='+fnum+'&ccid='+ccid, {
