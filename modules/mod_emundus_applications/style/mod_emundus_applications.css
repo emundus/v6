@@ -860,6 +860,7 @@ circle.circle {
     .material-icons-outlined {
         width: 22px;
         height: 22px;
+        font-size: 22px;
         text-align: center;
     }
 
