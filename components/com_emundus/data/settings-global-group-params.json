@@ -51,7 +51,7 @@
                 "value": "yyyy/MM/dd"
               }
             ]
-          },
+          }
         ]
       },
       {
@@ -405,13 +405,6 @@
         "type": "section",
         "helptext": "",
         "options": [
-          {
-            "type_field": "component",
-            "component": "EditApplicants",
-            "props": {
-              "type": "applicants"
-            }
-          },
           {"type_field": "Title","label": "Partie candidats"},
           {
             "name": "intro_text_for_candidate",
@@ -421,19 +414,13 @@
             "placeholder": ""
           },
           {
-            "name": "multiple_folder_per_candidate",
-            "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CONTENT_CANDIDATE_MULTIPLE_FILES",
-            "type_field": "yesno",
-            "helptext": "",
-            "defaultVal": "1"
+            "type_field": "component",
+            "component": "EditApplicants",
+            "props": {
+              "type": "applicants"
+            }
           },
-          {
-            "name": "modify_folder_by_candidate",
-            "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CONTENT_CANDIDATE_EDIT_UNTIL_DEADLINE",
-            "type_field": "yesno",
-            "helptext": "",
-            "defaultVal": "0"
-          },
+
           {
             "name": "history_folder_for_candidate",
             "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CONTENT_CANDIDATE_SHOW_HISTORY",
@@ -442,14 +429,6 @@
             "defaultVal": "1"
           },
           {"type_field": "Title","label": "Partie gestionnaire"},
-          {
-            "name": "alert_folder_modification",
-            "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CONTENT_ALERT_MOD_SIMUL",
-            "type_field": "yesno",
-            "defaultVal": "0",
-            "helptext": ""
-          },
-
           {
             "name": "number_of_folders",
             "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CONTENT_NUM_FILES_IN_LIST",
@@ -479,13 +458,6 @@
           {
             "name": "view_deleted_folder",
             "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CONTENT_SHOW_DELETED_FILES",
-            "type_field": "yesno",
-            "helptext": "",
-            "defaultVal": "1"
-          },
-          {
-            "name": "lock_pdf",
-            "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CONTENT_ALLOW_LOCK_PDF",
             "type_field": "yesno",
             "helptext": "",
             "defaultVal": "1"

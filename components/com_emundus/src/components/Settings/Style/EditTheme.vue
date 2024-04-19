@@ -41,6 +41,7 @@
 import Swal from "sweetalert2";
 import axios from "axios";
 import ModalUpdateColors from "../../AdvancedModals/ModalUpdateColors";
+import qs from "qs";
 
 const getTemplate = () => `
 <div class="dz-preview dz-file-preview">
@@ -75,12 +76,39 @@ export default {
     this.changes = false;
 
     await this.getAppColors();
+    await this.getVariable();
 
     this.changes = true;
     this.loading = false;
   },
 
   methods:{
+    getVariable(){
+      return new Promise((resolve) => {
+        axios({
+          method: "get",
+          url: 'index.php?option=com_emundus&controller=settings&task=getappVariablegantry',
+        }).then((rep) => {
+          console.log(rep.data);
+
+          resolve(true);
+        });
+      });
+    },
+    changeVariables(preset) {
+      axios({
+        method: "post",
+        url: "index.php?option=com_emundus&controller=settings&task=updateVariablegantry",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          preset: preset,
+        })
+      }).then(() => {
+        console.log("jojo");
+      });
+    },
 
 
     getAppColors() {

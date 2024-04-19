@@ -57,5 +57,40 @@
       }
     ],
     "value": 0
+  },
+  "display_other_user_editing_same_file": {
+    "displayed": true,
+    "component": "emundus",
+    "label": "COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_OTHER_USER_EDITING_SAME_FILE",
+    "param": "display_other_user_editing_same_file",
+    "helptext": "COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_OTHER_USER_EDITING_SAME_FILE_HELPTEXT",
+    "options": [
+      {
+        "label": "JNO",
+        "value": 0
+      },
+      {
+        "label": "JYES",
+        "value": 1
+      }
+    ],
+    "value": 1
+  },
+  "can_submit_anonymeFile": {
+    "displayed": true,
+    "component": "emundus",
+    "label": "COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANT_CAN_SUBMIT_ANONYM_FILE",
+    "param": "allow_anonym_files",
+    "options": [
+      {
+        "label": "JNO",
+        "value": 0
+      },
+      {
+        "label": "JYES",
+        "value": 1
+      }
+    ],
+    "value": 0
   }
 }

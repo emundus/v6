@@ -539,6 +539,65 @@ class EmundusControllersettings extends JControllerLegacy
         exit;
     }
 
+    public function getappVariablegantry()
+    {
+        $user = JFactory::getUser();
+
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $yaml = \Symfony\Component\Yaml\Yaml::parse(file_get_contents('templates/g5_helium/custom/config/default/styles.yaml'));
+
+            $background = $yaml['base']['background'];
+            $title = $yaml['base']['title-color'];
+            $text = $yaml['base']['text-color'];
+            $borderRadius = $yaml['em-border-radius']['default'];
+
+            $tab = array('status' => '1', 'msg' => JText::_("SUCCESS") , 'background'=> $background,'title' => $title, 'text' => $text , 'borderRadius' => $borderRadius);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function updateVariablegantry()
+    {
+        $user = JFactory::getUser();
+
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => '0', 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $preset = $jinput->post->getRaw('preset');
+
+            $yaml = \Symfony\Component\Yaml\Yaml::parse(file_get_contents('templates/g5_helium/custom/config/default/styles.yaml'));
+
+            $yaml['base']['background'] = $preset['background'];
+            $yaml['base']['title-color'] = $preset['title'];
+            $yaml['base']['text-color'] = $preset['text'];
+            $yaml['em-border-radius']['default'] = $preset['borderRadius'];
+
+            $new_yaml = \Symfony\Component\Yaml\Yaml::dump($yaml, 5);
+
+            file_put_contents('templates/g5_helium/custom/config/default/styles.yaml', $new_yaml);
+
+            // Recompile Gantry5 css at each update
+            $dir = JPATH_BASE . '/templates/g5_helium/custom/css-compiled';
+            if (!empty($dir)) {
+                foreach (glob($dir . '/*') as $file) {
+                    unlink($file);
+                }
+
+                rmdir($dir);
+            }
+
+            $tab = array('status' => '1', 'msg' => JText::_("SUCCESS"));
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
     public function updatecolor()
     {
         $user = JFactory::getUser();
