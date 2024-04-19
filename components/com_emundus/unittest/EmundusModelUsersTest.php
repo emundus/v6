@@ -100,7 +100,7 @@ class EmundusModelUsersTest extends TestCase
 
     /*
      * Test the getJosUsersById() method
-     * Should return an email, an username, a register date and a last connection date (maybe null)
+     * Should return an email, an username, a register date and a last connection date
      */
     public function testgetJosUsersById() {
 
@@ -122,7 +122,8 @@ class EmundusModelUsersTest extends TestCase
      * Test the getProfileDescriptionById() method
      * Should return a description
      */
-    public function testgetProfileDescriptionById() {
+    public function testgetProfileDescriptionById()
+    {
 
         $this->assertEmpty($this->m_users->getProfileDescriptionById(0), 'Passing an incorrect user id should return null');
         $profile = $this->m_users->getProfileDescriptionById(9);
@@ -208,7 +209,7 @@ class EmundusModelUsersTest extends TestCase
                 for ($i = 1; $i < count($dataType); $i++) {
                     $currentLabel = JText::_($dataType[$i]->label);
                     $previousLabel = JText::_($dataType[$i - 1]->label);
-                    $this->assertLessThanOrEqual(true, strcmp($previousLabel, $currentLabel));
+                    $this->assertLessThanOrEqual(true, strcmp($previousLabel, $currentLabel), 'The table should be sorted alphabetically.');
 
                 }
             }

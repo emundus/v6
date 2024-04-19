@@ -84,7 +84,7 @@ class EmundusHelperFabrikTest extends TestCase
     {
         $this->assertEquals('', $this->h_fabrik->formatElementValue('', ''), 'Passing an empty element name and raw value should return nothing');
         $this->assertEquals('', $this->h_fabrik->formatElementValue('name', ''), 'Passing an empty raw value should return nothing');
-        $this->assertEquals('element', $this->h_fabrik->formatElementValue('', 'element'), 'Passing an empty element nam should return raw_value');
+        $this->assertEquals('element', $this->h_fabrik->formatElementValue('', 'element'), 'Passing an empty element name should return raw_value');
 
         // Test case with a date
         $this->assertEquals('04/04/2024', $this->h_fabrik->formatElementValue('end_date', "2024-04-04"));
