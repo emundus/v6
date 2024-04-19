@@ -920,16 +920,17 @@ video {
   justify-content: center;
   align-items: center;
 }
-.com_fabrik #g-sidebar {
-      position: sticky;
-    }
+.view-form #g-sidebar, .view-checklist #g-sidebar {
+    position: sticky;
+  }
 @media all and (max-width: 480px) {
-    .com_fabrik #g-sidebar {
-        position: static;
-        padding-top: 0;
-        padding-bottom: 24px
+
+  .view-form #g-sidebar, .view-checklist #g-sidebar {
+      position: static;
+      padding-top: 0;
+      padding-bottom: 24px
+  }
     }
-      }
 .com_fabrik .popover:not(.clockpicker-popover) {
       display: none !important;
     }
