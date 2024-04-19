@@ -31,9 +31,7 @@ const qs = require("qs");
 
 export default {
   name: "EditApplicants",
-
   components: {},
-
   props: {
     type: String
   },
@@ -65,6 +63,7 @@ export default {
 
             this.loading = false;
           });
+      console.log(this.params);
     },
 
     saveEmundusParam(param) {

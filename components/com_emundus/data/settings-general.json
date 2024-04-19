@@ -6,6 +6,19 @@
     "param": "sitename",
     "maxlength": 50
   },
+  "sitedescription": {
+    "displayed": true,
+    "component": "joomla",
+    "label": "COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SITEDESCRIPTION",
+    "param": "MetaDesc",
+    "maxlength": 255
+  },
+    "keyword": {
+        "displayed": true,
+        "component": "joomla",
+        "label": "COM_EMUNDUS_ATTACHMENTS_KEYWORDS",
+        "param": "MetaKeys"
+    },
   "list_limit": {
     "displayed": true,
     "component": "joomla",

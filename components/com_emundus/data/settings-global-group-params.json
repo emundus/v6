@@ -13,18 +13,16 @@
         "helptext": "",
         "options": [
           {
-            "name": "sitename",
-            "label": "COM_EMUNDUS_GLOBAL_PARMAS_SITE_FIELD_NAME",
-            "type_field": "Input",
-            "helptext": "",
-            "value": "tchooz"
+            "type_field": "component",
+            "component": "EditApplicants",
+            "props": {
+              "type": "general"
+            }
           },
           {
-            "name": "site_desc",
-            "label": "COM_EMUNDUS_GLOBAL_PARMAS_SITE_DESC",
-            "type_field": "textarea",
-            "helptext": "",
-            "placeholder": ""
+            "type_field": "component",
+            "component": "GlobalLang",
+            "props": {}
           },
           {
             "name": "offset",
@@ -33,11 +31,7 @@
             "helptext": "",
             "placeholder": ""
           },
-          {
-            "type_field": "component",
-            "component": "GlobalLang",
-            "props": {}
-          },
+
           {
             "label": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_FORMAT",
             "type_field": "dropdown",
@@ -58,21 +52,6 @@
               }
             ]
           },
-          {
-            "name": "keywords",
-            "label": "COM_EMUNDUS_ATTACHMENTS_KEYWORDS",
-            "type_field": "Input",
-            "helptext": "",
-            "placeholder": "",
-            "multiple": true
-          },
-          {
-            "label": "COM_EMUNDUS_GLOBAL_PARMAS_SITE_NUMBER_LINES_LISTES",
-            "type_field": "Input",
-            "type": "number",
-            "helptext": "",
-            "value": "10"
-          }
         ]
       },
       {
@@ -84,7 +63,7 @@
           {
             "type_field": "component",
             "component": "Global",
-            "props": []
+            "props": {}
           }
         ]
       },
@@ -426,6 +405,13 @@
         "type": "section",
         "helptext": "",
         "options": [
+          {
+            "type_field": "component",
+            "component": "EditApplicants",
+            "props": {
+              "type": "applicants"
+            }
+          },
           {"type_field": "Title","label": "Partie candidats"},
           {
             "name": "intro_text_for_candidate",
