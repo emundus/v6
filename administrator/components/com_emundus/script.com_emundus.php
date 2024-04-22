@@ -4249,6 +4249,13 @@ if(in_array($applicant,$exceptions)){
                     EmundusHelperUpdate::insertTranslationsTag('SETUP_GROUPS_AVAILABLE_STATUS', 'Statuts');
                     EmundusHelperUpdate::insertTranslationsTag('SETUP_GROUPS_AVAILABLE_STATUS', 'Statuses', 'override', null, null, null, 'en-GB');
                 }
+
+
+                if (!class_exists('EmundusAdministratorModelComments')) {
+                    require_once(JPATH_ROOT . '/administrator/components/com_emundus/models/comments.php');
+                }
+                $m_comments = new EmundusAdministratorModelComments();
+                $succeed['update_comments_table'] = $m_comments->install();
 			}
 		}
 
