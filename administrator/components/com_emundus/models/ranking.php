@@ -247,7 +247,7 @@ class EmundusAdministrationModelRanking extends JModelList
             ]
         ];
 
-        $response = EmundusHelperUpdate::createTable('jos_emundus_ranking_hierarchy_rankable_status', $columns, $foreign_keys, 'Table des status apparaissant dans le tableau de classement pour un niveau de hiérarchie', $unique_keys);
+        $response = EmundusHelperUpdate::createTable('jos_emundus_ranking_hierarchy_rankable_status', $columns, $foreign_keys, 'Table des status apparaissant dans le tableau de classement pour un niveau de hiérarchie');
         $tasks[] = $response['status'];
 
         if ($debug) {
