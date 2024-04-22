@@ -405,14 +405,40 @@ class EmundusModelRanking extends JModelList
         return $hierarchy;
     }
 
-    public function getAllFilesRankerCanAccessTo($user_id, $files_status = null)
+    private function getStatusHierarchyCanSee($hierarchy_id) {
+        $status = [];
+
+        if (!empty($hierarchy_id)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('status')
+                ->from('#__emundus_ranking_hierarchy_rankable_status')
+                ->where('hierarchy_id = ' . $db->quote($hierarchy_id));
+
+            try {
+                $db->setQuery($query);
+                $status = $db->loadColumn();
+            } catch (Exception $e) {
+                $status = [];
+            }
+        }
+
+        return $status;
+    }
+
+    public function getAllFilesRankerCanAccessTo($user_id)
     {
         $file_ids = [];
 
         if (!empty($user_id)) {
+            $hierarchy = $this->getUserHierarchy($user_id);
+            $visible_status = [];
+            if (!empty($hierarchy)) {
+                $visible_status = $this->getStatusHierarchyCanSee($hierarchy);
+            }
 
             $query = $this->db->getQuery(true);
-
             $query->select('DISTINCT cc.id')
                 ->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
                 ->leftJoin($this->db->quoteName('#__emundus_users_assoc', 'eua') . ' ON ' . $this->db->quoteName('cc.fnum') . ' = ' . $this->db->quoteName('eua.fnum'))
@@ -422,8 +448,8 @@ class EmundusModelRanking extends JModelList
                 ->andWhere($this->db->quoteName('eua.r') . ' = 1')
                 ->andWhere($this->db->quoteName('cc.published') . ' = 1');
 
-            if (!is_null($files_status)) {
-                $query->andWhere($this->db->quoteName('cc.status') . ' = ' . $this->db->quote($files_status));
+            if (!empty($visible_status)) {
+                $query->andWhere($this->db->quoteName('cc.status') . ' IN (' . implode(',', $visible_status) . ')');
             }
 
             try {
@@ -452,8 +478,8 @@ class EmundusModelRanking extends JModelList
                     ->andWhere($this->db->quoteName('ega.r') . ' = 1')
                     ->andWhere($this->db->quoteName('cc.published') . ' = 1');
 
-                if (!is_null($files_status)) {
-                    $query->andWhere($this->db->quoteName('cc.status') . ' = ' . $this->db->quote($files_status));
+                if (!empty($visible_status)) {
+                    $query->andWhere($this->db->quoteName('cc.status') . ' IN (' . implode(',', $visible_status) . ')');
                 }
 
                 $this->db->setQuery($query);
@@ -474,8 +500,8 @@ class EmundusModelRanking extends JModelList
                     ->andWhere($this->db->quoteName('cc.applicant_id') . ' != ' . $this->db->quote($user_id))
                     ->andWhere($this->db->quoteName('cc.published') . ' = 1');
 
-                if (!is_null($files_status)) {
-                    $query->andWhere($this->db->quoteName('cc.status') . ' = ' . $this->db->quote($files_status));
+                if (!empty($visible_status)) {
+                    $query->andWhere($this->db->quoteName('cc.status') . ' IN (' . implode(',', $visible_status) . ')');
                 }
 
                 $this->db->setQuery($query);
