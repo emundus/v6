@@ -4160,29 +4160,153 @@ if(in_array($applicant,$exceptions)){
 				$db->execute();
 			}
 
-			if (version_compare($cache_version, '1.38.10', '<=') || $firstrun) {
-				$query->clear()
-					->select('id,params')
-					->from($db->quoteName('#__menu'))
-					->where($db->quoteName('link') . ' LIKE ' . $db->quote('index.php?option=com_emundus&view=checklist'));
-				$db->setQuery($query);
-				$menus = $db->loadObjectList();
+            if (version_compare($cache_version, '1.38.10', '<=') || $firstrun) {
+                // Create new id_prog table
+                $columns       = [
+                    [
+                        'name'   => 'parent_id',
+                        'type'   => 'int',
+                        'null'   => 1
+                    ],
+                    [
+                        'name'   => 'id_prog',
+                        'type'   => 'int',
+                        'null'   => 1
+                    ],
+                    [
+                        'name'   => 'params',
+                        'type'   => 'text',
+                        'null'   => 1
+                    ]
+                ];
+                $foreign_keys = [
+                    [
+                        'name'           => 'jos_emundus_hikashop_programs_fk_id_prog',
+                        'from_column'    => 'id_prog',
+                        'ref_table'      => 'jos_emundus_setup_programmes',
+                        'ref_column'     => 'id',
+                        'update_cascade' => true,
+                        'delete_cascade' => true,
+                    ]
+                ];
+                EmundusHelperUpdate::createTable('jos_emundus_hikashop_programs_repeat_id_prog', $columns, $foreign_keys);
 
-				foreach ($menus as $menu) {
-					$params = json_decode($menu->params);
-					$params->show_info_panel = 0;
-					$params->show_info_legend = 1;
-					$params->show_browse_button = 0;
-					$params->show_nb_column = 1;
+                // Create Fabrik databasejoin for new table and trash the old one
+                // Get fabrik group of current list, if exists
+                $query->clear()
+                    ->select($db->quoteName('form_id'))
+                    ->from($db->quoteName('#__fabrik_lists'))
+                    ->where($db->quoteName('db_table_name').' = '.$db->quote('jos_emundus_hikashop_programs'));
+                $db->setQuery($query);
+                $form_id = $db->loadResult();
 
-					$update = [
-						'id' => $menu->id,
-						'params' => json_encode($params)
-					];
-					$update = (object) $update;
-					$db->updateObject('#__menu', $update, 'id');
+                if (!empty($form_id)) {
+                    $query->clear()
+                        ->select('DISTINCT '.$db->quoteName('group_id'))
+                        ->from($db->quoteName('#__fabrik_formgroup'))
+                        ->where($db->quoteName('form_id').' = '.$db->quote($form_id));
+                    $db->setQuery($query);
+                    $groups = $db->loadColumn();
+
+                    if (!empty($groups)) {
+                        $query->clear()
+                            ->select('group_id, id')
+                            ->from($db->quoteName('#__fabrik_elements'))
+                            ->where($db->quoteName('group_id').' IN ('.implode(',', $groups).')')
+                            ->andWhere($db->quoteName('name').' = '.$db->quote('code_prog'));
+                        $db->setQuery($query);
+                        $code_prog_element = $db->loadObject();
+
+                        $element_id = $code_prog_element->id;
+                        $group_id = $code_prog_element->group_id;
+                    }
+                }
+
+                $datas  = [
+                    'name'     => 'id_prog',
+                    'group_id' => $group_id,
+                    'plugin'   => 'databasejoin',
+                    'label'    => 'PROGRAMS'
+                ];
+                $params = [
+                    'join_db_name' => 'jos_emundus_setup_programmes',
+                    'join_key_column' => 'id',
+                    'join_val_column' => 'label'
+                ];
+                EmundusHelperUpdate::addFabrikElement($datas, $params);
+
+				if(!empty($element_id))
+				{
+					$query->clear()
+						->update('#__fabrik_elements')
+						->set('published = 0')
+						->where('id = ' . $element_id);
+					$db->setQuery($query);
+					$db->execute();
 				}
-			}
+
+                // Insert data from the code table to the id table, but only if id table is empty
+                $query->clear()
+                    ->select('COUNT(*)')
+                    ->from('#__emundus_hikashop_programs_repeat_id_prog');
+                $db->setQuery($query);
+                $count = $db->loadResult();
+
+                if ($count == 0) {
+                    $query->clear()
+                        ->select('parent_id, code_prog')
+                        ->from('#__emundus_hikashop_programs_repeat_code_prog');
+                    $db->setQuery($query);
+                    $codes = $db->loadAssocList();
+
+                    $ids_to_insert = [];
+                    foreach($codes as $code) {
+                        $query->clear()
+                            ->select('id')
+                            ->from('#__emundus_setup_programmes')
+                            ->where('code = '.$db->quote($code['code_prog']));
+                        $db->setQuery($query);
+                        $prog_id = $db->loadResult();
+                        $ids_to_insert[] = [
+                            'parent_id' => $code['parent_id'],
+                            'id_prog' => $prog_id
+                        ];
+                    }
+
+                    if (!empty($ids_to_insert)) {
+                        $query->clear()
+                            ->insert('#__emundus_hikashop_programs_repeat_id_prog')
+                            ->columns('parent_id, id_prog');
+                        foreach($ids_to_insert as $id_to_insert) {
+                            $query->values($db->quote($id_to_insert['parent_id']).','.$db->quote($id_to_insert['id_prog']));
+                        }
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
+                }
+
+                $query->clear()
+                    ->select('id,params')
+                    ->from($db->quoteName('#__menu'))
+                    ->where($db->quoteName('link') . ' LIKE ' . $db->quote('index.php?option=com_emundus&view=checklist'));
+                $db->setQuery($query);
+                $menus = $db->loadObjectList();
+
+                foreach ($menus as $menu) {
+                    $params = json_decode($menu->params);
+                    $params->show_info_panel = 0;
+                    $params->show_info_legend = 1;
+                    $params->show_browse_button = 0;
+                    $params->show_nb_column = 1;
+
+                    $update = [
+                        'id' => $menu->id,
+                        'params' => json_encode($params)
+                    ];
+                    $update = (object) $update;
+                    $db->updateObject('#__menu', $update, 'id');
+                }
+            }
 		}
 
 		return $succeed;

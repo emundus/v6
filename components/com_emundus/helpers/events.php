@@ -239,11 +239,11 @@ class EmundusHelperEvents {
 
             $is_dead_line_passed = strtotime(date($now)) > strtotime($current_end_date);
 
-            $edit_status = array();
             if (!empty($current_phase) && !empty($current_phase->entry_status)) {
-                $edit_status = array_merge($edit_status, $current_phase->entry_status);
+                $edit_status = $current_phase->entry_status;
             } else {
-                $edit_status[] = 0;
+				$status_for_send = explode(',',$eMConfig->get('status_for_send', '0'));
+                $edit_status = array_unique(array_merge(['0'], $status_for_send));
             }
 
             $is_app_sent = !in_array(@$user->status, $edit_status);
@@ -681,18 +681,6 @@ class EmundusHelperEvents {
 	        }
 
             if ($application_fee) {
-                if($params->get('hikashop_session', 0)) {
-                    // check if there is not another cart open
-                    $hikashop_user = JFactory::getSession()->get('emundusPayment');
-                    if (!empty($hikashop_user->fnum) && $hikashop_user->fnum != $user->fnum) {
-                        $user->fnum = $hikashop_user->fnum;
-                        JFactory::getSession()->set('emundusUser', $user);
-
-                        $mainframe->enqueueMessage(JText::_('ANOTHER_HIKASHOP_SESSION_OPENED'), 'error');
-                        $mainframe->redirect('/');
-                    }
-                }
-
                 $fnumInfos = $mFiles->getFnumInfos($user->fnum);
 
                 // If students with a scholarship have a different fee.
@@ -724,6 +712,17 @@ class EmundusHelperEvents {
                     } else if (!empty($pay_scholarship)  && empty($mApplication->getHikashopOrder($fnumInfos))) {
                         $scholarship_product = $params->get('scholarship_product', 0);
                         if (!empty($scholarship_product)) {
+                            if($params->get('hikashop_session', 0)) {
+                                // check if there is not another cart open
+                                $hikashop_user = JFactory::getSession()->get('emundusPayment');
+                                if (!empty($hikashop_user->fnum) && $hikashop_user->fnum != $user->fnum) {
+                                    $user->fnum = $hikashop_user->fnum;
+                                    JFactory::getSession()->set('emundusUser', $user);
+
+                                    $mainframe->enqueueMessage(JText::_('ANOTHER_HIKASHOP_SESSION_OPENED'), 'error');
+                                    $mainframe->redirect('/');
+                                }
+                            }
                             $return_url = $mApplication->getHikashopCheckoutUrl($user->profile);
                             $return_url = preg_replace('/&product_id=[0-9]+/', "&product_id=$scholarship_product", $return_url);
 	                        $checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url=' . urlencode(base64_encode($return_url));
@@ -738,6 +737,17 @@ class EmundusHelperEvents {
                 if (count($fnumInfos) > 0) {
                     $checkout_cart_url = $mApplication->getHikashopCartUrl($user->profile);
                     if (!empty($checkout_cart_url)) {
+                        if($params->get('hikashop_session', 0)) {
+                            // check if there is not another cart open
+                            $hikashop_user = JFactory::getSession()->get('emundusPayment');
+                            if (!empty($hikashop_user->fnum) && $hikashop_user->fnum != $user->fnum) {
+                                $user->fnum = $hikashop_user->fnum;
+                                JFactory::getSession()->set('emundusUser', $user);
+
+                                $mainframe->enqueueMessage(JText::_('ANOTHER_HIKASHOP_SESSION_OPENED'), 'error');
+                                $mainframe->redirect('/');
+                            }
+                        }
                         JPluginHelper::importPlugin('emundus','custom_event_handler');
                         \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onBeforeEmundusRedirectToHikashopCart', ['url' => $checkout_cart_url, 'fnum' => $user->fnum, 'user' => $user]]);
                         $mainframe->redirect($checkout_cart_url);
@@ -748,7 +758,18 @@ class EmundusHelperEvents {
                             $checkout_url = $mEmails->setTagsFabrik($checkout_url, [$user->fnum], true);
                         }
                         // If $accept_other_payments is 2 : that means we do not redirect to the payment page.
-                        if ($accept_other_payments != 2 && empty($mApplication->getHikashopOrder($fnumInfos)) && $attachments_progress >= 100 && $forms_progress >= 100) {
+                        if ($accept_other_payments != 2 && empty($mApplication->getHikashopOrder($fnumInfos)) && $attachments >= 100 && $forms >= 100) {
+                            if($params->get('hikashop_session', 0)) {
+                                // check if there is not another cart open
+                                $hikashop_user = JFactory::getSession()->get('emundusPayment');
+                                if (!empty($hikashop_user->fnum) && $hikashop_user->fnum != $user->fnum) {
+                                    $user->fnum = $hikashop_user->fnum;
+                                    JFactory::getSession()->set('emundusUser', $user);
+
+                                    $mainframe->enqueueMessage(JText::_('ANOTHER_HIKASHOP_SESSION_OPENED'), 'error');
+                                    $mainframe->redirect('/');
+                                }
+                            }
                             // Profile number and document ID are concatenated, this is equal to the menu corresponding to the free option (or the paid option in the case of document_id = NULL)
 	                        $checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url=' . urlencode(base64_encode($checkout_url));
                             $mainframe->redirect($checkout_url);
