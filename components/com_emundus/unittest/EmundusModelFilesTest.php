@@ -98,14 +98,15 @@ class EmundusModelFilesTest extends TestCase{
         $this->assertIsArray($fnums, 'getusers returns an array');
 
         $user_id = $this->h_sample->createSampleUser(9, 'unit-test-candidat-' . rand(0, 1000) . '@emundus.test.fr');
-        $program = $this->h_sample->createSampleProgram();
+        $program = $this->h_sample->createSampleProgram('Nouveau programme');
 	    $campaign_id = $this->h_sample->createSampleCampaign($program);
         $fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
+        $this->assertNotEmpty($fnum);
 
 	    $session = JFactory::getSession();
 	    $session->set('filt_params', ['programme' => [$program['programme_code']]]);
 
-	    $fnums = $this->m_files->getAllFnums();
+	    $fnums = $this->m_files->getAllFnums(false, 62);
 	    $this->assertNotEmpty($fnums, 'if a fnum exists, by default get users should return a value');
 		$this->assertTrue(in_array($fnum, $fnums), 'If a fnum is associated to me. I should see it.');
     }
@@ -116,6 +117,83 @@ class EmundusModelFilesTest extends TestCase{
         $this->assertIsArray($tags, 'getAllTags returns an array');
         $this->assertNotEmpty($tags, 'getAllTags returns a non-empty array');
     }
+
+	public function testGetAllStatus()
+	{
+		// 1. Test if the function returns an array
+		$all_status = $this->m_files->getAllStatus();
+		$this->assertIsArray($all_status, 'getAllTags returns an array');
+		$this->assertNotEmpty($all_status, 'getAllTags returns a non-empty array');
+
+		$eMConfig = JComponentHelper::getParams('com_emundus');
+		$all_rights_grp = $eMConfig->get('all_rights_group', 1);
+
+		// 2. We affect all rights group to our coordinator user
+		$db = JFactory::getDbo();
+		$insert = [
+			'user_id' => $this->unit_test_coord_id,
+			'group_id' => $all_rights_grp,
+		];
+		$insert = (object) $insert;
+		$db->insertObject('#__emundus_groups', $insert);
+
+		// 2.1 We add a new restricted status in all rights group
+		$insert = [
+			'parent_id' => $all_rights_grp,
+			'status' => $all_status[0]['step']
+		];
+		$insert = (object) $insert;
+		$db->insertObject('#__emundus_setup_groups_repeat_status', $insert);
+
+		$status = $this->m_files->getAllStatus($this->unit_test_coord_id);
+		$this->assertSame(count($all_status), count($status), 'getAllStatus shoud return all status again because we does not update filter_status in group');
+
+		$query = $db->getQuery(true);
+		$query->clear()
+			->update('#__emundus_setup_groups')
+			->set('filter_status = 1')
+			->where('id = ' . $all_rights_grp);
+		$db->setQuery($query);
+		$db->execute();
+
+		$status = $this->m_files->getAllStatus($this->unit_test_coord_id);
+		$this->assertSame(1, count($status), 'getAllStatus should return 1 status because we update filter_status in group');
+
+		// 3. We add a second status in all rights group
+		$insert = [
+			'parent_id' => $all_rights_grp,
+			'status' => $all_status[1]['step']
+		];
+		$insert = (object) $insert;
+		$db->insertObject('#__emundus_setup_groups_repeat_status', $insert);
+
+		$status = $this->m_files->getAllStatus($this->unit_test_coord_id);
+		$this->assertSame(2, count($status), 'getAllStatus returns 2 status because we add a new one');
+
+		// 4. We affect a new group that does not have restricted status so we should have all status
+		$insert = [
+			'user_id' => $this->unit_test_coord_id,
+			'group_id' => 2,
+		];
+		$insert = (object) $insert;
+		$db->insertObject('#__emundus_groups', $insert);
+
+		$status = $this->m_files->getAllStatus($this->unit_test_coord_id);
+		$this->assertSame(count($all_status), count($status), 'getAllStatus shoudl return all status because at least one group of my user have not filter_status');
+
+		$query->clear()
+			->delete('#__emundus_setup_groups_repeat_status')
+			->where('parent_id = ' . $all_rights_grp);
+		$db->setQuery($query);
+		$db->execute();
+
+		$query->clear()
+			->update('#__emundus_setup_groups')
+			->set('filter_status = 0')
+			->where('id = ' . $all_rights_grp);
+		$db->setQuery($query);
+		$db->execute();
+	}
 
     public function testTagFile() {
         $tagged = $this->m_files->tagFile([], []);
@@ -140,9 +218,54 @@ class EmundusModelFilesTest extends TestCase{
 	    $this->assertTrue($tagged, 'tagFile should returns true if tag is already associated to the file but not by the same user');
     }
 
+    public function testgetStatus()
+    {
+        $status = $this->m_files->getStatus();
+        $this->assertIsArray($status, 'getStatus returns an array');
+        $this->assertNotEmpty($status, 'getStatus returns a non-empty array');
+    }
+
+    public function testgetFnumsInfos()
+    {
+        $infos = $this->m_files->getFnumInfos('');
+        $this->assertEmpty($infos, 'getFnumInfos returns an empty array if no fnum is given');
+
+        $user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+        $program = $this->h_sample->createSampleProgram();
+        $campaign_id = $this->h_sample->createSampleCampaign($program);
+        $fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
+
+        $infos = $this->m_files->getFnumInfos($fnum);
+        $this->assertNotEmpty($infos, 'getFnumInfos returns an array of data');
+
+        $this->assertArrayHasKey('fnum', $infos, 'the data contains the fnum');
+        $this->assertEquals($fnum, $infos['fnum'], 'the fnum is the one passed as parameter');
+
+        $this->assertArrayHasKey('campaign_id', $infos, 'the data contains the campaign_id');
+        $this->assertEquals($campaign_id, $infos['campaign_id'], 'the campaign_id is the one passed as parameter');
+    }
+
     public function testUpdateState() {
         $updated = $this->m_files->updateState([], null);
         $this->assertFalse($updated, 'updateState returns false if no file and no new state is given');
+
+        $user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+        $program = $this->h_sample->createSampleProgram();
+        $campaign_id = $this->h_sample->createSampleCampaign($program);
+        $fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
+
+        $updated = $this->m_files->updateState([$fnum], null);
+        $this->assertFalse($updated, 'updateState returns false if no new state is given');
+
+        $updated = $this->m_files->updateState([], 1);
+        $this->assertFalse($updated, 'updateState returns false if no file is given');
+
+        $updated = $this->m_files->updateState([$fnum], 1);
+        $this->assertTrue($updated['status'], 'updateState returns true if a file and a new state are given');
+
+        $infos = $this->m_files->getFnumInfos($fnum);
+        $this->assertArrayHasKey('status', $infos, 'the data contains the state');
+        $this->assertEquals(1, $infos['status'], 'the state is the one passed as parameter');
     }
 
 	public function testgetFnumArray2() {

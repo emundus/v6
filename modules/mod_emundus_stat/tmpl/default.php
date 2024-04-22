@@ -13,7 +13,7 @@ header('Content-Type: text/html; charset=utf-8');
 	</div>
 	<br />
 	<!-- Button to consult the data of the graph -->
-	<div class="btnConsulter"><i class="search icon"></i><a href="<?php echo JURI::base();?>index.php?option=com_fabrik&view=list&listid=<?php echo $listId; ?>&Itemid=0<?php echo $urlFiltre; ?>" target="_blank"><?php echo JText::_('VIEW_DATA')?></a></div>
+	<div class="btnConsulter"><i class="search icon"></i><a href="<?php echo JURI::base();?>index.php?option=com_fabrik&view=list&listid=<?php echo $listId; ?>&Itemid=0<?php echo $urlFiltre; ?>"><?php echo JText::_('VIEW_DATA')?></a></div>
 </center>
 
 <script type="text/javascript" src="./plugins/fabrik_visualization/fusionchart/libs/fusioncharts-suite-xt/js/fusioncharts.js"></script>

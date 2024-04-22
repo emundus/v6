@@ -504,7 +504,6 @@ class EmundusModelProfile extends JModelList {
             return $res;
         } catch(Exception $e) {
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus.error');
-            JError::raiseError(500, $e->getMessage());
         }
     }
 
