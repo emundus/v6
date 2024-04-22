@@ -205,7 +205,7 @@ if($currentCampaign->apply_online == 0){
 
             <h4 class="em-mb-24"><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_APPLY') ?></h4>
             <?php  if ($currentCampaign->is_limited == 1 && $currentCampaign->limit > 0) : ?>
-                <div class="flex em-flex-center em-mt-8 em-mb-8"><p class="mr-2 h-max em-p-5-12 em-font-weight-600 em-text-neutral-300 em-font-size-14 em-border-radius" style="background:var(--bg-3);"><?= $files_sent.' '.JText::_($files_sent_tag).' '.$currentCampaign->limit ?></p></div>
+                <div class="flex em-flex-center em-mb-24"><p class="mr-2 h-max em-p-5-12 em-font-weight-600 em-text-neutral-300 em-font-size-14 em-border-radius" style="background:var(--bg-3);"><?= $files_sent.' '.JText::_($files_sent_tag).' '.$currentCampaign->limit ?></p></div>
             <?php endif; ?>
             <?php if ($mod_em_campaign_show_registration == 1 && !empty($mod_em_campaign_show_registration_steps)) : ?>
             <div class="em-mt-24">
