@@ -1044,7 +1044,7 @@ die("<script>
      * Format an element value
      * According to its plugin name
      */
-    static function formatElementValue($elt_name, $raw_value)
+    static function formatElementValue($elt_name, $raw_value, $groupId = null)
     {
         $formatted_value = $raw_value;
 
@@ -1057,7 +1057,8 @@ die("<script>
 
             $query->select('fe.name,fe.params,fe.plugin')
                 ->from($db->quoteName('#__fabrik_elements', 'fe'))
-                ->where($db->quoteName('name') . ' = ' . $db->quote($elt_name));
+                ->where($db->quoteName('name') . ' = ' . $db->quote($elt_name))
+                ->andWhere($db->quoteName('fe.group_id') . ' = ' . $db->quote($groupId));
 
             try {
                 $db->setQuery($query);
@@ -1071,10 +1072,12 @@ die("<script>
             // According to the plugin the treatment will be different
             switch ($element->plugin) {
                 case ($element->plugin == 'date'):
+
                     $helperDate = new EmundusHelperDate();
                     $date_format = $params['date_form_format'];
+                    $local = $params['date_store_as_local'] ? 1 : 0;
 
-                    $formatted_value = $helperDate->displayDate($raw_value, $date_format);
+                    $formatted_value = $helperDate->displayDate($raw_value, $date_format, $local);
                     break;
 
 

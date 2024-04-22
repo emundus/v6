@@ -104,8 +104,10 @@ class EmundusModelUsersTest extends TestCase
      */
     public function testgetJosUsersById() {
 
+        $user_id = $this->h_sample->getSampleUser();
+
         $this->assertEmpty($this->m_users->getJosUsersById(0), 'Passing an incorrect user id should return null');
-        $josUser = $this->m_users->getJosUsersById(95);
+        $josUser = $this->m_users->getJosUsersById($user_id);
         $this->assertNotEmpty($josUser, 'Passing a correct user id should return an array of profile details');
 
         // Should contain
@@ -124,16 +126,20 @@ class EmundusModelUsersTest extends TestCase
      */
     public function testgetProfileDescriptionById()
     {
+        $user_id = $this->h_sample->getSampleUser();
 
-        $this->assertEmpty($this->m_users->getProfileDescriptionById(0), 'Passing an incorrect user id should return null');
-        $profile = $this->m_users->getProfileDescriptionById(9);
-        $this->assertNotEmpty($profile, 'Passing a correct profile id should return an array of profile details');
+        if ($user_id != 0) { // Verify if a user with profile 9 exists (allow us then to use 9 as a profile id)
 
-        // Should contain
-        $this->assertObjectHasAttribute('description', $profile, 'Profile details should contain description');
+            $this->assertEmpty($this->m_users->getProfileDescriptionById(0), 'Passing an incorrect user id should return null');
+            $profile = $this->m_users->getProfileDescriptionById(9);
+            $this->assertNotEmpty($profile, 'Passing a correct profile id should return an array of profile details');
 
-        // Should not contain
-        $this->assertObjectNotHasAttribute('label', $profile, 'Profile details should not contain label !');
+            // Should contain
+            $this->assertObjectHasAttribute('description', $profile, 'Profile details should contain description');
+
+            // Should not contain
+            $this->assertObjectNotHasAttribute('label', $profile, 'Profile details should not contain label !');
+        }
     }
 
     /*
@@ -142,9 +148,14 @@ class EmundusModelUsersTest extends TestCase
      */
     public function testgetUserGroupsLabelById() {
 
+        $user_id = $this->h_sample->createSampleUser(2, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+        $nonApplicantIds = $this->m_users->getNonApplicantId($user_id);
+        $this->m_users->affectToGroups($nonApplicantIds, [1]);
+
         $this->assertEmpty($this->m_users->getUserGroupsLabelById(0), 'Passing an incorrect user id should return null');
-        $groups = $this->m_users->getUserGroupsLabelById(95);
-        $this->assertNotEmpty($groups, 'Passing a correct user id should return an array of profile details');
+        $groups = $this->m_users->getUserGroupsLabelById($user_id);
+        $this->assertNotEmpty($groups, 'Passing a correct user id should return an array of group(s) details');
+
         foreach ($groups as $group)
         {
             // Should contain
@@ -169,9 +180,11 @@ class EmundusModelUsersTest extends TestCase
             $this->assertObjectHasAttribute('name', $column, 'Columns form details should contain name');
             $this->assertObjectHasAttribute('plugin', $column, 'Columns form details should contain plugin');
             $this->assertObjectHasAttribute('label', $column, 'Columns form details should contain label');
+            $this->assertObjectHasAttribute('group_id', $column, 'Columns form details should contain group form id');
 
             // Should not contain
-            $this->assertObjectNotHasAttribute('group_id', $column, 'Columns form details should not contain group form id !');
+            $this->assertObjectNotHasAttribute('hidden', $column, 'Columns form details should not contain hidden attribute');
+            $this->assertObjectNotHasAttribute('published', $column, 'Columns form details should not contain published attribute');
         }
     }
 
@@ -181,13 +194,16 @@ class EmundusModelUsersTest extends TestCase
      */
     public function testgetAllInformationsToExport()
     {
+        $user_id = $this->h_sample->getSampleUser();
 
         $this->assertEmpty($this->m_users->getAllInformationsToExport(0), 'Passing an incorrect user id should return null');
-        $data = $this->m_users->getAllInformationsToExport(95);
+        $data = $this->m_users->getAllInformationsToExport($user_id);
         $this->assertNotEmpty($data, 'Passing a correct user id should return an array of data');
         $this->assertCount(2, $data, 'Data array should contain 2 elements');
+
         foreach ($data as $key => $dataType) {
             foreach ($dataType as $element) {
+
                 // Should contain
                 $this->assertObjectHasAttribute('id', $element, 'Data array details should contain id');
                 $this->assertObjectHasAttribute('name', $element, 'Data array details should contain name');
@@ -195,13 +211,16 @@ class EmundusModelUsersTest extends TestCase
                 $this->assertObjectHasAttribute('label', $element, 'Data array details should contain label');
 
                 // Should not contain
-                $this->assertObjectNotHasAttribute('group_id', $element, 'Data array details should not contain group form id !');
+                $this->assertObjectNotHasAttribute('hidden', $element, 'Data array form details should not contain hidden attribute');
+                $this->assertObjectNotHasAttribute('published', $element, 'Data array form details should not contain published attribute');
 
                 if ($key === 'user_data') {
+                    $this->assertObjectNotHasAttribute('group_id', $element, 'user_data array details should not contain group form id !');
                     $this->assertObjectHasAttribute('value', $element, 'user_data array details should contain value');
                 }
                 else
                 {
+                    $this->assertObjectHasAttribute('group_id', $element, 'column array details should contain group form id !');
                     $this->assertObjectNotHasAttribute('value', $element, 'column array details should not contain value');
                 }
 
@@ -222,10 +241,12 @@ class EmundusModelUsersTest extends TestCase
      */
     public function testgetUserDetails()
     {
+        $user_id = $this->h_sample->getSampleUser();
+
         $this->assertEmpty($this->m_users->getUserDetails(0), 'Passing an incorrect user id should return null');
-        $data = $this->m_users->getUserDetails(95);
+        $data = $this->m_users->getUserDetails($user_id);
         $this->assertNotEmpty($data, 'Passing a correct user id should return an array of data');
-        $dataBefore = $this->m_users->getAllInformationsToExport(95);
+        $dataBefore = $this->m_users->getAllInformationsToExport($user_id);
         $numberColumns = 0;
         $arrayName = array();
 

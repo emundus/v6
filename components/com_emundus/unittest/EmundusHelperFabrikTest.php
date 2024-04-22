@@ -82,30 +82,87 @@ class EmundusHelperFabrikTest extends TestCase
      */
     public function testformatElementValue()
     {
+        // Test cases with empty values
         $this->assertEquals('', $this->h_fabrik->formatElementValue('', ''), 'Passing an empty element name and raw value should return nothing');
         $this->assertEquals('', $this->h_fabrik->formatElementValue('name', ''), 'Passing an empty raw value should return nothing');
         $this->assertEquals('element', $this->h_fabrik->formatElementValue('', 'element'), 'Passing an empty element name should return raw_value');
 
-        // Test case with a date
-        $this->assertEquals('04/04/2024', $this->h_fabrik->formatElementValue('end_date', "2024-04-04"));
+        $form_id = $this->h_sample->getUnitTestFabrikForm();
 
-        // Test cases with radiobutton, checkbox and dropdown
-        $this->assertEquals('option1', $this->h_fabrik->formatElementValue('checkbox', "1"));
-        $this->assertEquals('option2', $this->h_fabrik->formatElementValue('dropdown', "2"));
-        $this->assertEquals('option1', $this->h_fabrik->formatElementValue('radiobutton', "1"));
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
 
-        // Test cases with yes/no
-        $this->assertEquals('No', $this->h_fabrik->formatElementValue('yesno', "0"));
-        $this->assertEquals('Yes', $this->h_fabrik->formatElementValue('yesno', "1"));
+        $query->select('fe.id, fe.name, fe.group_id as group_id, fe.plugin as plugin, fe.params as params')
+            ->from($db->quoteName('#__fabrik_elements', 'fe'))
+            ->leftJoin($db->quoteName('#__fabrik_formgroup', 'ff') . ' ON ff.group_id = fe.group_id')
+            ->where($db->quoteName('ff.form_id') . ' = ' . $form_id);
 
-        // Test case with textarea
-        $this->assertEquals("Beautiful text.<br />\n        It is awesome !", $this->h_fabrik->formatElementValue('textarea', "Beautiful text.
-        It is awesome !"));
+        $db->setQuery($query);
+        $elements = $db->loadObjectList();
 
-        // Test cases with databasejoin
-        $this->assertEquals('Argentina, Argentine Republic', $this->h_fabrik->formatElementValue('country', "10"));
-        $this->assertEquals('Bissau-guinean', $this->h_fabrik->formatElementValue('nationality', "24"));
-        $this->assertEquals('Accepté', $this->h_fabrik->formatElementValue('status', "3"));
-        $this->assertEquals('1 paiement / campagne', $this->h_fabrik->formatElementValue('payment_type', "1"));
+        foreach ($elements as $element) {
+
+            $params = json_decode($element->params, true);
+
+            switch ($element->plugin) {
+                case 'date':
+                    $helperDate = new EmundusHelperDate();
+                    $date = $helperDate->getNow();
+                    $date_format = $params['date_form_format'];
+                    $local = $params['date_store_as_local'] ? 1 : 0;
+
+                    $formatted_date = $helperDate->displayDate($date, $date_format, $local);
+                    $this->assertEquals($formatted_date, $this->h_fabrik->formatElementValue($element->name, $date, $element->group_id));
+
+                    break;
+                case 'radiobutton':
+                case 'checkbox':
+                case 'dropdown':
+                    $this->assertEquals($params['sub_options']['sub_labels'][0], $this->h_fabrik->formatElementValue($element->name, $params['sub_options']['sub_values'][0], $element->group_id));
+                    $this->assertEquals($params['sub_options']['sub_labels'][1], $this->h_fabrik->formatElementValue($element->name, $params['sub_options']['sub_values'][1], $element->group_id));
+                    break;
+                case 'yesno':
+                    $this->assertEquals(JText::_('JYES'), $this->h_fabrik->formatElementValue($element->name, 1, $element->group_id));
+                    $this->assertEquals(JText::_('JNO'), $this->h_fabrik->formatElementValue($element->name, 0, $element->group_id));
+                    break;
+                case 'textarea':
+                    $formated_value = "This is<br />\n a test";
+                    $this->assertEquals($formated_value, $this->h_fabrik->formatElementValue($element->name, "This is
+ a test", $element->group_id));
+                    break;
+                case 'databasejoin':
+                    $db = JFactory::getDbo();
+                    $query = $db->getQuery(true);
+
+                    // Query to get the first value of the join_key_column
+                    $query->select($db->quoteName($params['join_key_column']))
+                        ->from($db->quoteName($params['join_db_name']))
+                        ->setLimit(1);
+
+                    $db->setQuery($query);
+                    $firstKeyValue = $db->loadResult();
+
+                    $query = $db->getQuery(true);
+
+                    if (!empty($params['join_val_column_concat'])) {
+                        $lang = substr(JFactory::getLanguage()->getTag(), 0, 2);
+                        $params['join_val_column_concat'] = str_replace('{thistable}', $params['join_db_name'], $params['join_val_column_concat']);
+                        $params['join_val_column_concat'] = str_replace('{shortlang}', $lang, $params['join_val_column_concat']);
+
+                        $query->select($db->quoteName($params['join_val_column_concat']));
+                    } else {
+                        $query->select($db->quoteName($params['join_val_column']));
+                    }
+
+                    $query->from($db->quoteName($params['join_db_name']));
+
+                    $db->setQuery($query);
+                    $formatted_value = $db->loadResult();
+
+                    $this->assertEquals($formatted_value, $this->h_fabrik->formatElementValue($element->name, $firstKeyValue, $element->group_id));
+
+                    break;
+            }
+        }
     }
 }

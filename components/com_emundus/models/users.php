@@ -3782,7 +3782,7 @@ class EmundusModelUsers extends JModelList {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        $query->select('fe.id as id, fe.name as name, fe.plugin as plugin, fe.label as label')
+        $query->select('fe.id as id, fe.name as name, fe.group_id as group_id, fe.plugin as plugin, fe.label as label, fe.params as params')
             ->from($db->quoteName('#__fabrik_elements', 'fe'))
             ->leftJoin($db->quoteName('#__fabrik_formgroup', 'ff') . ' ON ff.group_id = fe.group_id')
             ->where($db->quoteName('ff.form_id') . ' = ' . $this->getProfileForm())
@@ -3927,7 +3927,7 @@ class EmundusModelUsers extends JModelList {
                 if ($column->value == null) {
                     // If necessary, call a function that will "translate" a foreign key into the true value
                     // For example, nationality is indicated with a foreign key, so the formatElementValue() function is needed
-                    $userDetails[$column->name] = EmundusHelperFabrik::formatElementValue($column->name, $user[0]->{$column->name});
+                    $userDetails[$column->name] = EmundusHelperFabrik::formatElementValue($column->name, $user[0]->{$column->name}, $column->group_id);
                 } else {
                     $userDetails[$column->name] = $column->value;
                 }
