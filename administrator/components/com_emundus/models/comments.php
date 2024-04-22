@@ -39,7 +39,7 @@ class EmundusAdministratorModelComments extends JModelList
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        $query->columns('COLUMN_NAME')
+        $query->select('COLUMN_NAME')
             ->from('INFORMATION_SCHEMA.COLUMNS')
             ->where('TABLE_NAME = ' . $db->quoteName('jos_emundus_comments'))
             ->andWhere('COLUMN_NAME = ' . $db->quoteName('status_from') . ' OR COLUMN_NAME = ' . $db->quoteName('status_to'));
@@ -49,8 +49,6 @@ class EmundusAdministratorModelComments extends JModelList
             $columns = $db->loadColumn();
         } catch (Exception $e) {
             $columns = [];
-
-            echo ($e->getMessage());
         }
 
         if (!empty($columns)) {
@@ -60,8 +58,6 @@ class EmundusAdministratorModelComments extends JModelList
                     $installation_steps[] = $db->execute();
                 } catch (Exception $e) {
                     $installation_steps[] = false;
-                    echo ($e->getMessage());
-
                 }
             }
         }
