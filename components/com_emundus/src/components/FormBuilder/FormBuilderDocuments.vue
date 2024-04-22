@@ -47,7 +47,9 @@ export default {
     getDocuments () {
       formService.getDocuments(this.profile_id).then(response => {
         if (response.status) {
-          this.documents = response.data;
+          this.documents = response.data.filter((format) => {
+            return format.params !== "emundus_fileUpload";
+          });
         } else {
           this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_GET_DOCUMENTS_FAILED'), response.msg);
         }

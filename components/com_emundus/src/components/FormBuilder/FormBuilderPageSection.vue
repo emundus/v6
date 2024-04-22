@@ -23,7 +23,7 @@
             <span class="material-icons-outlined em-pointer hover-opacity" @click="moveSection('up')" title="Move section upwards">keyboard_double_arrow_up</span>
             <span class="material-icons-outlined em-pointer hover-opacity" @click="moveSection('down')" title="Move section downwards">keyboard_double_arrow_down</span>
             <span class="material-icons-outlined em-red-500-color em-pointer delete hover-opacity" @click="deleteSection">delete</span>
-            <span class="material-icons-outlined em-pointer hover-opacity" @click="$emit('open-section-properties')">settings</span>
+            <span class="material-icons-outlined em-pointer hover-opacity" @click="openSettingOfSection">settings</span>
           </div>
         </div>
         <transition name="slide-down">
@@ -133,6 +133,9 @@ export  default {
   methods: {
     getElements() {
       this.elements = Object.values(this.section.elements).length > 0 ? Object.values(this.section.elements) : [];
+    },
+    openSettingOfSection() {
+      this.$emit('open-section-properties', this.section);
     },
     updateTitle() {
       this.section.label[this.shortDefaultLang] = this.section.label[this.shortDefaultLang].trim();

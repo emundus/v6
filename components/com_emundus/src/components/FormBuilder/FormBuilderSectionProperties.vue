@@ -21,7 +21,7 @@
         <input id="section-label" name="section-label" class="em-w-100" type="text" v-model="section_tmp.label"/>
       </div>
       <div v-if="tabs[1].active" class="em-p-16">
-        <form-builder-section-params :params="params" :section="section_tmp"></form-builder-section-params>
+        <form-builder-section-params :params="params"  :repetable=ChoiceRepetable :section="section_tmp"></form-builder-section-params>
       </div>
     </div>
     <div class="em-flex-row em-flex-space-between actions em-m-16">
@@ -49,6 +49,10 @@ export default {
     profile_id: {
       type: Number,
       required: true
+    },
+    ChoiceRepetable: {
+      type: Boolean,
+      required: false,
     },
   },
   data() {
