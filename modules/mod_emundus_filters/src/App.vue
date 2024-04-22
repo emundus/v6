@@ -199,7 +199,7 @@ export default {
 
 				newFilter.uid = new Date().getTime();
 				newFilter.default = false;
-				newFilter.operator = '=';
+				newFilter.operator = newFilter.hasOwnProperty('operator') && newFilter.operator != '' ? newFilter.operator : '=';
 				newFilter.andorOperator = 'OR';
 
 				switch (newFilter.type) {
@@ -250,7 +250,6 @@ export default {
         }
 
         filtersService.getFiltersAvailable(this.moduleId).then((filters) => {
-          console.log(filters);
           this.filters = filters;
         }).catch((error) => {
           console.error(error);
@@ -262,7 +261,11 @@ export default {
 			this.globalSearch = [];
 			// reset applied filters values
 			this.appliedFilters = this.appliedFilters.map((filter) => {
-				if (filter.type === 'select') {
+				filter.operator = '=';
+
+        if (filter.type === 'select') {
+          filter.operator = 'IN';
+
 					// TODO: too specific to the published filter, should create a default_value field.
 					if (filter.uid === 'published') {
 						filter.value = [1];

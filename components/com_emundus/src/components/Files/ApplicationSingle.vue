@@ -79,7 +79,7 @@
 import axios from "axios";
 import Attachments from "@/views/Attachments";
 import filesService from 'com_emundus/src/services/files';
-import errors from "@/mixins/errors";
+import errors from "../../mixins/errors.js";
 import Comments from "@/components/Files/Comments";
 
 
@@ -229,6 +229,9 @@ export default {
               }
             });
           }
+        }).catch((error) => {
+          this.displayError('COM_EMUNDUS_FILES_CANNOT_ACCESS', 'COM_EMUNDUS_FILES_CANNOT_ACCESS_DESC');
+          this.loading = false;
         });
       }
     },
