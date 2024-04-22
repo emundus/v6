@@ -47,13 +47,10 @@ class EmundusModelExpert extends JModelList {
 			}
 
 			$query->clear()
-				->select('esfr.end_date,esfr.digital_sign,esfr.letter_id,esfr.attachment_id,esfr.must_validate,esfr.notify_email,esfrr.application_elements')
+				->select('esfr.is_numeric_sign,esfr.attachment_to_sign,esfr.attachment_to_upload,esfr.attachment_model,esfr.must_validate,esfr.notify_email,group_concat(esfrre.elements) as elements')
 				->from($this->_db->quoteName('#__emundus_setup_files_request', 'esfr'))
-				->leftJoin($this->_db->quoteName('#__emundus_setup_files_request_1115_repeat','esfrr').' ON '.$this->_db->quoteName('esfrr.parent_id').' = '.$this->_db->quoteName('esfr.id'))
-				->leftJoin($this->_db->quoteName('#__emundus_setup_files_request_1115_repeat_repeat_campaigns','esfrrc').' ON '.$this->_db->quoteName('esfrrc.parent_id').' = '.$this->_db->quoteName('esfrr.id'))
-				->leftJoin($this->_db->quoteName('#__emundus_setup_files_request_1115_repeat_repeat_programme','esfrrp').' ON '.$this->_db->quoteName('esfrrp.parent_id').' = '.$this->_db->quoteName('esfrr.id'))
-				->where($this->_db->quoteName('esfrrc.campaigns') . ' = ' . $this->_db->quote($fnumInfos->id))
-				->orWhere($this->_db->quoteName('esfrrp.programme') . ' = ' . $this->_db->quote($fnumInfos->training));
+				->leftJoin($this->_db->quoteName('#__emundus_setup_files_request_repeat_elements','esfrre').' ON '.$this->_db->quoteName('esfrre.parent_id').' = '.$this->_db->quoteName('esfr.id'))
+				->where($this->_db->quoteName('esfr.campaign') . ' = ' . $this->_db->quote($fnumInfos->id));
 			$this->_db->setQuery($query);
 			$setup = $this->_db->loadObject();
 		}

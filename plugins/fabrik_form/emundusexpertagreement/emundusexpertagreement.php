@@ -172,6 +172,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form
 	{
 
 		Log::addLogger(['text_file' => 'com_emundus.expertAcceptation.error.php'], Log::ERROR, 'com_emundus');
+		$current_user = Factory::getUser();
 
 		try
 		{
@@ -192,11 +193,11 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form
 			$formModel = $this->getModel();
 
 			$jinput             = $app->input;
-			$key_id             = $jinput->get->get('keyid');
-			$firstname          = ucfirst($jinput->get($this->getParam('firstname_input', 'jos_emundus_files_request___firstname')));
-			$lastname           = strtoupper($jinput->get($this->getParam('lastname_input', 'jos_emundus_files_request___lastname')));
-			$attachments_fields = $this->getParam('attachments_input', 'signed_documents');
-			$attachments_ids    = $this->getParam('attachments_id', '36');
+			$key_id             = $jinput->get->get('keyid') ?: $formModel->formData['keyid_raw'];
+			$firstname          = ucfirst($jinput->get($this->getParam('firstname_input', 'jos_emundus_files_request___firstname')) ?: $formModel->formData['firstname_raw']);
+			$lastname           = strtoupper($jinput->get($this->getParam('lastname_input', 'jos_emundus_files_request___lastname')) ?: $formModel->formData['lastname_raw']);
+			$attachments_fields = $this->getParam('attachments_input');
+			$attachments_ids    = $this->getParam('attachments_id');
 			$fnum_field         = $this->getParam('fnum_input', 'fnum_expertise');
 			$status_field       = $this->getParam('status_input', 'status_expertise');
 			$accepted_status    = $this->getParam('accepted_value', '1');
@@ -208,8 +209,15 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form
 			$send_email_accept   = $this->getParam('send_email_accept', 1);
 			$keep_accepted_fnums = $this->getParam('keep_accepted_fnums', 0);
 
-			$attachments_fields = explode(',', $attachments_fields);
-			$attachments_ids    = explode(',', $attachments_ids);
+
+			if(!empty($attachments_fields))
+			{
+				$attachments_fields = explode(',', $attachments_fields);
+			}
+			if(!empty($attachments_ids))
+			{
+				$attachments_ids = explode(',', $attachments_ids);
+			}
 
 			$fnums = [];
 			if ($pick_fnums)
@@ -278,15 +286,49 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form
 
 			$fnums = array_filter($fnums);
 
-			$query->clear()
-				->update($db->quoteName('#__emundus_files_request'))
-				->set([$db->quoteName('uploaded') . '=1', $db->quoteName('firstname') . '=' . $db->quote($firstname), $db->quoteName('lastname') . '=' . $db->quote($lastname), $db->quoteName('modified_date') . '=NOW()'])
-				->where($db->quoteName('keyid') . ' LIKE ' . $db->quote($key_id));
-			$db->setQuery($query);
-			$db->execute();
-
 			if (!empty($fnums))
 			{
+				require_once JPATH_SITE . '/components/com_emundus/models/expert.php';
+				$m_expert = new EmundusModelExpert();
+				$setup = $m_expert->getSetupByFnum($fnums[0]);
+
+				if($setup->must_validate == 1)
+				{
+					if ($current_user->guest == 1 || $current_user->email == $email)
+					{
+						$query->clear()
+							->select('u.email')
+							->from($db->quoteName('#__emundus_users', 'eu'))
+							->leftJoin($db->quoteName('#__users', 'u') . ' ON ' . $db->quoteName('u.id') . ' = ' . $db->quoteName('eu.user_id'))
+							->where($db->quoteName('eu.profile') . ' = 2');
+						$db->setQuery($query);
+						$coord_emails = $db->loadColumn();
+
+						require_once JPATH_SITE . '/components/com_emundus/models/emails.php';
+						$m_emails = new EmundusModelEmails();
+
+						/*foreach ($coord_emails as $coord_email) {
+							$coord_email = 'brice.hubinet@emundus.fr';
+							$m_emails->sendEmailNoFnum($coord_email,$setup->notify_email);
+						}*/
+
+						$coord_email = 'brice.hubinet@emundus.fr';
+						$m_emails->sendEmailNoFnum($coord_email, $setup->notify_email);
+
+						$app->enqueueMessage(Text::_('PLG_FABRIK_EXPERTAGREEMENT_NEED_VALIDATION'), 'success');
+						$app->redirect('index.php');
+					} elseif ($formModel->formData['uploaded_raw'][0] != 1) {
+						return;
+					}
+				}
+
+				$query->clear()
+					->update($db->quoteName('#__emundus_files_request'))
+					->set([$db->quoteName('uploaded') . '=1', $db->quoteName('firstname') . '=' . $db->quote($firstname), $db->quoteName('lastname') . '=' . $db->quote($lastname), $db->quoteName('modified_date') . '=NOW()'])
+					->where($db->quoteName('keyid') . ' LIKE ' . $db->quote($key_id));
+				$db->setQuery($query);
+				$db->execute();
+
 				$query->clear()
 					->select($db->quoteName('id'))
 					->from($db->quoteName('#__users'))
@@ -296,9 +338,9 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form
 
 				$acl_aro_groups = $m_users->getDefaultGroup($profile_id);
 
+				// Check if user is already an evaluator
 				if (!empty($uid))
 				{
-
 					$user = Factory::getUser($uid);
 
 					$query->clear()
@@ -343,126 +385,6 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form
 
 						return;
 					}
-
-					if (in_array('jos_emundus_files_request_1614_repeat', $existingTables))
-					{
-						$query->clear()
-							->select([$db->quoteName('fr.fnum'), $db->quoteName('frr.status_expertise'), $db->quoteName('frr.motif_expertise'), $db->quoteName('frr.refused_expertise'), $db->quoteName('fr.student_id')])
-							->from($db->quoteName('#__emundus_files_request_1614_repeat', 'frr'))
-							->leftJoin($db->quoteName('jos_emundus_files_request', 'fr') . ' ON ' . $db->quoteName('frr.parent_id') . ' = ' . $db->quoteName('fr.id'))
-							->where($db->quoteName('fr.keyid') . ' LIKE ' . $db->quote($key_id));
-						$db->setQuery($query);
-						$statut_expertise = $db->loadObjectList();
-
-						foreach ($statut_expertise as $key => $s)
-						{
-							if ($s->status_expertise == "1" && $send_email_accept == 1)
-							{
-								$email = $m_emails->getEmail('expert_accept');
-								$body  = $m_emails->setBody($user, $email->message);
-
-								$email_from_sys = Factory::getConfig()->get('mailfrom');
-								$sender         = [
-									$email_from_sys,
-									$email->name
-								];
-								$recipient      = $user->email;
-
-								$mailer->setSender($sender);
-								$mailer->addReplyTo($email->emailfrom, $email->name);
-								$mailer->addRecipient($recipient);
-								$mailer->setSubject($email->subject);
-								$mailer->isHTML(true);
-								$mailer->Encoding = 'base64';
-								$mailer->setBody($body);
-
-								$send = $mailer->Send();
-								if ($send !== true)
-								{
-									echo 'Error sending email: ' . $send;
-									die();
-								}
-								else
-								{
-									$message = [
-										'user_id_from' => 62,
-										'user_id_to'   => $user->id,
-										'subject'      => $email->subject,
-										'message'      => '<i>' . Text::_('MESSAGE') . ' ' . Text::_('SENT') . ' ' . Text::_('TO') . ' ' . $user->email . '</i><br>' . $body
-									];
-									$m_emails->logEmail($message);
-								}
-							}
-						}
-					}
-					else
-					{
-						if ($send_email_accept == 1)
-						{
-							$email = $m_emails->getEmail('expert_accept');
-							$body  = $m_emails->setBody($user, $email->message);
-
-							$email_from_sys = Factory::getConfig()->get('mailfrom');
-							$sender         = [
-								$email_from_sys,
-								$email->name
-							];
-							$recipient      = $user->email;
-
-							$mailer->setSender($sender);
-							$mailer->addReplyTo($email->emailfrom, $email->name);
-							$mailer->addRecipient($recipient);
-							$mailer->setSubject($email->subject);
-							$mailer->isHTML(true);
-							$mailer->Encoding = 'base64';
-							$mailer->setBody($body);
-
-							$send = $mailer->Send();
-							if ($send !== true)
-							{
-								echo 'Error sending email: ' . $send;
-								die();
-							}
-							else
-							{
-								$message = [
-									'user_id_from' => 62,
-									'user_id_to'   => $user->id,
-									'subject'      => $email->subject,
-									'message'      => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $user->email . '</i><br>' . $body
-								];
-								$m_emails->logEmail($message);
-							}
-						}
-					}
-
-					foreach ($fnums as $fnum)
-					{
-						$fnumInfos = $m_files->getFnumInfos($fnum);
-						$row = [
-							'applicant_id' => $fnumInfos['applicant_id'],
-							'user_id'      => $user->id,
-							'reason'       => Text::_('EXPERT_ACCEPT_TO_EVALUATE'),
-							'comment_body' => $user->name . ' ' . Text::_('ACCEPT_TO_EVALUATE'),
-							'fnum'         => $fnum
-						];
-						$m_application->addComment($row);
-
-						foreach ($attachments_fields as $key => $attachment_field)
-						{
-							$attachment_id = $attachments_ids[$key];
-							if (!empty($formModel->formData[$attachment_field . '_raw']))
-							{
-								$this->uploadSignedDocument($fnum, $attachment_id, $formModel->formData[$attachment_field . '_raw'], $user->id);
-							}
-						}
-					}
-
-					if (!empty($user->password))
-					{
-						$m_users->login($user->id);
-					}
-
 				}
 				else
 				{
@@ -555,7 +477,62 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form
 						];
 						$m_emails->logEmail($message);
 					}
+				}
 
+				// Send email if needed
+				if (in_array('jos_emundus_files_request_1614_repeat', $existingTables))
+				{
+					$query->clear()
+						->select([$db->quoteName('fr.fnum'), $db->quoteName('frr.status_expertise'), $db->quoteName('frr.motif_expertise'), $db->quoteName('frr.refused_expertise'), $db->quoteName('fr.student_id')])
+						->from($db->quoteName('#__emundus_files_request_1614_repeat', 'frr'))
+						->leftJoin($db->quoteName('jos_emundus_files_request', 'fr') . ' ON ' . $db->quoteName('frr.parent_id') . ' = ' . $db->quoteName('fr.id'))
+						->where($db->quoteName('fr.keyid') . ' LIKE ' . $db->quote($key_id));
+					$db->setQuery($query);
+					$statut_expertise = $db->loadObjectList();
+
+					foreach ($statut_expertise as $s)
+					{
+						if ($s->status_expertise == 1 && $send_email_accept == 1)
+						{
+							$email = $m_emails->getEmail('expert_accept');
+							$body  = $m_emails->setBody($user, $email->message);
+
+							$email_from_sys = Factory::getConfig()->get('mailfrom');
+							$sender         = [
+								$email_from_sys,
+								$email->name
+							];
+							$recipient      = $user->email;
+
+							$mailer->setSender($sender);
+							$mailer->addReplyTo($email->emailfrom, $email->name);
+							$mailer->addRecipient($recipient);
+							$mailer->setSubject($email->subject);
+							$mailer->isHTML(true);
+							$mailer->Encoding = 'base64';
+							$mailer->setBody($body);
+
+							$send = $mailer->Send();
+							if ($send !== true)
+							{
+								echo 'Error sending email: ' . $send;
+								die();
+							}
+							else
+							{
+								$message = [
+									'user_id_from' => 62,
+									'user_id_to'   => $user->id,
+									'subject'      => $email->subject,
+									'message'      => '<i>' . Text::_('MESSAGE') . ' ' . Text::_('SENT') . ' ' . Text::_('TO') . ' ' . $user->email . '</i><br>' . $body
+								];
+								$m_emails->logEmail($message);
+							}
+						}
+					}
+				}
+				else
+				{
 					if ($send_email_accept == 1)
 					{
 						$email = $m_emails->getEmail('expert_accept');
@@ -593,20 +570,26 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form
 							$m_emails->logEmail($message);
 						}
 					}
+				}
 
-					// 2.1.3. Commentaire sur le dossier du candidat : nouvel expert ayant accepté l'évaluation du dossier
-					foreach ($fnums as $fnum)
-					{
-						$row = [
-							'applicant_id' => (int) substr($fnum, -7),
-							'user_id'      => $user->id,
-							'reason'       => Text::_('EXPERT_ACCEPT_TO_EVALUATE'),
-							'comment_body' => $user->name . ' ' . Text::_('ACCEPT_TO_EVALUATE'),
-							'fnum'         => $fnum
-						];
-						$m_application->addComment($row);
+				// Log expertise and upload attachment if needed
+				foreach ($fnums as $fnum)
+				{
+					$fnumInfos = $m_files->getFnumInfos($fnum);
+					$row = [
+						'applicant_id' => $fnumInfos['applicant_id'],
+						'user_id'      => $user->id,
+						'reason'       => Text::_('EXPERT_ACCEPT_TO_EVALUATE'),
+						'comment_body' => $user->name . ' ' . Text::_('ACCEPT_TO_EVALUATE'),
+						'fnum'         => $fnum
+					];
+					$m_application->addComment($row);
 
-						// Upload des documents signés
+					if(!empty($attachments_fields)) {
+						if(empty($attachments_ids)) {
+							$attachments_ids = [$setup->attachment_to_upload];
+						}
+
 						foreach ($attachments_fields as $key => $attachment_field)
 						{
 							$attachment_id = $attachments_ids[$key];
@@ -616,12 +599,13 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form
 							}
 						}
 					}
+				}
 
-					if (!empty($password))
-					{
-						$m_users->login($user->id);
-					}
+				// Finally we log expert
+				if ((!empty($password) || !empty($user->password)) && ($current_user->guest == 1 || ($current_user->email == $email)))
+				{
 					$app->enqueueMessage(Text::_('USER_LOGGED'), 'success');
+					$m_users->login($user->id);
 				}
 			}
 			else
