@@ -223,6 +223,41 @@ class EmundusAdministrationModelRanking extends JModelList
             }
         }
 
+
+        $columns = [
+            [
+                'name' => 'hierarchy_id',
+                'type' => 'INT',
+                'null' => 0,
+            ],
+            [
+                'name' => 'status',
+                'type' => 'INT',
+                'null' => 0,
+            ],
+        ];
+        $foreign_keys = [
+            [
+                'name'           => 'jos_emundus_ranking_hierarchy_rankable_status_hierarchy_id_fk',
+                'from_column'    => 'hierarchy_id',
+                'ref_table'      => 'jos_emundus_ranking_hierarchy',
+                'ref_column'     => 'id',
+                'update_cascade' => true,
+                'delete_cascade' => true,
+            ]
+        ];
+
+        $response = EmundusHelperUpdate::createTable('jos_emundus_ranking_hierarchy_rankable_status', $columns, $foreign_keys, 'Table des status apparaissant dans le tableau de classement pour un niveau de hiérarchie', $unique_keys);
+        $tasks[] = $response['status'];
+
+        if ($debug) {
+            if ($response['status']) {
+                $app->enqueueMessage('Table jos_emundus_ranking_hierarchy_rankable_status exists or has been created');
+            } else {
+                $app->enqueueMessage('Table jos_emundus_ranking_hierarchy_rankable_status not created', 'error');
+            }
+        }
+
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $query->select('extension_id')
