@@ -18,6 +18,10 @@ jimport('joomla.application.component.helper');
 
 require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 include_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
+
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
 use libphonenumber\PhoneNumberUtil;
 use libphonenumber\PhoneNumberFormat;
 
@@ -1050,7 +1054,7 @@ die("<script>
 
         if(!empty($elt_name))
         {
-            $db = JFactory::getDbo();
+            $db = Factory::getDbo();
             $query = $db->getQuery(true);
 
             $element = null;
@@ -1064,38 +1068,28 @@ die("<script>
                 $db->setQuery($query);
                 $element = $db->loadObject();
             } catch (Exception $e) {
-                JLog::add('components/com_emundus/helpers/fabrik | Error when try to get fabrik elements table data : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.error');
+                Log::add('components/com_emundus/helpers/fabrik | Error when try to get fabrik elements table data : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
             }
 
             $params = json_decode($element->params, true);
 
-            // According to the plugin the treatment will be different
             switch ($element->plugin) {
-                case ($element->plugin == 'date'):
-
-                    $helperDate = new EmundusHelperDate();
-                    $date_format = $params['date_form_format'];
+                case 'date':
+					$date_format = $params['date_form_format'];
                     $local = $params['date_store_as_local'] ? 1 : 0;
 
-                    $formatted_value = $helperDate->displayDate($raw_value, $date_format, $local);
+                    $formatted_value = EmundusHelperDate::displayDate($raw_value, $date_format, $local);
                     break;
 
-
-                case  ($element->plugin == 'emundus_phonenumber'):
-
+                case 'emundus_phonenumber':
                     $formatted_value = self::getFormattedPhoneNumberValue($raw_value);
                     break;
 
-                // databasejoin indicates a foreign key situation
-                case ($element->plugin == 'databasejoin'):
-                    $db = JFactory::getDbo();
-                    $query = $db->getQuery(true);
+                case 'databasejoin':
+					$query->clear();
 
-                    // We first check if we will use concatenation or not
-                    // Then we look to the language of the user to translate into
-                    // the good language
                     if (!empty($params['join_val_column_concat'])) {
-                        $lang = substr(JFactory::getLanguage()->getTag(), 0, 2);
+                        $lang = substr(Factory::getLanguage()->getTag(), 0, 2);
                         $params['join_val_column_concat'] = str_replace('{thistable}', $params['join_db_name'], $params['join_val_column_concat']);
                         $params['join_val_column_concat'] = str_replace('{shortlang}', $lang, $params['join_val_column_concat']);
 
@@ -1104,7 +1098,6 @@ die("<script>
                         $query->select($db->quoteName($params['join_val_column']));
                     }
 
-                    // Finally we retrieve our value into the right table and column
                     $query->from($db->quoteName($params['join_db_name']))
                         ->where($db->quoteName($params['join_key_column']) . ' = ' . $db->quote($raw_value));
 
@@ -1112,33 +1105,32 @@ die("<script>
                         $db->setQuery($query);
                         $formatted_value = $db->loadResult();
                     } catch (Exception $e) {
-                        JLog::add('components/com_emundus/helpers/fabrik | Error when try to get value from databasejoin case : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.error');
+                        Log::add('components/com_emundus/helpers/fabrik | Error when try to get value from databasejoin case : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
                     }
                     break;
 
-                case ($element->plugin == 'radiobutton' || $element->plugin == 'checkbox' || $element->plugin == 'dropdown'):
-
+                case 'radiobutton':
+				case 'dropdown':
+				case 'checkbox':
                     $index = array_search($raw_value, $params['sub_options']['sub_values']);
                     if ($index !== false) {
                         $formatted_value = $params['sub_options']['sub_labels'][$index];
                     }
                     break;
 
-
-                case ($element->plugin == 'yesno'):
-
-                    $formatted_value = $raw_value == 1 ? JText::_('JYES') : JText::_('JNO');
+                case 'yesno':
+                    $formatted_value = $raw_value == 1 ? Text::_('JYES') : Text::_('JNO');
                     break;
 
-
-                case ($element->plugin == 'textarea'):
-
+                case 'textarea':
                     $formatted_value = nl2br($raw_value);
                     break;
+
                 default:
                     break;
             }
         }
+
         return $formatted_value;
     }
 }

@@ -9,6 +9,9 @@
 
 // No direct access
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+
 require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php');
 
 defined( '_JEXEC' ) or die( 'Restricted access' );
@@ -1295,82 +1298,70 @@ class EmundusControllerUsers extends JControllerLegacy {
      * Extracted data are also selected
      */
     public function exportusers() {
-        $jinput = JFactory::getApplication()->input;
-
         if (!EmundusHelperAccess::asAccessAction(12, 'r')) {
             $this->setRedirect('index.php', JText::_('ACCESS_DENIED'), 'error');
             return;
         }
 
-        $modelUsers = new EmundusModelUsers();
-
-        // Configure the hour according to the location
-        $config = JFactory::getConfig();
-        $config_offset = $config->get('offset');
-        $offset = $config_offset ?: 'Europe/Paris';
-        $timezone = new DateTimeZone($offset);
+	    $m_users = new EmundusModelUsers();
 
         // Retrieve the users' data to extract (indicated by the checkboxes checked)
-        $checkboxes = $jinput->get('checkboxes', array(), 'ARRAY');
-        $users = $jinput->getString('users', null);
+        $checkboxes = $this->input->get('checkboxes', array(), 'ARRAY');
+        $users = $this->input->getString('users', null);
 
         // If 'all' is choosed, it's necessary to retrieve the ids
         if ($users === 'all') {
-            $allUsers = $modelUsers->getUsers(0, 0);
-            $userIds = array();
-            foreach ($allUsers as $user) {
-                $userIds[] = $user->id;
+            $all_users = $m_users->getUsers(0, 0);
+            $user_ids = array();
+            foreach ($all_users as $user) {
+	            $user_ids[] = $user->id;
             }
         } else {
-            $userIds = (array) json_decode(stripslashes($users));
+	        $user_ids = (array) json_decode(stripslashes($users));
         }
 
-        // Create an array of users' data
-        // (one element of the array is also an array of one user's data)
-        $allUsersDetails = array();
-        foreach ($userIds as $userId) {
-            $allUsersDetails[] = $modelUsers->getUserDetails($userId);
+        $user_details = array();
+        foreach ($user_ids as $uid) {
+	        $user_details[] = $m_users->getUserDetails($uid);
         }
 
-        // Prepare the writing in the file
-        // The date is used for the file's name
-        $dateString = EmundusHelperDate::displayDate(date('Y-m-d H:i:s'), 'Y-m-d-H:i:s', $timezone === 'UTC' ? 1 : 0);
-        $csvFileName = 'export_users_' .  $dateString . '.csv';
-        $path = JPATH_SITE . '/tmp/' . $csvFileName;
-        $csvFile = fopen($path, 'w');
+		// Fill CSV
+        $export_filename = 'export_users_' .  date('Y-m-d H:i:s') . '.csv';
+        $path = JPATH_SITE . '/tmp/' . $export_filename;
 
-        // Collect all data name needed
-        // seenKeys keep a track of data name already collected
-        $seenKeys = [];
+        $seen_keys = [];
         $headers = array();
 
-        foreach ($allUsersDetails as $userDetails) {
-            foreach ($userDetails as $key => $value) {
-                if (!in_array($key, $seenKeys) && $checkboxes[$key]) {
-                    $seenKeys[] = $key;
-                    $headers[] = JText::_(strtoupper($key));
+		// Fill keys
+	    $csv_file = fopen($path, 'w');
+        foreach ($user_details as $user_detail) {
+            foreach ($user_detail as $key => $value) {
+                if (!in_array($key, $seen_keys) && $checkboxes[$key]) {
+	                $seen_keys[] = $key;
+                    $headers[] = Text::_(strtoupper($key));
                 }
             }
         }
-        fputcsv($csvFile, $headers);
+        fputcsv($csv_file, $headers);
+		//
 
         // Retrieve all the value of users' data necessary
-        foreach ($allUsersDetails as $userDetails) {
+        foreach ($user_details as $user_detail) {
             $userData = array();
-            foreach ($userDetails as $key => $value) {
-                if (in_array($key, $seenKeys))
+            foreach ($user_detail as $key => $value) {
+                if (in_array($key, $seen_keys))
                 {
-                    $userData[] = JText::_($value);
+                    $userData[] = Text::_($value);
                 }
             }
-            fputcsv($csvFile, $userData);
+            fputcsv($csv_file, $userData);
         }
-
-        fclose($csvFile);
+        fclose($csv_file);
+		//
 
         // Add all the headers necessary
         header('Content-type: text/csv');
-        header('Content-Disposition: attachment; filename=' . $csvFileName);
+        header('Content-Disposition: attachment; filename=' . $export_filename);
         header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
         header('Cache-Control: no-store, no-cache, must-revalidate');
         header('Cache-Control: pre-check=0, post-check=0, max-age=0');
@@ -1378,7 +1369,7 @@ class EmundusControllerUsers extends JControllerLegacy {
         header('Expires: 0');
 
         // Encode file's path and file's name if necessary
-        echo json_encode(['csvFilePath' => $path, 'fileName' => $csvFileName]);
+        echo json_encode(['csvFilePath' => $path, 'fileName' => $export_filename]);
         exit;
     }
 
