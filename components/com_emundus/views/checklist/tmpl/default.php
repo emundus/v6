@@ -670,7 +670,7 @@ $(document).ready(function() {
     const headerNav = document.getElementById('g-navigation');
     const sidebar = document.querySelector('.view-checklist #g-sidebar');
     if (headerNav && sidebar) {
-        document.querySelector('.view-checklist #g-sidebar').style.top = headerNav.offsetHeight + 8 + 'px';
+        sidebar.style.top = headerNav.offsetHeight + 8 + 'px';
     }
     $('.em_send_uploaded_file').attr("disabled", "disabled");
 

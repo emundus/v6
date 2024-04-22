@@ -171,7 +171,7 @@ endif;
         const headerNav = document.getElementById('g-navigation');
         const sidebar = document.querySelector('.view-form #g-sidebar');
         if (headerNav && sidebar) {
-            document.querySelector('.view-form #g-sidebar').style.top = headerNav.offsetHeight + 8 + 'px';
+            sidebar.style.top = headerNav.offsetHeight + 8 + 'px';
         }
 
         // Remove applicant-form class if needed
