@@ -55,12 +55,14 @@ export default {
   },
   methods: {
     getFormats() {
-	    formService.getDocumentModels().then(response => {
-		    if (response.status) {
-			    this.formats = response.data;
-		    }
-	    });
-    },
+  formService.getDocumentModels().then(response => {
+    if (response.status) {
+      this.formats = response.data.filter((format) => {
+        return format.params !== "emundus_fileUpload";
+      });
+    }
+  });
+},
     setCloneFormat(format) {
       this.cloneFormat = format;
     },

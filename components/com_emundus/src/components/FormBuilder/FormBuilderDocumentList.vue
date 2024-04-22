@@ -105,8 +105,10 @@ export default {
       formService.getDocuments(this.profile_id).then(response => {
 				if (response.status) {
 					this.documents = response.data.filter((document) => {
-						return document.id;
-					});
+            if (document.params !== "emundus_fileUpload") {
+              return document.id;
+            }
+          });
 				}
       });
     },

@@ -1760,6 +1760,7 @@ class EmundusModelCampaign extends JModelList {
                     ->set($this->_db->quoteName('description') . ' = ' . $this->_db->quote($document['description'][$actualLanguage]))
                     ->set($this->_db->quoteName('allowed_types') . ' = ' . $this->_db->quote($types))
                     ->set($this->_db->quoteName('ordering') . ' = ' . $this->_db->quote(0))
+                    ->set($this->_db->quoteName('params') . ' = ' . $this->_db->quote($document['params']))
                     ->set($this->_db->quoteName('nbmax') . ' = ' . $this->_db->quote($document['nbmax']));
 
                 /// insert image resolution if image is found

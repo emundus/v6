@@ -196,7 +196,8 @@ export default {
           width: 0,
           height: 0
         },
-	      max_pages_pdf: 0
+	      max_pages_pdf: 0,
+        params:'',
       },
       fileTypes: [],
       activeTab: 'general',
@@ -380,7 +381,9 @@ export default {
 
       if (!isModel) {
         this.document.id = null;
-
+        if (this.context === 'element'){
+          this.document.params = "emundus_fileUpload"
+        }
         const data = {
           pid:  this.profile_id,
           types: JSON.stringify(types),
