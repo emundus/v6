@@ -44,15 +44,15 @@ class EmundusModelExpert extends JModelList {
 					->where($this->_db->quoteName('ecc.fnum') . ' = ' . $this->_db->quote($fnum));
 				$this->_db->setQuery($query);
 				$fnumInfos = $this->_db->loadObject();
-			}
 
-			$query->clear()
-				->select('esfr.is_numeric_sign,esfr.attachment_to_sign,esfr.attachment_to_upload,esfr.attachment_model,esfr.must_validate,esfr.notify_email,group_concat(esfrre.elements) as elements')
-				->from($this->_db->quoteName('#__emundus_setup_files_request', 'esfr'))
-				->leftJoin($this->_db->quoteName('#__emundus_setup_files_request_repeat_elements','esfrre').' ON '.$this->_db->quoteName('esfrre.parent_id').' = '.$this->_db->quoteName('esfr.id'))
-				->where($this->_db->quoteName('esfr.campaign') . ' = ' . $this->_db->quote($fnumInfos->id));
-			$this->_db->setQuery($query);
-			$setup = $this->_db->loadObject();
+				$query->clear()
+					->select('esfr.id,esfr.is_numeric_sign,esfr.attachment_to_sign,esfr.attachment_to_upload,esfr.attachment_model,esfr.must_validate,esfr.notify_email,group_concat(esfrre.elements) as elements,esfr.notify_refus')
+					->from($this->_db->quoteName('#__emundus_setup_files_request', 'esfr'))
+					->leftJoin($this->_db->quoteName('#__emundus_setup_files_request_repeat_elements','esfrre').' ON '.$this->_db->quoteName('esfrre.parent_id').' = '.$this->_db->quoteName('esfr.id'))
+					->where($this->_db->quoteName('esfr.campaign') . ' = ' . $this->_db->quote($fnumInfos->id));
+				$this->_db->setQuery($query);
+				$setup = $this->_db->loadObject();
+			}
 		}
 		catch (Exception $e)
 		{
