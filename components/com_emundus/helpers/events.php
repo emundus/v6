@@ -1032,6 +1032,11 @@ class EmundusHelperEvents {
             </script>");
         }
 
+
+	    if(empty($link)) {
+		    $link = $_SERVER['REQUEST_URI'];
+	    }
+
         header('Location: '.$link);
         exit();
     }

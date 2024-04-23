@@ -238,7 +238,7 @@ class EmundusAdministrationModelRanking extends JModelList
         ];
         $foreign_keys = [
             [
-                'name'           => 'jos_emundus_ranking_hierarchy_rankable_status_hierarchy_id_fk',
+                'name'           => 'jos_emundus_ranking_hierarchy_visible_status_hierarchy_id_fk',
                 'from_column'    => 'hierarchy_id',
                 'ref_table'      => 'jos_emundus_ranking_hierarchy',
                 'ref_column'     => 'id',
@@ -247,14 +247,14 @@ class EmundusAdministrationModelRanking extends JModelList
             ]
         ];
 
-        $response = EmundusHelperUpdate::createTable('jos_emundus_ranking_hierarchy_rankable_status', $columns, $foreign_keys, 'Table des status apparaissant dans le tableau de classement pour un niveau de hiérarchie', $unique_keys);
+        $response = EmundusHelperUpdate::createTable('jos_emundus_ranking_hierarchy_visible_status', $columns, $foreign_keys, 'Table des status apparaissant dans le tableau de classement pour un niveau de hiérarchie');
         $tasks[] = $response['status'];
 
         if ($debug) {
             if ($response['status']) {
-                $app->enqueueMessage('Table jos_emundus_ranking_hierarchy_rankable_status exists or has been created');
+                $app->enqueueMessage('Table jos_emundus_ranking_hierarchy_visible_status exists or has been created');
             } else {
-                $app->enqueueMessage('Table jos_emundus_ranking_hierarchy_rankable_status not created', 'error');
+                $app->enqueueMessage('Table jos_emundus_ranking_hierarchy_visible_status not created', 'error');
             }
         }
 

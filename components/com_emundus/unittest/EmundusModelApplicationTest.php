@@ -467,5 +467,156 @@ class EmundusModelApplicationTest extends TestCase
 		$db->setQuery($query);
 		$db->execute();
 	}
+
+	public function testgetAttachmentsProgress() {
+		$db = Factory::getDbo();
+
+		$this->assertSame($this->m_application->getAttachmentsProgress([]), 0.0, 'getAttachmentsProgress should return 0 if application file does not exist');
+
+		$program = $this->h_sample->createSampleProgram();
+		$campaign = $this->h_sample->createSampleCampaign($program);
+		$fnum = $this->h_sample->createSampleFile($campaign, 95);
+        $this->assertNotEmpty($fnum);
+
+		$this->assertSame($this->m_application->getAttachmentsProgress($fnum), 0.0, 'getAttachmentsProgress should return 0.0 if no attachments are found');
+
+		$attachment = $this->h_sample->createSampleAttachment();
+        $this->assertGreaterThan(0, $attachment);
+
+		$upload_created = $this->h_sample->createSampleUpload($fnum, $campaign, 95, $attachment);
+        $this->assertTrue($upload_created);
+
+		$insert = [
+			'profile_id' => 9,
+			'attachment_id' => $attachment,
+			'mandatory' => 1,
+		];
+		$insert = (object) $insert;
+		$db->insertObject('#__emundus_setup_attachment_profiles', $insert);
+
+		$this->assertGreaterThan(0.0, $this->m_application->getAttachmentsProgress($fnum), 'getAttachmentsProgress should return more than 0.0 if an attachment were found');
+
+		$query = $db->getQuery(true);
+		$query->select('count(id)')
+			->from('#__emundus_setup_attachment_profiles')
+			->where('profile_id = 9')
+			->where('mandatory = 1');
+		$db->setQuery($query);
+		$mandatory_attachments = $db->loadResult();
+		$percentage = 1/$mandatory_attachments * 100;
+
+        $progress = $this->m_application->getAttachmentsProgress($fnum);
+        $this->assertIsFloat($progress, 'getAttachmentsProgress should return a float if only one fnun is passed');
+		$this->assertSame($progress, floor($percentage), 'getAttachmentsProgress should return exactly '.$percentage.' if one mandatory attachment is found');
+
+		$this->assertIsArray($this->m_application->getAttachmentsProgress([$fnum]), 'getAttachmentsProgress should return an array if fnum is an array');
+
+		$fnum_2 = $this->h_sample->createSampleFile($campaign, 95);
+
+		$this->assertSame(count($this->m_application->getAttachmentsProgress([$fnum, $fnum_2])),2, 'getAttachmentsProgress should return 2 entries');
+	}
+
+    public function testdeleteUserAccess() {
+        $deleted = $this->m_application->deleteUserAccess(0, 0, 95);
+        $this->assertFalse($deleted);
+
+        $program = $this->h_sample->createSampleProgram();
+        $campaign_id = $this->h_sample->createSampleCampaign($program);
+        $fnum = $this->h_sample->createSampleFile($campaign_id, 95, true);
+        $coord_user = $this->h_sample->createSampleUser(2, 'coordunittest' . rand(0, 1000) . '@emundus.test.fr');
+        $user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+
+        if (!class_exists('EmundusModelFiles')) {
+            include_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
+        }
+        $m_files = new EmundusModelFiles;
+        $shared = $m_files->shareUsers([$user_id], [1 => ['id' => 1, 'r' => 1, 'c' => 0, 'd' => 0, 'u' => 0]], [$fnum]);
+        $this->assertTrue($shared);
+
+        if (!class_exists('EmundusHelperAccess')) {
+            include_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
+        }
+
+        $has_access = EmundusHelperAccess::asAccessAction(1, 'r', $user_id, $fnum);
+        $this->assertTrue($has_access, 'User should have access to file');
+
+        $deleted = $this->m_application->deleteUserAccess($fnum, $user_id, $coord_user);
+        $this->assertTrue($deleted, 'User access should be deleted');
+
+        $has_access = EmundusHelperAccess::asAccessAction(1, 'r', $user_id, $fnum);
+        $this->assertFalse($has_access, 'User should no longer have access to file');
+
+        if (!class_exists('EmundusModelLogs')) {
+            include_once(JPATH_ROOT . '/components/com_emundus/models/logs.php');
+        }
+        $m_logs = new EmundusModelLogs();
+        $logs = $m_logs->getActionsOnFnum($fnum, null, 11, 'd');
+        $this->assertNotEmpty($logs, 'Logs should be returned if fnum is given');
+
+        $found_logs = array_filter($logs, function($log) {
+            return $log->action_id == 11 && $log->verb == 'd' && $log->message == 'COM_EMUNDUS_ACCESS_ACCESS_FILE';
+        });
+        $this->assertNotEmpty($found_logs, 'I should find a log about the deletion of the access');
+    }
+
+    public function testdeleteGroupAccess()
+    {
+        $deleted = $this->m_application->deleteGroupAccess(0, 0, 95);
+        $this->assertFalse($deleted);
+
+        $another_program = $this->h_sample->createSampleProgram('Programme groupe associé');
+        // get the group id
+        if (!class_exists('EmundusModelGroups')) {
+            include_once(JPATH_ROOT . '/components/com_emundus/models/groups.php');
+        }
+        $m_groups = new EmundusModelGroups;
+        $group_id = $m_groups->getGroupsIdByCourse($another_program['programme_code']);
+        $this->assertNotEmpty($group_id, 'Group id should be found');
+        $group_id = (int)$group_id[0]['id'];
+
+        $program = $this->h_sample->createSampleProgram();
+        $campaign_id = $this->h_sample->createSampleCampaign($program);
+        $fnum = $this->h_sample->createSampleFile($campaign_id, 95, true);
+
+        $coord_user = $this->h_sample->createSampleUser(2, 'coordunittest' . rand(0, 1000) . '@emundus.test.fr');
+        $user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+        if (!class_exists('EmundusModelUsers')) {
+            include_once(JPATH_ROOT . '/components/com_emundus/models/users.php');
+        }
+        $m_users = new EmundusModelUsers;
+        $affected = $m_users->affectToGroups([['user_id' => $user_id]], [$group_id]);
+        $this->assertTrue($affected, 'User should be affected to group');
+
+        if (!class_exists('EmundusModelFiles')) {
+            include_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
+        }
+        $m_files = new EmundusModelFiles;
+        $shared = $m_files->shareGroups([$group_id], [1 => ['id' => 1, 'r' => 1, 'c' => 0, 'd' => 0, 'u' => 0]], [$fnum]);
+        $this->assertTrue($shared, 'File should be shared with group');
+
+        if (!class_exists('EmundusHelperAccess')) {
+            include_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
+        }
+        $has_access = EmundusHelperAccess::asAccessAction(1, 'r', $user_id, $fnum);
+        $this->assertTrue($has_access, 'User ' . $user_id . ' should have access to file ' . $fnum . ' , now that they have groups in common');
+
+        $deleted = $this->m_application->deleteGroupAccess($fnum, $group_id, $coord_user);
+        $this->assertTrue($deleted, 'Group access should be deleted');
+
+        $has_access = EmundusHelperAccess::asAccessAction(1, 'r', $user_id, $fnum);
+        $this->assertFalse($has_access, 'User ' . $user_id . ' should no longer have access to file '. $fnum);
+
+        if (!class_exists('EmundusModelLogs')) {
+            include_once(JPATH_ROOT . '/components/com_emundus/models/logs.php');
+        }
+        $m_logs = new EmundusModelLogs();
+        $logs = $m_logs->getActionsOnFnum($fnum, null, 11, 'd');
+        $this->assertNotEmpty($logs, 'Logs should be returned if fnum is given');
+
+        $found_logs = array_filter($logs, function($log) {
+            return $log->action_id == 11 && $log->verb == 'd' && $log->message == 'COM_EMUNDUS_ACCESS_ACCESS_FILE';
+        });
+        $this->assertNotEmpty($found_logs, 'I should find a log about the deletion of the access');
+    }
 }
 

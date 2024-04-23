@@ -150,7 +150,12 @@ class EmundusHelperAccess {
 			if ($canAccess > 0) {
 				return true;
 			} elseif ($canAccess == 0 || $canAccess === null) {
-				$groups = JFactory::getSession()->get('emundusUser')->emGroups;
+                if (!empty($user_id)) {
+                    $groups = $m_users->getUserGroups($user_id, 'Column');
+                } else {
+                    $groups = JFactory::getSession()->get('emundusUser')->emGroups;
+                }
+
 				if (!empty($groups) && count($groups) > 0) {
 					return EmundusHelperAccess::canAccessGroup($groups, $action_id, $crud, $fnum);
 				} else {
@@ -160,7 +165,13 @@ class EmundusHelperAccess {
 				return false;
 			}
 		} else {
-			return EmundusHelperAccess::canAccessGroup(JFactory::getSession()->get('emundusUser')->emGroups, $action_id, $crud);
+            if (!empty($user_id)) {
+                $groups = $m_users->getUserGroups($user_id, 'Column');
+            } else {
+                $groups = JFactory::getSession()->get('emundusUser')->emGroups;
+            }
+
+			return EmundusHelperAccess::canAccessGroup($groups, $action_id, $crud);
 		}
 	}
 
@@ -195,6 +206,7 @@ class EmundusHelperAccess {
 			} elseif ($canAccess == 0 || $canAccess === null) {
 				// We filter the list of groups to take into account only the groups attached to the fnum's programme OR who are attached to no programme.
 				$gids = $m_users->getEffectiveGroupsForFnum($gids, $fnum);
+
 				return EmundusHelperAccess::canAccessGroup($gids, $action_id, $crud);
 			} else {
 				return false;

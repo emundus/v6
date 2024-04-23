@@ -774,11 +774,11 @@ class EmundusModelApplication extends JModelList
      */
 	public function getAttachmentsProgress($fnums = null)
 	{
-		$progress = 0;
+		$progress = 0.0;
 		$return_array = true;
 
 		if (empty($fnums) || (!is_array($fnums) && !is_numeric($fnums))) {
-			$progress = 0;
+			$progress = 0.0;
 		} else {
 			$session = JFactory::getSession();
 			$current_user = $session->get('emundusUser');
@@ -794,6 +794,8 @@ class EmundusModelApplication extends JModelList
 
 			$result = array();
 			foreach ($fnums as $f) {
+				$result[$f] = 0.0;
+
 				$profile_by_status = $m_profile->getProfileByStatus($f);
 
 				if (empty($profile_by_status["profile"])) {
@@ -805,50 +807,64 @@ class EmundusModelApplication extends JModelList
 					$profile_by_status = $this->_db->loadAssoc();
 				}
 
-				$profile_id = !empty($profile_by_status["profile_id"]) ? $profile_by_status["profile_id"] : $profile_by_status["profile"];
-				$campaign_id = $profile_by_status["campaign_id"];
+				if(!empty($profile_by_status))
+				{
+					$profile_id  = !empty($profile_by_status["profile_id"]) ? $profile_by_status["profile_id"] : $profile_by_status["profile"];
+					$campaign_id = $profile_by_status["campaign_id"];
 
-				$attachments = $m_checklist->getAttachmentsForProfile($profile_id, $campaign_id);
+					$attachments = $m_checklist->getAttachmentsForProfile($profile_id, $campaign_id);
 
-				// verify
-				// check how many attachments are completed
-				$completion = 0;
+					// verify
+					// check how many attachments are completed
+					$completion = 0;
 
-				if (!empty($attachments)) {
-					$nb_mandatory_attachments = 0;
-					foreach ($attachments as $attachment) {
-						if ($attachment->mandatory == 1) {
-							$nb_mandatory_attachments++;
+					if (!empty($attachments))
+					{
+						$nb_mandatory_attachments = 0;
+						foreach ($attachments as $attachment)
+						{
+							if ($attachment->mandatory == 1)
+							{
+								$nb_mandatory_attachments++;
+							}
 						}
-					}
 
-					if ($nb_mandatory_attachments > 0) {
-						foreach ($attachments as $attachment) {
-							if ($attachment->mandatory == 1) {
-								$query = $this->_db->getQuery(true);
+						if ($nb_mandatory_attachments > 0)
+						{
+							foreach ($attachments as $attachment)
+							{
+								if ($attachment->mandatory == 1)
+								{
+									$query = $this->_db->getQuery(true);
 
-								$query->select('count(*)')
-									->from($this->_db->quoteName('#__emundus_uploads'))
-									->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($f))
-									->andWhere($this->_db->quoteName('attachment_id') . ' = ' . $attachment->id);
-								$this->_db->setQuery($query);
-								$nb = $this->_db->loadResult();
+									$query->select('count(*)')
+										->from($this->_db->quoteName('#__emundus_uploads'))
+										->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($f))
+										->andWhere($this->_db->quoteName('attachment_id') . ' = ' . $attachment->id);
+									$this->_db->setQuery($query);
+									$nb = $this->_db->loadResult();
 
-								if ($nb > 0) {
-									$completion += 100 / $nb_mandatory_attachments;
+									if ($nb > 0)
+									{
+										$completion += 100 / $nb_mandatory_attachments;
+									}
 								}
 							}
 						}
-					} else {
+						else
+						{
+							$completion = 100;
+						}
+					}
+					else
+					{
 						$completion = 100;
 					}
-				} else {
-					$completion = 100;
+
+
+					$this->updateAttachmentProgressByFnum(floor($completion), $f);
+					$result[$f] = floor($completion);
 				}
-
-
-				$this->updateAttachmentProgressByFnum(floor($completion), $f);
-				$result[$f] = floor($completion);
 			}
 			$progress = $result;
 		}
@@ -3816,34 +3832,96 @@ class EmundusModelApplication extends JModelList
         }
     }
 
-    public function deleteGroupAccess($fnum, $gid)
+    /**
+     * @param $fnum string
+     * @param $gid int
+     * @param $current_user int If null, the current user will be used
+     * @return false|mixed
+     */
+    public function deleteGroupAccess($fnum, $gid, $current_user = null)
     {
-        $dbo = $this->getDbo();
-        try
-        {
-            $query = "delete from #__emundus_group_assoc  where `group_id` = $gid and `fnum` like ".$dbo->quote($fnum);
-            $dbo->setQuery($query);
-            return $dbo->execute();
+        $deleted = false;
+
+        if (!empty($fnum) && !empty($gid)) {
+            if (empty($current_user)) {
+                $current_user = JFactory::getUser()->id;
+            }
+
+            $dbo = $this->getDbo();
+            $query = $dbo->getQuery(true);
+
+            $query->delete('#__emundus_group_assoc')
+                ->where($dbo->quoteName('group_id') . ' = ' . $gid)
+                ->andWhere($dbo->quoteName('fnum') . ' = ' . $dbo->quote($fnum));
+
+            try {
+                $dbo->setQuery($query);
+                $deleted = $dbo->execute();
+            } catch (Exception $e) {
+                JLog::add('Error in model/application at query: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+            }
+
+            if ($deleted) {
+                $query->clear()
+                    ->select('label')
+                    ->from('#__emundus_setup_groups')
+                    ->where('id = ' . $gid);
+
+                $dbo->setQuery($query);
+                $label = $dbo->loadResult();
+
+                $logsParams = ['deleted' => ['details' => $label]];
+                EmundusModelLogs::log($current_user, '', $fnum, 11, 'd', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+            }
         }
-        catch(Exception $e)
-        {
-            throw $e;
-        }
+
+        return $deleted;
     }
 
-    public function deleteUserAccess($fnum, $uid)
+    /**
+     * @param $fnum string
+     * @param $uid int
+     * @param $current_user int if null, the current user will be used
+     * @return false|mixed
+     */
+    public function deleteUserAccess($fnum, $uid, $current_user = null)
     {
-        $dbo = $this->getDbo();
-        try
-        {
-            $query = "delete from #__emundus_users_assoc where `user_id` = $uid and `fnum` like ".$dbo->quote($fnum);
-            $dbo->setQuery($query);
-            return $dbo->execute();
+        $deleted = false;
+
+        if (!empty($fnum) && !empty($uid)) {
+            if (empty($current_user)) {
+                $current_user = JFactory::getUser()->id;
+            }
+
+            $dbo = $this->getDbo();
+            $query = $dbo->getQuery(true);
+
+            $query->delete('#__emundus_users_assoc')
+                ->where($dbo->quoteName('user_id') . ' = ' . $uid)
+                ->andWhere($dbo->quoteName('fnum') . ' = ' . $dbo->quote($fnum));
+
+            try {
+                $dbo->setQuery($query);
+                $deleted = $dbo->execute();
+            } catch (Exception $e) {
+                JLog::add('Error in model/application at query: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+            }
+
+            if ($deleted) {
+                $query->clear()
+                    ->select('name')
+                    ->from('#__users')
+                    ->where('id = ' . $uid);
+
+                $dbo->setQuery($query);
+                $user_name = $dbo->loadResult();
+
+                $logsParams = ['deleted' => ['details' => $user_name]];
+                EmundusModelLogs::log($current_user, '', $fnum, 11, 'd', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+            }
         }
-        catch(Exception $e)
-        {
-            throw $e;
-        }
+
+        return $deleted;
     }
 
     public function getApplications($uid)
