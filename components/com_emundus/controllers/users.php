@@ -1292,17 +1292,21 @@ class EmundusControllerUsers extends JControllerLegacy {
 		exit;
 	}
 
-    /*
-     * Export users' selected data
-     * Extracted data are also selected
+    /**
+     * @return void
+     *
+     * @description Export users' selected data. Extracted data are also selected by the user.
+     *
+     * @throws Exception
      */
-    public function exportusers() {
+    public function exportusers()
+    {
         if (!EmundusHelperAccess::asAccessAction(12, 'r')) {
             $this->setRedirect('index.php', JText::_('ACCESS_DENIED'), 'error');
             return;
         }
 
-	    $m_users = new EmundusModelUsers();
+        $m_users = new EmundusModelUsers();
 
         // Retrieve the users' data to extract (indicated by the checkboxes checked)
         $checkboxes = json_decode($_POST["checkboxes"], true);
@@ -1313,50 +1317,59 @@ class EmundusControllerUsers extends JControllerLegacy {
             $all_users = $m_users->getUsers(0, 0);
             $user_ids = array();
             foreach ($all_users as $user) {
-	            $user_ids[] = $user->id;
+                $user_ids[] = $user->id;
             }
         } else {
-	        $user_ids = (array) json_decode(stripslashes($users));
+            $user_ids = (array)json_decode(stripslashes($users));
         }
 
         $user_details = array();
         foreach ($user_ids as $uid) {
-	        $user_details[] = $m_users->getUserDetails($uid);
+            $user_details[] = $m_users->getUserDetails($uid);
         }
 
-		// Fill CSV
-        $export_filename = 'export_users_' .  date('Y-m-d H:i:s') . '.csv';
+        // Fill CSV
+        $export_filename = 'export_users_' . date('Y-m-d H:i:s') . '.csv';
         $path = JPATH_SITE . '/tmp/' . $export_filename;
 
         $seen_keys = [];
         $headers = array();
 
-		// Fill keys
-	    $csv_file = fopen($path, 'w');
+        // Fill keys
+        $csv_file = fopen($path, 'w');
+
+        $seen_keys[] = 'username';
+        $headers[] = Text::_('JGLOBAL_USERNAME');
+
         foreach ($user_details as $user_detail) {
             foreach ($user_detail as $key => $value) {
                 if (!in_array($key, $seen_keys) && $checkboxes[$key]) {
-	                $seen_keys[] = $key;
+                    $seen_keys[] = $key;
                     $headers[] = Text::_(strtoupper($key));
                 }
             }
         }
         fputcsv($csv_file, $headers);
-		//
+        //
 
         // Retrieve all the value of users' data necessary
         foreach ($user_details as $user_detail) {
             $userData = array();
             foreach ($user_detail as $key => $value) {
-                if (in_array($key, $seen_keys))
-                {
-                    $userData[] = Text::_($value);
+                if (in_array($key, $seen_keys)) {
+                    if ($key === Text::_('JGLOBAL_USERNAME')) {
+                        array_unshift($userData, Text::_($value));
+                    } else {
+                        $userData[] = Text::_($value);
+                    }
                 }
             }
-            fputcsv($csv_file, $userData);
+            if (!empty(array_filter($userData))) {
+                fputcsv($csv_file, $userData);
+            }
         }
         fclose($csv_file);
-		//
+        //
 
         // Add all the headers necessary
         header('Content-type: text/csv');
@@ -1372,8 +1385,12 @@ class EmundusControllerUsers extends JControllerLegacy {
         exit;
     }
 
-    /*
-     * Delete users' data file once it has been downloaded
+    /**
+     * @return void
+     *
+     * @description Delete the file containing the users' data once it has been downloaded (or canceled by the user).
+     *
+     * @throws Exception
      */
     public function deleteusersfile() {
         if (!EmundusHelperAccess::asAccessAction(12, 'r')) {
@@ -1381,19 +1398,20 @@ class EmundusControllerUsers extends JControllerLegacy {
             return;
         }
 
-        $jinput = JFactory::getApplication()->input;
-        $fileName = $jinput->get('fileName');
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        $file_name = $data['fileName'];
 
         // Verification to be sure that the file's name is not an extern command, etc...
-        if (!preg_match('/^export_users_.+\.csv$/', $fileName)) {
+        if (!preg_match('/^export_users_.+\.csv$/', $file_name)) {
             JFactory::getApplication()->enqueueMessage(JText::_('INVALID_FILE_NAME'), 'error');
             return;
         }
-        $filePath = JPATH_SITE . '/tmp/' . $fileName;
+        $file_path = JPATH_SITE . '/tmp/' . $file_name;
 
         // Deleting the file
-        if (file_exists($filePath)) {
-            unlink($filePath);
+        if (file_exists($file_path)) {
+            unlink($file_path);
         }
         exit;
     }

@@ -3697,9 +3697,10 @@ class EmundusModelUsers extends JModelList {
         return str_shuffle($password);
     }
 
-    /*
-     * Return the label of group(s)'s user in jos_emundus_setup_groupes table
-     * User's id is necessaray
+    /**
+     * @param $uid
+     * @description Return the label of group(s)'s user in jos_emundus_setup_groupes table
+     * @return array|mixed
      */
     public function getUserGroupsLabelById($uid)
     {
@@ -3725,8 +3726,9 @@ class EmundusModelUsers extends JModelList {
         return $groups_label;
     }
 
-    /*
-     * Return all columns of a profile form
+    /**
+     * @description Return all columns of a profile form
+     * @return array|mixed|null
      */
     public function getColumnsForm() {
 
@@ -3761,145 +3763,165 @@ class EmundusModelUsers extends JModelList {
         return $columns;
     }
 
+    /**
+     * @return object[]
+     * @description Return all the columns of the joomla columns wanted to be exported
+     */
+    public function getJoomlaUserColumns()
+    {
+        $user_columns = array(
+            'email' => (object)array(
+                'id' => null,
+                'name' => 'email',
+                'plugin' => null,
+                'label' => 'COM_EMUNDUS_EMAIL',
+            ),
+            'profile' => (object)array(
+                'id' => null,
+                'name' => 'profile',
+                'plugin' => null,
+                'label' => 'COM_EMUNDUS_PROFILE',
+            ),
+            'groups' => (object)array(
+                'id' => null,
+                'name' => 'groups',
+                'plugin' => null,
+                'label' => 'COM_EMUNDUS_GROUPE',
+            ),
+            'registerDate' => (object)array(
+                'id' => null,
+                'name' => 'registerDate',
+                'plugin' => null,
+                'label' => 'COM_EMUNDUS_REGISTERDATE',
+            ),
+            'lastvisitDate' => (object)array(
+                'id' => null,
+                'name' => 'lastvisitDate',
+                'plugin' => null,
+                'label' => 'COM_EMUNDUS_LASTVISITDATE',
+            )
+        );
+        return $user_columns;
+    }
+
 	/**
 	 * @param $uid
-	 *
 	 * @return array
-	 *
 	 * @description Return an array of 2 elements
 	 *  First element concerns the columns form profile
 	 *  Second element concerns data available on the user list table (email, etc...)
-	 *
 	 * @throws Exception
 	 */
     public function getAllInformationsToExport($uid)
     {
         $data = [];
 
-        if(!empty($uid)) {
+        if (!empty($uid)) {
             $columns = $this->getColumnsForm();
 
             // Configure the hour according to the location
-	        if(version_compare(JVERSION, '4.0', '>=')) {
-				$config = Factory::getApplication()->getConfig();
-	        } else {
-		        $config = Factory::getConfig();
-	        }
-	        $offset = $config->get('offset', 'Europe/Paris');
+            if (version_compare(JVERSION, '4.0', '>=')) {
+                $config = Factory::getApplication()->getConfig();
+            } else {
+                $config = Factory::getConfig();
+            }
+            $offset = $config->get('offset', 'Europe/Paris');
             $timezone = new DateTimeZone($offset);
 
             // Necessary to retrieve data not available in the profile form
             // (email, username, registerDate of the user, last connexion date of a user, profile and groups)
             $user = $this->getUserById($uid);
-			if(!empty($user)) {
-				$user = $user[0];
+            if (!empty($user)) {
+                $user = $user[0];
 
-				$user_profile_details = $this->getProfileDetails($user->profile);
-				if($user_profile_details->published == 0)
-				{
-					$user_profile = $user_profile_details->label;
-				}
-				else
-				{
-					$user_profile = Text::_('COM_EMUNDUS_APPLICANT');
-				}
+                $user_profile_details = $this->getProfileDetails($user->profile);
+                if ($user_profile_details->published == 0) {
+                    $user_profile = $user_profile_details->label;
+                } else {
+                    $user_profile = Text::_('COM_EMUNDUS_APPLICANT');
+                }
 
-				$user_groups = $this->getUserGroupsLabelById($uid);
+                $user_groups = $this->getUserGroupsLabelById($uid);
 
-				$register_date = $user->registerDate ?? '';
-				$lastvisit_date = $user->lastvisitDate ?? '';
+                $register_date = $user->registerDate ?? '';
+                $lastvisit_date = $user->lastvisitDate ?? '';
 
-				// Set the right format date according to the location
-				if(!empty($register_date))
-				{
-					$register_date = EmundusHelperDate::displayDate($register_date, 'DATE_FORMAT_LC2', $timezone === 'UTC' ? 1 : 0);
-				}
-				if(!empty($lastvisit_date))
-				{
-					$lastvisit_date = EmundusHelperDate::displayDate($lastvisit_date, 'DATE_FORMAT_LC2', $timezone === 'UTC' ? 1 : 0);
-				}
+                // Set the right format date according to the location
+                if (!empty($register_date)) {
+                    $register_date = EmundusHelperDate::displayDate($register_date, 'DATE_FORMAT_LC2', $timezone === 'UTC' ? 1 : 0);
+                }
+                if (!empty($lastvisit_date)) {
+                    $lastvisit_date = EmundusHelperDate::displayDate($lastvisit_date, 'DATE_FORMAT_LC2', $timezone === 'UTC' ? 1 : 0);
+                }
 
-				// We only need the labal of each group
-				$groups = array();
-				foreach ($user_groups as $group) {
-					$groups[] = $group->label;
-				}
+                // We only need the labal of each group
+                $groups = array();
+                foreach ($user_groups as $group) {
+                    $groups[] = $group->label;
+                }
 
-				// Create an array with array of each data not in the profile form
-				// Necessary to be coherent with the data in the profile form
-				// We indeed need id, name, plugin, label and value at least for each
-				$user_data = array(
-					'email' => (object)array(
-						'id' => null,
-						'name' => 'email',
-						'plugin' => null,
-						'label' => 'COM_EMUNDUS_EMAIL',
-						'value' => $user->email ?? ''
-					),
-					'username' => (object)array(
-						'id' => null,
-						'name' => 'username',
-						'plugin' => null,
-						'label' => 'COM_EMUNDUS_USERNAME',
-						'value' => $user->username ?? ''
-					),
-					'profile' => (object)array(
-						'id' => null,
-						'name' => 'profil',
-						'plugin' => null,
-						'label' => 'COM_EMUNDUS_PROFILE',
-						'value' => $user_profile ?? ''
-					),
-					'groups' => (object)array(
-						'id' => null,
-						'name' => 'groupes',
-						'plugin' => null,
-						'label' => 'COM_EMUNDUS_GROUPE',
-						'value' => implode(', ', $groups) // In case the user has multiple groups
-					),
-					'registerDate' => (object)array(
-						'id' => null,
-						'name' => 'registerDate',
-						'plugin' => null,
-						'label' => 'COM_EMUNDUS_REGISTERDATE',
-						'value' => $register_date
-					),
-					'lastvisitDate' => (object)array(
-						'id' => null,
-						'name' => 'lastvisitDate',
-						'plugin' => null,
-						'label' => 'COM_EMUNDUS_LASTVISITDATE',
-						'value' => $lastvisit_date
-					)
-				);
+                // Create an array with array of each data not in the profile form
+                // Necessary to be coherent with the data in the profile form
+                // We indeed need id, name, plugin, and label at least for each
+                $j_columns = $this->getJoomlaUserColumns();
 
+                $j_columns['username'] = (object)array(
+                    'id' => null,
+                    'name' => 'username',
+                    'plugin' => null,
+                    'label' => 'COM_EMUNDUS_USERNAME',
+                );
 
-				// Create a complete array with all the data we want
-				$data = array(
-					'columns' => $columns,
-					'user_data' => $user_data
-				);
+                foreach ($j_columns as $j_column) {
+                    switch ($j_column->name) {
+                        case 'email':
+                            $j_column->value = $user->email ?? '';
+                            break;
+                        case 'username':
+                            $j_column->value = $user->username ?? '';
+                            break;
+                        case 'registerDate':
+                            $j_column->value = $register_date;
+                            break;
+                        case 'lastvisitDate':
+                            $j_column->value = $lastvisit_date;
+                            break;
+                        case 'groups':
+                            $j_column->value = implode(', ', $groups);
+                            break;
+                        case 'profile':
+                            $j_column->value = $user_profile ?? '';
+                            break;
+                        default :
+                            $j_column->value = '';
+                            break;
+                    }
+                }
 
-				// Sort alphabetically all the columns
-				usort($data['columns'], function($a, $b) {
-					return strcmp(Text::_($a->label), Text::_($b->label));
-				});
+                // Create a complete array with all the data we want
+                $data = array(
+                    'columns' => $columns,
+                    'user_data' => $j_columns
+                );
 
-				usort($data['user_data'], function($a, $b) {
-					return strcmp(Text::_($a->label), Text::_($b->label));
-				});
-			}
+                // Sort alphabetically all the columns
+                usort($data['columns'], function ($a, $b) {
+                    return strcmp(Text::_($a->label), Text::_($b->label));
+                });
+
+                usort($data['user_data'], function ($a, $b) {
+                    return strcmp(Text::_($a->label), Text::_($b->label));
+                });
+            }
 
         }
-
         return $data;
     }
 
 	/**
 	 * @param $uid
-	 *
+     * @description Return all the details of a user to export in a csv file (profile form and emundus informations)
 	 * @return array
-	 *
 	 */
     public function getUserDetails($uid) {
         $user_details = [];
@@ -3915,21 +3937,21 @@ class EmundusModelUsers extends JModelList {
 				{
 					if ($column->value == null)
 					{
-						$user_details[$column->name] = EmundusHelperFabrik::formatElementValue($column->name, $user->{$column->name}, $column->group_id);
+						$user_details[$column->label] = EmundusHelperFabrik::formatElementValue($column->name, $user->{$column->name}, $column->group_id);
 					}
 					else
 					{
-						$user_details[$column->name] = $column->value;
+						$user_details[$column->label] = $column->value;
 					}
 				}
 
 				foreach ($columns['user_data'] as $field)
 				{
-					$user_details[$field->name] = $field->value;
+					$user_details[$field->label] = $field->value;
 				}
+
 			}
         }
-
         return $user_details;
     }
 }

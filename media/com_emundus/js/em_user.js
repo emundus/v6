@@ -1153,6 +1153,8 @@ $(document).ready(function () {
 			case 6:
 				addLoader();
 
+				var checkInput = getUserCheck();
+
 				var checkBoxesProps = {};
 				var allChecked = $('#checkbox-all').prop('checked');
 

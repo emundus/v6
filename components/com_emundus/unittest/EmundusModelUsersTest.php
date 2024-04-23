@@ -98,9 +98,11 @@ class EmundusModelUsersTest extends TestCase
 		$this->assertObjectHasAttribute('class', $profile, 'Profile details should contain class');
 	}
 
-    /*
-     * Test the getUserGroupsLabelById() method
-     * Should return a label
+    /**
+     * @covers EmundusModelUsers::getUserGroupsLabelById
+     * Function getUserGroupsLabelById return an array of group(s) details
+     * It should return the label of the group(s) the user is in
+     * @return void
      */
     public function testgetUserGroupsLabelById() {
 
@@ -122,9 +124,11 @@ class EmundusModelUsersTest extends TestCase
         }
     }
 
-    /*
-     * Test the getColumnsForm() method
-     * Should return an id, name, plugin and label
+    /**
+     * @covers EmundusModelUsers::getColumnsForm
+     * Function getColumnsForm return an array of columns form details
+     * It should return an id, name, plugin, label, group_id and a list of params
+     * @return void
      */
     public function testgetColumnsForm() {
 
@@ -137,6 +141,7 @@ class EmundusModelUsersTest extends TestCase
             $this->assertObjectHasAttribute('plugin', $column, 'Columns form details should contain plugin');
             $this->assertObjectHasAttribute('label', $column, 'Columns form details should contain label');
             $this->assertObjectHasAttribute('group_id', $column, 'Columns form details should contain group form id');
+            $this->assertObjectHasAttribute('params', $column, 'Columns form details should contain params');
 
             // Should not contain
             $this->assertObjectNotHasAttribute('hidden', $column, 'Columns form details should not contain hidden attribute');
@@ -144,9 +149,12 @@ class EmundusModelUsersTest extends TestCase
         }
     }
 
-    /*
-     * Test the getAllInformationsToExport() method
-     * Should return an array of 2 array (each element of both array containing an array too)
+    /**
+     * @covers EmundusModelUsers::getAllInformationsToExport
+     * Function getAllInformationsToExport return an array of user data and columns data
+     * It should return an array of 2 array (each element of both array containing an array too)
+     * @return void
+     * @throws Exception
      */
     public function testgetAllInformationsToExport()
     {
@@ -194,6 +202,12 @@ class EmundusModelUsersTest extends TestCase
     /*
      * Test the getUserDetails() method
      * Should return an array with all columns
+     */
+    /**
+     * @covers EmundusModelUsers::getUserDetails
+     * @return void
+     * It should return an array of all columns (user data and columns data)
+     * @throws Exception
      */
     public function testgetUserDetails()
     {
