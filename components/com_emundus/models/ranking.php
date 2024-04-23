@@ -413,14 +413,14 @@ class EmundusModelRanking extends JModelList
             $query = $db->getQuery(true);
 
             $query->select('status')
-                ->from('#__emundus_ranking_hierarchy_rankable_status')
+                ->from('#__emundus_ranking_hierarchy_visible_status')
                 ->where('hierarchy_id = ' . $db->quote($hierarchy_id));
 
             try {
                 $db->setQuery($query);
                 $status = $db->loadColumn();
             } catch (Exception $e) {
-                $status = [];
+                JLog::add('failed to get visible status for hierarchy ' . $e->getMessage(), JLog::ERROR, 'com_emundus.ranking.php');
             }
         }
 
