@@ -1,15 +1,23 @@
 <template>
   <div v-if="params.length > 0">
     <div v-for="param in displayedParams" class="form-group mb-4">
-      <label>{{ translate(param.label) }}</label>
+
+      <label v-if="(param.name !== 'repeat_min' && param.name !== 'repeat_max')||($data.repetable === true) " >{{ translate(param.label) }}</label>
 
 
       <!-- TEXTAREA -->
       <textarea v-if="param.type === 'textarea'" v-model="section.params[param.name]" class="em-w-100"></textarea>
 
       <!-- INPUT (TEXT,NUMBER) -->
-      <input v-if="param.type === 'number' || param.type === 'text'" :type="param.type"
+      <div v-if="param.name !== 'repeat_min' && param.name !== 'repeat_max'">
+        <input v-if="param.type === 'number' || param.type === 'text'" :type="param.type"
              v-model="section.params[param.name]" class="em-w-100" :placeholder="translate(param.placeholder)"/>
+      </div>
+      <div v-else-if="$data.repetable === true">
+        <input v-if="param.type === 'number' || param.type === 'text'" :type="param.type"
+               min="0"
+               v-model="section.params[param.name]" class="em-w-100" :placeholder="translate(param.placeholder)"/>
+      </div>
 
       <!-- HELPTEXT -->
       <label v-if="param.helptext !== ''" style="font-size: small">{{ translate(param.helptext) }}</label>
@@ -68,6 +76,8 @@ export default {
   }),
   created() {
     this.$data.repetable = this.$props.repetable;
+    console.log(this.params)
+    console.log(this.$data.repetable)
 
   },
   mounted() {

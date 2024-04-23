@@ -365,8 +365,6 @@ export default {
       this.$refs.formBuilderDocumentList.getDocuments();
     },
     onOpenSectionProperties(event) {
-      console.log("section update");
-      console.log(event);
       this.selectedSection = event;
       this.showInRightPanel = 'section-properties';
     },

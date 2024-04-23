@@ -108,10 +108,6 @@ export default {
       });
     },
     checkIfRepetable(){
-      console.log("section de base ");
-      console.log(this.$props.section);
-      //need to parcour event.elements to check if on of the element.plugin is egale to "emundus_fileupload"
-
       for (let key in this.section.elements) {
         if (this.section.elements.hasOwnProperty(key)) {
           let element = this.section.elements[key];

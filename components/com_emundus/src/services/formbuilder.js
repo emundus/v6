@@ -248,7 +248,6 @@ export default {
                 'index.php?option=com_emundus&controller=formbuilder&task=updategroupparams',
                 formData
             );
-
             return response;
         } catch (e) {
             return {

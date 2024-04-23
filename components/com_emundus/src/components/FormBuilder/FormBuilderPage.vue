@@ -113,7 +113,6 @@ export default {
         } else {
 					this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'), this.translate(response.msg));
         }
-
 	      this.loading = false;
       });
     },
