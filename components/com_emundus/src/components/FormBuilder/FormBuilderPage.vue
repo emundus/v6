@@ -42,6 +42,7 @@
         @update-element="getSections"
         @move-section="moveSection"
         @open-section-properties="handleOpenSectionProperties"
+        @delete-element="deleteElement"
       >
       </form-builder-page-section>
     </div>
@@ -248,8 +249,11 @@ export default {
       this.sections = this.sections.filter(section => section.group_id !== sectionId);
       this.updateLastSave();
     },
-    handleOpenSectionProperties(section) {
+    handleOpenSectionProperties(section ) {
       this.$emit('open-section-properties', section);
+    },
+    deleteElement(section , elementId) {
+    this.$emit('delete-element', section , elementId);
     },
   },
 }

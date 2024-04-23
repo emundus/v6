@@ -193,10 +193,13 @@ export  default {
       }
     },
     deleteElement(elementId) {
+
       this.section.elements['element'+elementId].publish = -2;
       this.elementsDeletedPending.push(elementId);
 	    this.getElements();
 	    this.updateLastSave();
+
+      this.$emit('delete-element', this.section , elementId);
     },
     cancelDeleteElement(elementId) {
       this.section.elements['element'+elementId].publish = true;
@@ -235,7 +238,7 @@ export  default {
 		},
 		sysadmin: function(){
 			return parseInt(this.$store.state.global.sysadminAccess);
-		},
+		}
 	}
 }
 </script>

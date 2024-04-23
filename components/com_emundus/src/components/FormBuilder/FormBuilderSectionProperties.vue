@@ -21,7 +21,7 @@
         <input id="section-label" name="section-label" class="em-w-100" type="text" v-model="section_tmp.label"/>
       </div>
       <div v-if="tabs[1].active" class="em-p-16">
-        <form-builder-section-params :params="params"  :repetable=ChoiceRepetable :section="section_tmp"></form-builder-section-params>
+        <form-builder-section-params :params="params"  :repetable=this.$data.repetable :section="section_tmp"></form-builder-section-params>
       </div>
     </div>
     <div class="em-flex-row em-flex-space-between actions em-m-16">
@@ -42,22 +42,19 @@ export default {
   name: 'FormBuilderSectionProperties',
   components: {FormBuilderSectionParams},
   props: {
-    section_id: {
-      type: Number,
+    section: {
+      type: Object,
       required: true
     },
     profile_id: {
       type: Number,
       required: true
     },
-    ChoiceRepetable: {
-      type: Boolean,
-      required: false,
-    },
   },
   data() {
     return {
       section_tmp: {},
+      repetable: true,
       params: [],
       tabs: [
         {
@@ -78,6 +75,7 @@ export default {
   created() {
 	  this.paramsAvailable();
 	  this.getSection();
+    this.checkIfRepetable();
   },
   methods: {
     saveProperties() {
@@ -105,9 +103,26 @@ export default {
       }
     },
     getSection(){
-      formBuilderService.getSection(this.$props.section_id).then((response) => {
+      formBuilderService.getSection(this.$props.section.group_id).then((response) => {
         this.section_tmp = response.data.group;
       });
+    },
+    checkIfRepetable(){
+      console.log("section de base ");
+      console.log(this.$props.section);
+      //need to parcour event.elements to check if on of the element.plugin is egale to "emundus_fileupload"
+
+      for (let key in this.section.elements) {
+        if (this.section.elements.hasOwnProperty(key)) {
+          let element = this.section.elements[key];
+          if (element.plugin === 'emundus_fileupload') {
+            this.repetable = false;
+            break;
+          }else {
+            this.repetable = true;
+          }
+        }
+      }
     }
   },
   computed: {
@@ -124,6 +139,7 @@ export default {
     section: function(){
       this.paramsAvailable();
       this.getSection();
+      this.checkIfRepetable();
     }
   }
 }

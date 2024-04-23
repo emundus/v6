@@ -77,6 +77,7 @@
                 @open-section-properties="onOpenSectionProperties"
                 @open-create-model="onOpenCreateModel"
                 @update-page-title="getPages(currentPage.id)"
+                @delete-element="ReloadPropertiesSection"
             ></form-builder-page>
             <form-builder-document-list
                 ref="formBuilderDocumentList"
@@ -123,10 +124,10 @@
               ></form-builder-element-properties>
               <form-builder-section-properties
                   v-if="showInRightPanel === 'section-properties'"
+                  :key="KeySectionProperties"
                   @close="onCloseSectionProperties"
-                  :section_id="parseInt(selectedSection.group_id)"
+                  :section="selectedSection"
                   :profile_id="parseInt(profile_id)"
-                  :choice-repetable=repetable
               ></form-builder-section-properties>
               <form-builder-create-model
                   v-if="showInRightPanel === 'create-model'"
@@ -242,7 +243,7 @@ export default {
       },
       formBuilderCreateDocumentKey: 0,
       createDocumentMode: 'create',
-      repetable: true,
+      KeySectionProperties: 0
     }
   },
   created() {
@@ -364,16 +365,8 @@ export default {
       this.$refs.formBuilderDocumentList.getDocuments();
     },
     onOpenSectionProperties(event) {
-      //need to parcour event.elements to check if on of the element.plugin is egale to "emundus_fileupload"
-      for (let key in event.elements) {
-        if (event.elements.hasOwnProperty(key)) {
-          let element = event.elements[key];
-          if (element.plugin === 'emundus_fileupload') {
-            this.repetable = false;
-            break;
-        }
-      }
-      }
+      console.log("section update");
+      console.log(event);
       this.selectedSection = event;
       this.showInRightPanel = 'section-properties';
     },
@@ -478,6 +471,24 @@ export default {
         this.onCloseCreatePage({reload: false});
       } else {
         window.history.go(-1);
+      }
+    },
+    ReloadPropertiesSection(section , elementId) {
+      if(this.showInRightPanel === 'section-properties')
+      {
+        let element = 'element'+elementId;
+        //parcours eatch section.elements and delete the element with the id elementId
+        for (let key in section.elements) {
+          if (section.elements.hasOwnProperty(key)) {
+            let element = section.elements[key];
+            if (element.id === elementId) {
+              delete section.elements[key];
+              break;
+            }
+          }
+        }
+        this.selectedSection = section;
+        this.KeySectionProperties++;
       }
     }
   },

@@ -29,9 +29,10 @@
           </div>
         </div>
         <div v-if="param.name === 'repeat_group_button'">
-        <div v-if="$data.repetable === false">
+        <div v-if="$data.repetable === false" class="py-1 px-3 bg-neutral-300	rounded-md mt-2">
+          <span>{{translate('COM_EMUNDUS_ONBOARD_REPEAT_GROUP_WARNING_DISABLE_FILEUPLOAD')}}</span>
           <select disabled>
-            <option>jojo</option>
+            <option value="0" >{{translate('JNO')}}</option>
           </select>
         </div>
         </div>
@@ -66,10 +67,6 @@ export default {
     repetable: true,
   }),
   created() {
-    console.log('section', this.section);
-    console.log('params', this.params);
-    console.log('repetable', this.repetable);
-
     this.$data.repetable = this.$props.repetable;
 
   },
