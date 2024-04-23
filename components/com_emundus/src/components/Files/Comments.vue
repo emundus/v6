@@ -1,23 +1,30 @@
 <template>
-  <div id="comments">
-    <div id="file-comments" v-for="comment in parentComments" :key="comment.id">
-      <div>
-        <span>{{ comment.user_id }}</span>
+  <div id="comments" class="p-4">
+    <div id="file-comment" v-for="comment in parentComments" :key="comment.id"
+      class="shadow rounded-lg p-2 my-4"
+    >
+      <div id="file-comment-header">
         <span>{{ comment.date }}</span>
+        <span>{{ comment.user_id }}</span>
       </div>
       <p>{{ comment.comment_body }}</p>
     </div>
     <div id="add-comment-container">
       <textarea @keyup.enter="addComment" v-model="comment"></textarea>
-      <div>
-        <input type="radio" name="visible_to_applicant" v-model="visible_to_applicant" :value="false" id="visible-to-coords">
-        <label for="visible-to-coords">{{ translate('COM_EMUNDUS_COMMENTS_VISIBLE_PARTNERS') }}</label>
+      <div class="flex flex-row items-center">
+        <div class="flex flex-row items-center">
+          <input type="radio" name="visible_to_applicant" v-model="visible_to_applicant" :value="false" id="visible-to-coords">
+          <label for="visible-to-coords" class="m-0">{{ translate('COM_EMUNDUS_COMMENTS_VISIBLE_PARTNERS') }}</label>
+        </div>
+        <div class="flex flex-row items-center ml-2">
+          <input type="radio" name="visible_to_applicant" v-model="visible_to_applicant" :value="true" id="visible-to-applicant">
+          <label for="visible-to-applicant" class="m-0">{{ translate('COM_EMUNDUS_COMMENTS_VISIBLE_ALL') }}</label>
+        </div>
       </div>
-      <div>
-        <input type="radio" name="visible_to_applicant" v-model="visible_to_applicant" :value="true" id="visible-to-applicant">
-        <label for="visible-to-applicant">{{ translate('COM_EMUNDUS_COMMENTS_VISIBLE_APPLICANT') }}</label>
-      </div>
-      <button id="add-comment-btn" class="em-bg-main-500 em-neutral-300-color" @click="addComment">{{ translate('COM_EMUNDUS_COMMENTS_ADD_COMMENT') }}</button>
+      <button id="add-comment-btn" class="em-primary-button em-bg-main-500 em-neutral-300-color" @click="addComment">
+        <span>{{ translate('COM_EMUNDUS_COMMENTS_ADD_COMMENT') }}</span>
+        <span class="material-icons-outlined ml-1 em-neutral-300-color">send</span>
+      </button>
     </div>
     <div class="em-page-loader" v-if="loading"></div>
   </div>

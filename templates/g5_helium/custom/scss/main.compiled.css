@@ -2282,6 +2282,10 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .m-0 {
   margin: 0px;
 }
+.my-4 {
+  margin-top: var(--em-spacing-4);
+  margin-bottom: var(--em-spacing-4);
+}
 .mb-0 {
   margin-bottom: 0px;
 }
@@ -2970,6 +2974,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .grid-cols-5 {
   grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+.flex-row {
+  flex-direction: row;
 }
 .flex-col {
   flex-direction: column;
