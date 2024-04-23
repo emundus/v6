@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension group="fabrik_form" method="upgrade" type="plugin" version="30">
+	<name>eMundus - Referent form</name>
+	<author>eMundus</author>
+	<creationDate>March 2024</creationDate>
+	<copyright>Copyright (C) 2024 eMundus.fr - All rights reserved.</copyright>
+	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+	<authorEmail>dev@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>3.8.13</version>
+	<description>PLG_FABRIK_FORM_EMUNDUS_REFERENT_FORM_DESCRIPTION</description>
+	<files>
+		<filename plugin="emundusreferentform">emundusreferentform.php</filename>
+		<filename>index.html</filename>
+		<folder>forms</folder>
+		<folder>language</folder>
+	</files>
+</extension>

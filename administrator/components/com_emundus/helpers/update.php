@@ -2184,7 +2184,7 @@ class EmundusHelperUpdate
         return $result;
     }
 
-    public static function addFabrikElement($datas,$params = []) {
+    public static function addFabrikElement($datas,$params = [],$required = true) {
         $result = ['status' => false, 'message' => ''];
 
         if(empty($datas['name'])){
@@ -2213,7 +2213,7 @@ class EmundusHelperUpdate
         if(!$is_existing) {
             require_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
 
-            $default_params = EmundusHelperFabrik::prepareElementParameters($datas['plugin']);
+            $default_params = EmundusHelperFabrik::prepareElementParameters($datas['plugin'],$required);
             $params = array_merge($default_params, $params);
 
             try {

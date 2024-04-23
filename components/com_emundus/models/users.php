@@ -14,6 +14,8 @@
 
 // No direct access
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Plugin\PluginHelper;
 
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
@@ -1092,49 +1094,46 @@ class EmundusModelUsers extends JModelList {
         return $db->loadColumn();
     }
 
-    public function login($uid) {
-        $app     = JFactory::getApplication();
-        $db      = JFactory::getDBO();
-        $session = JFactory::getSession();
+	public function login($uid) {
+		$app     = Factory::getApplication();
+		$db      = Factory::getDBO();
+		$session = Factory::getSession();
 
-        $instance   = JFactory::getUser($uid);
+		$instance   = Factory::getUser($uid);
 
-       // $userarray = array();
-        //$userarray['username'] = $instance->username;
-        //$userarray['password'] = $instance->password;
-        //$app->login($userarray);
+		$instance->set('guest', 0);
 
-        $instance->set('guest', 0);
+		// Register the needed session variables
+		$session->set('user', $instance);
 
-        // Register the needed session variables
-        $session->set('user', $instance);
+		// Check to see the the session already exists.
+		$app->checkSession();
 
-        // Check to see the the session already exists.
-        $app->checkSession();
-
-        // Update the user related fields for the Joomla sessions table.
-        $query = 'UPDATE #__session
+		// Update the user related fields for the Joomla sessions table.
+		$query = 'UPDATE #__session
                     SET guest='.$db->quote($instance->get('guest')).',
                         username = '.$db->quote($instance->get('username')).',
                         userid = '.(int) $instance->get('id').'
                         WHERE session_id like '.$db->quote($session->getId());
-        $db->setQuery($query);
-        $db->execute();
+		$db->setQuery($query);
+		$db->execute();
 
-        // Hit the user last visit field
-        $instance->setLastVisit();
+		// Hit the user last visit field
+		$instance->setLastVisit();
 
-        // Trigger OnUserLogin
-        JPluginHelper::importPlugin('user', 'emundus');
-        $dispatcher = JEventDispatcher::getInstance();
-        $options = array('action' => 'core.login.site', 'remember' => false);
+		// Trigger OnUserLogin
+		PluginHelper::importPlugin('user');
+		PluginHelper::importPlugin('emundus');
 
-        $dispatcher->trigger( 'onUserLogin', $instance );
-        $dispatcher->trigger('callEventHandler', ['onUserLogin', ['instance' => $instance]]);
+		$options = array();
+		$options['action'] = 'core.login.site';
 
-        return $instance;
+		$response['username'] = $instance->get('username');
+		$app->triggerEvent('onUserLogin', array($response, $options));
+		$app->triggerEvent('callEventHandler', ['onUserLogin', ['user_id' => $uid]]);
 
-    }
+		return $instance;
+	}
 
 
 	/**
