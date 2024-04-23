@@ -50,6 +50,11 @@ export default {
       type: Number,
       required: true
     },
+    context : {
+      type: String,
+      default: '',
+      required: false
+    }
   },
   data() {
     return {
@@ -76,9 +81,14 @@ export default {
 	  this.paramsAvailable();
 	  this.getSection();
     this.checkIfRepetable();
+    if(this.context === "delete"){
+      this.$emit('stopDelete')
+      this.saveProperties()
+    }
   },
   methods: {
     saveProperties() {
+      console.log("jojo");
       formBuilderService.updateGroupParams(this.section_tmp.id,this.section_tmp.params, this.shortDefaultLang).then(() => {
         this.$emit('close');
       });

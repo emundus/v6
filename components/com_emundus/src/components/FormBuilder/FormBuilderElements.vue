@@ -157,7 +157,7 @@ export default {
             this.loading = false;
           });
           if (this.cloneElement.value === 'emundus_fileupload') {
-            this.swalParameter(this.translate("COM_EMUNDUS_ATTACHMENTS_SWAL_PARAM") , this.translate("COM_EMUNDUS_ATTACHMENTS_SWAL_PARAM_DESC"), this.translate("COM_EMUNDUS_ATTACHMENTS_SWAL_PARAM_I_UNDERSTAND"));
+            this.swalParameter('emundus_fileUpload',  this.translate("COM_EMUNDUS_ATTACHMENTS_SWAL_PARAM") , this.translate("COM_EMUNDUS_ATTACHMENTS_SWAL_PARAM_DESC"),this.translate("COM_EMUNDUS_ATTACHMENTS_SWAL_PARAM_DESC_2") , this.translate("COM_EMUNDUS_ATTACHMENTS_SWAL_PARAM_I_UNDERSTAND"));
             this.showInRightPanel = 'element-properties';
             this.$emit('update-right-panel', this.showInRightPanel,response.data); // Emit an event to notify the parent component
           }

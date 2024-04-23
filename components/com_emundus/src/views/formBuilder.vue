@@ -126,8 +126,10 @@
                   v-if="showInRightPanel === 'section-properties'"
                   :key="KeySectionProperties"
                   @close="onCloseSectionProperties"
+                  @stopDelete="resetContext"
                   :section="selectedSection"
                   :profile_id="parseInt(profile_id)"
+                  :context="this.context"
               ></form-builder-section-properties>
               <form-builder-create-model
                   v-if="showInRightPanel === 'create-model'"
@@ -243,7 +245,8 @@ export default {
       },
       formBuilderCreateDocumentKey: 0,
       createDocumentMode: 'create',
-      KeySectionProperties: 0
+      KeySectionProperties: 0,
+      context: ''
     }
   },
   created() {
@@ -299,6 +302,9 @@ export default {
             }
           }
       );
+    },
+    resetContext(){
+      this.context = '';
     },
     getFormTitle() {
       if (this.profile_id) {
@@ -472,8 +478,7 @@ export default {
       }
     },
     ReloadPropertiesSection(section , elementId) {
-      if(this.showInRightPanel === 'section-properties')
-      {
+
         let element = 'element'+elementId;
         //parcours eatch section.elements and delete the element with the id elementId
         for (let key in section.elements) {
@@ -487,7 +492,9 @@ export default {
         }
         this.selectedSection = section;
         this.KeySectionProperties++;
-      }
+        this.showInRightPanel = 'section-properties';
+        this.context = 'delete';
+
     }
   },
   computed: {

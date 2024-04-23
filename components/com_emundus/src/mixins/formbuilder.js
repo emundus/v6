@@ -40,13 +40,19 @@ export default {
             });
         },
 
-        async swalParameter(title , textDesc , confirmButtonText, callback = null)
+        async swalParameter(type ,title , textDesc , textDesc2 , confirmButtonText, callback = null)
         {
+            let text=''
+            if (type === 'emundus_fileUpload')
+            { text = textDesc + '<br><br>' + textDesc2}
+            else{
+                text = textDesc
+            }
             let options = {
                 title: title,
                 type: 'warning',
                 width: 610, // to avoid the user on the elements below
-                html: textDesc,
+                html: text,
                 reverseButtons: true,
                 confirmButtonText: confirmButtonText,
                 customClass: {
