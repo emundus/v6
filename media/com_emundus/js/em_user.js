@@ -33,7 +33,7 @@ function clearchosen(target){
 
 function getUserCheck() {
 	var id = parseInt($('.modal-body').attr('act-id'));
-	if ($('#em-check-all').is(':checked')) {
+	if ($('#em-check-all-all').is(':checked')) {
 		var checkInput = 'all';
 	} else {
 		var i = 0;
@@ -883,28 +883,36 @@ $(document).ready(function () {
 
 			case 6:
 				addLoader();
-				await $.ajax({
-					type: 'get',
-					url: url,
-					dataType: 'html',
-					data: {
-						user: sid
-					},
-					success: function (result) {
-						removeLoader();
 
-						swalForm = true;
-						title = 'COM_EMUNDUS_EXPORT_USER';
-						swal_confirm_button = 'COM_EMUNDUS_EXPORTS_GENERATE_EXCEL';
-						preconfirm = "var atLeastOneChecked = false; $('.form-group input[type=\"checkbox\"], .all-boxes input[type=\"checkbox\"]').each(function() { if ($(this).is(':checked')) { atLeastOneChecked = true; return false; } }); if (!atLeastOneChecked) { Swal.showValidationMessage(Joomla.JText._('COM_EMUNDUS_EXPORTS_SELECT_AT_LEAST_ONE_INFORMATION')); }";
-						html = result;
-					},
-					error: function (jqXHR) {
-						removeLoader();
-						console.log(jqXHR.responseText);
+				try {
+					const response = await fetch(url, {
+						method: 'POST',
+						body: new URLSearchParams({
+							user: sid
+						})
+					});
+
+					if (!response.ok) {
+						throw new Error('Network response was not ok');
 					}
-				});
+
+					const result = await response.text();
+					removeLoader();
+
+					swalForm = true;
+					title = 'COM_EMUNDUS_EXPORT_USER';
+					swal_confirm_button = 'COM_EMUNDUS_EXPORTS_GENERATE_EXCEL';
+					preconfirm = "var atLeastOneChecked = false; $('.form-group input[type=\"checkbox\"], .all-boxes input[type=\"checkbox\"]').each(function() { if ($(this).is(':checked')) { atLeastOneChecked = true; return false; } }); if (!atLeastOneChecked) { Swal.showValidationMessage(Joomla.JText._('COM_EMUNDUS_EXPORTS_SELECT_AT_LEAST_ONE_INFORMATION')); }";
+					html = result;
+
+				} catch (error) {
+					removeLoader();
+					console.error('Error:', error);
+				}
+
 				break;
+
+
 			case 26:
 				Swal.fire({
 					title: $(this).children('a').text(),
@@ -1148,7 +1156,7 @@ $(document).ready(function () {
 				var checkBoxesProps = {};
 				var allChecked = $('#checkbox-all').prop('checked');
 
-				// First verify all checkboxes if it has been selected
+				// First verify all checkboxes if they have been selected
 				$('input[type="checkbox"]').each(function() {
 					if ($(this).attr('value') !== 'all') {
 						var checkboxValue = $(this).attr('value');
@@ -1164,18 +1172,24 @@ $(document).ready(function () {
 					}
 				}
 
-				$.ajax({
-					type: 'POST',
-					url: 'index.php?option=com_emundus&controller=users&task=exportusers&Itemid=' + itemId,
-					data: {
-						users: checkInput,
-						checkboxes: checkedBoxes,
-					},
-					success: function(result) {
+				var formData = new FormData();
+				formData.append('users', checkInput);
+				formData.append('checkboxes', JSON.stringify(checkedBoxes));
+
+				fetch('index.php?option=com_emundus&controller=users&task=exportusers&Itemid=' + itemId, {
+					method: 'POST',
+					body: formData
+				})
+					.then(function(response) {
+						if (!response.ok) {
+							throw new Error('Network response was not ok');
+						}
+						return response.json();
+					})
+					.then(function(result) {
 						removeLoader();
 
-						var response = JSON.parse(result);
-						var fileName = response.fileName;
+						var fileName = result.fileName;
 
 						Swal.fire({
 							position: 'center',
@@ -1192,34 +1206,33 @@ $(document).ready(function () {
 								confirmButton: 'em-swal-confirm-button btn btn-success',
 								title: 'w-full justify-center',
 							}
-						}).then((result) => {
+						}).then(function(result) {
 							if (result.value) {
 								download("/tmp/" + fileName, fileName);
 							}
-							// Avoid deleting the file before being download
+							// Avoid deleting the file before being downloaded
 							setTimeout(function() {
-								$.ajax({
-									type: 'POST',
-									url: 'index.php?option=com_emundus&controller=users&task=deleteusersfile&Itemid=' + itemId,
-									data: { fileName: fileName },
-									success: function(response) {
-										// console.log(response);
-									},
-									error: function(jqXHR, textStatus, errorThrown) {
-										console.error(textStatus, errorThrown);
-									}
+								fetch('index.php?option=com_emundus&controller=users&task=deleteusersfile&Itemid=' + itemId, {
+									method: 'POST',
+									body: JSON.stringify({ fileName: fileName })
+								})
+									.then(function(response) {
+										if (!response.ok) {
+											throw new Error('Network response was not ok');
+										}
+									})
+									.catch(function(error) {
+										console.error('Error:', error);
 									});
-								}, 1000);
+							}, 1000);
 						});
-					},
-
-					error: function(jqXHR) {
+					})
+					.catch(function(error) {
 						removeLoader();
-						console.log(jqXHR.responseText);
-					}
-				});
-				break;
+						console.error('Error:', error);
+					});
 
+				break;
 
 			case 19:
 				var programs = $('#gprogs');
