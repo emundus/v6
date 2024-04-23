@@ -1,16 +1,48 @@
 <?php
 
-$modelUsers = new EmundusModelUsers();
+$m_users = new EmundusModelUsers();
 $jinput = JFactory::getApplication()->input;
 
-$users = $jinput->getString('user');
-
-if ($users == 'em-check-all') {
-    $allUsers = $modelUsers->getUsers(0, 0);
-    $userDetails = $modelUsers->getAllInformationsToExport($allUsers[0]->id);
-} else {
-    $userDetails = $modelUsers->getAllInformationsToExport($users);
-}
+$euser_columns = $m_users->getColumnsForm();
+//TODO: Create getJoomlaUserColumns
+$user_columns = array(
+	'email' => (object)array(
+		'id' => null,
+		'name' => 'email',
+		'plugin' => null,
+		'label' => 'COM_EMUNDUS_EMAIL',
+	),
+	'username' => (object)array(
+		'id' => null,
+		'name' => 'username',
+		'plugin' => null,
+		'label' => 'COM_EMUNDUS_USERNAME',
+	),
+	'profile' => (object)array(
+		'id' => null,
+		'name' => 'profil',
+		'plugin' => null,
+		'label' => 'COM_EMUNDUS_PROFILE',
+	),
+	'groups' => (object)array(
+		'id' => null,
+		'name' => 'groupes',
+		'plugin' => null,
+		'label' => 'COM_EMUNDUS_GROUPE',
+	),
+	'registerDate' => (object)array(
+		'id' => null,
+		'name' => 'registerDate',
+		'plugin' => null,
+		'label' => 'COM_EMUNDUS_REGISTERDATE',
+	),
+	'lastvisitDate' => (object)array(
+		'id' => null,
+		'name' => 'lastvisitDate',
+		'plugin' => null,
+		'label' => 'COM_EMUNDUS_LASTVISITDATE',
+	)
+);
 
 ?>
 
@@ -30,7 +62,7 @@ if ($users == 'em-check-all') {
 <div class="flex justify-between items-start">
     <div class="w-1/2">
         <?php
-        foreach ($userDetails['columns'] as $column) {
+        foreach ($euser_columns as $column) {
             ?>
             <div class="form-group flex items-center mb-1">
                 <input type="checkbox" id="checkbox-<?= $column->name ?>" name="checkbox-csv" value="<?= $column->name ?>" onchange="uncheckCheckboxAllElement(this)" class="mr-1 mt-2">
@@ -42,7 +74,7 @@ if ($users == 'em-check-all') {
     </div>
     <div class="w-1/2">
         <?php
-        foreach ($userDetails['user_data'] as $field) {
+        foreach ($user_columns as $field) {
             ?>
             <div class="form-group flex items-center mb-1">
                 <input type="checkbox" id="checkbox-<?= $field->name ?>" name="checkbox-csv" value="<?= $field->name ?>" onchange="uncheckCheckboxAllElement(this)" class="mr-1 mt-2">
