@@ -29,7 +29,7 @@
               </div>
             </header>
             <div class="scrollable">
-              <slot name="before-default-file-tabs">
+              <slot name="before-default-file-tabs" class="m-b-4">
               </slot>
               <application-tabs id="comparison-wrapper-left" :key="defaultFile.id" :user="user" :file="defaultFile" :access="access" :tabs="tabs"></application-tabs>
             </div>
@@ -62,7 +62,7 @@
               </div>
             </header>
             <div class="scrollable">
-              <slot name="before-compare-file-tabs">
+              <slot name="before-compare-file-tabs" class="m-b-4">
               </slot>
               <application-tabs id="comparison-wrapper-right" :key="selectedFileToCompareWith.id" :user="user" :file="selectedFileToCompareWith" :access="access" :tabs="tabs"></application-tabs>
             </div>

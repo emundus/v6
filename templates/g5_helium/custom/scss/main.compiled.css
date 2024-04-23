@@ -3360,6 +3360,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .self-center {
   align-self: center;
 }
+.overflow-auto {
+  overflow: auto;
+}
 .overflow-hidden {
   overflow: hidden;
 }
@@ -3371,11 +3374,18 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .text-ellipsis {
   text-overflow: ellipsis;
 }
+.whitespace-nowrap {
+  white-space: nowrap;
+}
 .rounded {
   border-radius: 0.25rem;
 }
 .rounded-lg {
   border-radius: 0.5rem;
+}
+.rounded-t-lg {
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
 }
 .border {
   border-width: 1px;
