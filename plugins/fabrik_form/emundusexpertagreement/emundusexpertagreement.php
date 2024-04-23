@@ -399,6 +399,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form
 						if (!$user->save())
 						{
 							$app->enqueueMessage(Text::_('CAN_NOT_SAVE_USER') . '<BR />' . $user->getError(), 'error');
+							$app->redirect('index.php');
 						}
 
 						$query->clear()
@@ -416,6 +417,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form
 						if($current_user->guest == 1 || ($current_user->email == $email))
 						{
 							$m_users->login($user->id);
+							$app->redirect('index.php');
 						}
 
 						return;
@@ -478,6 +480,8 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form
 						if($current_user->guest == 1 || ($current_user->email == $email))
 						{
 							$m_users->login($user->id);
+
+							$app->redirect('index.php');
 						}
 
 						return;
@@ -647,6 +651,8 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form
 				{
 					$app->enqueueMessage(Text::_('USER_LOGGED'), 'success');
 					$m_users->login($user->id);
+
+					$app->redirect('index.php');
 				}
 			}
 			else
