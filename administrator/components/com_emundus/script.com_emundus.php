@@ -4159,6 +4159,98 @@ if(in_array($applicant,$exceptions)){
 				$db->setQuery($query);
 				$db->execute();
 			}
+
+			if (version_compare($cache_version, '1.39.0', '<=') || $firstrun) {
+				$columns      = [
+					[
+						'name'   => 'date_time',
+						'type'   => 'DATE'
+					],
+					[
+						'name'   => 'created_by',
+						'type'   => 'INT'
+					],
+					[
+						'name'   => 'updated',
+						'type'   => 'DATE'
+					],
+					[
+						'name'   => 'updated_by',
+						'type'   => 'INT'
+					],
+					[
+						'name'   => 'campaign',
+						'type'   => 'INT'
+					],
+					[
+						'name'   => 'elements',
+						'type'   => 'varchar',
+						'length' => '255'
+					],
+					[
+						'name'   => 'is_numeric_sign',
+						'type'   => 'INT'
+					],
+					[
+						'name'   => 'attachment_to_upload',
+						'type'   => 'INT'
+					],
+					[
+						'name'   => 'attachment_to_sign',
+						'type'   => 'INT'
+					],
+					[
+						'name'   => 'attachment_model',
+						'type'   => 'TEXT'
+					],
+					[
+						'name'   => 'must_validate',
+						'type'   => 'INT'
+					],
+					[
+						'name'   => 'notify_email',
+						'type'   => 'INT'
+					],
+					[
+						'name'   => 'motif_refus',
+						'type'   => 'INT'
+					],
+				];
+				EmundusHelperUpdate::createTable('jos_emundus_setup_files_request', $columns, [], 'Configuration for experts');
+
+				$columns      = [
+					[
+						'name'   => 'parent_id',
+						'type'   => 'INT'
+					],
+					[
+						'name'   => 'elements',
+						'type'   => 'varchar',
+						'length' => '100'
+					],
+					[
+						'name'   => 'params',
+						'type'   => 'TEXT'
+					]
+				];
+				EmundusHelperUpdate::createTable('jos_emundus_setup_files_request_repeat_elements', $columns);
+
+				$columns      = [
+					[
+						'name'   => 'parent_id',
+						'type'   => 'INT'
+					],
+					[
+						'name'   => 'motif_refus',
+						'type'   => 'INT'
+					],
+					[
+						'name'   => 'params',
+						'type'   => 'TEXT'
+					]
+				];
+				EmundusHelperUpdate::createTable('jos_emundus_setup_files_request_repeat_motif_refus', $columns);
+			}
 		}
 
 		return $succeed;
