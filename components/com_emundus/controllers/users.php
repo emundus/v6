@@ -9,7 +9,6 @@
 
 // No direct access
 
-use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 
 require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php');

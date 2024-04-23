@@ -4159,6 +4159,32 @@ if(in_array($applicant,$exceptions)){
 				$db->setQuery($query);
 				$db->execute();
 			}
+
+			if ((version_compare($cache_version, '1.39.0', '<=') || $firstrun)) {
+				$datas = [
+					'menutype'     => 'actions-users',
+					'title'        => 'Exporter',
+					'alias'        => 'export',
+					'link'         => '',
+					'type'         => 'heading',
+					'component_id' => 0,
+				];
+				$export_menu = EmundusHelperUpdate::addJoomlaMenu($datas);
+
+				if($export_menu['status'])
+				{
+					$datas = [
+						'menutype'     => 'actions-users',
+						'title'        => 'Exporter vers Excel',
+						'alias'        => 'export-excel',
+						'type'         => 'url',
+						'link'         => 'index.php?option=com_emundus&view=users&format=raw&layout=export&Itemid={Itemid}',
+						'component_id' => 0,
+						'note'         => '12|r|1|6'
+					];
+					EmundusHelperUpdate::addJoomlaMenu($datas,$export_menu['id']);
+				}
+			}
 		}
 
 		return $succeed;

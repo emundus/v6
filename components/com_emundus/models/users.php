@@ -3697,88 +3697,32 @@ class EmundusModelUsers extends JModelList {
         return str_shuffle($password);
     }
 
-	/**
-	 * @param $uid
-	 *
-	 * @return null
-	 *
-	 * @deprecated Use getUserById instead
-	 */
-    public function getJosUsersById($uid)
-    {
-        $josUser = null;
-
-        if (!empty($uid)) {
-            $db = JFactory::getDbo();
-            $query = $db->getQuery(true);
-
-            $query->select('u.email as email, u.username as username, u.registerDate as registerDate, u.lastvisitDate as lastvisitDate')
-                ->from($db->quoteName('#__users', 'u'))
-                ->where($db->quoteName('u.id') . ' = ' . $uid);
-
-            try {
-                $db->setQuery($query);
-                $josUser = $db->loadObject();
-            } catch (Exception $e) {
-                JLog::add('component/com_emundus/models/users | Error when try to get jos user details : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.error');
-            }
-        }
-        return $josUser;
-    }
-
-    /*
-     * Return the description of a profile in jos_emundus_setup_profiles table
-     * Profile's id is necessaray
-     */
-    public function getProfileDescriptionById($pid)
-    {
-        $profileDescription = null;
-
-        if (!empty($pid)) {
-            $db = JFactory::getDbo();
-            $query = $db->getQuery(true);
-
-            $query->select('esp.description as description')
-                ->from($db->quoteName('#__emundus_setup_profiles', 'esp'))
-                ->where($db->quoteName('esp.id') . ' = ' . $pid);
-
-            try {
-
-                $db->setQuery($query);
-                $profileDescription = $db->loadObject();;
-            } catch (Exception $e) {
-                JLog::add('component/com_emundus/models/users | Error when try to get profile description : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.error');
-            }
-        }
-        return $profileDescription;
-    }
-
     /*
      * Return the label of group(s)'s user in jos_emundus_setup_groupes table
      * User's id is necessaray
      */
     public function getUserGroupsLabelById($uid)
     {
-        $groupLabel = null;
+        $groups_label = [];
 
         if (!empty($uid)) {
-            $db = JFactory::getDbo();
+            $db = Factory::getDbo();
             $query = $db->getQuery(true);
 
-            $query->select('esg.label as label')
+            $query->select('esg.label')
                 ->from($db->quoteName('#__emundus_setup_groups', 'esg'))
                 ->leftJoin($db->quoteName('#__emundus_groups', 'eg') . ' ON eg.group_id = esg.id')
                 ->where($db->quoteName('eg.user_id') . ' = ' . $uid);
 
             try {
                 $db->setQuery($query);
-                $groupLabel = $db->loadObjectList();
+	            $groups_label = $db->loadObjectList();
 
             } catch (Exception $e) {
-                JLog::add('component/com_emundus/models/users | Error when try to get group(s) label : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.error');
+                Log::add('component/com_emundus/models/users | Error when try to get group(s) label : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
             }
         }
-        return $groupLabel;
+        return $groups_label;
     }
 
     /*
@@ -3850,8 +3794,16 @@ class EmundusModelUsers extends JModelList {
 			if(!empty($user)) {
 				$user = $user[0];
 
-				//TODO: Get profile label instead of description
-				$user_profile = $this->getProfileDescriptionById($user->profile);
+				$user_profile_details = $this->getProfileDetails($user->profile);
+				if($user_profile_details->published == 0)
+				{
+					$user_profile = $user_profile_details->label;
+				}
+				else
+				{
+					$user_profile = Text::_('COM_EMUNDUS_APPLICANT');
+				}
+
 				$user_groups = $this->getUserGroupsLabelById($uid);
 
 				$register_date = $user->registerDate ?? '';
@@ -3896,7 +3848,7 @@ class EmundusModelUsers extends JModelList {
 						'name' => 'profil',
 						'plugin' => null,
 						'label' => 'COM_EMUNDUS_PROFILE',
-						'value' => $user_profile->description ?? ''
+						'value' => $user_profile ?? ''
 					),
 					'groups' => (object)array(
 						'id' => null,

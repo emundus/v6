@@ -99,50 +99,6 @@ class EmundusModelUsersTest extends TestCase
 	}
 
     /*
-     * Test the getJosUsersById() method
-     * Should return an email, an username, a register date and a last connection date
-     */
-    public function testgetJosUsersById() {
-
-        $user_id = $this->h_sample->getSampleUser();
-
-        $this->assertEmpty($this->m_users->getJosUsersById(0), 'Passing an incorrect user id should return null');
-        $josUser = $this->m_users->getJosUsersById($user_id);
-        $this->assertNotEmpty($josUser, 'Passing a correct user id should return an array of profile details');
-
-        // Should contain
-        $this->assertObjectHasAttribute('email', $josUser, 'Profile details should contain email');
-        $this->assertObjectHasAttribute('username', $josUser, 'Profile details should contain username');
-        $this->assertObjectHasAttribute('registerDate', $josUser, 'Profile details should contain register date');
-        $this->assertObjectHasAttribute('lastvisitDate', $josUser, 'Profile details should contain last connection date (if there is one');
-
-        // Should not contain
-        $this->assertObjectNotHasAttribute('password', $josUser, 'Profile details should not contain password !');
-    }
-
-    /*
-     * Test the getProfileDescriptionById() method
-     * Should return a description
-     */
-    public function testgetProfileDescriptionById()
-    {
-        $user_id = $this->h_sample->getSampleUser();
-
-        if ($user_id != 0) { // Verify if a user with profile 9 exists (allow us then to use 9 as a profile id)
-
-            $this->assertEmpty($this->m_users->getProfileDescriptionById(0), 'Passing an incorrect user id should return null');
-            $profile = $this->m_users->getProfileDescriptionById(9);
-            $this->assertNotEmpty($profile, 'Passing a correct profile id should return an array of profile details');
-
-            // Should contain
-            $this->assertObjectHasAttribute('description', $profile, 'Profile details should contain description');
-
-            // Should not contain
-            $this->assertObjectNotHasAttribute('label', $profile, 'Profile details should not contain label !');
-        }
-    }
-
-    /*
      * Test the getUserGroupsLabelById() method
      * Should return a label
      */
