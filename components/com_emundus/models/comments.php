@@ -139,6 +139,28 @@ class EmundusModelComments extends JModelLegacy
             } catch (Exception $e) {
                 JLog::add('Failed to get comments ' . $e->getMessage(), JLog::ERROR, 'com_emundus.comments');
             }
+
+            if (!empty($comments)) {
+                $users = [];
+                $user_ids = array_column($comments, 'user_id');
+                $user_ids = array_unique($user_ids);
+
+                $query->clear()
+                    ->select('id, name')
+                    ->from($this->db->quoteName('#__users'))
+                    ->where('id IN (' . implode(',', $user_ids) . ')');
+
+                try {
+                    $this->db->setQuery($query);
+                    $users = $this->db->loadAssocList('id');
+                } catch (Exception $e) {
+                    JLog::add('Failed to get users ' . $e->getMessage(), JLog::ERROR, 'com_emundus.comments');
+                }
+
+                foreach ($comments as $key => $comment) {
+                    $comments[$key]['username'] = $users[$comment['user_id']]['name'];
+                }
+            }
         }
 
         return $comments;

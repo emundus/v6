@@ -1,11 +1,11 @@
 <template>
   <div id="comments" class="p-4">
     <div id="file-comment" v-for="comment in parentComments" :key="comment.id"
-      class="shadow rounded-lg p-2 my-4"
+      class="shadow rounded-lg py-2 px-4 my-4 em-bg-neutral-100"
     >
-      <div id="file-comment-header">
+      <div id="file-comment-header" class="flex flex-col">
         <span>{{ comment.date }}</span>
-        <span>{{ comment.user_id }}</span>
+        <span>{{ comment.username }}</span>
       </div>
       <p>{{ comment.comment_body }}</p>
     </div>
