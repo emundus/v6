@@ -4215,6 +4215,10 @@ if(in_array($applicant,$exceptions)){
 						'name'   => 'motif_refus',
 						'type'   => 'INT'
 					],
+					[
+						'name'   => 'notify_refus',
+						'type'   => 'INT'
+					],
 				];
 				EmundusHelperUpdate::createTable('jos_emundus_setup_files_request', $columns, [], 'Configuration for experts');
 
