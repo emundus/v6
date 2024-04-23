@@ -30,7 +30,28 @@ class EmundusModelComments extends JModelLegacy
 
     }
 
-    public function getComments($file_id) {
+    /**
+     * @param $file_id
+     * @param $current_user
+     * @return void
+     */
+    public function getComments($file_id, $current_user) {
+        $comments = [];
 
+        if (!empty($file_id) && !empty($current_user)) {
+            $query = $this->db->getQuery(true);
+            $query->select('ec.*')
+                ->from($this->db->quoteName('#__emundus_comments', 'ec'))
+                ->where('ec.ccid = ' . $this->db->quote($file_id));
+
+            try {
+                $this->db->setQuery($query);
+                $comments = $this->db->loadObjectList();
+            } catch (Exception $e) {
+                JLog::add('Failed to get comments ' . $e->getMessage(), JLog::ERROR, 'com_emundus.comments');
+            }
+        }
+
+        return $comments;
     }
 }

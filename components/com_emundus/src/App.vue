@@ -24,7 +24,7 @@
 
     <Comments
         v-else-if="component === 'comments'"
-        :fnum="datas.fnum.value"
+        :ccid="datas.ccid.value"
         :user="datas.user.value"
     >
 

@@ -30,11 +30,12 @@ class EmundusAdministratorModelComments extends JModelList
 
         $installation_steps = [];
         $installation_steps[] = EmundusHelperUpdate::addColumn('jos_emundus_comments', 'ccid', 'INT', null, 0);
+        $installation_steps[] = EmundusHelperUpdate::addColumn('jos_emundus_comments', 'parent_id', 'INT', null, 0, 0);
         $installation_steps[] = EmundusHelperUpdate::addColumn('jos_emundus_comments', 'opened', 'TINYINT', 1, 0, 1);
         $installation_steps[] = EmundusHelperUpdate::addColumn('jos_emundus_comments', 'updated', 'DATETIME');
-        $installation_steps[] = EmundusHelperUpdate::addColumn('jos_emundus_comments', 'updated_by', 'INT', null, 0);
+        $installation_steps[] = EmundusHelperUpdate::addColumn('jos_emundus_comments', 'updated_by', 'INT');
         $installation_steps[] = EmundusHelperUpdate::addColumn('jos_emundus_comments', 'target_type', 'VARCHAR', 255);
-        $installation_steps[] = EmundusHelperUpdate::addColumn('jos_emundus_comments', 'target_id', 'INT', null, 0);
+        $installation_steps[] = EmundusHelperUpdate::addColumn('jos_emundus_comments', 'target_id', 'INT');
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);

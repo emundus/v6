@@ -314,6 +314,7 @@ class EmundusViewApplication extends JViewLegacy {
 
                         $this->assignRef('userComments', $userComments);
                         $this->assignRef('fnum', $fnum);
+                        $this->assignRef('ccid', $fnumInfos['ccid']);
 
                     } elseif (EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $fnum)) {
 

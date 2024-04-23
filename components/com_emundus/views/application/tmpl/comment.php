@@ -49,7 +49,7 @@ if (count($languages) > 1) {
 <div id="em-component-vue"
      component="comments"
      user="<?= $this->_user->id ?>"
-     fnum="<?= $this->fnum ?>"
+     ccid="<?= $this->ccid ?>"
      currentLanguage="<?= $current_lang->getTag() ?>"
      shortLang="<?= $short_lang ?>"
      coordinatorAccess="<?= $coordinator_access ?>"
