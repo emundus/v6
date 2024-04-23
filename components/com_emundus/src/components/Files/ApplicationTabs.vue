@@ -1,53 +1,55 @@
 <template>
   <div id="application-tabs">
-    <div class="em-flex-row em-flex-center em-gap-16 em-border-bottom-neutral-300 sticky-tab">
-      <div v-for="tab in tabs" v-if="access[tab.access].r" class="em-light-tabs em-pointer" @click="selected = tab.name"
-           :class="selected === tab.name ? 'em-light-selected-tab' : ''">
-        <span class="em-font-size-14">{{ translate(tab.label) }}</span>
+    <div class="flex flex-row items-center justify-center sticky-tab gap-1 w-100 overflow-auto">
+      <div v-for="tab in tabs" v-if="access[tab.access].r" class="cursor-pointer shadow rounded-t-lg px-2.5 py-3" @click="selected = tab.name"
+           :class="selected === tab.name ? 'em-bg-main-500 em-text-neutral-300' : ''">
+        <span class="em-font-size-14 whitespace-nowrap">{{ translate(tab.label) }}</span>
       </div>
     </div>
-    <div v-if="selected === 'application'" v-html="applicationform"></div>
-    <Attachments
-        v-if="selected === 'attachments'"
-        :fnum="file.fnum"
-        :user="user"
-        :columns="['name','date','category','status']"
-        :displayEdit="false"
-    />
-    <Comments
-        v-if="selected === 'comments'"
-        :fnum="file.fnum"
-        :user="user"
-        :access="access['10']"
-    />
-    <EvaluationForm
-        v-if="selected === 'evaluation'"
-        :access="access['5']"
-        :fnum="file.fnum"
-        :user="user"
-    >
-    </EvaluationForm>
-    <DecisionForm
-        v-if="selected === 'decision'"
-        :access="access['29']"
-        :fnum="file.fnum"
-        :user="user"
-        >
-    </DecisionForm>
-    <AdmissionForm
-        v-if="selected === 'admission'"
-        :access="access['32']"
-        :fnum="file.fnum"
-        :user="user"
-    >
-    </AdmissionForm>
-    <IframeTab
-      v-if="selectedTab.url"
-      :url="selectedTab.url"
-      :fnum="file.fnum"
-    >
+    <div class="shadow mr-4 ml-4 mb-4 p-2 rounded-lg em-border-top-neutral-300">
+      <div v-if="selected === 'application'" v-html="applicationform"></div>
+      <Attachments
+          v-if="selected === 'attachments'"
+          :fnum="file.fnum"
+          :user="user"
+          :columns="['name','date','category','status']"
+          :displayEdit="false"
+      />
+      <Comments
+          v-if="selected === 'comments'"
+          :fnum="file.fnum"
+          :user="user"
+          :access="access['10']"
+      />
+      <EvaluationForm
+          v-if="selected === 'evaluation'"
+          :access="access['5']"
+          :fnum="file.fnum"
+          :user="user"
+      >
+      </EvaluationForm>
+      <DecisionForm
+          v-if="selected === 'decision'"
+          :access="access['29']"
+          :fnum="file.fnum"
+          :user="user"
+      >
+      </DecisionForm>
+      <AdmissionForm
+          v-if="selected === 'admission'"
+          :access="access['32']"
+          :fnum="file.fnum"
+          :user="user"
+      >
+      </AdmissionForm>
+      <IframeTab
+          v-if="selectedTab.url"
+          :url="selectedTab.url"
+          :fnum="file.fnum"
+      >
 
-    </IframeTab>
+      </IframeTab>
+    </div>
   </div>
 </template>
 
@@ -132,7 +134,7 @@ export default {
 
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 #application-tabs > div {
   width: 100%;
   overflow: scroll;
