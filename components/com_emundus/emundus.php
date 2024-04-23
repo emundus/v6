@@ -641,6 +641,15 @@ JText::script('COM_EMUNDUS_EMAIL_CURRENT_FILE');
 JText::script('COM_EMUNDUS_EMAIL_ALL_FILES');
 JText::script('COM_EMUNDUS_EMAIL_ON_FILE');
 
+// COMMENTS
+JText::script('COM_EMUNDUS_FILES_ADD_COMMENT');
+JText::script('COM_EMUNDUS_FILES_CANNOT_ACCESS_COMMENTS');
+JText::script('COM_EMUNDUS_FILES_CANNOT_ACCESS_COMMENTS_DESC');
+JText::script('COM_EMUNDUS_FILES_COMMENT_TITLE');
+JText::script('COM_EMUNDUS_FILES_COMMENT_BODY');
+JText::script('COM_EMUNDUS_FILES_VALIDATE_COMMENT');
+JText::script('COM_EMUNDUS_FILES_COMMENT_DELETE');
+
 $app = JFactory::getApplication();
 
 // Require specific controller if requested

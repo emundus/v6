@@ -22,6 +22,14 @@
         :ratio="data.ratio"
     ></ApplicationSingle>
 
+    <Comments
+        v-else-if="component === 'comments'"
+        :fnum="datas.fnum.value"
+        :user="datas.user.value"
+    >
+
+    </Comments>
+
     <transition v-else name="slide-right">
       <component v-bind:is="$props.component"/>
     </transition>
@@ -33,6 +41,7 @@ import moment from "moment";
 
 import Attachments from "./views/Attachments.vue";
 import Files from './views/Files/Files.vue';
+import Comments from '@/components/Files/Comments.vue';
 
 import fileService from "./services/file.js";
 import list_v2 from "./views/list.vue";
@@ -81,7 +90,8 @@ export default {
     messages,
     Files,
 		list_v2,
-		TranslationTool
+		TranslationTool,
+    Comments
 	},
 
   created() {

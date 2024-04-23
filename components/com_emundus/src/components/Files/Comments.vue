@@ -73,8 +73,13 @@ export default {
     },
     access: {
       type: Object,
-      required: true,
-    },
+      default: () => ({
+        c: true,
+        r: true,
+        u: true,
+        d: true
+      })
+    }
   },
   mixins: [mixins, errors],
   data: () => ({
@@ -83,7 +88,6 @@ export default {
       reason: '',
       comment_body: '',
     },
-
     loading: false,
     adding_comment: false,
     show_options: false,
