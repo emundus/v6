@@ -58,4 +58,36 @@ class EmundusControllerComments extends JControllerLegacy
 
         $this->sendJsonResponse($response);
     }
+
+    public function addcomment()
+    {
+        $response = ['status' => false, 'code' => 403, 'message' => Text::_('ACCESS_DENIED')];
+        $ccid = $this->app->input->getInt('ccid', 0);
+        $comment = $this->app->input->getString('comment', '');
+
+        if (!empty($ccid) && !empty($comment)) {
+            $fnum = EmundusHelperFiles::getFnumFromId($ccid);
+
+            if (EmundusHelperAccess::asAccessAction(10, 'c', $this->user->id, $fnum)) {
+                $response['code'] = 500;
+                $target = $this->app->input->getString('target', '');
+                $target = !empty($target) ? json_decode($target, true) : [];
+                $visible_to_applicant = $this->app->input->getBool('visible_to_applicant', false);
+                $visible_to_applicant = $visible_to_applicant ? 1 : 0;
+
+                $model = $this->getModel('comments');
+                $comment_id = $model->addComment($ccid, $comment, $target, $visible_to_applicant, $this->user->id);
+
+                if (!empty($comment_id)) {
+                    $response['code'] = 200;
+                    $response['status'] = true;
+                    $response['data'] = $model->getComment($comment_id);
+                } else {
+                    $response['message'] = Text::_('COM_EMUNDUS_ADD_COMMENT_FAILED');
+                }
+            }
+        }
+
+        $this->sendJsonResponse($response);
+    }
 }
