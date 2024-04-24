@@ -78,6 +78,7 @@
                 @open-create-model="onOpenCreateModel"
                 @update-page-title="getPages(currentPage.id)"
                 @delete-element="ReloadPropertiesSection"
+                @stopDelete="resetContext"
             ></form-builder-page>
             <form-builder-document-list
                 ref="formBuilderDocumentList"

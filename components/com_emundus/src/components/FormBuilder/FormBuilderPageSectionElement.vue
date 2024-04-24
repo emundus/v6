@@ -1,5 +1,5 @@
 <template>
-  <div class="form-builder-page-section-element"
+  <div  class="form-builder-page-section-element"
        :id="'element_'+element.id"
        v-show="(!element.hidden && element.publish !== -2) || (element.hidden && sysadmin)"
        :class="{'unpublished': !element.publish || element.hidden, 'properties-active':propertiesOpened == element.id}">
@@ -38,7 +38,7 @@
       <form-builder-element-phone-number v-else-if="element.plugin === 'emundus_phonenumber'" type="phonenumber" :element="element"></form-builder-element-phone-number>
       <form-builder-element-currency v-else-if="element.plugin === 'currency'" type="currency" :element="element"></form-builder-element-currency>
       <form-builder-element-geolocation v-else-if="element.plugin === 'emundus_geolocalisation'" type="geolocation" :element="element"></form-builder-element-geolocation>
-      <form-builder-element-emundus-file-upload v-else-if="element.plugin === 'emundus_fileupload'" type="fileupload"  @trigger-element-properties="triggerElementProperties"  :element="element"></form-builder-element-emundus-file-upload>
+      <form-builder-element-emundus-file-upload v-else-if="(element.plugin === 'emundus_fileupload')" type="fileupload" @trigger-element-properties="triggerElementProperties" :element="element"></form-builder-element-emundus-file-upload>
       <div v-else v-html="element.element" class="fabrikElement"></div>
     </div>
   </div>
@@ -73,6 +73,11 @@ export default {
       type: Object,
       default: {}
     },
+    sectionRepeat: {
+      type: Boolean,
+      default: false,
+      required: true,
+    }
   },
   mixins: [formBuilderMixin,mixin],
   data() {

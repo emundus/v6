@@ -253,6 +253,7 @@ export default {
     },
     deleteElement(section , elementId) {
     this.$emit('delete-element', section , elementId);
+    this.$emit('stopDelete');
     },
   },
 }

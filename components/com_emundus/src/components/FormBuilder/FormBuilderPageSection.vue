@@ -49,6 +49,7 @@
                     v-for="element in elements"
                     :key="element.id"
                     :element="element"
+                    :sectionRepeat="section.repeat_group"
                     @open-element-properties="$emit('open-element-properties', element)"
                     @delete-element="deleteElement"
                     @cancel-delete-element="cancelDeleteElement"
@@ -129,8 +130,22 @@ export  default {
 
   created() {
     this.getElements();
+    this.SupprEmundusFileUploadRepeatable();
   },
   methods: {
+    SupprEmundusFileUploadRepeatable() {
+      console.log("test")
+      console.log(this.$props.section.repeat_group)
+      if (this.$props.section.repeat_group){
+        this.elements.forEach((element, index) => {
+          if (element.plugin === 'emundus_fileupload') {
+            this.deleteElement(element.id);
+          }
+        });
+      }
+      console.log("juju")
+      console.log(this.elements);
+    },
     getElements() {
       this.elements = Object.values(this.section.elements).length > 0 ? Object.values(this.section.elements) : [];
     },
@@ -198,7 +213,6 @@ export  default {
       this.elementsDeletedPending.push(elementId);
 	    this.getElements();
 	    this.updateLastSave();
-
       this.$emit('delete-element', this.section , elementId);
     },
     cancelDeleteElement(elementId) {
@@ -226,6 +240,7 @@ export  default {
     section: {
       handler() {
         this.getElements();
+        this.SupprEmundusFileUploadRepeatable();
       },
       deep: true
     }
