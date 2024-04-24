@@ -14,7 +14,7 @@
         "options": [
           {
             "type_field": "component",
-            "component": "EditApplicants",
+            "component": "EditSettingJoomla",
             "props": {
               "type": "general"
             }
@@ -143,6 +143,13 @@
             "type_field": "variables",
             "helptext": "",
             "placeholder": ""
+          },
+          {
+            "type_field": "component",
+            "component": "EditSettingJoomla",
+            "props": {
+              "type": "mail"
+            }
           }
         ]
       }
@@ -415,7 +422,7 @@
           },
           {
             "type_field": "component",
-            "component": "EditApplicants",
+            "component": "EditSettingJoomla",
             "props": {
               "type": "applicants"
             }

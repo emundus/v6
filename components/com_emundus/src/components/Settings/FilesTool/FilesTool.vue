@@ -48,7 +48,7 @@
 /* COMPONENTS */
 import EditStatus from "./EditStatus";
 import EditTags from "./EditTags";
-import EditApplicants from "./EditApplicants";
+import EditApplicants from "./EditSettingJoomla.vue";
 
 export default {
   name: "filesTool",

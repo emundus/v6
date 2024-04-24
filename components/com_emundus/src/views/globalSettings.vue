@@ -195,7 +195,7 @@ import StyleTool from '../components/Settings/Style/StyleTool';
 import AttachmentStorage from '../components/Settings/AttachmentStorage/AttachmentStorage';
 
 import SettingParam from '../../data/settings-global-group-params.json';
-import EditApplicants from "@/components/Settings/FilesTool/EditApplicants.vue";
+import EditSettingJoomla from "@/components/Settings/FilesTool/EditSettingJoomla.vue";
 import Global from "@/components/Settings/Style/General.vue";
 import EditTheme from "@/components/Settings/Style/EditTheme.vue";
 import EditFooter from "@/components/Settings/Content/EditFooter.vue";
@@ -213,7 +213,7 @@ import {forEach} from "lodash";
 export default {
   name: "globalSettings",
   components: {
-    EditApplicants,
+    EditSettingJoomla,
     EditorQuill,
     EditArticle,
     Orphelins,

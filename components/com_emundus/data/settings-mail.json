@@ -1,0 +1,34 @@
+{
+  "smtphost": {
+    "displayed": true,
+    "component": "joomla",
+    "label": "SMTP Host",
+    "param": "smtphost"
+  },
+    "smtpport": {
+        "displayed": true,
+        "component": "joomla",
+        "label": "SMTP Port",
+        "param": "smtpport"
+    },
+    "smtpsecure": {
+        "displayed": true,
+        "component": "joomla",
+        "label": "securité",
+        "param": "smtpsecure",
+        "options": [
+            {
+                "value": "0",
+                "label": "None"
+            },
+            {
+                "value": "1",
+                "label": "SSL"
+            },
+            {
+                "value": "2",
+                "label": "TLS"
+            }
+        ]
+    }
+}

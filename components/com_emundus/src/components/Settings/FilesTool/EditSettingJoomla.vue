@@ -63,6 +63,7 @@ export default {
 
             this.loading = false;
           });
+      console.log('jojo')
       console.log(this.params);
     },
 
