@@ -3,8 +3,8 @@
     <div id="file-comment" v-for="comment in parentComments" :key="comment.id"
       class="shadow rounded-lg py-2 px-4 my-4 em-white-bg"
     >
-      <div class="file-comment-header flex flex-row items-center justify-between mb-3" @click="replyToComment(comment.id)">
-        <div class="file-comment-header-left flex flex-row cursor-pointer items-center ">
+      <div class="file-comment-header flex flex-row items-center justify-between mb-3">
+        <div class="file-comment-header-left flex flex-row cursor-pointer items-center" @click="replyToComment(comment.id)">
           <div class="flex flex-col mr-3">
             <span class="em-text-neutral-500">{{ comment.date }}</span>
             <span>{{ comment.username }}</span>
