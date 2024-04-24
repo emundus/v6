@@ -1407,10 +1407,11 @@ class EmundusControllerUsers extends JControllerLegacy {
         $file_name = $data['fileName'];
 
         // Verification to be sure that the file's name is not an extern command, etc...
-        if (!preg_match('/^export_users_.+\.csv$/', $file_name)) {
+        if (!preg_match('/^export_users_[0-9\-_: ]+\.csv$/', $file_name)) {
             JFactory::getApplication()->enqueueMessage(JText::_('INVALID_FILE_NAME'), 'error');
             return;
         }
+
         $file_path = JPATH_SITE . '/tmp/' . $file_name;
 
         // Deleting the file
