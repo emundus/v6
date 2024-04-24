@@ -76,9 +76,11 @@ class EmundusHelperFabrikTest extends TestCase
         $this->assertEmpty($formatted_phone_number, 'Incorrect phone number returns empty string');
     }
 
-    /*
-     * Test the formatElementValue() method
-     * Should return the value formatted in a good way
+    /**
+     * @return void
+     * @description Test the formatElementValue() method
+     * It should return the value formatted in a good way
+     * @throws Exception
      */
     public function testformatElementValue()
     {

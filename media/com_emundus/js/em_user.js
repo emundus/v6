@@ -888,7 +888,6 @@ $(document).ready(function () {
 					const response = await fetch(url, {
 						method: 'POST',
 						body: new URLSearchParams({
-							user: sid
 						})
 					});
 
@@ -1174,9 +1173,9 @@ $(document).ready(function () {
 					}
 				}
 
-				var formData = new FormData();
+				const formData = new FormData();
 				formData.append('users', checkInput);
-				formData.append('checkboxes', JSON.stringify(checkedBoxes));
+				formData.append('checkboxes', checkedBoxes);
 
 				fetch('index.php?option=com_emundus&controller=users&task=exportusers&Itemid=' + itemId, {
 					method: 'POST',

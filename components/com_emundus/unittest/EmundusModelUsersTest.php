@@ -227,10 +227,6 @@ class EmundusModelUsersTest extends TestCase
         }
     }
 
-    /*
-     * Test the getUserDetails() method
-     * Should return an array with all columns
-     */
     /**
      * @covers EmundusModelUsers::getUserDetails
      * @return void

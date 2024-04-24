@@ -4259,7 +4259,12 @@ if(in_array($applicant,$exceptions)){
 	                ];
 	                $export_menu = EmundusHelperUpdate::addJoomlaMenu($datas);
 
-	                if($export_menu['status'])
+                    EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_EXPORT', 'Exporter');
+                    EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_EXPORT', 'Export', 'override', null, null, null, 'en-GB');
+
+                    EmundusHelperUpdate::insertFalangTranslation(1, 3315, 'menu', 'title', 'Export to Excel');
+
+                    if($export_menu['status'])
 	                {
 		                $datas = [
 			                'menutype'     => 'actions-users',
@@ -4271,7 +4276,15 @@ if(in_array($applicant,$exceptions)){
 			                'note'         => '12|r|1|6'
 		                ];
 		                EmundusHelperUpdate::addJoomlaMenu($datas,$export_menu['id']);
-	                }
+
+                        EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_EXPORT_EXCEL', 'Exporter vers Excel');
+                        EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_EXPORT_EXCEL', 'Export to Excel', 'override', null, null, null, 'en-GB');
+
+                        EmundusHelperUpdate::insertFalangTranslation(1, 3314, 'menu', 'title', 'Export');
+
+
+
+                    }
                 }
 			}
 		}

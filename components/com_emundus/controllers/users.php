@@ -1310,8 +1310,10 @@ class EmundusControllerUsers extends JControllerLegacy {
         $m_users = new EmundusModelUsers();
 
         // Retrieve the users' data to extract (indicated by the checkboxes checked)
-        $checkboxes = json_decode($_POST["checkboxes"], true);
-        $users = $_POST["users"];
+        $checkboxes = $this->input->getString('checkboxes');
+        $users = $this->input->getString('users', null);
+
+        $checkboxes = (array)json_decode(stripslashes($checkboxes));
 
         // If 'all' is choosed, it's necessary to retrieve the ids
         if ($users === 'all') {
