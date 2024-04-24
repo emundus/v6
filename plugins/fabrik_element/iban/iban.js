@@ -118,367 +118,361 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                     mask: 'aa00 **** **** **** **** **** ***',
                     startsWith: 'FR',
                     lazy: false,
-                    country: 'France'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_FRANCE')
                 },
                 {
                     mask: 'aa00 **** **** **** **** ****',
                     startsWith: 'AD',
                     lazy: false,
-                    country: 'Andorre'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_ANDORRA')
                 },
                 {
                     mask: 'aa00 **** **** **** ****',
                     startsWith: 'AT',
                     lazy: false,
-                    country: 'Autriche'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_AUSTRIA')
                 },
                 {
                     mask: 'aa00 **** **** **** ****',
                     startsWith: 'BA',
                     lazy: false,
-                    country: 'Bosnie Herzégovine'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_BOSNIE_HERZEGOVINE')
                 },
                 {
                     mask: 'aa00 **** **** ****',
                     startsWith: 'BE',
                     lazy: false,
-                    country: 'Belgique'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_BELGIUM')
                 },
                 {
                     mask: 'aa00 **** **** **** **** **',
                     startsWith: 'BG',
                     lazy: false,
-                    country: 'Bulgarie'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_BULGARIA')
                 },
                 {
                     mask: 'aa00 **** **** **** **** *',
                     startsWith: 'CH',
                     lazy: false,
-                    country: 'Suisse'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_SWITZERLAND')
                 },
                 {
                     mask: 'aa00 **** **** **** **** **** ****',
                     startsWith: 'CY',
                     lazy: false,
-                    country: 'Chypre'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_CYPRUS')
                 },
                 {
                     mask: 'aa00 **** **** **** **** ****',
                     startsWith: 'CZ',
                     lazy: false,
-                    country: 'République thèque'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_CZECH_REPUBLIC')
                 },
                 {
                     mask: 'aa00 **** **** **** **** **',
                     startsWith: 'DE',
                     lazy: false,
-                    country: 'Allemagne'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_GERMANY')
                 },
                 {
                     mask: 'aa00 **** **** **** **',
                     startsWith: 'DK',
                     lazy: false,
-                    country: 'Danemark'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_DENMARK')
                 },
                 {
                     mask: 'aa00 **** **** **** ****',
                     startsWith: 'EE',
                     lazy: false,
-                    country: 'Estonie'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_ESTONIA')
                 },
                 {
                     mask: 'aa00 **** **** **** **** ****',
                     startsWith: 'ES',
                     lazy: false,
-                    country: 'Espagne'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_SPAIN')
                 },
                 {
                     mask: 'aa00 **** **** **** **',
                     startsWith: 'FI',
                     lazy: false,
-                    country: 'Finlande'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_FINLAND')
                 },
                 {
                     mask: 'aa00 **** **** **** **',
                     startsWith: 'FO',
                     lazy: false,
-                    country: 'Îles Féroé'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_FEROE_ISLANDS')
                 },
                 {
                     mask: 'aa00 **** **** **** **** **',
                     startsWith: 'GB',
                     lazy: false,
-                    country: 'Grande-Bretagne'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_UNITED_KINGDOM')
                 },
                 {
                     mask: 'aa00 **** **** **** **** ***',
                     startsWith: 'GI',
                     lazy: false,
-                    country: 'Gibraltar'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_GIBRALTAR')
                 },
                 {
                     mask: 'aa00 **** **** **** **',
                     startsWith: 'GL',
                     lazy: false,
-                    country: 'Gröenland'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_GREENLAND')
                 },
                 {
                     mask: 'aa00 **** **** **** **** **** ***',
                     startsWith: 'GR',
                     lazy: false,
-                    country: 'Grèce'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_GREECE')
                 },
                 {
                     mask: 'aa00 **** **** **** **** *',
                     startsWith: 'HR',
                     lazy: false,
-                    country: 'Croatie'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_CROATIA')
                 },
                 {
                     mask: 'aa00 **** **** **** **** **** ****',
                     startsWith: 'HU',
                     lazy: false,
-                    country: 'Hongrie'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_HUNGARY')
                 },
                 {
                     mask: 'aa00 **** **** **** **** **',
                     startsWith: 'IE',
                     lazy: false,
-                    country: 'Irlande'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_IRELAND')
                 },
                 {
                     mask: 'aa00 **** **** **** **** **** **',
                     startsWith: 'IS',
                     lazy: false,
-                    country: 'Islande'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_ICELAND')
                 },
                 {
                     mask: 'aa00 **** **** **** **** **** ***',
                     startsWith: 'IT',
                     lazy: false,
-                    country: 'Italie'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_ITALY')
                 },
                 {
                     mask: 'aa00 **** **** **** **** *',
                     startsWith: 'LI',
                     lazy: false,
-                    country: 'Liechtenstein'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_LIECHTENSTEIN')
                 },
                 {
                     mask: 'aa00 **** **** **** ****',
                     startsWith: 'LT',
                     lazy: false,
-                    country: 'Lituanie'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_LITHUANIA')
                 },
                 {
                     mask: 'aa00 **** **** **** ****',
                     startsWith: 'LU',
                     lazy: false,
-                    country: 'Luxembourg'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_LUXEMBOURG')
                 },
                 {
                     mask: 'aa00 **** **** **** **** *',
                     startsWith: 'LV',
                     lazy: false,
-                    country: 'Lettonie'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_LATVIA')
                 },
                 {
                     mask: 'aa00 **** **** **** **** **** ***',
                     startsWith: 'MC',
                     lazy: false,
-                    country: 'Monaco'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_MONACO')
                 },
                 {
                     mask: 'aa00 **** **** **** **** ****',
                     startsWith: 'MD',
                     lazy: false,
-                    country: 'Moldavie'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_REPUBLIC_OF_MOLDOVA')
                 },
                 {
                     mask: 'aa00 **** **** **** **** **',
                     startsWith: 'ME',
                     lazy: false,
-                    country: 'Monténégro'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_MONTENEGRO')
                 },
                 {
                     mask: 'aa00 **** **** **** ***',
                     startsWith: 'MK',
                     lazy: false,
-                    country: 'Macédoine'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_MACEDONIA')
                 },
                 {
                     mask: 'aa00 **** **** **** **** **** ***',
                     startsWith: 'MR',
                     lazy: false,
-                    country: 'Mauritanie'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_MOROCCO')
                 },
                 {
                     mask: 'aa00 **** **** **** **** **** **** ***',
                     startsWith: 'MT',
                     lazy: false,
-                    country: 'Malte'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_MALTA')
                 },
                 {
                     mask: 'aa00 **** **** **** **** **** **** **',
                     startsWith: 'MU',
                     lazy: false,
-                    country: 'Île Maurice'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_MAURITIUS')
                 },
                 {
                     mask: 'aa00 **** **** **** **',
                     startsWith: 'NL',
                     lazy: false,
-                    country: 'Pays-Bas'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_NETHERLANDS')
                 },
                 {
                     mask: 'aa00 **** **** ***',
                     startsWith: 'NO',
                     lazy: false,
-                    country: 'Norvège'
-                },
-                {
-                    mask: 'aa00 **** **** ***',
-                    startsWith: 'NO',
-                    lazy: false,
-                    country: 'Norvège'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_NORWAY')
                 },
                 {
                     mask: 'aa00 **** **** **** **** ****',
                     startsWith: 'PK',
                     lazy: false,
-                    country: 'Pakistan'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_PAKISTAN')
                 },
                 {
                     mask: 'aa00 **** **** **** **** **** ****',
                     startsWith: 'PL',
                     lazy: false,
-                    country: 'Pologne'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_POLAND')
                 },
                 {
                     mask: 'aa00 **** **** **** **** **** **** *',
                     startsWith: 'PS',
                     lazy: false,
-                    country: 'Palestine'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_PALESTINE')
                 },
                 {
                     mask: 'aa00 **** **** **** **** **** *',
                     startsWith: 'PT',
                     lazy: false,
-                    country: 'Portugal'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_PORTUGAL')
                 },
                 {
                     mask: 'aa00 **** **** **** **** **** **** *',
                     startsWith: 'QA',
                     lazy: false,
-                    country: 'Qatar'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_QATAR')
                 },
                 {
                     mask: 'aa00 **** **** **** **** ****',
                     startsWith: 'RO',
                     lazy: false,
-                    country: 'Roumanie'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_ROMANIA')
                 },
                 {
                     mask: 'aa00 **** **** **** **** **',
                     startsWith: 'RS',
                     lazy: false,
-                    country: 'Serbie'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_SERBIA')
                 },
                 {
                     mask: 'aa00 **** **** **** **** ****',
                     startsWith: 'SA',
                     lazy: false,
-                    country: 'Arabie Saoudite'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_SAUDI_ARABIA')
                 },
                 {
                     mask: 'aa00 **** **** **** **** ****',
                     startsWith: 'SE',
                     lazy: false,
-                    country: 'Suède'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_SWEDEN')
                 },
                 {
                     mask: 'aa00 **** **** **** ***',
                     startsWith: 'SI',
                     lazy: false,
-                    country: 'Slovénie'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_SLOVENIA')
                 },
                 {
                     mask: 'aa00 **** **** **** **** ****',
                     startsWith: 'SK',
                     lazy: false,
-                    country: 'Slovaquie'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_SLOVAKIA')
                 },
                 {
                     mask: 'aa00 **** **** **** **** **** ***',
                     startsWith: 'SM',
                     lazy: false,
-                    country: 'Saint-Marin'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_SAN_MARINO')
                 },
                 {
                     mask: 'aa00 **** **** **** **** ****',
                     startsWith: 'TN',
                     lazy: false,
-                    country: 'Tunisie'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_TUNISIA')
                 },
                 {
                     mask: 'aa00 **** **** **** **** **** **',
                     startsWith: 'TR',
                     lazy: false,
-                    country: 'Turquie'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_TURKEY')
                 },
                 {
                     mask: 'aa00 **** **** **** **** **** ****',
                     startsWith: 'AL',
                     lazy: false,
-                    country: 'Albanie'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_ALBANIA')
                 },
                 {
                     mask: 'aa00 **** **** **** **** **** ****',
                     startsWith: 'BY',
                     lazy: false,
-                    country: 'Biélorussie'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_BELARUS')
                 },
                 {
                     mask: 'aa00 **** **** **** **** **',
                     startsWith: 'CR',
                     lazy: false,
-                    country: 'Costa Rica'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_COSTA_RICA')
                 },
                 {
                     mask: 'aa00 **** **** **** **** **** **** *',
                     startsWith: 'EG',
                     lazy: false,
-                    country: 'Égypte'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_EGYPT')
                 },
                 {
                     mask: 'aa00 **** **** **** **** **',
                     startsWith: 'GE',
                     lazy: false,
-                    country: 'Géorgie'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_GEORGIA')
                 },
                 {
                     mask: 'aa00 **** **** **** **** **** **** ****',
                     startsWith: 'LC',
                     lazy: false,
-                    country: 'Sainte-Lucie'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_SAINT_LUCIA')
                 },
                 {
                     mask: 'aa00 **** **** **** **** **** **** ***',
                     startsWith: 'SC',
                     lazy: false,
-                    country: 'Seychelles'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_SEYCHELLES')
                 },
                 {
                     mask: 'aa00 **** **** **** **** **** **** *',
                     startsWith: 'UA',
                     lazy: false,
-                    country: 'Ukraine'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_UKRAINE')
                 },
                 {
                     mask: 'aa00 **** **** **** ****',
                     startsWith: 'XK',
                     lazy: false,
-                    country: 'Kosovo'
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_KOSOVO')
                 },
                 {
                     mask: 'aa00 **** **** **** **** **** ***',
