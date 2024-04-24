@@ -28,14 +28,14 @@ class EmundusAdministratorModelComments extends JModelList
     {
         $installed = false;
 
-        $installation_steps = [];
-        $installation_steps[] = EmundusHelperUpdate::addColumn('jos_emundus_comments', 'ccid', 'INT', null, 0);
-        $installation_steps[] = EmundusHelperUpdate::addColumn('jos_emundus_comments', 'parent_id', 'INT', null, 0, 0);
-        $installation_steps[] = EmundusHelperUpdate::addColumn('jos_emundus_comments', 'opened', 'TINYINT', 1, 0, 1);
-        $installation_steps[] = EmundusHelperUpdate::addColumn('jos_emundus_comments', 'updated', 'DATETIME');
-        $installation_steps[] = EmundusHelperUpdate::addColumn('jos_emundus_comments', 'updated_by', 'INT');
-        $installation_steps[] = EmundusHelperUpdate::addColumn('jos_emundus_comments', 'target_type', 'VARCHAR', 255);
-        $installation_steps[] = EmundusHelperUpdate::addColumn('jos_emundus_comments', 'target_id', 'INT');
+        $tasks = [];
+        $tasks[] = EmundusHelperUpdate::addColumn('jos_emundus_comments', 'ccid', 'INT', null, 0);
+        $tasks[] = EmundusHelperUpdate::addColumn('jos_emundus_comments', 'parent_id', 'INT', null, 0, 0);
+        $tasks[] = EmundusHelperUpdate::addColumn('jos_emundus_comments', 'opened', 'TINYINT', 1, 0, 1);
+        $tasks[] = EmundusHelperUpdate::addColumn('jos_emundus_comments', 'updated', 'DATETIME');
+        $tasks[] = EmundusHelperUpdate::addColumn('jos_emundus_comments', 'updated_by', 'INT');
+        $tasks[] = EmundusHelperUpdate::addColumn('jos_emundus_comments', 'target_type', 'VARCHAR', 255);
+        $tasks[] = EmundusHelperUpdate::addColumn('jos_emundus_comments', 'target_id', 'INT');
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -56,14 +56,48 @@ class EmundusAdministratorModelComments extends JModelList
             foreach ($columns as $column) {
                 try {
                     $db->setQuery('ALTER TABLE ' . $db->quoteName('jos_emundus_comments') . ' DROP COLUMN ' . $db->quoteName($column));
-                    $installation_steps[] = $db->execute();
+                    $tasks[] = $db->execute();
                 } catch (Exception $e) {
-                    $installation_steps[] = false;
+                    $tasks[] = false;
                 }
             }
         }
 
-        if (!in_array(false, $installation_steps)) {
+        $columns = [
+            [
+                'name' => 'comment_id',
+                'type' => 'INT',
+                'null' => 0,
+            ],
+            [
+                'name' => 'reader_id',
+                'type' => 'INT',
+                'null' => 0,
+            ],
+        ];
+        $foreign_keys = [
+            [
+                'name'           => 'jos_emundus_comments_read_by_jos_emundus_comments_id_fk',
+                'from_column'    => 'comment_id',
+                'ref_table'      => 'jos_emundus_comments',
+                'ref_column'     => 'id',
+                'update_cascade' => true,
+                'delete_cascade' => true,
+            ],
+            [
+                'name'           => 'jos_emundus_comments_read_by_jos_users_id_fk',
+                'from_column'    => 'reader_id',
+                'ref_table'      => 'jos_users',
+                'ref_column'     => 'id',
+                'update_cascade' => true,
+                'delete_cascade' => true,
+            ],
+        ];
+        EmundusHelperUpdate::createTable('jos_emundus_comments_read_by', $columns, $foreign_keys, 'Liste des utilisateurs ayant lu un commentaire');
+        
+        
+
+        if (!in_array(false, $tasks)) {
             $installed = true;
         }
 
