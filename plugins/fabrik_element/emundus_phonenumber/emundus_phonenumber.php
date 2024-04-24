@@ -164,10 +164,13 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
      */
     public function DBRequest()
     {
+        $shortlang = substr(JFactory::getLanguage()->getTag(),0 ,2);
+        $shortlang = $shortlang == 'fr' || $shortlang == 'en' ? $shortlang : 'en';
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $query->select('DISTINCT iso2,label_fr,label_en,flag,flag_img')
-            ->from($db->quoteName('data_country'));
+            ->from($db->quoteName('data_country'))
+            ->order('label_'.$shortlang);
         $db->setQuery($query);
 
         $db->execute();
