@@ -92,8 +92,28 @@ class EmundusModelComments extends JModelLegacy
         return $new_comment_id;
     }
 
-    public function deleteComment($comment_id) {
+    public function deleteComment($comment_id, $user) {
+        $deleted = false;
 
+        if (!empty($comment_id) && !empty($user)) {
+            $query = $this->db->getQuery(true);
+            $query->delete($this->db->quoteName('#__emundus_comments'))
+                ->where('id = ' . $this->db->quote($comment_id))
+                ->orWhere('parent_id = ' . $this->db->quote($comment_id));
+
+            try {
+                $this->db->setQuery($query);
+                $deleted = $this->db->execute();
+            } catch (Exception $e) {
+                JLog::add('Failed to delete comment ' . $e->getMessage(), JLog::ERROR, 'com_emundus.comments');
+            }
+
+            if ($deleted) {
+                // TODO: log deleted comments
+            }
+        }
+
+        return $deleted;
     }
 
     public function updateComment($comment_id, $comment, $user) {

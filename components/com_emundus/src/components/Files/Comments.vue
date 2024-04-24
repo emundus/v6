@@ -149,7 +149,13 @@ export default {
     },
     deleteComment(commentId) {
       if (commentId > 0) {
-
+        commentsService.deleteComment(commentId).then((response) => {
+          if (response.status) {
+            this.comments = this.comments.filter((comment) => comment.id !== commentId);
+          }
+        }).catch((error) => {
+          this.handleError(error);
+        });
       }
     }
   },

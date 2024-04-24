@@ -38,6 +38,37 @@ export default {
                     msg: e.message
                 };
             }
+        } else {
+            return {
+                status: false,
+                msg: 'Invalid data'
+            };
+        }
+    },
+    async deleteComment(comment_id) {
+        if (comment_id > 0) {
+            try {
+                const formData = new FormData();
+                formData.append('comment_id', comment_id);
+
+                const response = await client().post('index.php?option=com_emundus&controller=comments&task=deletecomment', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+
+                return response.data;
+            } catch (e) {
+                return {
+                    status: false,
+                    msg: e.message
+                };
+            }
+        } else {
+            return {
+                status: false,
+                msg: 'Invalid data'
+            };
         }
     }
 };
