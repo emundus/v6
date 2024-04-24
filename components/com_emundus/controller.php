@@ -1447,7 +1447,7 @@ class EmundusController extends JControllerLegacy {
             foreach ($attachments as $id => $attachment) {
                 if (!$attachment->selected) continue;
                 $query .= '('.$profile_id.', '.$id.', ';
-                $query .= $attachment->displayed?'1':'0';
+                $query .= $attachment->displayed?'0':'0';
                 $query .= ', ';
                 $query .= $attachment->required?'1':'0';
                 $query .= ', ';

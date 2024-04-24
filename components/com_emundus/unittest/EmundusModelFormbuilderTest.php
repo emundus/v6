@@ -332,7 +332,7 @@ class EmundusModelFormbuilderTest extends TestCase
 		$query->clear()
 			->insert('#__emundus_setup_attachment_profiles')
 			->columns(['profile_id', 'campaign_id', 'attachment_id', 'displayed', 'mandatory', 'ordering', 'published', 'bank_needed', 'duplicate', 'sample_filepath', 'has_sample'])
-			->values('1, null, ' . $attachment_id . ', 1, 1, 1, 1, null, 0, null, 0');
+			->values('1, null, ' . $attachment_id . ', 0, 1, 1, 1, null, 0, null, 0');
 		$db->setQuery($query);
 		$db->execute();
 

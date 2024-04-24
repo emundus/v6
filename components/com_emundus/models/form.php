@@ -1521,13 +1521,13 @@ class EmundusModelForm extends JModelList {
 
         $query =
             'INSERT INTO jos_emundus_setup_attachment_profiles 
-        (attachment_id, profile_id, displayed, published)
+        (attachment_id, profile_id, 0, published)
         VALUES 
         ' .
             implode(',', $values) .
             '
         ON DUPLICATE KEY UPDATE 
-        displayed = VALUES(displayed),
+        displayed = 0,
         published = VALUES(published),
         profile_id = VALUES(profile_id)
         ;';
@@ -1623,7 +1623,7 @@ class EmundusModelForm extends JModelList {
                 ->set($db->quoteName('profile_id') . ' = ' . $db->quote($profile))
                 ->set($db->quoteName('campaign_id') . ' = ' . $db->quote($campaign))
                 ->set($db->quoteName('attachment_id') . ' = ' . $db->quote($did))
-                ->set($db->quoteName('displayed') . ' = ' . $db->quote(1))
+                ->set($db->quoteName('displayed') . ' = ' . $db->quote(0))
                 ->set($db->quoteName('mandatory') . ' = ' . $db->quote(0))
                 ->set($db->quoteName('ordering') . ' = ' . $db->quote(0));
             $db->setQuery($query);
