@@ -3,10 +3,17 @@
     <div id="file-comment" v-for="comment in parentComments" :key="comment.id"
       class="shadow rounded-lg py-2 px-4 my-4 em-white-bg"
     >
-      <div class="file-comment-header flex flex-row justify-between">
-        <div class="file-comment-header-left flex flex-col">
-          <span>{{ comment.date }}</span>
-          <span>{{ comment.username }}</span>
+      <div class="file-comment-header flex flex-row items-center justify-between mb-3" @click="replyToComment(comment.id)">
+        <div class="file-comment-header-left flex flex-row cursor-pointer items-center ">
+          <div class="flex flex-col mr-3">
+            <span class="em-text-neutral-500">{{ comment.date }}</span>
+            <span>{{ comment.username }}</span>
+          </div>
+          <div>
+            <span v-if="childrenComments[comment.id].length > 0" class="label label-green-2">
+              {{ childrenComments[comment.id].length }} {{ childrenComments[comment.id].length > 1 ? translate('COM_EMUNDUS_COMMENTS_ANSWERS') : translate('COM_EMUNDUS_COMMENTS_ANSWER') }}
+            </span>
+          </div>
         </div>
         <div class="file-comment-header-right">
           <span class="material-icons-outlined cursor-pointer" @click="replyToComment(comment.id)">reply</span>
