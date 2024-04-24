@@ -385,6 +385,57 @@ function checkPasswordSymbols(element) {
     }
 }
 
+function cleanNumberInput(element, maxDecimals) {
+    let value = element.get('value');
+    const input = document.getElementById(element.strElement);
+
+    const nonDigitExceptCommaDot = /[^0-9.,]/;
+
+    const moreThanOneCommaDot = /[.,].*[.,]/;
+
+    const caretPosition = input.selectionStart;
+    const lastInsertedCharacter = value.charAt(caretPosition - 1);
+
+    if (nonDigitExceptCommaDot.test(value)) {
+        value = value.replace(nonDigitExceptCommaDot, '');
+    }
+
+    // If the last inserted character is a comma, replace it with a dot
+    if (lastInsertedCharacter === ',') {
+        value = value.substring(0, caretPosition - 1) + '.' + value.substring(caretPosition);
+    }
+
+    if (moreThanOneCommaDot.test(value)) {
+        value = value.substring(0, caretPosition - 1) + value.substring(caretPosition);
+    }
+
+    const dotOrCommaIndex = value.indexOf(".") !== -1 ? value.indexOf(".") : value.indexOf(",");
+    if (dotOrCommaIndex !== -1) {
+        const digitsAfterDotOrComma = value.substring(dotOrCommaIndex + 1).length;
+        if (digitsAfterDotOrComma > maxDecimals) {
+            value = value.substring(0, caretPosition - 1) + value.substring(caretPosition);
+        }
+    }
+
+    if (maxDecimals === 0 && value.indexOf(".") !== -1) {
+        value = value.replace(".", "");
+    }
+
+    if (maxDecimals > 0) {
+        // remove all characters after dot + maxdecimals
+        const dotIndex = value.indexOf(".");
+        if (dotIndex !== -1) {
+            value = value.substring(0, dotIndex + maxDecimals + 1);
+        }
+    }
+
+    // remove all non numeric characters
+    value = value.replace(/[^0-9.,]/g, '');
+
+    return value;
+}
+
+
 function prefillBic(element, bic_element) {
     let table_name = element.form.options.primaryKey.split('___')[0];
     var fab = element.form.elements;
