@@ -1001,5 +1001,24 @@ class EmundusControllerCampaign extends JControllerLegacy {
         echo json_encode((object)$tab);
         exit;
     }
+
+    public function getProgrammeByCampaignID() {
+        $response = ['status' => 0, 'msg' => JText::_('ACCESS_DENIED'), 'code' => 403];
+
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+            $jinput = JFactory::getApplication()->input;
+            $campaign_id = $jinput->getInt('campaign_id', 0);
+            $programmes = $this->m_campaign->getProgrammeByCampaignID($campaign_id);
+
+            if (!empty($programmes)) {
+                $response = array('status' => 1, 'msg' => JText::_('PROGRAMMES_RETRIEVED'), 'data' => $programmes);
+            } else {
+                $response = array('status' => 0, 'msg' => JText::_('NO_PROGRAMMES'), 'data' => $programmes);
+            }
+        }
+
+        echo json_encode((object)$response);
+        exit;
+    }
 }
 ?>
