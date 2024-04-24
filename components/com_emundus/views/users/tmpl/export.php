@@ -1,5 +1,7 @@
 <?php
 
+use Joomla\CMS\Language\Text;
+
 $m_users = new EmundusModelUsers();
 $jinput = JFactory::getApplication()->input;
 
@@ -28,7 +30,7 @@ $user_columns = $m_users->getJoomlaUserColumns();
             ?>
             <div class="form-group flex items-center mb-1">
                 <input type="checkbox" id="checkbox-<?= $column->name ?>" name="checkbox-csv" value="<?= $column->label ?>" onchange="uncheckCheckboxAllElement(this)" class="mr-1 mt-2">
-                <label for="checkbox-<?= $column->name ?>" class="checkbox-label align-middle mt-1.5"><?= JText::_($column->label) ?></label>
+                <label for="checkbox-<?= $column->name ?>" class="checkbox-label align-middle mt-1.5"><?= Text::_($column->label) ?></label>
             </div>
             <?php
         }
@@ -40,7 +42,7 @@ $user_columns = $m_users->getJoomlaUserColumns();
             ?>
             <div class="form-group flex items-center mb-1">
                 <input type="checkbox" id="checkbox-<?= $field->name ?>" name="checkbox-csv" value="<?= $field->label ?>" onchange="uncheckCheckboxAllElement(this)" class="mr-1 mt-2">
-                <label for="checkbox-<?= $field->name ?>" class="checkbox-label align-middle mt-1.5"><?= JText::_($field->label) ?></label>
+                <label for="checkbox-<?= $field->name ?>" class="checkbox-label align-middle mt-1.5"><?= Text::_($field->label) ?></label>
             </div>
             <?php
         }

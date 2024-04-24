@@ -3753,6 +3753,10 @@ class EmundusModelUsers extends JModelList {
 			{
 				$db->setQuery($query);
 				$columns = $db->loadObjectList();
+                // Sort alphabetically all the columns
+                usort($columns, function ($a, $b) {
+                    return strcmp(Text::_(strtoupper($a->label)), Text::_(strtoupper($b->label)));
+                });
 			}
 			catch (Exception $e)
 			{
@@ -3801,6 +3805,11 @@ class EmundusModelUsers extends JModelList {
                 'label' => 'COM_EMUNDUS_LASTVISITDATE',
             )
         );
+
+        // Sort alphabetically all the columns
+        usort($user_columns, function ($a, $b) {
+            return strcmp(Text::_(strtoupper($a->label)), Text::_(strtoupper($b->label)));
+        });
         return $user_columns;
     }
 
@@ -3809,7 +3818,7 @@ class EmundusModelUsers extends JModelList {
 	 * @return array
 	 * @description Return an array of 2 elements
 	 *  First element concerns the columns form profile
-	 *  Second element concerns data available on the user list table (email, etc...)
+	 *  Second element concerns Joomla user columns (email, etc...)
 	 * @throws Exception
 	 */
     public function getAllInformationsToExport($uid)
@@ -3901,19 +3910,10 @@ class EmundusModelUsers extends JModelList {
                 // Create a complete array with all the data we want
                 $data = array(
                     'columns' => $columns,
-                    'user_data' => $j_columns
+                    'j_columns' => $j_columns
                 );
 
-                // Sort alphabetically all the columns
-                usort($data['columns'], function ($a, $b) {
-                    return strcmp(Text::_($a->label), Text::_($b->label));
-                });
-
-                usort($data['user_data'], function ($a, $b) {
-                    return strcmp(Text::_($a->label), Text::_($b->label));
-                });
             }
-
         }
         return $data;
     }
@@ -3933,22 +3933,24 @@ class EmundusModelUsers extends JModelList {
 			if(!empty($user))
 			{
 				$user = $user[0];
-				foreach ($columns['columns'] as $column)
-				{
-					if ($column->value == null)
-					{
-						$user_details[$column->label] = EmundusHelperFabrik::formatElementValue($column->name, $user->{$column->name}, $column->group_id);
-					}
-					else
-					{
-						$user_details[$column->label] = $column->value;
-					}
-				}
+                foreach ($columns['columns'] as $column) {
+                    if (isset($column->value)) {
+                        $user_details[$column->label] = $column->value;
+                    } else {
+                        $user_details[$column->label] = EmundusHelperFabrik::formatElementValue($column->name, $user->{$column->name}, $column->group_id);
+                    }
+                }
 
-				foreach ($columns['user_data'] as $field)
+
+                foreach ($columns['j_columns'] as $field)
 				{
 					$user_details[$field->label] = $field->value;
 				}
+
+                // Sort alphabetically all the columns
+                uksort($user_details, function ($a, $b) {
+                    return strcmp(Text::_(strtoupper($a)), Text::_(strtoupper($b)));
+                });
 
 			}
         }

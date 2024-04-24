@@ -1071,9 +1071,17 @@ die("<script>
                 Log::add('components/com_emundus/helpers/fabrik | Error when try to get fabrik elements table data : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
             }
 
-            $params = json_decode($element->params, true);
+            $params = null;
+            if (!empty($element)) {
+                $params = json_decode($element->params, true);
+            }
 
-            switch ($element->plugin) {
+            $plugin = null;
+            if (!empty($element->plugin)) {
+                $plugin = $element->plugin ;
+            }
+
+            switch ($plugin) {
                 case 'date':
 					$date_format = $params['date_form_format'];
                     $local = $params['date_store_as_local'] ? 1 : 0;

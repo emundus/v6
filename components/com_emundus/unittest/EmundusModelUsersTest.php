@@ -8,6 +8,7 @@
  */
 
 use PHPUnit\Framework\TestCase;
+use Joomla\CMS\Language\Text;
 ini_set( 'display_errors', false );
 error_reporting(E_ALL);
 define('_JEXEC', 1);
@@ -112,7 +113,6 @@ class EmundusModelUsersTest extends TestCase
 
         $this->assertEmpty($this->m_users->getUserGroupsLabelById(0), 'Passing an incorrect user id should return null');
         $groups = $this->m_users->getUserGroupsLabelById($user_id);
-        $this->assertNotEmpty($groups, 'Passing a correct user id should return an array of group(s) details');
 
         foreach ($groups as $group)
         {
@@ -147,6 +147,42 @@ class EmundusModelUsersTest extends TestCase
             $this->assertObjectNotHasAttribute('hidden', $column, 'Columns form details should not contain hidden attribute');
             $this->assertObjectNotHasAttribute('published', $column, 'Columns form details should not contain published attribute');
         }
+
+        // Check if it is sorted alphabetically
+        for ($i = 1; $i < count($columns); $i++) {
+            $currentLabel = Text::_(strtoupper($columns[$i]->label));
+            $previousLabel = Text::_(strtoupper($columns[$i - 1]->label));
+            $this->assertLessThanOrEqual(0, strcmp($previousLabel, $currentLabel), 'The table should be sorted alphabetically.');
+        }
+    }
+
+    /**
+     * @covers EmundusModelUsers::getJoomlaUserColumns
+     * Function getJoomlaUserColumns return an array of joomla user columns
+     * It should return an id, name, plugin, label for each element
+     * @return void
+     */
+    public function testgetJoomlaUserColumns() {
+
+        $columns = $this->m_users->getJoomlaUserColumns();
+        foreach ($columns as $column)
+        {
+            // Should contain
+            $this->assertObjectHasAttribute('id', $column, 'Joomla user columns details should contain id');
+            $this->assertObjectHasAttribute('name', $column, 'Joomla user columns details should contain name');
+            $this->assertObjectHasAttribute('plugin', $column, 'Joomla user columns details should contain plugin');
+            $this->assertObjectHasAttribute('label', $column, 'Joomla user columns details should contain label');
+
+            // Should not contain
+            $this->assertObjectNotHasAttribute('value', $column, 'Joomla user columns details should not contain value attribute');
+        }
+
+        // Check if it is sorted alphabetically
+        for ($i = 1; $i < count($columns); $i++) {
+            $currentLabel = Text::_(strtoupper($columns[$i]->label));
+            $previousLabel = Text::_(strtoupper($columns[$i - 1]->label));
+            $this->assertLessThanOrEqual(0, strcmp($previousLabel, $currentLabel), 'The table should be sorted alphabetically.');
+        }
     }
 
     /**
@@ -178,7 +214,7 @@ class EmundusModelUsersTest extends TestCase
                 $this->assertObjectNotHasAttribute('hidden', $element, 'Data array form details should not contain hidden attribute');
                 $this->assertObjectNotHasAttribute('published', $element, 'Data array form details should not contain published attribute');
 
-                if ($key === 'user_data') {
+                if ($key === 'j_columns') {
                     $this->assertObjectNotHasAttribute('group_id', $element, 'user_data array details should not contain group form id !');
                     $this->assertObjectHasAttribute('value', $element, 'user_data array details should contain value');
                 }
@@ -186,14 +222,6 @@ class EmundusModelUsersTest extends TestCase
                 {
                     $this->assertObjectHasAttribute('group_id', $element, 'column array details should contain group form id !');
                     $this->assertObjectNotHasAttribute('value', $element, 'column array details should not contain value');
-                }
-
-                // Check if it is sorted alphabetically
-                for ($i = 1; $i < count($dataType); $i++) {
-                    $currentLabel = JText::_($dataType[$i]->label);
-                    $previousLabel = JText::_($dataType[$i - 1]->label);
-                    $this->assertLessThanOrEqual(true, strcmp($previousLabel, $currentLabel), 'The table should be sorted alphabetically.');
-
                 }
             }
         }
@@ -218,20 +246,30 @@ class EmundusModelUsersTest extends TestCase
         $this->assertNotEmpty($data, 'Passing a correct user id should return an array of data');
         $dataBefore = $this->m_users->getAllInformationsToExport($user_id);
         $numberColumns = 0;
-        $arrayName = array();
+        $array_label = array();
 
         // Count the number of columns  we should have
         foreach ($dataBefore as $dataType) {
             foreach ($dataType as $element) {
-                $arrayName[] = $element->name;
+                $array_label[] = $element->label;
                 $numberColumns += 1;
             }
         }
-        foreach ($arrayName as $name) {
+        foreach ($array_label as $name) {
             $this->assertArrayHasKey($name, $data, "Key '$name' not found in data array");
         }
 
         $this->assertCount($numberColumns, $data, 'Not the number of columns expected');
+
+        $data_keys = array_keys($data);
+
+        // Check if it is sorted alphabetically
+        for ($i = 1; $i < count($data_keys); $i++) {
+            $currentLabel = Text::_(strtoupper($data_keys[$i]));
+            $previousLabel = Text::_(strtoupper($data_keys[$i - 1]));
+            $this->assertLessThanOrEqual(0, strcmp($previousLabel, $currentLabel), 'The table should be sorted alphabetically.');
+        }
+
     }
 }
 

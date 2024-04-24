@@ -1338,8 +1338,8 @@ class EmundusControllerUsers extends JControllerLegacy {
         // Fill keys
         $csv_file = fopen($path, 'w');
 
-        $seen_keys[] = 'username';
-        $headers[] = Text::_('JGLOBAL_USERNAME');
+        $seen_keys[] = 'COM_EMUNDUS_USERNAME';
+        $headers[] = Text::_('COM_EMUNDUS_USERNAME');
 
         foreach ($user_details as $user_detail) {
             foreach ($user_detail as $key => $value) {
@@ -1357,7 +1357,8 @@ class EmundusControllerUsers extends JControllerLegacy {
             $userData = array();
             foreach ($user_detail as $key => $value) {
                 if (in_array($key, $seen_keys)) {
-                    if ($key === Text::_('JGLOBAL_USERNAME')) {
+                    if ($key === 'COM_EMUNDUS_USERNAME') {
+                        // We force to put Username as the first column
                         array_unshift($userData, Text::_($value));
                     } else {
                         $userData[] = Text::_($value);
