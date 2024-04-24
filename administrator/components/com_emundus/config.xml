@@ -196,6 +196,10 @@
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
+		<field name="can_edit_back_documents" menu="hide" type="list" default="0" label="COM_EMUNDUS_CAN_EDIT_BACK_DOCUMENTS" description="COM_EMUNDUS_CAN_EDIT_BACK_DOCUMENTS_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
 		<field name="attachment_to_keep_non_deletable"
 			   type="sql"
 			   query="SELECT id, CONCAT(id,' - ',value) as value FROM jos_emundus_setup_attachments"
