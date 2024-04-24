@@ -72,8 +72,7 @@ class EmundusControllerComments extends JControllerLegacy
                 $response['code'] = 500;
                 $target = $this->app->input->getString('target', '');
                 $target = !empty($target) ? json_decode($target, true) : [];
-                $visible_to_applicant = $this->app->input->getBool('visible_to_applicant', false);
-                $visible_to_applicant = $visible_to_applicant ? 1 : 0;
+                $visible_to_applicant = $this->app->input->getInt('visible_to_applicant', 0);
                 $parent_id = $this->app->input->getInt('parent_id', 0);
 
                 $model = $this->getModel('comments');

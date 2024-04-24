@@ -6,7 +6,7 @@
       <div class="file-comment-header flex flex-row items-center justify-between mb-3">
         <div class="file-comment-header-left flex flex-row cursor-pointer items-center" @click="replyToComment(comment.id)">
           <div class="flex flex-col mr-3">
-            <span class="em-text-neutral-500">{{ comment.date }}</span>
+            <span class="em-text-neutral-500 text-xs">{{ comment.date }}</span>
             <span>{{ comment.username }}</span>
           </div>
           <div>
@@ -28,7 +28,7 @@
           <div class="child-comment flex flex-col border-s-4 my-2 px-3">
             <div class="file-comment-header flex flex-row justify-between">
               <div class="file-comment-header-left flex flex-col">
-                <span>{{ child.date }}</span>
+                <span class="em-text-neutral-500 text-xs">{{ child.date }}</span>
                 <span>{{ child.username }}</span>
               </div>
               <div class="file-comment-header-left">

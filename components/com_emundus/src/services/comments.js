@@ -15,9 +15,11 @@ export default {
             }
         }
     },
-    async addComment(ccid, comment, target, visible_to_applicant = 0, parent_id = 0) {
+    async addComment(ccid, comment, target, visible_to_applicant = false, parent_id = 0) {
         if (ccid > 0 && comment.length > 0) {
             try {
+                visible_to_applicant = visible_to_applicant ? 1 : 0;
+
                 const formData = new FormData();
                 formData.append('ccid', ccid);
                 formData.append('comment', comment);
