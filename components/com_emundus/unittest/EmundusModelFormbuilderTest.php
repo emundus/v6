@@ -493,4 +493,29 @@ class EmundusModelFormbuilderTest extends TestCase
 		$this->assertEmpty($datas, 'getSqlDropdownOptions returns empty datas because we do not have rights to get tables not available in elements params');
 
 	}
+
+    public function testEmundus_fileUpload(){
+        /*$group_eval_id = 666;
+        $new_element_id = $this->m_formbuilder->createSimpleElement($group_eval_id, 'field');
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('plugin')
+            ->from('#__fabrik_elements')
+            ->where('id = ' . $new_element_id);
+
+        $db->setQuery($query);
+        $plugin = $db->loadResult();
+        $this->assertSame('field', $plugin, 'createSimpleElement creates the element with the correct plugin');
+
+        $new_file_Upload_element = $this->m_formbuilder->createSimpleElement($group_eval_id, 'emundus_fileupload', 3, 1);
+        $query->clear()
+            ->select('name, plugin')
+            ->from('#__fabrik_elements')
+            ->where('id = ' . $new_file_Upload_element);
+        $db->setQuery($query);
+        $element_data = $db->loadAssoc();
+        $this->assertSame('emundus_fileupload', $element_data['plugin'], 'createSimpleElement creates the element with the field plugin for fileUpload'); */
+    }
 }
