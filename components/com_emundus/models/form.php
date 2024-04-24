@@ -2125,7 +2125,7 @@ class EmundusModelForm extends JModelList {
         return true;
     }
 
-    function getDocumentsByProfile($prid){
+    function getDocumentsByProfile($prid,$all = true){
 		$attachments_by_profile = [];
 
 		if (!empty($prid)) {
@@ -2135,8 +2135,11 @@ class EmundusModelForm extends JModelList {
 			$query->select('sa.id as docid,sa.value as label,sap.*,sa.allowed_types, sa.params')
 				->from($db->quoteName('#__emundus_setup_attachment_profiles','sap'))
 				->leftJoin($db->quoteName('#__emundus_setup_attachments','sa').' ON '.$db->quoteName('sa.id').' = '.$db->quoteName('sap.attachment_id'))
-				->where($db->quoteName('sap.profile_id') . ' = ' . $db->quote($prid))
-				->order('sap.mandatory DESC, sap.ordering, sa.value ASC');
+				->where($db->quoteName('sap.profile_id') . ' = ' . $db->quote($prid));
+			if(!$all) {
+				$query->where($db->quoteName('sap.displayed') . ' = 1');
+			}
+			$query->order('sap.mandatory DESC, sap.ordering, sa.value ASC');
 
 			try {
 				$db->setQuery($query);

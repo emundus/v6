@@ -550,7 +550,7 @@ class EmundusControllerForm extends JControllerLegacy {
             $profile_id = $jinput->getInt('pid');
 
 			if (!empty($profile_id)) {
-				$documents = $this->m_form->getDocumentsByProfile($profile_id);
+				$documents = $this->m_form->getDocumentsByProfile($profile_id, false);
 
 				if (!empty($documents)) {
 					$response = array('status' => true, 'msg' => 'worked', 'data' => $documents);
