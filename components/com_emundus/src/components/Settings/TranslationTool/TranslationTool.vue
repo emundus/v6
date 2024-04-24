@@ -13,8 +13,8 @@
       <div class="em-modal-header">
         <div class="em-flex-space-between em-flex-row em-pointer" @click.prevent="$modal.hide('translationTool')">
           <div class="em-w-max-content em-flex-row">
-            <span class="material-icons-outlined">arrow_back</span>
-            <span class="em-ml-8">{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
+             <span class="material-icons-outlined">navigate_before</span>
+            <span class="em-ml-8 em-text-neutral-900">{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
           </div>
           <div v-if="saving" class="em-flex-row em-flex-start">
             <div class="em-loader em-mr-8"></div>
@@ -59,7 +59,16 @@ import translationsService from "com_emundus/src/services/translations";
 
 export default {
   name: "translationTool",
-  props: { },
+  props: {
+		showModalOnLoad: {
+			type: Number,
+			default: 0
+		},
+	  defaultMenuIndex: {
+		  type: Number,
+		  default: 1
+	  }
+  },
   components: {Orphelins, Translations, Global},
   data() {
     return {
@@ -86,9 +95,33 @@ export default {
       last_save: null,
     }
   },
+	created() {
+		const data = this.$store.getters['global/datas'];
+
+		if (this.showModalOnLoad === 0) {
+			if (data.showModalOnLoad !== undefined) {
+				this.showModalOnLoad = Number(data.showModalOnLoad.value) || 0;
+			}
+		}
+
+		if (data.hasOwnProperty('defaultMenuIndex')) {
+			this.defaultMenuIndex = Number(data.defaultMenuIndex.value) || 1;
+		}
+
+		if (this.showModalOnLoad > 0) {
+			setTimeout(() => {
+				this.$modal.show('translationTool');
+			}, 1000);
+		}
+	},
   methods:{
     beforeClose(event) {
-      this.$emit('resetMenuIndex');
+	    const data = this.$store.getters['global/datas'];
+	    if (data.hasOwnProperty('redirectOnClose')) {
+		    window.location.href = data.redirectOnClose.value;
+	    }
+
+	    this.$emit('resetMenuIndex');
     },
 
     updateOrphelinsCount(count) {
@@ -103,14 +136,14 @@ export default {
             if(result.data === 1){
               this.loading = false;
               this.setup_success = true;
-              this.currentMenu = 1;
+              this.currentMenu = this.defaultMenuIndex;
               setTimeout(() => {
                 this.setup_success = false;
               },2700)
             }
           });
         } else {
-          this.currentMenu = 1;
+          this.currentMenu = this.defaultMenuIndex;
         }
       })
     },

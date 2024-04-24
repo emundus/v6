@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="1.37.9" type="plugin" group="extension" method="upgrade">
+    <name>plg_extension_emundus</name>
+    <author>Jérémy LEGENDRE</author>
+    <creationDate>November 2023</creationDate>
+    <copyright>(C) 2010 Open Source Matters, Inc.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>jeremy.legendre@emundus.fr</authorEmail>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>1.0.0</version>
+    <description>PLG_EXTENSION_EMUNDUS_XML_DESCRIPTION</description>
+    <files>
+        <filename plugin="emundus">emundus.php</filename>
+    </files>
+    <languages>
+        <language tag="fr-FR">fr-FR.plg_extension_emundus.ini</language>
+        <language tag="fr-FR">fr-FR.plg_extension_emundus.sys.ini</language>
+    </languages>
+</extension>

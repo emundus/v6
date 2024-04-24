@@ -7,9 +7,9 @@
 					:cid="campaignId"
 			/>
 			<div>
-				<div class="em-flex-row em-mt-16 em-pointer" @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
-					<span class="material-icons-outlined">arrow_back</span>
-					<p class="em-ml-8">{{ translate('BACK') }}</p>
+				<div class="em-flex-row em-pointer" @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
+          <span class="material-icons-outlined">navigate_before</span>
+          <span class="em-ml-8 em-text-neutral-900">{{ translate('BACK') }}</span>
 				</div>
 				<div class="em-flex-row em-mt-16">
 					<h1 v-if="menuHighlight != -1">{{this.translate(formCategories[menuHighlight])}}</h1>
@@ -22,7 +22,7 @@
 
       <div class="em-flex-row em-mb-32">
         <p>
-          <b style="color: var(--em-coordinator-primary-color); font-weight: 700 !important;"> {{form.label}}</b>
+          <b style="color: var(--em-profile-color); font-weight: 700 !important;"> {{form.label}}</b>
           {{translations.From}}
           <strong>{{ form.start_date }}</strong>
           {{translations.To}}
@@ -103,7 +103,7 @@
       <div class="em-flex-row em-flex-space-between em-float-right" v-if="menuHighlight !== 0 && menuHighlightProg !== 0">
         <button
             type="button"
-            class="em-primary-button em-w-auto"
+            class="em-primary-button em-w-auto mb-4"
             @click="next">
           {{ translate('COM_EMUNDUS_ONBOARD_ADD_CONTINUER') }}
         </button>
@@ -414,11 +414,11 @@ export default {
 }
 
 .w--current:hover{
-  color: var(--em-coordinator-primary-color);
+  color: var(--em-profile-color);
 }
 
 .em-pointer:hover{
-  color: var(--em-coordinator-primary-color);
+  color: var(--em-profile-color);
 }
 
 .em-w-custom {

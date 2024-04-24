@@ -218,6 +218,11 @@ class plgAuthenticationEmundus_Oauth2 extends JPlugin
 					                    }
 				                    }
 			                    }
+		                    } else {
+			                    JFactory::getSession()->set('skip_activation', true);
+
+			                    $response->params = ['skip_activation' => true];
+			                    $response->activation = 1;
 		                    }
 	                    }
 
@@ -397,6 +402,10 @@ class plgAuthenticationEmundus_Oauth2 extends JPlugin
 		        $query = $db->getQuery(true);
 
 		        foreach($user['annex_data'] as $data) {
+			        if(is_array($data['value'])) {
+				        $data['value'] = implode(',', $data['value']);
+				    }
+
 			        $query->clear()
 				        ->update($data['table'])
 				        ->set($db->quoteName($data['column']) . ' = ' . $db->quote($data['value']))

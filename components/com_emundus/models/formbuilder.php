@@ -851,7 +851,7 @@ class EmundusModelFormbuilder extends JModelList {
             $group = $this->createGroup($group_label,$formid);
 
             $eid = $this->createElement('declare',$group['group_id'],'checkbox','Confirmation','',0,0,0);
-            EmundusHelperFabrik::addOption($eid,'CONFIRM_POST',1);
+            EmundusHelperFabrik::addOption($eid,'CONFIRM_POST','JYES');
             EmundusHelperFabrik::addNotEmptyValidation($eid);
             //
 
@@ -1255,8 +1255,8 @@ class EmundusModelFormbuilder extends JModelList {
                 case 'email':
 
                     $label = array(
-                        'fr' => 'Email',
-                        'en' => 'Email',
+                        'fr' => 'Adresse email',
+                        'en' => 'Email address',
                     );
 
                     $created_elements[] = $this->createSimpleElement($gid, $plugin, null, $evaluation, $label);
@@ -1417,8 +1417,10 @@ class EmundusModelFormbuilder extends JModelList {
 				$dbtype = $this->h_fabrik->getDBType($plugin);
 				$dbnull = 'NULL';
 				$default = '';
+				$eval = 1;
 
-				if ($plugin === 'display') {
+				if ($plugin === 'display' || $plugin === 'panel') {
+					$eval = 0;
 					$default = 'Ajoutez du texte personnalisé pour vos candidats';
 				}
 
@@ -1460,7 +1462,7 @@ class EmundusModelFormbuilder extends JModelList {
 					->set($db->quoteName('width') . ' = 0')
 					->set($db->quoteName('default') . ' = ' . $db->quote($default))
 					->set($db->quoteName('hidden') . ' = 0')
-					->set($db->quoteName('eval') . ' = 1')
+					->set($db->quoteName('eval') . ' = ' . $eval)
 					->set($db->quoteName('ordering') . ' = ' . $db->quote(array_values($orderings)[strval(sizeof($orderings) - 1)] + 1))
 					->set($db->quoteName('parent_id') . ' = 0')
 					->set($db->quoteName('published') . ' = 1')
@@ -1798,7 +1800,10 @@ class EmundusModelFormbuilder extends JModelList {
             $old_params['notempty-validation_condition'] = array("");
             $eval = 1;
         } else {
-            $key = array_search("notempty",$old_params['validations']['plugin']);
+			$key = false;
+			if(is_array($old_params['validations']['plugin'])) {
+            	$key = array_search("notempty",$old_params['validations']['plugin']);
+			}
             unset($old_params['validations']['plugin'][$key]);
             unset($old_params['validations']['plugin_published'][$key]);
             unset($old_params['validations']['validate_in'][$key]);
@@ -1864,7 +1869,10 @@ class EmundusModelFormbuilder extends JModelList {
             $db->setQuery($query);
             $db_element = $db->loadObject();
 
-            $key = array_search("notempty", $element['params']['validations']['plugin']);
+			$key = false;
+			if(is_array($element['params']['validations']['plugin'])) {
+            	$key = array_search("notempty", $element['params']['validations']['plugin']);
+			}
             if($element['FRequire'] != "true") {
                 if($key !== false && $key !== null) {
                     unset($element['params']['validations']['plugin'][$key]);
@@ -1874,6 +1882,15 @@ class EmundusModelFormbuilder extends JModelList {
                     unset($element['params']['validations']['validate_hidden'][$key]);
                     unset($element['params']['validations']['must_validate'][$key]);
                     unset($element['params']['validations']['show_icon'][$key]);
+
+	                // Reindex validations
+	                $element['params']['validations']['plugin'] = array_values($element['params']['validations']['plugin']);
+	                $element['params']['validations']['plugin_published'] = array_values($element['params']['validations']['plugin_published']);
+	                $element['params']['validations']['validate_in'] = array_values($element['params']['validations']['validate_in']);
+	                $element['params']['validations']['validation_on'] = array_values($element['params']['validations']['validation_on']);
+	                $element['params']['validations']['validate_hidden'] = array_values($element['params']['validations']['validate_hidden']);
+	                $element['params']['validations']['must_validate'] = array_values($element['params']['validations']['must_validate']);
+	                $element['params']['validations']['show_icon'] = array_values($element['params']['validations']['show_icon']);
                 }
             } else {
                 if($key === false || $key === null) {
@@ -1886,7 +1903,6 @@ class EmundusModelFormbuilder extends JModelList {
                     $element['params']['validations']['show_icon'][] = "1";
                 }
             }
-
 
             // Filter by plugin
             if ($element['plugin'] === 'checkbox' || $element['plugin'] === 'radiobutton' || $element['plugin'] === 'dropdown' || $element['plugin'] === 'databasejoin') {
@@ -1945,7 +1961,10 @@ class EmundusModelFormbuilder extends JModelList {
             }
 
             if ($element['plugin'] === 'field') {
-                $key = array_search("isemail", $element['params']['validations']['plugin']);
+				$key = false;
+				if(is_array($element['params']['validations']['plugin'])) {
+                	$key = array_search("isemail", $element['params']['validations']['plugin']);
+				}
 
                 if ($element['params']['password'] == 3) {
                     if($key === false || $key === null) {
@@ -1962,7 +1981,10 @@ class EmundusModelFormbuilder extends JModelList {
                         $element['params']['validations']['show_icon'][] = "0";
                     }
                 } else {
-                    $key = array_search("isemail", $element['params']['validations']['plugin']);
+					$key = false;
+					if(is_array($element['params']['validations']['plugin'])) {
+                    	$key = array_search("isemail", $element['params']['validations']['plugin']);
+					}
                     if($key !== false && $key !== null) {
                         unset($element['params']['validations']['plugin'][$key]);
                         unset($element['params']['validations']['plugin_published'][$key]);
@@ -1983,6 +2005,7 @@ class EmundusModelFormbuilder extends JModelList {
             $fields = array(
                 $db->quoteName('plugin') . ' = ' . $db->quote($element['plugin']),
                 $db->quoteName('default') . ' = ' . $db->quote($element['default']),
+                $db->quoteName('eval') . ' = ' . $db->quote($element['eval']),
                 $db->quoteName('params') . ' = ' . $db->quote(json_encode($element['params'])),
                 $db->quoteName('modified_by') . ' = ' . $db->quote($user),
                 $db->quoteName('modified') . ' = ' . $db->quote($date),
@@ -2024,10 +2047,10 @@ class EmundusModelFormbuilder extends JModelList {
             return false;
         }
 
-        if($group_params['repeat_group_button'] == 1 && $params['repeat_group_button'] == 0){
+        if($group_params['repeat_group_button'] == 1 && (isset($params['repeat_group_button']) && $params['repeat_group_button'] == 0)){
             $this->disableRepeatGroup($group_id);
         }
-        if($group_params['repeat_group_button'] == 0 && $params['repeat_group_button'] == 1){
+        if($group_params['repeat_group_button'] == 0 && (isset($params['repeat_group_button']) && $params['repeat_group_button'] == 1)){
             $this->enableRepeatGroup($group_id);
         }
 
@@ -2345,6 +2368,26 @@ class EmundusModelFormbuilder extends JModelList {
 
         return ${"element".$element};
     }
+
+	function getSimpleElement($eid) {
+		$db = $this->getDbo();
+		$query = $db->getQuery(true);
+
+		$element = [];
+
+		try {
+			$query->select('*')
+				->from($db->quoteName('#__fabrik_elements'))
+				->where($db->quoteName('id') . ' = ' . $db->quote($eid));
+			$db->setQuery($query);
+			$element = $db->loadAssoc();
+		}
+		catch (Exception $e) {
+			JLog::add('component/com_emundus/models/formbuilder | Cannot get simple element : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+		}
+
+		return $element;
+	}
 
     function deleteElement($elt) {
         $db = $this->getDbo();
@@ -4206,5 +4249,55 @@ class EmundusModelFormbuilder extends JModelList {
 		if (!is_array($document)) $document = array();
 
 		return $document;
+	}
+
+	public function getSqlDropdownOptions($table,$key,$value,$translate)
+	{
+		$datas = [];
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$tables_allowed = [];
+		$elements_params = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/form-builder-elements-params.json');
+		if(!empty($elements_params)) {
+			$elements_params = json_decode($elements_params, true);
+
+			foreach ($elements_params as $params) {
+				foreach ($params as $param) {
+					if($param['type'] == 'sqldropdown') {
+						$tables_allowed[] = $param['table'];
+					}
+				}
+			}
+		}
+
+		if(!in_array($table, $tables_allowed)) {
+			return $datas;
+		}
+
+		try {
+			if($translate) {
+				$query->select('sef')
+					->from($db->quoteName('#__languages'))
+					->where($db->quoteName('lang_code') . ' = ' . $db->quote(JFactory::getLanguage()->getTag()));
+				$db->setQuery($query);
+				$language = $db->loadResult();
+
+				$query->clear()
+					->select($key . ' as value, ' . $value . '_' . $language . ' as label');
+			} else {
+				$query->select($key . ' as value, ' . $value . ' as label');
+			}
+			
+			$query->from($db->quoteName($table));
+			$db->setQuery($query);
+			$datas = $db->loadAssocList();
+		}
+		catch (Exception $e) {
+			JLog::add('component/com_emundus/models/formbuilder | Error at getting sql dropdown options : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+		}
+
+		return $datas;
 	}
 }

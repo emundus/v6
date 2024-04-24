@@ -29,14 +29,18 @@ if($user->guest || in_array($e_user->profile,$app_prof))
     $document = JFactory::getDocument();
     JHtml::script('media/com_emundus/js/jquery.cookie.js');
     JHtml::script('media/jui/js/bootstrap.min.js');
+
+    require_once (JPATH_SITE.'/components/com_emundus/helpers/cache.php');
+    $hash = EmundusHelperCache::getCurrentGitHash();
+
     if (!in_array($params->get('mod_em_campaign_layout'), ['default_tchooz', 'tchooz_single_campaign']))
     {
         JHtml::stylesheet('media/com_emundus/css/mod_emundus_campaign.css');
-        $document->addStyleSheet("modules/mod_emundus_campaign/css/mod_emundus_campaign.css");
+        $document->addStyleSheet("modules/mod_emundus_campaign/css/mod_emundus_campaign.css?".$hash);
     }
     else
     {
-        $document->addStyleSheet("modules/mod_emundus_campaign/css/mod_emundus_campaign_tchooz.css");
+        $document->addStyleSheet("modules/mod_emundus_campaign/css/mod_emundus_campaign_tchooz.css?".$hash);
     }
 
     // PARAMS
@@ -44,9 +48,11 @@ if($user->guest || in_array($e_user->profile,$app_prof))
     $mod_em_campaign_get_link             = $params->get('mod_em_campaign_get_link', 0);
     $mod_em_campaign_date_format          = $params->get('mod_em_campaign_date_format', 'd/m/Y H:i');
     $mod_em_campaign_show_camp_start_date = $params->get('mod_em_campaign_show_camp_start_date', 1);
-    $mod_em_campaign_show_camp_end_date   = $params->get('mod_em_campaign_show_camp_end_date', 1);
+	$mod_em_campaign_show_camp_end_date   = $params->get('mod_em_campaign_show_camp_end_date', 1);
+    $mod_em_campaign_display_svg          = $params->get('mod_em_campaign_display_svg', 1);
+    $mod_em_campaign_display_hover_offset = $params->get('mod_em_campaign_display_hover_offset', 1);
     $mod_em_campaign_show_timezone        = $params->get('mod_em_campaign_show_timezone', 1);
-    $mod_em_campaign_list_sections        = $params->get('mod_em_campaign_list_sections');
+    $mod_em_campaign_list_sections        = $params->get('mod_em_campaign_list_sections', []);
     $mod_em_campaign_intro                = $params->get('mod_em_campaign_intro', null);
     if (empty($mod_em_campaign_intro) && $params->get('mod_em_campaign_layout') == 'default_tchooz')
     {
@@ -77,6 +83,7 @@ if($user->guest || in_array($e_user->profile,$app_prof))
     $mod_em_campaign_show_filters_list       = $params->get('mod_em_campaign_show_filters_list', []);
     $mod_em_campaign_sort_list               = $params->get('mod_em_campaign_sort_list');
     $mod_em_campaign_groupby                 = $params->get('mod_em_campaign_groupby');
+    $mod_em_campaign_groupby_closed          = $params->get('mod_em_campaign_groupby_closed');
 
     // OLD PARAMS
     $mod_em_campaign_url                       = $params->get('mod_em_campaign_url');
@@ -155,16 +162,13 @@ if($user->guest || in_array($e_user->profile,$app_prof))
     $categories_filt = $session->get('category');
 
     $program_array = [];
-    if ($params->get('mod_em_campaign_layout') == 'institut_fr')
+    if (!empty($program_code))
     {
-        if (!empty($program_code))
-        {
-            $program_array['IN'] = array_map('trim', explode(',', $program_code));
-        }
-        if (!empty($ignored_program_code))
-        {
-            $program_array['NOT_IN'] = array_map('trim', explode(',', $ignored_program_code));
-        }
+        $program_array['IN'] = array_map('trim', explode(',', $program_code));
+    }
+    if (!empty($ignored_program_code))
+    {
+        $program_array['NOT_IN'] = array_map('trim', explode(',', $ignored_program_code));
     }
 
     include_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'programme.php');
@@ -183,6 +187,15 @@ if($user->guest || in_array($e_user->profile,$app_prof))
         }
     }
 
+    $programs_codes = [];
+    foreach ($programs as $program)
+    {
+        if (!empty($program['code']))
+        {
+            $programs_codes[] = $program['code'];
+        }
+    }
+
     $condition = '';
     if (!empty($searchword)) {
         $condition .= ' AND (ca.label LIKE "%"' . $db->quote($searchword) . '"%" OR ca.short_description LIKE "%"' . $db->quote($searchword) . '"%"';
@@ -193,9 +206,9 @@ if($user->guest || in_array($e_user->profile,$app_prof))
 
     }
 
-    if (!empty($program_code))
+    if (!empty($programs_codes))
     {
-        $condition .= ' AND pr.code IN (' . implode(',', array_map('trim', explode(',', $db->quote($program_code)))) . ')';
+        $condition .= ' AND pr.code IN (' . implode(',', $db->quote($programs_codes)) . ')';
     }
 
     if (!empty($codes))
@@ -207,13 +220,7 @@ if($user->guest || in_array($e_user->profile,$app_prof))
         $condition .= ' AND pr.programmes IN (' . implode(',', $db->quote(explode(',', $categories_filt))) . ')';
     }
 
-
-    if (!empty($ignored_program_code))
-    {
-        $condition .= ' AND pr.code NOT IN (' . implode(',', $db->quote(array_map('trim', explode(',', $ignored_program_code)))) . ')';
-    }
-
-// Get single campaign
+    // Get single campaign
     $cid = $app->input->getInt('cid', 0);
     if (!empty($cid))
     {

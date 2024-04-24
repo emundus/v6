@@ -104,7 +104,8 @@ foreach ($fnums as $fnum => $fnumInfo) {
         }
     </script>
 <?php
-$attachment_types = @EmundusHelperfilters::setEvaluationList(0);
+$h_files = new EmundusHelperFilters();
+$attachment_types = $h_files->setEvaluationList(0);
 if (!empty($attachment_types)) :?>
 
     <?php foreach ($fnums as $fnum => $fnumInfo) :?>
@@ -169,7 +170,7 @@ var mail_from_name = document.getElementById("mail_from_name");
 mail_body.value = '<?= str_replace("'", "\'", preg_replace('~[[:cntrl:]]~', '', $email->message)); ?>';
 mail_subject.value = "<?= $email->subject; ?>";
 mail_attachments.value = "<?= $files_path; ?>";
-mail_to.value = "<?= implode(',', $experts_email); ?>";
+mail_to.value = "<?= !empty($experts_email) ? implode(',', $experts_email) : ''; ?>";
 mail_from.value = "<?= $email->emailfrom; ?>";
 mail_from_name.value = "<?= $email->name; ?>";
 
@@ -182,9 +183,9 @@ document.getElementById("adminForm").addEventListener("submit", event => {
         $("html, body").animate({ scrollTop: 0 }, "slow");
     } else {
 
-        var btn = document.getElementsByName(document.pressed);
+        /*var btn = document.getElementsByName(document.pressed);
         btn[0].disabled = true;
-        btn[0].value = "<?= JText::_('COM_EMUNDUS_EMAILS_SENDING_EMAIL'); ?>";
+        btn[0].innerHtml = "<?= JText::_('COM_EMUNDUS_EMAILS_SENDING_EMAIL'); ?>";*/
 
         var delete_attachment = 0;
         if (document.getElementById('delete_attachment_box').checked) {

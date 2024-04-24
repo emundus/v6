@@ -17,9 +17,11 @@ administrator/cache/*
 templates/rt_afterburner2/css/rt_afterburner2-custom.css
 templates/g5_helium/templateDetails.xml
 templates/g5_helium/custom/*
+!templates/g5_helium/custom/particles/*
 !templates/g5_helium/custom/scss/tchooz.scss
 !templates/g5_helium/custom/scss/global.scss
 !templates/g5_helium/custom/scss/variables.scss
+!templates/g5_helium/custom/scss/tchoozy.css
 templates/g5_helium/html/com_eventbooking/*
 templates/g5_helium/html/com_hikashop/*
 templates/emundus_vanilla/*
@@ -148,3 +150,24 @@ custom_variables.js
 
 ## Imt Atlantique Me3+ And Sarena ##
 assessment/
+
+## WAITING QUEUE ##
+waiting-queue.html
+
+## yootheme ##
+/templates/yootheme
+/templates/yootheme_*
+/modules/mod_yootheme_builder/
+/plugins/fields/location/
+/plugins/installer/yootheme/
+/plugins/system/yootheme/
+/language/en-GB/en-GB.mod_yootheme_builder.ini
+/language/en-GB/en-GB.mod_yootheme_builder.sys.ini
+/language/en-GB/en-GB.tpl_yootheme.ini
+/language/fr-FR/fr-FR.tpl_yootheme.ini
+/language/nl-NL/nl-NL.tpl_yootheme.ini
+/administrator/language/en-GB/en-GB.plg_fields_location.ini
+/administrator/language/en-GB/en-GB.plg_installer_yootheme.ini
+/administrator/language/en-GB/en-GB.plg_installer_yootheme.sys.ini
+/administrator/manifests/packages/yootheme/
+/administrator/manifests/packages/pkg_yootheme.xml

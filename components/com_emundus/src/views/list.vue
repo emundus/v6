@@ -1,7 +1,7 @@
 <template>
 	<div id="onboarding_list" class="w-full">
 		<skeleton v-if="loading.lists" height="40px" width="100%" class="mb-4 mt-4 rounded-lg"></skeleton>
-		<div v-else class="head flex justify-between mb-4 mt-4">
+		<div v-else class="head em-flex-row justify-between">
 			<h2>{{ translate(currentList.title) }}</h2>
 			<a v-if="addAction" id="add-action-btn" class="em-primary-button em-w-auto cursor-pointer" @click="onClickAction(addAction)">{{ translate(addAction.label) }}</a>
 		</div>
@@ -83,19 +83,17 @@
 						</thead>
 						<tbody>
 							<tr v-for="item in displayedItems" :key="item.id"
-							    class="em-border-cards"
+							    class="em-border-cards table-row"
 							    :class="{'em-card-neutral-100 em-card-shadow em-p-24' : viewType === 'blocs'}"
 							>
 								<td class="cursor-pointer" @click="onClickAction(editAction, item.id)">
 									<span :class="{'em-font-weight-600 mb-4 text-ellipsis overflow-hidden':  viewType === 'blocs'}" :title="item.label[params.shortlang]">{{ item.label[params.shortlang] }}</span>
 								</td>
 								<td class="columns" v-for="column in item.additional_columns" :key="column.key" v-if="column.display === viewType || column.display === 'all'">
-									<div v-if="column.type === 'tags'" class="flex flex-wrap" :class="column.classes">
-										<span v-for="tag in column.values" :key="tag.key" class="mr-2 h-max" :class="tag.classes">{{ tag.value }}</span>
+									<div v-if="column.type === 'tags'" class="flex flex-wrap em-flex-gap-8" :class="column.classes">
+										<span v-for="tag in column.values" :key="tag.key" class="mr-2 h-max" :class="tag.classes" v-html="tag.value"></span>
 									</div>
-									<span v-else class="mt-2 mb-2" :class="column.classes">
-										{{ column.value }}
-									</span>
+									<span v-else class="mt-2 mb-2" :class="column.classes" v-html="column.value"></span>
 								</td>
 								<div>
 									<hr v-if="viewType === 'blocs'" class="w-full mt-1.5 mb-3">
@@ -678,6 +676,11 @@ export default {
 </script>
 
 <style lang="scss">
+
+.head  {
+  padding: 0 0 20px 0;
+}
+
 #list-nav {
 	li {
 		transition: all .3s;

@@ -36,7 +36,7 @@ $ext = JFile::getExt($d->filename);
 	<?php
 	else :
 		?>
-        <div class="em-flex-row em-gap-4 file-button">
+        <div class="em-flex-row em-gap-4 file-button w-fit">
             <span class="material-icons-outlined">file_download</span>
             <span class="file-button__filename"><?php echo $d->filename; ?></span>
         </div>

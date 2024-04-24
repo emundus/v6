@@ -112,5 +112,38 @@ export default {
                 message: 'Error'
             };
         });
+    },
+    async getFilterValues(filterId) {
+        let values = [];
+
+        return client.get('getfiltervalues', {id: filterId}).then(data => {
+            if (data.status) {
+                values = data.data;
+            }
+
+            return values;
+        }).catch(error => {
+            console.log(error);
+            return values;
+        });
+    },
+    async getFiltersAvailable(moduleId) {
+        let filters = [];
+
+        if (moduleId > 0) {
+            return client.get('getFiltersAvailable', {
+                module_id: moduleId
+            }).then(data => {
+                if (data.status) {
+                    filters = data.data;
+                }
+
+                return filters;
+            }).catch(error => {
+                throw new Error('Error occured while getting filters : ' . error.message);
+            });
+        } else {
+            throw new Error('Module id is not valid');
+        }
     }
 };

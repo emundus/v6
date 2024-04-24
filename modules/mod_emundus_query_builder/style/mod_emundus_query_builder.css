@@ -162,8 +162,8 @@
 .btnExport:hover .swal2-cancel:hover, #createButton.btnQueryBuilder:hover{
 	border-radius: var(--em-coordinator-br);
 	background: var(--neutral-0);
-	border: 1px	solid var(--em-coordinator-primary-color);
-	color: var(--em-coordinator-primary-color);
+	border: 1px	solid var(--em-profile-color);
+	color: var(--em-profile-color);
 	padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
 	white-space: normal;
 }
@@ -171,8 +171,8 @@
 
 .btnQueryBuilder, .swal2-confirm, #createButton.btnQueryBuilder {
 	border-radius: var(--em-coordinator-br);
-	background: var(--em-coordinator-primary-color);
-	border: 1px	solid var(--em-coordinator-primary-color);
+	background: var(--em-profile-color);
+	border: 1px	solid var(--em-profile-color);
 	color: var(--neutral-0);
 	padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
 	white-space: normal;
@@ -183,7 +183,7 @@
 	outline:none;
 }
 .edit {
-	width:20%;
+	width: 100%;
 }
 .move {
 	cursor:grab;
@@ -230,6 +230,10 @@
 	text-align:left;
 }
 
+.inputFilter select {
+	padding: 8px 10px;
+}
+
 .closeButtonWelcomeStat {
 	float:right;
 	cursor:pointer;
@@ -273,41 +277,41 @@
 }
 
 #validation {
-	background: var(--em-coordinator-primary-color);
-	border: 1px solid var(--em-coordinator-primary-color);
+	background: var(--em-profile-color);
+	border: 1px solid var(--em-profile-color);
 }
 
 #validation:hover,
 #validation:focus,
 #validation:active {
 	background: transparent;
-	border: 1px solid var(--em-coordinator-primary-color);
-	color: var(--em-coordinator-primary-color);
+	border: 1px solid var(--em-profile-color);
+	color: var(--em-profile-color);
 }
 
 .btnQueryBuilder,
 .swal2-confirm {
-	background: var(--em-coordinator-primary-color);
-	border: 1px solid var(--em-coordinator-primary-color);
+	background: var(--em-profile-color);
+	border: 1px solid var(--em-profile-color);
 }
 
 .btnConsulter {
-	background: var(--em-coordinator-primary-color);
-	border: 1px solid var(--em-coordinator-primary-color);
+	background: var(--em-profile-color);
+	border: 1px solid var(--em-profile-color);
 	border-radius: var(--em-coordinator-br);
 }
 
 .btnConsulter:hover {
-	color: var(--em-coordinator-primary-color);
-	border: 1px solid var(--em-coordinator-primary-color);
+	color: var(--em-profile-color);
+	border: 1px solid var(--em-profile-color);
 	background: transparent;
 	border-radius: var(--em-coordinator-br) !important;
 }
 
 .btnQueryBuilder:hover,
 .swal2-confirm:hover {
-	color: var(--em-coordinator-primary-color);
-	border: 1px solid var(--em-coordinator-primary-color);
+	color: var(--em-profile-color);
+	border: 1px solid var(--em-profile-color);
 	background: transparent;
 }
 
@@ -353,7 +357,7 @@
 }
 
 .btnConsulter:hover a {
-	color: var(--em-coordinator-primary-color);
+	color: var(--em-profile-color);
 }
 
 

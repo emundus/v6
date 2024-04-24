@@ -4,7 +4,7 @@
  * This file is part of FPDI PDF-Parser
  *
  * @package   setasign\FpdiPdfParser
- * @copyright Copyright (c) 2021 Setasign GmbH & Co. KG (https://www.setasign.com)
+ * @copyright Copyright (c) 2023 Setasign GmbH & Co. KG (https://www.setasign.com)
  * @license   FPDI PDF-Parser Commercial Developer License Agreement (see LICENSE.txt file within this package)
  */
 

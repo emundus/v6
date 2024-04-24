@@ -35,6 +35,27 @@
                 </field>
 
                 <field name="colors" type="textarea" default="#16AFE1, #78dc6e" label="Palette de couleurs" description="Palette de couleurs permettant de personnaliser les graphiques en fonction du client" hint="#de6339,#1b1f3c" rows="10" cols="5"/>
+
+                <field name="display_name" type="radio" default="1" label="COM_EMUNDUS_DASHBOARD_DISPLAY_NAME" description="COM_EMUNDUS_DASHBOARD_DISPLAY_NAME" class="btn-group btn-group-yesno">
+                    <option value="0">JNo</option>
+                    <option value="1">JYes</option>
+                </field>
+
+                <field name="display_description" type="radio" default="0" label="COM_EMUNDUS_DASHBOARD_WELCOME_DESCRIPTION" description="COM_EMUNDUS_DASHBOARD_WELCOME_DESCRIPTION_DESC" class="btn-group btn-group-yesno">
+                    <option value="0">JNo</option>
+                    <option value="1">JYes</option>
+                </field>
+
+                <field name="display_shapes" type="radio" default="1" label="COM_EMUNDUS_DASHBOARD_SHAPES" description="COM_EMUNDUS_DASHBOARD_SHAPES_DESC" class="btn-group btn-group-yesno">
+                    <option value="0">JNo</option>
+                    <option value="1">JYes</option>
+                </field>
+
+                <field name="display_dashboard_tchoozy" type="radio" default="1" label="COM_EMUNDUS_DASHBOARD_TCHOOZY_DASHBOARD" description="COM_EMUNDUS_DASHBOARD_TCHOOZY_DASHBOARD_DESC" class="btn-group btn-group-yesno">
+                    <option value="0">JNo</option>
+                    <option value="1">JYes</option>
+                </field>
+
             </fieldset>
         </fields>
     </config>

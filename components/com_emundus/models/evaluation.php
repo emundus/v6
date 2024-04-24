@@ -10,6 +10,8 @@
 
 // No direct access
 
+use PhpOffice\PhpWord\TemplateProcessor;
+
 defined('_JEXEC') or die('Restricted access');
 define('R_MD5_MATCH', '/^[a-f0-9]{32}$/i');
 
@@ -30,6 +32,8 @@ class EmundusModelEvaluation extends JModelList {
     private $_files;
     public $fnum_assoc;
     public $code;
+
+    private $use_module_filters = false;
 
     /**
      * Constructor
@@ -57,6 +61,7 @@ class EmundusModelEvaluation extends JModelList {
         }
 
         $menu_params = $menu->getParams($current_menu->id);
+        $this->use_module_filters = boolval($menu_params->get('em_use_module_for_filters', false));
 
         $session = JFactory::getSession();
         if (!$session->has('filter_order')) {
@@ -150,8 +155,8 @@ class EmundusModelEvaluation extends JModelList {
 				    $column = (!empty($join_val_column_concat) && $join_val_column_concat!='')?'CONCAT('.$join_val_column_concat.')':$attribs->join_val_column;
 
 				    // Check if the db table has a published column. So we don't get the unpublished value
-				    $db->setQuery("SHOW COLUMNS FROM $attribs->join_db_name LIKE 'published'");
-				    $publish_query = ($db->loadResult()) ? " AND $attribs->join_db_name.published = 1 " : '';
+				    //$db->setQuery("SHOW COLUMNS FROM $attribs->join_db_name LIKE 'published'");
+				    $publish_query = '';
 
 				    if (@$group_params->repeat_group_button == 1) {
 					    $query = '(
@@ -166,14 +171,13 @@ class EmundusModelEvaluation extends JModelList {
                                   ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
 				    } else {
 					    if ($attribs->database_join_display_type == "checkbox") {
-
-						    $t = $def_elmt->tab_name.'_repeat_'.$def_elmt->element_name;
-						    $query = '(
-                                SELECT GROUP_CONCAT('.$t.'.'.$def_elmt->element_name.' SEPARATOR ", ")
-                                FROM '.$t.'
-                                WHERE '.$t.'.parent_id='.$def_elmt->tab_name.'.id
+                            $query = '(
+                                SELECT GROUP_CONCAT('.$column.' SEPARATOR ", ")
+                                FROM '.$def_elmt->table_join.'
+                                LEFT JOIN '.$attribs->join_db_name.' ON '.$attribs->join_db_name.'.'.$attribs->join_key_column.'='.$def_elmt->table_join.'.'.$def_elmt->element_name.'
+                                WHERE '.$def_elmt->table_join.'.parent_id='.$def_elmt->tab_name.'.id
                                 '.$publish_query.'
-                              ) AS `'.$t.'`';
+                              ) AS `'.$def_elmt->tab_name.'_repeat_'.$def_elmt->element_name.'`';
 					    } else if( $attribs->database_join_display_type == 'multilist' ) {
 						    $t = $def_elmt->tab_name.'_repeat_'.$def_elmt->element_name;
 						    $query = '(
@@ -239,8 +243,7 @@ class EmundusModelEvaluation extends JModelList {
 					    $element_attribs = json_decode($def_elmt->element_attribs);
 					    $select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
 					    foreach ($element_attribs->sub_options->sub_values as $key => $value) {
-						    $select = 'REPLACE(' . $select . ', "' . $value . '", "' .
-							    JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+                            $select = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
 					    }
 					    $this->_elements_default[] = $select . ' AS ' . $def_elmt->tab_name . '___' . $def_elmt->element_name;
 				    }
@@ -350,21 +353,22 @@ class EmundusModelEvaluation extends JModelList {
 
         if ($session->has('filt_params'))
         {
-            //var_dump($session->get('filt_params'));
             $element_id = array();
             $filt_params = $session->get('filt_params');
 
             if (is_array($filt_params['programme']) && count(@$filt_params['programme']) > 0) {
                 foreach ($filt_params['programme'] as $value) {
-                    $groups = $this->getGroupsEvalByProgramme($value);
-                    if (empty($groups)) {
-                        $eval_elt_list = array();
-                    } else {
-                        $eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
-                        if (count($eval_elt_list)>0) {
-                            foreach ($eval_elt_list as $eel) {
-                                if(isset($eel->element_id) && !empty($eel->element_id))
-                                    $elements_id[] = $eel->element_id;
+                    if ($value !== '%') {
+                        $groups = $this->getGroupsEvalByProgramme($value);
+                        if (empty($groups)) {
+                            $eval_elt_list = array();
+                        } else {
+                            $eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
+                            if (count($eval_elt_list)>0) {
+                                foreach ($eval_elt_list as $eel) {
+                                    if(isset($eel->element_id) && !empty($eel->element_id))
+                                        $elements_id[] = $eel->element_id;
+                                }
                             }
                         }
                     }
@@ -372,23 +376,25 @@ class EmundusModelEvaluation extends JModelList {
             }
             if (!empty($filt_params['campaign']) && is_array($filt_params['campaign']) && count(@$filt_params['campaign']) > 0) {
                 foreach ($filt_params['campaign'] as $value) {
-                    $campaign = $h_files->getCampaignByID($value);
-                    $groups = $this->getGroupsEvalByProgramme($campaign['training']);
-                    if (empty($groups)) {
-                        $eval_elt_list = array();
-                    } else {
-                        $eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
-                        if (is_array($eval_elt_list) && count($eval_elt_list) > 0) {
-                            foreach ($eval_elt_list as $eel) {
-                                if (isset($eel->element_id) && !empty($eel->element_id))
-                                    $elements_id[] = $eel->element_id;
+                    if ($value !== '%') {
+                        $campaign = $h_files->getCampaignByID($value);
+                        $groups = $this->getGroupsEvalByProgramme($campaign['training']);
+                        if (empty($groups)) {
+                            $eval_elt_list = array();
+                        } else {
+                            $eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
+                            if (is_array($eval_elt_list) && count($eval_elt_list) > 0) {
+                                foreach ($eval_elt_list as $eel) {
+                                    if (isset($eel->element_id) && !empty($eel->element_id))
+                                        $elements_id[] = $eel->element_id;
+                                }
                             }
                         }
                     }
                 }
             }
         }
-//die(var_dump($elements_id));
+
         return @$elements_id;
     }
 
@@ -407,13 +413,13 @@ class EmundusModelEvaluation extends JModelList {
         $h_list = new EmundusHelperList;
 
         $elements = array();
-        if ($session->has('filt_params') ||!empty($all)) {
+        if ($session->has('filt_params') || !empty($all)) {
 
             $filt_params = $session->get('filt_params');
 
             if (!empty($code)) {
                 $programmes = array_unique($code);
-            } elseif ($filt_params['programme'][0] !== '%' && is_array(@$filt_params['programme']) && count(@$filt_params['programme']) > 0) {
+            } elseif ($filt_params['programme'][0] !== '%' && is_array($filt_params['programme']) && !empty($filt_params['programme'])) {
                 $programmes = array_unique($filt_params['programme']);
             } else {
                 return array();
@@ -426,7 +432,7 @@ class EmundusModelEvaluation extends JModelList {
                 } else {
                     $eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
 
-                    if (count($eval_elt_list) > 0) {
+                    if (!empty($eval_elt_list)) {
                         foreach ($eval_elt_list as $eel) {
                             if (isset($eel->element_id) && !empty($eel->element_id)) {
                                 $elements[] = $h_list->getElementsDetailsByID($eel->element_id)[0];
@@ -454,9 +460,9 @@ class EmundusModelEvaluation extends JModelList {
 
         $jinput = JFactory::getApplication()->input;
         $fnums = $jinput->getString('cfnums', null);
+		$get_all = false;
 
         if ($session->has('filt_params')) {
-            //var_dump($session->get('filt_params'));
             $elements_id = array();
             $filt_params = $session->get('filt_params');
 
@@ -475,17 +481,23 @@ class EmundusModelEvaluation extends JModelList {
                     }
                 }
             } else {
-                $groups = $this->getGroupsEvalByProgramme($programme_code);
-                if (!empty($groups)) {
-                    $eval_elt_list = $this->getAllElementsByGroups($groups); // $show_in_list_summary
-                    if (count($eval_elt_list)>0) {
-                        foreach ($eval_elt_list as $eel) {
-                            $elements_id[] = $eel->element_id;
-                        }
-                    }
-                }
+				$get_all = true;
             }
+        } else {
+			$get_all = true;
         }
+
+		if ($get_all) {
+			$groups = $this->getGroupsEvalByProgramme($programme_code);
+			if (!empty($groups)) {
+				$eval_elt_list = $this->getAllElementsByGroups($groups); // $show_in_list_summary
+				if (count($eval_elt_list)>0) {
+					foreach ($eval_elt_list as $eel) {
+						$elements_id[] = $eel->element_id;
+					}
+				}
+			}
+		}
 
         return @$elements_id;
     }
@@ -507,7 +519,6 @@ class EmundusModelEvaluation extends JModelList {
 
         if ($session->has('filt_params'))
         {
-            //var_dump($session->get('filt_params'));
             $elements_id = array();
             $filt_params = $session->get('filt_params');
 
@@ -839,14 +850,22 @@ class EmundusModelEvaluation extends JModelList {
         }
     }
 
-
-
-    private function _buildWhere($tableAlias = array()) {
+    private function _buildWhere($already_joined_tables = array())
+    {
         $h_files = new EmundusHelperFiles();
-        return $h_files->_buildWhere($tableAlias, 'evaluation', array(
-            'fnum_assoc' => $this->fnum_assoc,
-            'code' => $this->code
-        ));
+
+        if ($this->use_module_filters) {
+            return $h_files->_moduleBuildWhere($already_joined_tables, 'files', array(
+                'fnum_assoc' => $this->fnum_assoc,
+                'code'       => $this->code
+            ));
+        }
+        else {
+            return $h_files->_buildWhere($already_joined_tables, 'files', array(
+                'fnum_assoc' => $this->fnum_assoc,
+                'code'       => $this->code
+            ));
+        }
     }
 
     public function getUsers($current_fnum = null) {
@@ -860,76 +879,80 @@ class EmundusModelEvaluation extends JModelList {
 
         $query = 'select jecc.fnum, ss.step, ss.value as status, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name, ss.class as status_class, sp.code ';
 
-	    $already_joined_tables = [
-		    'jecc' => 'jos_emundus_campaign_candidature',
-		    'ss' => 'jos_emundus_setup_status',
-		    'esc' => 'jos_emundus_setup_campaigns',
-		    'sp' => 'jos_emundus_setup_programmes',
-		    'u' => 'jos_users',
-		    'eu' => 'jos_emundus_users',
-		    'eta' => 'jos_emundus_tag_assoc',
-		    'jos_emundus_evaluations' => 'jos_emundus_evaluations'
-	    ];
+        $group_by = 'GROUP BY jecc.fnum ';
 
-	    $leftJoin = '';
-	    if (!empty($this->_elements)) {
-		    $h_files = new EmundusHelperFiles();
+        $already_joined_tables = [
+            'jecc' => 'jos_emundus_campaign_candidature',
+            'ss' => 'jos_emundus_setup_status',
+            'esc' => 'jos_emundus_setup_campaigns',
+            'sp' => 'jos_emundus_setup_programmes',
+            'u' => 'jos_users',
+            'eu' => 'jos_emundus_users',
+            'eta' => 'jos_emundus_tag_assoc',
+            'jos_emundus_evaluations' => 'jos_emundus_evaluations'
+        ];
 
-		    foreach ($this->_elements as $elt) {
-			    $table_to_join = !empty($elt->table_join) ? $elt->table_join : $elt->tab_name;
-			    $already_join_alias = array_keys($already_joined_tables);
+        $leftJoin = '';
+        if (!empty($this->_elements)) {
+            $h_files = new EmundusHelperFiles();
 
-			    if (!(in_array($table_to_join, $already_joined_tables)) && !(in_array($table_to_join, $already_join_alias, true))) {
-				    if ($h_files->isTableLinkedToCampaignCandidature($table_to_join)) {
-					    $leftJoin .= 'LEFT JOIN ' . $table_to_join .  ' ON '. $table_to_join .'.fnum = jecc.fnum ';
-					    $already_joined_tables[] = $table_to_join;
-				    } else {
-					    $joined = false;
-					    $query_find_join = $dbo->getQuery(true);
-					    foreach ($already_joined_tables as $already_join_alias => $already_joined_table_name) {
-						    $query_find_join->clear()
-							    ->select('*')
-							    ->from('#__fabrik_joins')
-							    ->where('table_join = ' . $dbo->quote($already_joined_table_name))
-							    ->andWhere('join_from_table = ' . $dbo->quote($table_to_join))
-							    ->andWhere('table_key = ' . $dbo->quote('id'))
-							    ->andWhere('list_id = ' . $dbo->quote($elt->table_list_id));
+            foreach ($this->_elements as $elt) {
+                $table_to_join = !empty($elt->table_join) ? $elt->table_join : $elt->tab_name;
+                $already_join_alias = array_keys($already_joined_tables);
 
-						    $dbo->setQuery($query_find_join);
-						    $join_informations = $dbo->loadAssoc();
+                if (!(in_array($table_to_join, $already_joined_tables)) && !(in_array($table_to_join, $already_join_alias, true))) {
+                    if ($h_files->isTableLinkedToCampaignCandidature($table_to_join)) {
+                        $leftJoin .= 'LEFT JOIN ' . $table_to_join .  ' ON '. $table_to_join .'.fnum = jecc.fnum ';
+                        $already_joined_tables[] = $table_to_join;
+                    } else {
+                        $joined = false;
+                        $query_find_join = $dbo->getQuery(true);
+                        foreach ($already_joined_tables as $already_join_alias => $already_joined_table_name) {
+                            $query_find_join->clear()
+                                ->select('*')
+                                ->from('#__fabrik_joins')
+                                ->where('table_join = ' . $dbo->quote($already_joined_table_name))
+                                ->andWhere('join_from_table = ' . $dbo->quote($table_to_join))
+                                ->andWhere('table_key = ' . $dbo->quote('id'))
+                                ->andWhere('list_id = ' . $dbo->quote($elt->table_list_id));
 
-						    if (!empty($join_informations)) {
-							    $already_joined_tables[] = $table_to_join;
+                            $dbo->setQuery($query_find_join);
+                            $join_informations = $dbo->loadAssoc();
 
-							    $leftJoin .= ' LEFT JOIN ' . $dbo->quoteName($join_informations['join_from_table']) . ' ON ' . $dbo->quoteName($join_informations['join_from_table'] . '.' . $join_informations['table_key']) . ' = ' . $dbo->quoteName($already_join_alias . '.' . $join_informations['table_join_key']);
-							    $joined = true;
-							    break;
-						    }
-					    }
+                            if (!empty($join_informations)) {
+                                $already_joined_tables[] = $table_to_join;
 
-					    if (!$joined) {
-						    $element_joins = $h_files->findJoinsBetweenTablesRecursively('jos_emundus_campaign_candidature', $table_to_join);
+                                $leftJoin .= ' LEFT JOIN ' . $dbo->quoteName($join_informations['join_from_table']) . ' ON ' . $dbo->quoteName($join_informations['join_from_table'] . '.' . $join_informations['table_key']) . ' = ' . $dbo->quoteName($already_join_alias . '.' . $join_informations['table_join_key']);
+                                $joined = true;
+                                break;
+                            }
+                        }
 
-						    if (!empty($element_joins)) {
-							    $leftJoin .= $h_files->writeJoins($element_joins, $already_joined_tables);
-						    }
-					    }
-				    }
-			    }
-		    }
-	    }
+                        if (!$joined) {
+                            $element_joins = $h_files->findJoinsBetweenTablesRecursively('jos_emundus_campaign_candidature', $table_to_join);
 
-	    $query .= ', jos_emundus_evaluations.id AS evaluation_id, CONCAT(eue.lastname," ",eue.firstname) AS evaluator';
+                            if (!empty($element_joins)) {
+                                $leftJoin .= $h_files->writeJoins($element_joins, $already_joined_tables);
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
-	    if (!empty($this->_elements_default)) {
-		    $query .= ', '.implode(',', $this->_elements_default);
-	    }
+        $query .= ', jos_emundus_evaluations.id AS evaluation_id, CONCAT(eue.lastname," ",eue.firstname) AS evaluator';
+        $group_by .= ', evaluation_id';
+
+        if (!empty($this->_elements_default)) {
+            $query .= ', '.implode(',', $this->_elements_default);
+        }
         $query .= ' FROM #__emundus_campaign_candidature as jecc
 					LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status
 					LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jecc.campaign_id
 					LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
 					LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
-					LEFT JOIN #__users as u on u.id = jecc.applicant_id';
+					LEFT JOIN #__users as u on u.id = jecc.applicant_id
+                    LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum = jecc.fnum ';
         $q = $this->_buildWhere($already_joined_tables);
 
         if (EmundusHelperAccess::isCoordinator($current_user->id)
@@ -955,7 +978,8 @@ class EmundusModelEvaluation extends JModelList {
         $query .= ' AND esc.published = 1 ';
 
         $query .= $q['q'];
-        
+        $query .= ' ' . $group_by;
+
         $query .=  $this->_buildContentOrderBy();
 
         $dbo->setQuery($query);
@@ -975,7 +999,7 @@ class EmundusModelEvaluation extends JModelList {
             $dbo->setQuery($query);
             return $dbo->loadAssocList();
         } catch(Exception $e) {
-            echo $query . ' ' . $e->getMessage();
+	        echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.str_replace('#_', 'jos', $query), JLog::ERROR, 'com_emundus');
         }
     }
@@ -1135,7 +1159,7 @@ class EmundusModelEvaluation extends JModelList {
     // get string of fabrik group ID use for evaluation form
     public function getGroupsEvalByProgramme($code) {
         $db = $this->getDbo();
-        $query = 'select fabrik_group_id from #__emundus_setup_programmes where code like '.$db->Quote($code);
+        $query = 'select fabrik_group_id from #__emundus_setup_programmes where code like '.$db->Quote($code).' order by id desc';
         try {
             if (!empty($code)) {
                 $db->setQuery($query);
@@ -1820,6 +1844,7 @@ class EmundusModelEvaluation extends JModelList {
 					->where($this->_db->quoteName('jeslrs.status') . ' = ' . $fnum_infos['status'])
 					->andWhere($this->_db->quoteName('jeslrt.training') . ' = ' . $this->_db->quote($fnum_infos['training']) . ' OR ' . $this->_db->quoteName('jeslrc.campaign') . ' = ' . $this->_db->quote($fnum_infos['id']))
 					->andWhere($this->_db->quoteName('jesl.attachment_id') . ' IN (' . implode(',', $templates) . ')')
+                    ->group($this->_db->quoteName('jesl.id'))
 					->order('id ASC');
 
 				try {
@@ -2092,7 +2117,7 @@ class EmundusModelEvaluation extends JModelList {
 								{
 									\PhpOffice\PhpWord\Settings::setOutputEscapingEnabled(true);
 								}
-			                    $preprocess = $phpWord->loadTemplate($letter_file);
+			                    $preprocess = new TemplateProcessor($letter_file);
 			                    $tags       = $preprocess->getVariables();
 
 			                    $idFabrik  = [];
@@ -2191,13 +2216,26 @@ class EmundusModelEvaluation extends JModelList {
 				                    elseif($elt['plugin'] == 'emundus_phonenumber'){
 					                    $fabrikValues[$elt['id']][$fnum]['val'] = substr($fabrikValues[$elt['id']][$fnum]['val'], 2, strlen($fabrikValues[$elt['id']][$fnum]['val']));
 				                    }
+                                    elseif ($elt['plugin'] == 'yesno') {
+                                        $fabrikValues[$elt['id']][$fnum]['val'] = $fabrikValues[$elt['id']][$fnum]['val'] == '1' ? JText::_('JYES') : JText::_('JNO');
+                                    }
+                                    elseif($elt['plugin'] == 'cascadingdropdown') {
+                                        foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
+                                            $fabrikValues[$elt['id']][$fnum]['val'] = $_mEmail->getCddLabel($elt, $val['val']);
+                                        }
+                                    }
 				                    else {
 					                    if (@$groupParams->repeat_group_button == 1 || $elt['plugin'] === 'databasejoin') {
 						                    $fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, $groupParams->repeat_group_button == 1);
 					                    }
-					                    else {
-						                    $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
-					                    }
+                                        else {
+                                            if ($elt['plugin'] == 'date') {
+                                                $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name'], $params->date_form_format);
+                                            }
+                                            else {
+                                                $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
+                                            }
+                                        }
 				                    }
 
 				                    if(!isset($fabrikValues[$elt['id']][$fnum]['complex_data'])){
@@ -2404,6 +2442,11 @@ class EmundusModelEvaluation extends JModelList {
 	                    }
 						break;
 				}
+
+	            if ($res->status) {
+		            $logs_params = ['created' => ['filename' => $letter->title]];
+		            EmundusModelLogs::log($user->id, (int)substr($fnum, -7), $fnum, 27, 'c', 'COM_EMUNDUS_ACCESS_LETTERS', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
+	            }
 			}
         }
 
@@ -2790,18 +2833,22 @@ class EmundusModelEvaluation extends JModelList {
 
     private function copy_directory($src,$dst) {
         $dir = opendir($src);
-        @mkdir($dst);
-        while(false !== ( $file = readdir($dir)) ) {
-            if (( $file != '.' ) && ( $file != '..' )) {
-                if ( is_dir($src . '/' . $file) ) {
-                    recurse_copy($src . '/' . $file,$dst . '/' . $file);
-                }
-                else {
-                    copy($src . '/' . $file,$dst . '/' . $file);
-                }
-            }
-        }
-        closedir($dir);
+
+		if($dir !== false) {
+			mkdir($dst);
+			while (false !== ($file = readdir($dir))) {
+				if (($file != '.') && ($file != '..')) {
+					if (is_dir($src . '/' . $file)) {
+						recurse_copy($src . '/' . $file, $dst . '/' . $file);
+					}
+					else {
+						copy($src . '/' . $file, $dst . '/' . $file);
+					}
+				}
+			}
+			closedir($dir);
+		}
+
         return 0;
     }
 

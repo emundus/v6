@@ -3,22 +3,25 @@
        :id="'element_'+element.id"
        v-show="(!element.hidden && element.publish !== -2) || (element.hidden && sysadmin)"
        :class="{'unpublished': !element.publish || element.hidden, 'properties-active':propertiesOpened == element.id}">
-    <div class="em-flex-row em-flex-space-between em-w-100">
-      <label class="em-w-100 em-flex-row fabrikLabel control-label fabrikTip" @click="triggerElementProperties">
-        <i v-if="element.FRequire" data-isicon="true" class="icon-star small"></i>
-	      <input
-			      v-if="element.label_value && element.labelsAbove != 2"
-			      :ref="'element-label-' + element.id"
-			      :id="'element-label-' + element.id"
-			      class="element-title editable-data"
-			      :name="'element-label-' + element.id"
-			      type="text"
-			      v-model="element.label[shortDefaultLang]"
-			      @focusout="updateLabel"
-			      @keyup.enter="updateLabelKeyup"
-	      />
-      </label>
-      <div id="element-action-icons" class="em-flex-row">
+    <div class="flex items-start justify-between w-full mb-2">
+      <div class="w-11/12">
+        <label class="em-w-100 flex items-center fabrikLabel control-label mb-0" @click="triggerElementProperties">
+          <span v-if="element.FRequire" class="material-icons text-xxs text-red-500 mr-0" style="top: -5px;position: relative">emergency</span>
+          <input
+              v-if="element.label_value && element.labelsAbove != 2"
+              :ref="'element-label-' + element.id"
+              :id="'element-label-' + element.id"
+              class="ml-2 element-title editable-data"
+              :name="'element-label-' + element.id"
+              type="text"
+              v-model="element.label[shortDefaultLang]"
+              @focusout="updateLabel"
+              @keyup.enter="updateLabelKeyup"
+          />
+        </label>
+        <span class="fabrikElementTip fabrikElementTipAbove">{{ element.params.rollover.replace(/(<([^>]+)>)/gi, "") }}</span>
+      </div>
+      <div id="element-action-icons" class="flex items-end mt-2">
         <span class="material-icons-outlined handle em-grab">drag_indicator</span>
         <span id="delete-element" class="material-icons-outlined em-red-500-color em-pointer" @click="deleteElement">delete</span>
         <span v-if="sysadmin" class="material-icons-outlined em-pointer em-ml-8" @click="openAdmin">content_copy</span>
@@ -32,6 +35,9 @@
           @update-element="$emit('update-element')"
       ></form-builder-element-options>
       <form-builder-element-wysiwig v-else-if="element.plugin === 'display'" :element="element" type="display" @update-element="$emit('update-element')"></form-builder-element-wysiwig>
+      <form-builder-element-phone-number v-else-if="element.plugin === 'emundus_phonenumber'" type="phonenumber" :element="element"></form-builder-element-phone-number>
+      <form-builder-element-currency v-else-if="element.plugin === 'currency'" type="currency" :element="element"></form-builder-element-currency>
+      <form-builder-element-geolocation v-else-if="element.plugin === 'emundus_geolocalisation'" type="geolocation" :element="element"></form-builder-element-geolocation>
       <div v-else v-html="element.element" class="fabrikElement"></div>
     </div>
   </div>
@@ -43,9 +49,18 @@ import formBuilderMixin from "../../mixins/formbuilder";
 import mixin from "../../mixins/mixin";
 import FormBuilderElementOptions from "./FormBuilderSectionSpecificElements/FormBuilderElementOptions";
 import FormBuilderElementWysiwig from "./FormBuilderSectionSpecificElements/FormBuilderElementWysiwig";
+import FormBuilderElementPhoneNumber
+  from "@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementPhoneNumber.vue";
+import FormBuilderElementCurrency
+  from "@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementCurrency.vue";
+import FormBuilderElementGeolocation
+  from "@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementGeolocation.vue";
 
 export default {
   components: {
+    FormBuilderElementGeolocation,
+    FormBuilderElementCurrency,
+    FormBuilderElementPhoneNumber,
     FormBuilderElementWysiwig,
     FormBuilderElementOptions
   },
@@ -198,8 +213,7 @@ export default {
       padding: 12px;
       box-shadow: none;
       cursor: pointer;
-      border: 1px solid var(--em-coordinator-primary-color);
-      background: var(--em-coordinator-primary-color);
+      border: 1px solid var(--em-profile-color);
       border-radius: var(--em-coordinator-br) !important;
       width: 100% !important;
       max-width: 250px;
@@ -208,7 +222,6 @@ export default {
 
       span {
         margin-top: 0;
-        color: var(--neutral-0) !important;
       }
     }
 
@@ -240,7 +253,7 @@ export default {
   }
 
   &:hover {
-    border: 2px solid var(--em-coordinator-primary-color);
+    border: 2px solid var(--em-profile-color);
 
     #element-action-icons {
       opacity: 1;
@@ -294,6 +307,184 @@ export default {
   input:hover{
     border: 1px solid var(--neutral-600);
     box-shadow: none !important;
+  }
+
+  .fabrikElementTip {
+    color: var(--em-form-tip-color);
+    font-size: 12px;
+    line-height: 1.5rem;
+    font-weight: 400;
+    font-family: var(--em-applicant-font);
+    font-style: normal;
+    display: flex;
+  }
+
+  /* YES / NO */
+  /* And radio buttons grouped together */
+
+  .fabrikElementyesno .fabrikSubElementContainer .btn-group {
+    width: 48.93617021276595%;
+  }
+
+  @media only all and (min-width: 48rem) and (max-width: 59.99rem) {
+    .fabrikElementyesno .fabrikSubElementContainer .btn-group {
+      width: 48.6187845304% !important;
+    }
+  }
+
+  @media only all and (max-width: 48rem) {
+    .fabrikElementyesno .fabrikSubElementContainer .btn-group {
+      width: 100% !important;
+    }
+  }
+
+  .fabrikElementyesno .fabrikSubElementContainer .btn-group {
+    display: flex;
+    gap: var(--em-form-yesno-gap);
+  }
+
+  label.btn-default.btn.btn-success.active {
+    padding: var(--p-12);
+    box-shadow: none;
+    cursor: pointer;
+    background-color: var(--em-form-yesno-bgc-yes);
+    border: var(--em-form-yesno-bw) solid var(--em-form-yesno-bc-yes);
+    color: var(--neutral-900);
+    border-radius: var(--em-applicant-br) !important;
+    width: var(--em-form-yesno-width) !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: var(--em-form-yesno-height);
+    font-size: 16px;
+    font-style: normal;
+    line-height: 24px;
+    letter-spacing: 0.0015em;
+  }
+
+  label.btn-default.btn.btn-success.active:hover {
+    background-color: var(--em-form-yesno-bgc-yes-hover);
+    border-color: var(--em-form-yesno-bc-yes-hover) !important;
+  }
+
+  label.btn-default.btn.btn-success.active:hover span {
+    font-family: var(--em-default-font);
+    font-size: 16px;
+    font-style: normal;
+    line-height: 24px;
+    letter-spacing: 0.0015em;
+    color: var(--em-form-yesno-color-yes-hover);
+    word-wrap: break-word;
+  }
+
+  label.btn-default.btn.btn-success.active span {
+    font-family: var(--em-default-font);
+    font-size: 16px;
+    font-style: normal;
+    line-height: 24px;
+    letter-spacing: 0.0015em;
+    color: var(--em-form-yesno-color-yes);
+    word-wrap: break-word;
+  }
+
+  label.btn-default.btn.btn-danger.active {
+    height: var(--em-form-yesno-height);
+    padding: var(--p-12);
+    box-shadow: none;
+    cursor: pointer;
+    background-color: var(--em-form-yesno-bgc-no);
+    border-color: var(--em-form-yesno-bc-no);
+    color: var(--em-form-yesno-color-no);
+    border-radius: var(--em-applicant-br) !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-style: normal;
+    line-height: 24px;
+    letter-spacing: 0.0015em;
+    width: var(--em-form-yesno-width) !important;
+  }
+
+
+  label.btn-default.btn.btn-danger.active:hover {
+    background-color: var(--em-form-yesno-bgc-no-hover);
+    border-color: var(--em-form-yesno-bc-no-hover)!important;
+  }
+
+  label.btn-default.btn.btn-danger.active:hover span {
+    font-family: var(--em-default-font);
+    font-size: 16px;
+    font-style: normal;
+    line-height: 24px;
+    letter-spacing: 0.0015em;
+    color: var(--em-form-yesno-color-no-hover);
+    word-wrap: break-word;
+  }
+
+  label.btn-default.btn.btn-danger.active span {
+    font-family: var(--em-default-font);
+    font-size: 16px;
+    font-style: normal;
+    line-height: 24px;
+    letter-spacing: 0.0015em;
+    color: var(--em-form-yesno-color-no);
+    word-wrap: break-word;
+  }
+
+  label.btn-default.btn:not(.active) {
+    height: var(--em-form-yesno-height);
+    padding: var(--p-12);
+    box-shadow: none;
+    cursor: pointer;
+    border: var(--em-form-yesno-bw) solid var(--em-form-yesno-bc-not-active);
+    background: var(--em-form-yesno-bgc-not-active);
+    color: var(--em-form-yesno-color-not-active);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    line-height: 24px;
+    font-style: normal;
+    letter-spacing: 0.0015em;
+    width: var(--em-form-yesno-width) !important;
+  }
+
+  label.btn-default.btn:not(.active):hover {
+    background-color: var(--em-form-yesno-bgc-not-active-hover);
+    border-color: var(--em-form-yesno-bc-not-active-hover) !important;
+  }
+
+  label.btn-default.btn:not(.active):hover span {
+    font-family: var(--em-default-font);
+    font-size: 16px;
+    font-style: normal;
+    line-height: 24px;
+    letter-spacing: 0.0015em;
+    color: var(--em-form-yesno-color-not-active-hover);
+    word-wrap: break-word;
+  }
+
+  label.btn-default.btn:not(.active) span {
+    font-family: var(--em-default-font);
+    font-size: 16px;
+    font-style: normal;
+    line-height: 24px;
+    letter-spacing: 0.0015em;
+    color: var(--em-form-yesno-color-not-active);
+    word-wrap: break-word;
+  }
+
+  /** PANEL **/
+  .fabrikElementpanel .fabrikElement .fabrikinput {
+    display: flex;
+    padding: var(--em-spacing-5);
+    border-radius: 0.25rem;
+
+    .fabrikElementContent {
+      margin-left: var(--em-spacing-3);
+      line-height: 24px;
+    }
   }
 }
 </style>

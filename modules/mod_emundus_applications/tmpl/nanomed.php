@@ -7,7 +7,6 @@
  */
 // no direct access
 defined('_JEXEC') or die;
-//var_dump($user->fnums); echo "<hr>"; var_dump($applications);
 echo $description;
 
 $confirm_form_url = $m_application->getConfirmUrl($fnums);

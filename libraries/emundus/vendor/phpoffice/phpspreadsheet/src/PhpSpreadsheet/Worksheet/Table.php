@@ -148,7 +148,7 @@ class Table
         $tableName = StringHelper::strToLower($name);
 
         if ($worksheet !== null && StringHelper::strToLower($this->name) !== $name) {
-            $spreadsheet = $worksheet->getParentOrThrow();
+            $spreadsheet = $worksheet->getParent();
 
             foreach ($spreadsheet->getWorksheetIterator() as $sheet) {
                 foreach ($sheet->getTableCollection() as $table) {
@@ -170,7 +170,7 @@ class Table
         if (StringHelper::strToLower($this->name) !== StringHelper::strToLower($name)) {
             // We need to check all formula cells that might contain fully-qualified Structured References
             //    that refer to this table, and update those formulae to reference the new table name
-            $spreadsheet = $this->workSheet->getParentOrThrow();
+            $spreadsheet = $this->workSheet->getParent();
             foreach ($spreadsheet->getWorksheetIterator() as $sheet) {
                 $this->updateStructuredReferencesInCells($sheet, $name);
             }
@@ -180,7 +180,7 @@ class Table
 
     private function updateStructuredReferencesInCells(Worksheet $worksheet, string $newName): void
     {
-        $pattern = '/' . preg_quote($this->name, '/') . '\[/mui';
+        $pattern = '/' . preg_quote($this->name) . '\[/mui';
 
         foreach ($worksheet->getCoordinates(false) as $coordinate) {
             $cell = $worksheet->getCell($coordinate);
@@ -196,7 +196,7 @@ class Table
 
     private function updateStructuredReferencesInNamedFormulae(Spreadsheet $spreadsheet, string $newName): void
     {
-        $pattern = '/' . preg_quote($this->name, '/') . '\[/mui';
+        $pattern = '/' . preg_quote($this->name) . '\[/mui';
 
         foreach ($spreadsheet->getNamedFormulae() as $namedFormula) {
             $formula = $namedFormula->getValue();
@@ -298,8 +298,8 @@ class Table
         }
 
         [$width, $height] = Coordinate::rangeDimension($range);
-        if ($width < 1 || $height < 1) {
-            throw new PhpSpreadsheetException('The table range must be at least 1 column and row');
+        if ($width < 1 || $height < 2) {
+            throw new PhpSpreadsheetException('The table range must be at least 1 column and 2 rows');
         }
 
         $this->range = $range;
@@ -347,7 +347,7 @@ class Table
     public function setWorksheet(?Worksheet $worksheet = null): self
     {
         if ($this->name !== '' && $worksheet !== null) {
-            $spreadsheet = $worksheet->getParentOrThrow();
+            $spreadsheet = $worksheet->getParent();
             $tableName = StringHelper::strToUpper($this->name);
 
             foreach ($spreadsheet->getWorksheetIterator() as $sheet) {

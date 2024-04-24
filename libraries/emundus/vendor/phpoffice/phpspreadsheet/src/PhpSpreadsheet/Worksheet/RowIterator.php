@@ -53,11 +53,6 @@ class RowIterator implements NativeIterator
         $this->resetStart($startRow);
     }
 
-    public function __destruct()
-    {
-        $this->subject = null; // @phpstan-ignore-line
-    }
-
     /**
      * (Re)Set the start row and the current row pointer.
      *

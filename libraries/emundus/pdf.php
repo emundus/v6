@@ -12,31 +12,46 @@ use Dompdf\Css;
 use Gotenberg\Gotenberg;
 use Gotenberg\Stream;
 
-function get_mime_type($filename, $mimePath = '../etc') {
-    $fileext = substr(strrchr($filename, '.'), 1);
+if(!function_exists('get_mime_type'))
+{
+	function get_mime_type($filename, $mimePath = '../etc')
+	{
+		$fileext = substr(strrchr($filename, '.'), 1);
 
-    if (empty($fileext)) {
-	    return false;
-    }
+		if (empty($fileext))
+		{
+			return false;
+		}
 
-    $regex = "/^([\w\+\-\.\/]+)\s+(\w+\s)*($fileext\s)/i";
-    $lines = file("$mimePath/mime.types");
-    foreach ($lines as $line) {
-        if (substr($line, 0, 1) == '#') {
-	        continue;
-        } // skip comments
-        $line = rtrim($line) . " ";
-        if (!preg_match($regex, $line, $matches)) {
-        	continue;
-        } // no match to the extension
-        return $matches[1];
-    }
-    return false; // no match at all
+		$regex = "/^([\w\+\-\.\/]+)\s+(\w+\s)*($fileext\s)/i";
+		$lines = file("$mimePath/mime.types");
+		foreach ($lines as $line)
+		{
+			if (substr($line, 0, 1) == '#')
+			{
+				continue;
+			} // skip comments
+			$line = rtrim($line) . " ";
+			if (!preg_match($regex, $line, $matches))
+			{
+				continue;
+			} // no match to the extension
+
+			return $matches[1];
+		}
+
+		return false; // no match at all
+	}
 }
 
-function is_image_ext($filename) {
-    $array = explode('.', $filename);
-    return in_array(strtolower(end($array)), ['png', 'jpe', 'jpeg', 'jpg', 'gif', 'bmp', 'ico', 'tiff', 'tif', 'svg', 'svgz']);
+if(!function_exists('is_image_ext'))
+{
+	function is_image_ext($filename)
+	{
+		$array = explode('.', $filename);
+
+		return in_array(strtolower(end($array)), ['png', 'jpe', 'jpeg', 'jpg', 'gif', 'bmp', 'ico', 'tiff', 'tif', 'svg', 'svgz']);
+	}
 }
 
 
@@ -451,7 +466,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
             if (file_exists(JPATH_BASE.$letter['file'])) {
 
                 $PHPWord = new \PhpOffice\PhpWord\PhpWord();
-                $document = $PHPWord->loadTemplate(JPATH_BASE.$letter['file']);
+	            $document = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_BASE.$letter['file']);
 
                 for ($i = 0; $i < count($tags['patterns']); $i++) {
                     $document->setValue($tags['patterns'][$i], $tags['replacements'][$i]);
@@ -699,7 +714,7 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
 
             $PHPWord = new PHPWord();
 
-            $document = $PHPWord->loadTemplate(JPATH_BASE.$letter['file']);
+            $document = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_BASE.$letter['file']);
 
             for ($i = 0; $i < count($tags['patterns']); $i++) {
                 $document->setValue($tags['patterns'][$i], $tags['replacements'][$i]);
@@ -800,7 +815,7 @@ function data_to_img($match) {
  * @return false|string|void
  * @throws Exception
  */
-function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1, $form_ids = null, $options = null, $application_form_order = null, $profile_id = null, $file_lbl = null, $elements = null, $attachments = true) {
+function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1, $form_ids = null, $options = [], $application_form_order = null, $profile_id = null, $file_lbl = null, $elements = null, $attachments = true) {
 	jimport('joomla.html.parameter');
     set_time_limit(0);
     require_once (JPATH_SITE.'/components/com_emundus/helpers/date.php');
@@ -1454,9 +1469,9 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
     }
 
 
-    @chdir('tmp');
+    chdir('tmp');
     if ($output) {
-        if (!isset($current_user->applicant) && @$current_user->applicant != 1) {
+        if (!isset($current_user->applicant) || $current_user->applicant != 1) {
             //$output?'FI':'F'
             $name = 'application_header_' . date('Y-m-d_H-i-s') . '.pdf';
             $pdf->Output(EMUNDUS_PATH_ABS . $item->user_id . DS . $name, 'FI');

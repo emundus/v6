@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="[DEV] build" type="js.build_tools.npm">
+  <configuration default="false" name="[DEV] build" type="js.build_tools.npm" folderName="VUEJS">
     <package-json value="$PROJECT_DIR$/components/com_emundus/package.json" />
     <command value="run" />
     <scripts>

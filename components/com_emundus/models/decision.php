@@ -225,8 +225,7 @@ class EmundusModelDecision extends JModelList
 						$element_attribs = json_decode($def_elmt->element_attribs);
 						$select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
 						foreach ($element_attribs->sub_options->sub_values as $key => $value) {
-							$select = 'REPLACE(' . $select . ', "' . $value . '", "' .
-								JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+							$select = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
 						}
 						$this->_elements_default[] = $select . ' AS ' . $def_elmt->tab_name . '___' . $def_elmt->element_name;
 					}
@@ -381,6 +380,7 @@ class EmundusModelDecision extends JModelList
     public function getAllDecisionElements($show_in_list_summary=1, $programme_code) {
         $session = JFactory::getSession();
 
+		$get_all = false;
         if ($session->has('filt_params')) {
             $elements_id = array();
 			$filt_params = $session->get('filt_params');
@@ -400,17 +400,24 @@ class EmundusModelDecision extends JModelList
                     }
                 }
             } else {
-				$groups = $this->getGroupsDecisionByProgramme($programme_code);
-                if (!empty($groups)) {
-                    $eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary); // $show_in_list_summary
-                    if (count($eval_elt_list)>0) {
-                        foreach ($eval_elt_list as $eel) {
-                            $elements_id[] = $eel->element_id;
-                        }
-                    }
-                }
+				$get_all = true;
             }
+		} else {
+	        $get_all = true;
         }
+
+		if ($get_all) {
+			$groups = $this->getGroupsDecisionByProgramme($programme_code);
+			if (!empty($groups)) {
+				$eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary); // $show_in_list_summary
+				if (count($eval_elt_list)>0) {
+					foreach ($eval_elt_list as $eel) {
+						$elements_id[] = $eel->element_id;
+					}
+				}
+			}
+		}
+
         return @$elements_id;
     }
 
@@ -772,7 +779,7 @@ class EmundusModelDecision extends JModelList
 					$name = explode('.', $c);
 					if (!in_array($name[0] . '__' . $name[1], $head_val)) {
 
-						if ($this->details->{$name[0] . '__' . $name[1]}['group_by'] && array_key_exists($name[0] . '__' . $name[1], $this->subquery) && array_key_exists($applicant->user_id, $this->subquery[$name[0] . '__' . $name[1]])) {
+						if (!empty($this->subquery) && $this->details->{$name[0] . '__' . $name[1]}['group_by'] && array_key_exists($name[0] . '__' . $name[1], $this->subquery) && array_key_exists($applicant->user_id, $this->subquery[$name[0] . '__' . $name[1]])) {
 							$eval_list[$name[0] . '__' . $name[1]] = @EmundusHelperList::createHtmlList(explode(",",
 								$this->subquery[$name[0] . '__' . $name[1]][$applicant->user_id]));
 						} elseif ($name[0] == 'jos_emundus_training') {
@@ -865,14 +872,14 @@ class EmundusModelDecision extends JModelList
 		$query .= ' FROM #__emundus_campaign_candidature as jecc
 					LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status
 					LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jecc.campaign_id
-					LEFT JOIN #__emundus_setup_programmes as sp on sp.code LIKE esc.training
+					LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
 					LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
 					LEFT JOIN #__users as u on u.id = jecc.applicant_id
-					LEFT JOIN #__emundus_final_grade as jos_emundus_final_grade on jos_emundus_final_grade.fnum LIKE jecc.fnum
-					LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum LIKE jecc.fnum  ';
+					LEFT JOIN #__emundus_final_grade as jos_emundus_final_grade on jos_emundus_final_grade.fnum = jecc.fnum
+					LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum = jecc.fnum  ';
 
 		if (in_array('overall', $em_other_columns)) {
-			$query .= ' LEFT JOIN #__emundus_evaluations as ee on ee.fnum LIKE jecc.fnum ';
+			$query .= ' LEFT JOIN #__emundus_evaluations as ee on ee.fnum = jecc.fnum ';
 		}
 
 

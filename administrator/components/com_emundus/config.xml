@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
 	<fieldset label="COM_EMUNDUS_GENERAL" name="general" description="COM_EMUNDUS_GENERAL_DESC">
+		<field name="logged_homepage_link"
+			   type="sql"
+			   default=""
+			   label="COM_EMUNDUS_LOGGED_HOMEPAGE_LINK"
+			   description=""
+			   query="SELECT id, title as label FROM jos_menu WHERE published = 1"
+			   key_field="id"
+			   value_field="label"
+		/>
+
 		<field name="logs" label="LOGS_ACTIVE" type="radio" default="0" description="LOGS_ACTIVE_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
@@ -82,6 +92,23 @@
 		</field>
 
 		<field name="repeat_icon" type="text" label="COM_EMUNDUS_REPEAT_GROUP_ICON" default="clear" description="COM_EMUNDUS_REPEAT_GROUP_ICON_DESC" size="60"/>
+
+		<field name="photo_attachment"
+			   type="sql"
+			   default=""
+			   label="COM_EMUNDUS_PHOTO_ATTACHMENT"
+			   description="COM_EMUNDUS_PHOTO_ATTACHMENT_DESC"
+			   query="SELECT id, value as label FROM jos_emundus_setup_attachments"
+			   key_field="id"
+			   value_field="label"
+		>
+			<option value="">Please select your option</option>
+		</field>
+
+		<field name="fix_file_header" label="COM_EMUNDUS_FIX_FILE_HEADER" type="list" default="0" description="">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
 
 		<field
 				name="spacer0"
@@ -166,6 +193,19 @@
 			<option value="1">JYES</option>
 		</field>
 		<field name="can_edit_after_deadline" menu="hide" type="list" default="0" label="COM_EMUNDUS_CAN_EDIT_AFTER_DEADLINE" description="COM_EMUNDUS_CAN_EDIT_AFTER_DEADLINE_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+		<field name="attachment_to_keep_non_deletable"
+			   type="sql"
+			   query="SELECT id, CONCAT(id,' - ',value) as value FROM jos_emundus_setup_attachments"
+			   key_field="id"
+			   value_field="value"
+			   multiple="true"
+			   default='["4", "6", "21"]'
+			   label="COM_EMUNDUS_ATTACHCHMENT_NON_DELETABLE"
+		/>
+		<field name="referent_can_edit_after_deadline" menu="hide" type="list" default="1" label="COM_EMUNDUS_REFERENT_CAN_EDIT_AFTER_DEADLINE" description="COM_EMUNDUS_REFERENT_CAN_EDIT_AFTER_DEADLINE_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
@@ -290,13 +330,21 @@
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
+		<field name="check_eval" type="radio" default="0" label="COM_EMUNDUS_CHECK_EVAL" description="COM_EMUNDUS_CHECK_EVAL_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+		<field name="check_decision" type="radio" default="0" label="COM_EMUNDUS_CHECK_DECISION" description="COM_EMUNDUS_CHECK_DECISION_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
 
 		<field name="export_application_pdf_title_color" type="text" default="#000000" label="COM_EMUNDUS_EXPORT_APPLICATION_TITLE_COLOR" description="COM_EMUNDUS_EXPORT_APPLICATION_TITLE_COLOR_DESC"/>
 
-		<filed name="show_empty_fields" type="radio" default="1" label="COM_EMUNDUS_SHOW_EMPTY_FIELDS" description="COM_EMUNDUS_SHOW_EMPTY_FIELDS_DESC"/>
 		<field name="export_path" type="text" size="6" label="COM_EMUNDUS_EXPORT_PATH" description="COM_EMUNDUS_EXPORT_PATH_DESC"/>
 		<field name="application_form_order" type="text" size="6" label="COM_EMUNDUS_APPLICATION_FORM_ORDER" description="COM_EMUNDUS_APPLICATION_FORM_ORDER_DESC"/>
 		<field name="attachment_order" type="text" size="6" label="COM_EMUNDUS_CANDIDACY_FORM_ORDER" description="COM_EMUNDUS_CANDIDACY_FORM_ORDER_DESC"/>
+		<field name="export_concat_separator" type="text" size="6" default=", " label="COM_EMUNDUS_EXPORT_APPLICATION_SEPARATOR" description="COM_EMUNDUS_EXPORT_APPLICATION_SEPARATOR_DESC"/>
 
 		<field
 				name="spacer1"
@@ -372,6 +420,10 @@
 		<field name="expert_fabrikformid" type="text" default="110" label="COM_EMUNDUS_EXPERT_FIELD" description="COM_EMUNDUS_EXPERT_FIELD_DESC" />
 		<field name="expert_document_id" type="text" default="36" label="COM_EMUNDUS_EXPERT_DOCUMENT_FIELD" description="COM_EMUNDUS_EXPERT_DOCUMENT_FIELD_DESC" />
 		<field name="default_email_tmpl" type="text" default="expert" label="COM_EMUNDUS_EXPERT_DEFAULT_EMAIL_TMPL_FIELD" description="COM_EMUNDUS_EXPERT_DEFAULT_EMAIL_TMPL_FIELD_DESC" />
+		<field name="email_check_dns" menu="hide" type="list" default="1" label="COM_EMUNDUS_EMAIL_CHECK_DNS" description="COM_EMUNDUS_EMAIL_CHECK_DNS_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
 	</fieldset>
 	<fieldset label="COM_EMUNDUS_IMPORTS" name="imports" description="COM_EMUNDUS_IMPORTS_DESC">
 		<field name="ldapFiltersImport" type="text" required="false" label="COM_EMUNDUS_LDAP_FILTERS_IMPORT_LABEL" description="COM_EMUNDUS_LDAP_FILTERS_IMPORT_DESC" />
@@ -433,7 +485,14 @@
 			<option value="1">JYES</option>
 		</field>
 		<field name="allowed_non_applicant_profiles" type="text" default="" label="COM_EMUNDUS_ALLOWED_NON_APPLICANT_PROFILES" description="COM_EMUNDUS_ALLOWED_NON_APPLICANT_PROFILES_DESC" />
+		<field name="automated_task_user" type="number" default="" label="COM_EMUNDUS_AUTOMATED_TASK_USER" description="COM_EMUNDUS_AUTOMATED_TASK_USER_DESC" />
 		<field name="all_rights_group" type="number" default="1" label="COM_EMUNDUS_ALL_RIGHTS_GROUP" description="COM_EMUNDUS_ALL_RIGHTS_GROUP_DESC" />
+		<field name="evaluator_group" type="number" default="2" label="COM_EMUNDUS_EVALUATOR_GROUP" description="COM_EMUNDUS_EVALUATOR_GROUP_DESC" />
+		<field name="program_manager_group" type="number" default="3" label="COM_EMUNDUS_PROGRAM_MANAGER_GROUP" description="COM_EMUNDUS_PROGRAM_MANAGER_GROUP_DESC" />
+		<field name="create_program_groups" type="list" menu="hide" default="1" label="COM_EMUNDUS_CREATE_PROGRAM_GROUPS" description="COM_EMUNDUS_CREATE_PROGRAM_GROUPS_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
 	</fieldset>
 	<fieldset label="COM_EMUNDUS_INTEGRATION" name="ametys" description="COM_EMUNDUS_INTEGRATION_DESC">
 
@@ -556,6 +615,10 @@
 		<field name="zoom_jwt_title" type="note" label="COM_EMUNDUS_API_ZOOM_TITLE"/>
 		<field name="zoom_jwt" type="text" label="COM_EMUNDUS_API_ZOOM_JWT" description="COM_EMUNDUS_API_ZOOM_JWT_DESC" />
 
+		<field name="zoom_account_id" type="text" label="COM_EMUNDUS_API_ZOOM_ACCOUNT_ID" description="COM_EMUNDUS_API_ZOOM_ACCOUNT_ID_DESC"/>
+		<field name="zoom_client_id" type="text" label="COM_EMUNDUS_API_ZOOM_CLIENT_ID" description="COM_EMUNDUS_API_ZOOM_CLIENT_ID_DESC"/>
+		<field name="zoom_client_secret" type="password" label="COM_EMUNDUS_API_ZOOM_CLIENT_SECRET" description="COM_EMUNDUS_API_ZOOM_CLIENT_SECRET_DESC"/>
+
 		<field name="spacer8" type="spacer" hr="true"/>
 
 		<field name="external_storage_title" type="note" label="COM_EMUNDUS_EXTERNAL_STORAGE_TITLE"/>
@@ -639,7 +702,23 @@
 			<field name="glpi_api_user_token" type="text" label="COM_EMUNDUS_GLPI_USER_TOKEN"/>
 		</fieldset>
 
+		<field name="spacer14" type="spacer" hr="true"/>
+		<field name="insee" type="note" label="COM_EMUNDUS_INSEE_API"/>
+		<fieldset label="COM_EMUNDUS_INSEE_API">
+			<field name="insee_api_base_url" type="text" label="COM_EMUNDUS_INSEE_BASE_URL" default="https://api.insee.fr"/>
+			<field name="insee_api_consumer_key" type="text" label="COM_EMUNDUS_INSEE_CONSUMER_KEY"/>
+			<field name="insee_api_consumer_secret" type="text" label="COM_EMUNDUS_INSEE_CONSUMER_SECRET"/>
+		</fieldset>
+
+		<field name="spacer15" type="spacer" hr="true"/>
+		<field name="ixparapheur" type="note" label="COM_EMUNDUS_IXPARAPHEUR_API"/>
+		<fieldset label="COM_EMUNDUS_IXPARAPHEUR_API">
+			<field name="ixparapheur_api_base_url" type="text" label="COM_EMUNDUS_IXPARAPHEUR_BASE_URL"/>
+			<field name="ixparapheur_api_app_token" type="text" label="COM_EMUNDUS_IXPARAPHEUR_APP_TOKEN"/>
+		</fieldset>
+
 	</fieldset>
+
 	<fieldset
 			name="permissions"
 			description="JCONFIG_PERMISSIONS_DESC"
@@ -651,6 +730,7 @@
 				label="JCONFIG_PERMISSIONS_LABEL"
 				section="component" />
 	</fieldset>
+
 	<fieldset label="COM_EMUNDUS_MESSENGER" name="messenger" description="COM_EMUNDUS_MESSENGER_DESC">
 		<field name="messenger_anonymous_coordinator" type="list" default="0" label="COM_EMUNDUS_MESSENGER_ANONYMOUS" description="COM_EMUNDUS_MESSENGER_ANONYMOUS_DESC">
 			<option value="0">JNO</option>
@@ -668,6 +748,7 @@
 		<field name="messenger_notify_groups" type="textarea" default="" label="COM_EMUNDUS_MESSENGER_NOTIFY_GROUPS" description="COM_EMUNDUS_MESSENGER_NOTIFY_GROUPS_DESC"/>
 		<field name="messenger_notify_users" type="textarea" default="" label="COM_EMUNDUS_MESSENGER_NOTIFY_USERS" description="COM_EMUNDUS_MESSENGER_NOTIFY_USERS_DESC"/>
 	</fieldset>
+
 	<fieldset label="COM_EMUNDUS_MODULES" name="modules" description="COM_EMUNDUS_MODULES_DESC">
 		<field name="style" label="COM_EMUNDUS_MODULES_STYLE" type="radio" default="1" description="COM_EMUNDUS_MODULES_STYLE_DESC">
 			<option value="0">JNO</option>

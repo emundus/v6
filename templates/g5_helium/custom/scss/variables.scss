@@ -5,7 +5,6 @@
   --em-secondary-color: #{$base-secondary-color};
   --em-tertiary-color: #{$base-tertiary-color};
 
-  --em-coordinator-primary-color: #{$coordinator-primary-color};
   --em-coordinator-secondary-color: #{$coordinator-secondary-color};
   --em-coordinator-tertiary-color: #{$coordinator-tertiary-color};
 
@@ -88,6 +87,9 @@
 
   --bg-2: #F8F8F8;
   --bg-3: #C62222;
+
+  /* PROFIL */
+  --em-profile-color: #{$base-primary-color};
 
   /* ALERTS */
   --em-alert-error-bgc: #{$em-alert-error-background-color};
@@ -173,7 +175,6 @@
 
 
   // Spacing
-
   --spacing-2: 8px;
 
   --em-spacing-vertical: #{$em-spacing-vertical};
@@ -181,6 +182,17 @@
   --em-coordinator-vertical: #{$coordinator-vertical};
   --em-coordinator-horizontal: #{$coordinator-horizontal};
 
+  // Font-weight
+  --em-font-weight-100: 100;
+  --em-font-weight-200: 200;
+  --em-font-weight-300: 300;
+  --em-font-weight-400: 400;
+  --em-font-weight-500: 500;
+  --em-font-weight-600: 600;
+  --em-font-weight-700: 700;
+  --em-font-weight-800: 800;
+  --em-font-weight-900: 900;
+  
   // Padding
   --p-4: 4px;
   --p-8: 8px;
@@ -347,7 +359,34 @@
   --em-spacing-10: #{$em-spacing-10};
   --em-spacing-11: #{$em-spacing-11};
   --em-spacing-12: #{$em-spacing-12};
+
+  // TCHOOZY - Accueil
+  --display-wide-background: #{$tchoozy-wide-background};
+  --display-demonstration: #{$tchoozy-demonstration};
+
+  //TCHOOZY - Connexion
+  --display-corner-bottom-left-background: #{$tchoozy-corner-bottom-left-background};
+  --display-corner-top-right-background: #{$tchoozy-corner-top-right-background};
+  --display-candidate-button: #{$tchoozy-candidate-button};
+  --display-digital-testing: #{$tchoozy-digital-testing};
+
+  //TCHOOZY - Page settings
+  --display-corner-bottom-right-background: #{$tchoozy-corner-bottom-right-background};
+  --display-setting-tools: #{$tchoozy-setting-tools};
+
+  //TCHOOZY - Historique des emails
+  --display-email-history: #{$tchoozy-email-history};
+
+  //TCHOOZY - Groupes
+  --display-groups: #{$tchoozy-groups};
+
+  //TCHOOZY - Profils
+  --display-profiles: #{$tchoozy-profiles};
+
+  //TCHOOZY - Easter egg
+  --display-hiding: #{$tchoozy-hiding};
 }
+
 
 // Mixin - typo
 
@@ -389,7 +428,7 @@
   font-family: $font-family-title;
   font-size: 22px;
   font-style: normal;
-  font-weight: 500;
+  font-weight: var(--em-font-weight-500);
   line-height: 26.4px;
 }
 
@@ -398,7 +437,7 @@
   font-family: $font-family-title;
   font-size: 22px;
   font-style: normal;
-  font-weight: 500;
+  font-weight: var(--em-font-weight-500);
   line-height: 26.4px;
 }
 
@@ -407,7 +446,7 @@
   font-family: $font-family-title;
   font-size: 22px;
   font-style: normal;
-  font-weight: 500;
+  font-weight: var(--em-font-weight-500);
   line-height: 26.4px;
 }
 
@@ -475,7 +514,7 @@
 @mixin headline-1 {
   font-family: var(--em-default-font-title);
   font-style: normal;
-  font-weight: 600;
+  font-weight: var(--em-font-weight-600);
   font-size: 32px;
   line-height: 40px;
   letter-spacing: 0;
@@ -485,7 +524,7 @@
 @mixin headline-2 {
   font-family: var(--em-default-font-title);
   font-style: normal;
-  font-weight: 600;
+  font-weight: var(--em-font-weight-600);
   font-size: 24px;
   line-height: 30px;
   letter-spacing: 0;
@@ -495,7 +534,7 @@
 @mixin headline-3 {
   font-family: var(--em-default-font-title);
   font-style: normal;
-  font-weight: 600;
+  font-weight: var(--em-font-weight-600);
   font-size: 20px;
   line-height: 25px;
   letter-spacing: 0;
@@ -505,7 +544,7 @@
 @mixin headline-4 {
   font-family: var(--em-default-font-title);
   font-style: normal;
-  font-weight: 600;
+  font-weight: var(--em-font-weight-600);
   font-size: 18px;
   line-height: 23px;
   letter-spacing: 0;
@@ -515,7 +554,7 @@
 @mixin headline-5 {
   font-family: var(--em-default-font-title);
   font-style: normal;
-  font-weight: 600;
+  font-weight: var(--em-font-weight-600);
   font-size: 16px;
   line-height: 20px;
   letter-spacing: 0;
@@ -525,7 +564,7 @@
 @mixin headline-6 {
   font-family: var(--em-default-font-title);
   font-style: normal;
-  font-weight: 600;
+  font-weight: var(--em-font-weight-600);
   font-size: 14px;
   line-height: 16px;
   letter-spacing: 0;
@@ -536,7 +575,7 @@
   font-family: var(--em-default-font);
   font-size: 16px;
   font-style: normal;
-  font-weight: 400;
+  font-weight: var(--em-font-weight-400);
   line-height: 19px;
   letter-spacing: 0.0015em;
   text-align: left;
@@ -546,7 +585,7 @@
   font-family: var(--em-default-font);
   font-size: 16px;
   font-style: normal;
-  font-weight: 500 !important;
+  font-weight: var(--em-font-weight-500) !important;
   line-height: 19px;
   letter-spacing: 0.0015em;
   text-align: left;
@@ -556,7 +595,7 @@
   font-family: var(--em-default-font);
   font-size: 16px;
   font-style: normal;
-  font-weight: 600;
+  font-weight: var(--em-font-weight-600);
   line-height: 19px;
   letter-spacing: 0.0015em;
   text-align: left;
@@ -566,7 +605,7 @@
   font-family: var(--em-default-font);
   font-size: 14px;
   font-style: normal;
-  font-weight: 400;
+  font-weight: var(--em-font-weight-400);
   line-height: 17px;
   letter-spacing: 0.0025em;
   text-align: left;
@@ -576,7 +615,7 @@
   font-family: var(--em-default-font);
   font-size: 14px;
   font-style: normal;
-  font-weight: 500;
+  font-weight: var(--em-font-weight-500);
   line-height: 17px;
   letter-spacing: 0.0025em;
   text-align: left;
@@ -586,7 +625,7 @@
   font-family: var(--em-default-font);
   font-size: 14px;
   font-style: normal;
-  font-weight: 600;
+  font-weight: var(--em-font-weight-600);
   line-height: 17px;
   letter-spacing: 0.0025em;
   text-align: left;
@@ -596,7 +635,7 @@
   font-family: $font-family-text;
   font-size: 12px;
   font-style: normal;
-  font-weight: 400;
+  font-weight: var(--em-font-weight-400);
   line-height: 15px;
   letter-spacing: 0.004em;
   text-align: left;
@@ -606,7 +645,7 @@
   font-family: $font-family-text;
   font-size: 10px;
   font-style: normal;
-  font-weight: 400;
+  font-weight: var(--em-font-weight-400);
   line-height: 12px;
   letter-spacing: 0.015em;
   text-align: left;
@@ -618,7 +657,7 @@
   font-family: $font-family-text;
   font-size: 5px;
   font-style: normal;
-  font-weight: 400;
+  font-weight: var(--em-font-weight-400);
   line-height: 19px;
   letter-spacing: 0;
   text-align: left;
@@ -722,7 +761,7 @@
   background: var(--neutral-0);
   border-radius: 9px !important;
   appearance: auto;
-  margin-top: 0 !important;
+  margin-top: 0;
   border: 1px solid var(--neutral-600);
   padding: 0 !important;
   margin-right: 16px;

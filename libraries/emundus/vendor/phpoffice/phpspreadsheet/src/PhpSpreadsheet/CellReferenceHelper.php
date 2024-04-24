@@ -116,9 +116,10 @@ class CellReferenceHelper
 
     protected function updateColumnReference(int $newColumnIndex, string $absoluteColumn): string
     {
-        $newColumn = Coordinate::stringFromColumnIndex(min($newColumnIndex + $this->numberOfColumns, AddressRange::MAX_COLUMN_INT));
+        $newColumn = Coordinate::stringFromColumnIndex($newColumnIndex + $this->numberOfColumns);
+        $newColumn = ($newColumn > AddressRange::MAX_COLUMN) ? AddressRange::MAX_COLUMN : $newColumn;
 
-        return "{$absoluteColumn}{$newColumn}";
+        return $absoluteColumn . $newColumn;
     }
 
     protected function updateRowReference(int $newRowIndex, string $absoluteRow): string
@@ -126,6 +127,6 @@ class CellReferenceHelper
         $newRow = $newRowIndex + $this->numberOfRows;
         $newRow = ($newRow > AddressRange::MAX_ROW) ? AddressRange::MAX_ROW : $newRow;
 
-        return "{$absoluteRow}{$newRow}";
+        return $absoluteRow . (string) $newRow;
     }
 }

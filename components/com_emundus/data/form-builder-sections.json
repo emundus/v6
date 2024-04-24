@@ -1,0 +1,141 @@
+[
+  {
+    "id": 1,
+    "value": "personal_details",
+    "icon": "recent_actors",
+    "name": "COM_EMUNDUS_ONBOARD_SECTIONS_PERSONAL_DETAILS",
+    "labels": {
+      "fr": "Informations personnelles",
+      "en": "Personal details"
+    },
+    "published": true,
+    "elements": [
+      {
+        "value": "radiobutton",
+        "labels": {
+          "fr": "Civilité",
+          "en": "Title"
+        },
+        "options": [
+          {
+            "value": "Monsieur",
+            "labels": {
+              "fr": "Monsieur",
+              "en": "Mr"
+            }
+          },
+          {
+            "value": "Madame",
+            "labels": {
+              "fr": "Madame",
+              "en": "Mrs"
+            }
+          }
+        ]
+      },
+      {
+        "value": "nom"
+      },
+      {
+        "value": "prenom"
+      },
+      {
+        "value": "field",
+        "labels": {
+          "fr": "Date de naissance",
+          "en": "Date of birth"
+        },
+        "params": {
+          "text_input_mask" : "99/99/9999"
+        }
+      },
+      {
+        "value": "field",
+        "labels": {
+          "fr": "Ville de naissance",
+          "en": "Place of birth"
+        }
+      },
+      {
+        "value": "databasejoin",
+        "labels": {
+          "fr": "Pays de naissance",
+          "en": "Country of birth"
+        },
+        "params": {
+          "join_db_name": "data_country",
+          "join_key_column": "id",
+          "join_val_column": "label_fr",
+          "join_val_column_concat": "{thistable}.label_{shortlang}"
+        }
+      },
+      {
+        "value": "databasejoin",
+        "labels": {
+          "fr": "Nationalité",
+          "en": "Nationality"
+        },
+        "params": {
+          "join_db_name": "data_nationality",
+          "join_key_column": "id",
+          "join_val_column": "label_fr",
+          "join_val_column_concat": "{thistable}.label_{shortlang}"
+        }
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "value": "address",
+    "icon": "home",
+    "name": "COM_EMUNDUS_ONBOARD_SECTIONS_ADRESS",
+    "labels": {
+      "fr": "Adresse et coordonnées",
+      "en": "Adress"
+    },
+    "published": true,
+    "elements": [
+      {
+        "value": "field",
+        "labels": {
+          "fr": "Adresse",
+          "en": "Adress"
+        }
+      },
+      {
+        "value": "field",
+        "labels": {
+          "fr": "Code postal",
+          "en": "Postal code"
+        }
+      },
+      {
+        "value": "field",
+        "labels": {
+          "fr": "Ville",
+          "en": "City"
+        }
+      },
+      {
+        "value": "databasejoin",
+        "labels": {
+          "fr": "Pays",
+          "en": "Country"
+        },
+        "params": {
+          "join_db_name": "data_country",
+          "join_key_column": "id",
+          "join_val_column": "label_fr",
+          "join_val_column_concat": "{thistable}.label_{shortlang}"
+        }
+      },
+      {
+        "value": "emundus_phonenumber",
+        "labels": {
+          "fr": "Téléphone",
+          "en": "Phone"
+        }
+      }
+    ]
+  }
+]

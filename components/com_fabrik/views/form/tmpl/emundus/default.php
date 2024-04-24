@@ -22,6 +22,10 @@ $display_required_icon = $eMConfig->get('display_required_icon', 1);
 
 $pageClass = $this->params->get('pageclass_sfx', '');
 
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+$m_users = new EmundusModelUsers();
+$profile_form = $m_users->getProfileForm();
+
 JText::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TITLE');
 JText::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TEXT');
 JText::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_CONFIRM');
@@ -43,6 +47,9 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 endif;
 ?>
 <div class="emundus-form p-6">
+    <?php  if($form->id == $profile_form) : ?>
+        <iframe id="background-shapes" alt="<?= JText::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
+    <?php endif; ?>
     <div class="mb-0 fabrikMainError alert alert-error fabrikError<?php echo $active ?>">
         <span class="material-icons">cancel</span>
 		<?php echo $form->error; ?>
@@ -193,13 +200,15 @@ endif;
         for (title of grouptitle) {
             title.style.opacity = 0;
         }
-        grouptitle = document.querySelectorAll('.fabrikGroup h2');
+        grouptitle = document.querySelectorAll('.fabrikGroup h2, .fabrikGroup h3');
         for (title of grouptitle){
             title.style.opacity = 0;
         }
-        let groupintro = document.querySelector('.groupintro');
-        if (groupintro) {
-            groupintro.style.opacity = 0;
+        let groupintros = document.querySelectorAll('.groupintro');
+        if (groupintros) {
+            groupintros.forEach((groupintro) => {
+                groupintro.style.opacity = 0;
+            });
         }
 
         let elements = document.querySelectorAll('.fabrikGroup .row-fluid');
@@ -215,4 +224,9 @@ endif;
             elt.classList.add('skeleton');
         }
     });
+
+    let displayTchoozy = getComputedStyle(document.documentElement).getPropertyValue('--display-profiles');
+    if (displayTchoozy !== 'block') {
+        document.querySelector('#background-shapes').style.display = 'none';
+    }
 </script>

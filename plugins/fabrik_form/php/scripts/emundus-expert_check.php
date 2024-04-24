@@ -1,4 +1,8 @@
 <?php
+
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Uri\Uri;
+
 defined('_JEXEC') or die();
 /**
  * @version 1.5: emundus-expert_check.php 89 2017-10-01 Benjamin Rivalland
@@ -47,12 +51,12 @@ if (!empty($key_id)) {
 		}
 
 	} else {
-		$app->enqueueMessage(JText::_('PLEASE_LOGIN'), 'message');
-		$app->redirect($baseurl.'index.php?option=com_users&view=login');
-		exit();
+		$app->enqueueMessage(Text::_('PLEASE_LOGIN'), 'message');
+		$menu = $app->getMenu()->getItems('link','index.php?option=com_users&view=login', true);
+		$app->redirect(Uri::base().$menu->alias);
 	}
 } else {
-	$app->enqueueMessage(JText::_('PLEASE_LOGIN'), 'message');
-	$app->redirect($baseurl.'index.php?option=com_users&view=login');
-	exit();
+	$app->enqueueMessage(Text::_('PLEASE_LOGIN'), 'message');
+	$menu = $app->getMenu()->getItems('link','index.php?option=com_users&view=login', true);
+	$app->redirect(Uri::base().$menu->alias);
 }

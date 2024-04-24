@@ -48,7 +48,7 @@ if($currentCampaign->apply_online == 0){
 <div class="mod_emundus_campaign__grid em-mt-24 em-mb-64" style="grid-gap: 64px">
     <div>
         <div class="em-flex-row em-mb-12 em-pointer em-w-max-content" onclick="history.go(-1)">
-            <span class="material-icons">arrow_back</span><span class="em-ml-8"><?php echo JText::_('MOD_EM_CAMPAIGN_BACK'); ?></span>
+            <span class="material-icons">navigate_before</span><span class="em-ml-8 em-text-neutral-900"><?php echo JText::_('MOD_EM_CAMPAIGN_BACK'); ?></span>
         </div>
         <?php if($mod_em_campaign_details_show_programme == 1) : ?>
             <?php
@@ -165,6 +165,11 @@ if($currentCampaign->apply_online == 0){
         <!-- INFO BLOCK -->
         <?php if ($can_apply != 0 || $mod_em_campaign_show_registration == 1 && !empty($mod_em_campaign_show_registration_steps)) : ?>
         <div class="mod_emundus_campaign__details_content em-border-neutral-300 em-mb-24">
+
+            <?php if ($mod_em_campaign_display_svg == 1) : ?>
+                <div id="background-shapes" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></div>
+            <?php endif; ?>
+
             <h4 class="em-mb-24"><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_APPLY') ?></h4>
             <?php if ($mod_em_campaign_show_registration == 1 && !empty($mod_em_campaign_show_registration_steps)) : ?>
             <div class="em-mt-24">
@@ -182,10 +187,14 @@ if($currentCampaign->apply_online == 0){
                     if(!isset($redirect_url) || empty($redirect_url)) {
                         $redirect_url = "index.php?option=com_users&view=registration";
                     }
-                    $register_url = $redirect_url."&course=".$currentCampaign->code."&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid;
-                } else {
-                    $register_url = $redirect_url."?course=".$currentCampaign->code."&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid;
                 }
+
+	            if (strpos($redirect_url, '?') !== false) {
+		            $register_url = $redirect_url."&course=".$currentCampaign->code."&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid;
+	            } else {
+		            $register_url = $redirect_url."?course=".$currentCampaign->code."&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid;
+	            }
+
                 if(!$user->guest) {
                     $register_url .= "&redirect=" . $formUrl;
                 }
@@ -200,6 +209,11 @@ if($currentCampaign->apply_online == 0){
         <!-- ATTACHMENTS BLOCK -->
         <?php if (!empty($files) && $mod_em_campaign_show_documents == 1) : ?>
         <div class="mod_emundus_campaign__details_content em-border-neutral-300 em-mb-24">
+
+            <?php if ($mod_em_campaign_display_svg == 1) : ?>
+                <div id="background-shapes" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></div>
+            <?php endif; ?>
+
             <h4><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_DOWNLOADS') ?></h4>
             <div class="em-mt-24">
                 <?php foreach($files as $file) : ?>
@@ -228,11 +242,17 @@ if($currentCampaign->apply_online == 0){
     window.onload = function() {
         document.getElementById('campaign_tab').classList.add('current-tab');
         <?php if (in_array('faq', $modules_tabs)) : ?>
-        document.getElementById('faq').style.display = 'none';
+        const faq = document.getElementById('faq');
+        if (faq) {
+            document.getElementById('faq').style.display = 'none';
+        }
         <?php endif; ?>
 
         <?php if (in_array('documents', $modules_tabs)) : ?>
-        document.getElementById('documents').style.display = 'none';
+        const documents = document.getElementById('documents');
+        if (documents) {
+            documents.style.display = 'none';
+        }
         if(typeof document.getElementsByClassName('campaign-documents')[0] != 'undefined') {
             document.getElementsByClassName('campaign-documents')[0].parentElement.style.display = 'none';
         }
@@ -268,6 +288,33 @@ if($currentCampaign->apply_online == 0){
         section.style.display === 'none' ? tab_div.classList.add('current-tab') : '';
         section.style.display === 'none' ? section.style.display = 'flex' : '';
     }
+
+    /* Couleur des cards "candidater" des campagnes clôturées */
+    let buttonElement = document.querySelector(".mod_emundus_campaign__details_content button");
+
+    if(buttonElement !== null) {
+
+    if(buttonElement.classList.contains("em-disabled-button")) {
+
+      let iframeElement = document.querySelector(".mod_emundus_campaign__details_content #background-shapes");
+
+      if(iframeElement !== null) {
+          iframeElement.onload = function () {
+              let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
+              let pathElements = iframeDocument.querySelectorAll("path");
+              let neutral600 = getComputedStyle(document.documentElement).getPropertyValue('--neutral-600');
+
+              /* Coloration de tous les éléments "path" */
+              pathElements.forEach((pathElement) => {
+                  let pathStyle = pathElement.getAttribute("style");
+                  pathStyle = pathStyle.replace(/fill:#[0-9A-Fa-f]{6};/, "fill :" + neutral600 + ";");
+                  pathElement.setAttribute("style", pathStyle);
+              });
+          }
+        }
+      }
+    }
+
 </script>
 
 

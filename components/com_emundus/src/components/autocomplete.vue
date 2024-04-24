@@ -91,7 +91,7 @@ export default {
       }
     },
     onEnter() {
-      this.search = this.results[this.arrowCounter];
+      this.search = this.results[this.arrowCounter] ? this.results[this.arrowCounter] : this.search;
       this.isOpen = false;
       this.arrowCounter = -1;
       this.onSearching();

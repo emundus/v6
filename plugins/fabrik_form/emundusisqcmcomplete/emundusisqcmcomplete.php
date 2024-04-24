@@ -108,7 +108,7 @@ class PlgFabrik_FormEmundusisqcmcomplete extends plgFabrik_Form {
             $query->select('distinct sq.id')
                 ->from($db->quoteName('#__emundus_setup_qcm','sq'))
                 ->leftJoin($db->quoteName('#__emundus_qcm_applicants','qc').' ON '.$db->quoteName('qc.qcmid').' = '.$db->quoteName('sq.id'))
-                ->where($db->quoteName('qc.fnum') . ' = ' . $db->quote($fnum));
+                ->where($db->quoteName('qc.fnum') . ' LIKE ' . $db->quote($fnum));
             $db->setQuery($query);
             $qcms = $db->loadColumn();
 
@@ -117,7 +117,7 @@ class PlgFabrik_FormEmundusisqcmcomplete extends plgFabrik_Form {
                     $query->clear()
                         ->select('questions')
                         ->from($db->quoteName('#__emundus_qcm_applicants'))
-                        ->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum))
+                        ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum))
                         ->andWhere($db->quoteName('qcmid') . ' = ' . $db->quote($qcm));
                     $db->setQuery($query);
                     $q_numbers = sizeof(explode(',',$db->loadResult()));
@@ -126,7 +126,7 @@ class PlgFabrik_FormEmundusisqcmcomplete extends plgFabrik_Form {
                         ->select('count(rt.id) as answers')
                         ->from($db->quoteName($repeat_table[$key], 'rt'))
                         ->leftJoin($db->quoteName($table[$key], 't') . ' ON ' . $db->quoteName('t.id') . ' = ' . $db->quoteName('rt.parent_id'))
-                        ->where($db->quoteName('t.fnum') . ' = ' . $db->quote($fnum));
+                        ->where($db->quoteName('t.fnum') . ' LIKE ' . $db->quote($fnum));
                     $db->setQuery($query);
                     $answers_given = $db->loadResult();
 

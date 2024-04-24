@@ -29,6 +29,17 @@
 			<field type="helplink"
 				url="PLG_ELEMENT_PANEL_HELP_SERVER" />
 
+			<field name="type"
+				   type="list"
+				   default="1"
+				   label="PLG_ELEMENT_PANEL_TYPE_LABEL">
+				<option value="0">PLG_ELEMENT_PANEL_TYPE_CUSTOM</option>
+				<option value="1">PLG_ELEMENT_PANEL_TYPE_INFORMATION</option>
+				<option value="2">PLG_ELEMENT_PANEL_TYPE_WARNING</option>
+				<option value="3">PLG_ELEMENT_PANEL_TYPE_ERROR</option>
+				<option value="4">PLG_ELEMENT_PANEL_TYPE_NONE</option>
+			</field>
+
 			<field name="accordion"
 				   type="radio"
 				   default="0"
@@ -42,25 +53,29 @@
 				   type="text"
 				   label="PLG_ELEMENT_PANEL_ACCORDION_TITLE_LABEL" />
 
-			<field name="panel_background"
+			<field showon="type:0"
+				   name="panel_background"
 				   type="color"
 				   default="#EBEEFA"
 				   label="PLG_ELEMENT_PANEL_BACKGROUND">
 			</field>
 
-			<field name="panel_icon"
+			<field showon="type:0"
+				   name="panel_icon"
 				   type="text"
 				   default="info"
 				   label="PLG_ELEMENT_PANEL_ICON">
 			</field>
 
-			<field name="panel_icon_color"
+			<field showon="type:0"
+				   name="panel_icon_color"
 				   type="color"
 				   default="#525b85"
 				   label="PLG_ELEMENT_PANEL_ICON_COLOR">
 			</field>
 
-			<field name="panel_icon_type"
+			<field showon="type:0"
+				   name="panel_icon_type"
 				   type="text"
 				   default=""
 				   label="PLG_ELEMENT_PANEL_ICON_TYPE"
