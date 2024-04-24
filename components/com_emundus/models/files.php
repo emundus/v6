@@ -21,6 +21,7 @@ jimport('joomla.application.component.model');
 require_once(JPATH_SITE.'/components/com_emundus/helpers/date.php');
 require_once(JPATH_SITE.'/components/com_emundus/helpers/files.php');
 require_once(JPATH_SITE.'/components/com_emundus/helpers/list.php');
+require_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
 require_once(JPATH_SITE.'/components/com_emundus/models/logs.php');
 require_once(JPATH_SITE.'/components/com_emundus/models/users.php');
 
@@ -1620,6 +1621,16 @@ class EmundusModelFiles extends JModelLegacy
                             ->where($db->quoteName('user_id').' = '.$db->quote($applicant_id));
                         $db->setQuery($query);
                         $db->execute();
+                    }
+
+                    $can_edit_back_documents = ComponentHelper::getParams('com_emundus')->get('can_edit_back_documents', 0);
+                    if ($can_edit_back_documents) {
+                        $m_profile = new EmundusModelProfile;
+                        $current_profile = $m_profile->getProfileByStatus($fnum);
+
+                        if (!empty($current_profile)) {
+                            $this->makeAttachmentsEditableByApplicant($fnum, $current_profile['profile']);
+                        }
                     }
                 }
             } catch (Exception $e) {
@@ -5075,5 +5086,46 @@ class EmundusModelFiles extends JModelLegacy
         }
 
         return $nom;
+    }
+
+    public function makeAttachmentsEditableByApplicant($fnum, $profile)
+    {
+        $res = true;
+
+        $attachment_to_keep_non_deletable = ComponentHelper::getParams('com_emundus')->get('attachment_to_keep_non_deletable', '');
+
+        if (isset($fnum) && isset($profile)) {
+            $fnumInfos = $this->getFnumInfos($fnum);
+
+            $db = $this->getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('attachment_id')
+                ->from('#__emundus_setup_attachment_profiles')
+                ->where('profile_id = ' . $db->quote($profile))
+                ->andWhere('attachment_id NOT IN (' . implode(',', $db->quote($attachment_to_keep_non_deletable)) . ')');
+            $db->setQuery($query);
+            $attachments = $db->loadColumn();
+
+            if (!empty($attachments)) {
+                try {
+                    $query->clear()
+                        ->update('#__emundus_uploads')
+                        ->set('can_be_deleted = 1')
+                        ->where('fnum LIKE ' . $db->quote($fnum))
+                        ->andWhere('attachment_id IN (' . implode(',', $attachments) . ')')
+                        ->andWhere('user_id = '.$fnumInfos['applicant_id']);
+                    $db->setQuery($query);
+                    $res = $db->execute();
+                } catch (Exception $e) {
+                    JLog::add('Error making attachments editable by applicant for fnum: '.$fnum.' and profile: '.$profile.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                    $res = false;
+                }
+            }
+        } else {
+            $res = false;
+        }
+
+        return $res;
     }
 }
