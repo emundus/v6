@@ -3,11 +3,23 @@
     <div id="file-comment" v-for="comment in parentComments" :key="comment.id"
       class="shadow rounded-lg py-2 px-4 my-4 em-bg-neutral-100"
     >
-      <div id="file-comment-header" class="flex flex-col">
-        <span>{{ comment.date }}</span>
-        <span>{{ comment.username }}</span>
+      <div id="file-comment-header" class="flex flex-row justify-between">
+        <div class="file-comment-header-left">
+          <span>{{ comment.date }}</span>
+          <span>{{ comment.username }}</span>
+        </div>
+        <div class="file-comment-header-right">
+          <span class="material-icons-outlined cursor-pointer" @click="replyToComment(comment.id)">reply</span>
+          <span class="material-icons-outlined cursor-pointer">trash</span>
+        </div>
       </div>
       <p>{{ comment.comment_body }}</p>
+
+      <div class="comment-children" :class="{'opened': openedCommentId === comment.id}">
+        <div v-for="child in childrenComments[comment.id]">
+
+        </div>
+      </div>
     </div>
     <div id="add-comment-container">
       <textarea @keyup.enter="addComment" v-model="comment"></textarea>
@@ -65,6 +77,7 @@ export default {
       target_id: 0,
     },
     visible_to_applicant: false,
+    openedCommentId: 0,
     loading: false,
   }),
   created() {
@@ -101,11 +114,29 @@ export default {
       this.visible_to_applicant = false;
       this.target.target_id = 0;
       this.target.target_type = 'element';
+    },
+    replyToComment(commentId) {
+      this.openedCommentId = this.openedCommentId === commentId ? 0 : commentId;
     }
   },
   computed: {
     parentComments() {
       return this.comments.filter((comment) => parseInt(comment.parent_id) === 0);
+    },
+    childrenComments() {
+      return this.comments.reduce((acc, comment) => {
+        if (parseInt(comment.parent_id) !== 0) {
+          if (!acc[comment.parent_id]) {
+            acc[comment.parent_id] = [];
+          }
+          acc[comment.parent_id].push(comment);
+        } else {
+          if (!acc[comment.id]) {
+            acc[comment.id] = [];
+          }
+        }
+        return acc;
+      }, {});
     }
   }
 }
