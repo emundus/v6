@@ -154,6 +154,24 @@
 				/>
 
 				<field
+						name="ldap_firstname"
+						type="text"
+						label="PLG_LDAP_FIELD_FIRSTNAME_LABEL"
+						description="PLG_LDAP_FIELD_FIRSTNAME_DESC"
+						default="sn"
+						size="20"
+				/>
+
+				<field
+						name="ldap_lastname"
+						type="text"
+						label="PLG_LDAP_FIELD_LASTNAME_LABEL"
+						description="PLG_LDAP_FIELD_LASTNAME_DESC"
+						default="givenName"
+						size="20"
+				/>
+
+				<field
 					name="ldap_email"
 					type="text"
 					label="PLG_LDAP_FIELD_EMAIL_LABEL"

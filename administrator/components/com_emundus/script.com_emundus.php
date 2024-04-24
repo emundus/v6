@@ -4160,30 +4160,119 @@ if(in_array($applicant,$exceptions)){
 				$db->execute();
 			}
 
-			if ((version_compare($cache_version, '1.39.0', '<=') || $firstrun)) {
-				$datas = [
-					'menutype'     => 'actions-users',
-					'title'        => 'Exporter',
-					'alias'        => 'export',
-					'link'         => '',
-					'type'         => 'heading',
-					'component_id' => 0,
-				];
-				$export_menu = EmundusHelperUpdate::addJoomlaMenu($datas);
+			if (version_compare($cache_version, '1.39.0', '<=') || $firstrun) {
+				$succeed['get_attachments_for_profile_event_added'] = EmundusHelperUpdate::addCustomEvents([
+					['label' => 'onAfterGetAttachmentsForProfile', 'category' => 'Files']
+				]);
 
-				if($export_menu['status'])
-				{
-					$datas = [
-						'menutype'     => 'actions-users',
-						'title'        => 'Exporter vers Excel',
-						'alias'        => 'export-excel',
-						'type'         => 'url',
-						'link'         => 'index.php?option=com_emundus&view=users&format=raw&layout=export&Itemid={Itemid}',
-						'component_id' => 0,
-						'note'         => '12|r|1|6'
-					];
-					EmundusHelperUpdate::addJoomlaMenu($datas,$export_menu['id']);
-				}
+
+                EmundusHelperUpdate::addColumn('jos_emundus_setup_groups', 'filter_status', 'INT',1,1,'0');
+                EmundusHelperUpdate::addColumn('jos_emundus_setup_groups', 'status', 'INT',11,1);
+
+                $columns       = [
+                    [
+                        'name'   => 'parent_id',
+                        'type'   => 'int',
+                        'length' => 11,
+                        'null'   => 0,
+                    ],
+                    [
+                        'name'   => 'status',
+                        'type'   => 'int',
+                        'length' => 11,
+                        'null'   => 0,
+                    ],
+                    [
+                        'name'   => 'params',
+                        'type'   => 'varchar',
+                        'length' => 255,
+                        'null'   => 1,
+                    ]
+                ];
+                $repeat_status = EmundusHelperUpdate::createTable('jos_emundus_setup_groups_repeat_status', $columns);
+
+                $query->clear()
+                    ->select('ffg.group_id,fl.id')
+                    ->from($db->quoteName('#__fabrik_lists','fl'))
+                    ->leftJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffg.form_id').' = '.$db->quoteName('fl.form_id'))
+                    ->where($db->quoteName('fl.db_table_name') . ' LIKE ' . $db->quote('jos_emundus_setup_groups'))
+                    ->where($db->quoteName('fl.label') . ' LIKE ' . $db->quote('TABLE_SETUP_GROUPS'));
+                $db->setQuery($query);
+                $setup_groups = $db->loadAssoc();
+
+                if(!empty($setup_groups['group_id']))
+                {
+                    $datas  = [
+                        'name'                 => 'filter_status',
+                        'group_id'             => $setup_groups['group_id'],
+                        'plugin'               => 'yesno',
+                        'label'                => 'SETUP_GROUPS_FILTER_STATUS',
+                        'show_in_list_summary' => 1
+                    ];
+                    EmundusHelperUpdate::addFabrikElement($datas);
+
+                    $datas  = [
+                        'name'                 => 'status',
+                        'group_id'             => $setup_groups['group_id'],
+                        'plugin'               => 'databasejoin',
+                        'label'                => 'SETUP_GROUPS_AVAILABLE_STATUS',
+                        'show_in_list_summary' => 1
+                    ];
+                    $params = [
+                        'database_join_display_type' => 'multilist',
+                        'join_db_name' => 'jos_emundus_setup_status',
+                        'join_key_column' => 'step',
+                        'join_val_column' => 'value',
+                        'advanced_behavior' => 1
+                    ];
+                    $status_elt = EmundusHelperUpdate::addFabrikElement($datas, $params, false)['id'];
+
+                    $datas = [
+                        'list_id' => $setup_groups['id'],
+                        'element_id' => $status_elt,
+                        'join_from_table' => 'jos_emundus_setup_groups',
+                        'table_join' => 'jos_emundus_setup_groups_repeat_status',
+                        'table_key' => 'status',
+                        'table_join_key' => 'parent_id',
+                        'join_type' => 'left',
+                        'group_id' => 0,
+                    ];
+                    $params = [
+                        'type' => 'repeatElement',
+                        'pk' => '`jos_emundus_setup_groups_repeat_status`.`id`'
+                    ];
+                    EmundusHelperUpdate::addFabrikJoin($datas,$params);
+
+                    EmundusHelperUpdate::insertTranslationsTag('SETUP_GROUPS_FILTER_STATUS', 'Restreindre l\'accès à certains statuts');
+                    EmundusHelperUpdate::insertTranslationsTag('SETUP_GROUPS_FILTER_STATUS', 'Restricting access to certain statuses', 'override', null, null, null, 'en-GB');
+
+                    EmundusHelperUpdate::insertTranslationsTag('SETUP_GROUPS_AVAILABLE_STATUS', 'Statuts');
+                    EmundusHelperUpdate::insertTranslationsTag('SETUP_GROUPS_AVAILABLE_STATUS', 'Statuses', 'override', null, null, null, 'en-GB');
+
+	                $datas = [
+		                'menutype'     => 'actions-users',
+		                'title'        => 'Exporter',
+		                'alias'        => 'export',
+		                'link'         => '',
+		                'type'         => 'heading',
+		                'component_id' => 0,
+	                ];
+	                $export_menu = EmundusHelperUpdate::addJoomlaMenu($datas);
+
+	                if($export_menu['status'])
+	                {
+		                $datas = [
+			                'menutype'     => 'actions-users',
+			                'title'        => 'Exporter vers Excel',
+			                'alias'        => 'export-excel',
+			                'type'         => 'url',
+			                'link'         => 'index.php?option=com_emundus&view=users&format=raw&layout=export&Itemid={Itemid}',
+			                'component_id' => 0,
+			                'note'         => '12|r|1|6'
+		                ];
+		                EmundusHelperUpdate::addJoomlaMenu($datas,$export_menu['id']);
+	                }
+                }
 			}
 		}
 

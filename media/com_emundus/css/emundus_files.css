@@ -224,6 +224,10 @@ button.close {
     background: var(--neutral-100) !important;
 }
 
+.em-data-container .table-hover.table-striped tbody tr:nth-child(2n+1) td .sticker .circle {
+    background-color: var(--neutral-100);
+}
+
 th {
     position: static;
     background: var(--neutral-0) !important;
@@ -269,7 +273,7 @@ table .btn-group > .btn {
 .table-striped tbody > tr > td {
     vertical-align: middle;
 }
-.toggle-editor .bnt .icon-eye{
+.toggle-editor .btn .icon-eye{
     padding-right:5px;
 }
 
@@ -1471,6 +1475,7 @@ td:first-child>.em-cell {
     overflow-y: scroll;
     -ms-overflow-style: none;
     scrollbar-width: none;
+    font-size: 14px;
 }
 .em-cell-scroll > .em-cell > span, .em-cell-scroll > .em-cell > a > div {
     display:block;
