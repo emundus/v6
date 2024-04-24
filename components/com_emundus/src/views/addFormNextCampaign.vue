@@ -26,29 +26,20 @@
             <strong>{{ form.end_date }}</strong>
           </p>
         </div>
-
-        <!--- start Menu --->
-        <div class="em-flex-row">
+        <div class="flex flex-row">
           <ul class="nav nav-tabs topnav">
 
             <li v-for="menu in menus" :key="menu.component" @click="selectMenu(menu)" :class="{'w--current': selectedMenu === menu.component}">
-              <a href="javascript:void(0)">
-                <span class="material-icons-outlined em-mr-8">{{ menu.icon }}</span>
-                {{ translate(menu.label) }}
-              </a>
+              <span class="cursor-pointer">{{ translate(menu.label) }}</span>
             </li>
           </ul>
         </div>
         <br>
-
-
-        <!-- end Menu -->
-
         <div v-if="selectedMenu === 'addEmail'" class="warning-message-program mb-1">
-          <p class="em-red-500-color em-flex-row"><span class="material-icons-outlined em-mr-8 em-red-500-color">warning_amber</span>{{ translate('COM_EMUNDUS_ONBOARD_PROGRAM_WARNING') }}
+          <p class="em-red-500-color flex flex-row"><span class="material-icons-outlined em-mr-8 em-red-500-color">warning_amber</span>{{ translate('COM_EMUNDUS_ONBOARD_PROGRAM_WARNING') }}
           </p>
           <ul v-if="campaignsByProgram.length > 0" class="em-mt-8 em-mb-32 em-pl-16">
-            <li v-for="(campaign, index) in campaignsByProgram" :key="'camp_progs_' + index">{{ campaign.label }}</li>
+            <li v-for="campaign in campaignsByProgram" :key="'camp_progs_' + campaign.id">{{ campaign.label }}</li>
           </ul>
         </div>
         <transition name="fade">
@@ -94,7 +85,7 @@
       </div>
 
       <div class="em-flex-row em-flex-space-between em-float-right"
-           v-if="menuHighlight !== 0 && menuHighlightProg !== 0">
+           v-if="selectedMenu">
         <button
             type="button"
             class="em-primary-button em-w-auto mb-4"
@@ -306,7 +297,6 @@ export default {
               this.campaignsByProgram = repcampaigns.data.campaigns;
             });
           }).catch(e => {
-        console.log(e);
       });
     },
     selectMenu(menu) {
@@ -317,7 +307,6 @@ export default {
       this.profileId = prid;
     },
     next() {
-      // select next menu
       let index = this.menus.findIndex(menu => menu.component === this.selectedMenu);
       if (index < this.menus.length - 1) {
         this.selectedMenu = this.menus[index + 1].component;
@@ -353,7 +342,6 @@ export default {
   },
 
   computed: {
-    console: () => console,
     getProfileId() {
       return Number(this.profileId);
     },

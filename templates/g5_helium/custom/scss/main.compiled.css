@@ -2971,6 +2971,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .grid-cols-5 {
   grid-template-columns: repeat(5, minmax(0, 1fr));
 }
+.flex-row {
+  flex-direction: row;
+}
 .flex-col {
   flex-direction: column;
 }
