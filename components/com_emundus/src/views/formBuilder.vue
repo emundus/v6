@@ -487,13 +487,16 @@ export default {
             let element = section.elements[key];
             if (element.id === elementId) {
               delete section.elements[key];
+              if(element.plugin === 'emundus_fileupload'){
+                this.selectedSection = section;
+                this.KeySectionProperties++;
+                this.showInRightPanel = 'section-properties';
+              }
               break;
             }
           }
         }
-        this.selectedSection = section;
-        this.KeySectionProperties++;
-        this.showInRightPanel = 'section-properties';
+
         this.context = 'delete';
 
     }
