@@ -4159,6 +4159,10 @@ if(in_array($applicant,$exceptions)){
 				$db->setQuery($query);
 				$db->execute();
 			}
+
+			if (version_compare($cache_version, '1.39.0', '<=') || $firstrun) {
+				EmundusHelperUpdate::addColumn('jos_emundus_widgets_repeat_access', 'access_level', 'INT', 11);
+			}
 		}
 
 		return $succeed;
