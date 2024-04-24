@@ -26,9 +26,13 @@ class EmundusModelComments extends JModelLegacy
      * @param $user int
      * @return int
      */
-    public function addComment($file_id, $comment, $target, $visible_to_applicant, $user): int
+    public function addComment($file_id, $comment, $target, $visible_to_applicant, $parent_id = 0, $user = null): int
     {
         $new_comment_id = 0;
+
+        if (empty($user)) {
+            $user = JFactory::getUser()->id;
+        }
 
         if (!empty($file_id) && !empty($comment)) {
             $target_type = !empty($target) && isset($target['target_type']) ? $target['target_type'] : '';
@@ -54,7 +58,8 @@ class EmundusModelComments extends JModelLegacy
                     $this->db->quoteName('target_id'),
                     $this->db->quoteName('visible_to_applicant'),
                     $this->db->quoteName('user_id'),
-                    $this->db->quoteName('date')
+                    $this->db->quoteName('date'),
+                    $this->db->quoteName('parent_id')
                 ])
                 ->values(
                     $this->db->quote($file_id) . ', ' .
@@ -65,7 +70,8 @@ class EmundusModelComments extends JModelLegacy
                     $this->db->quote($target_id) . ', ' .
                     $this->db->quote($visible_to_applicant) . ', ' .
                     $this->db->quote($user) . ', 
-                    NOW()'
+                    NOW(), ' .
+                    $this->db->quote($parent_id)
                 );
 
             try {

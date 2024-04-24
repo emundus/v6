@@ -1,28 +1,47 @@
 <template>
   <div id="comments" class="p-4">
     <div id="file-comment" v-for="comment in parentComments" :key="comment.id"
-      class="shadow rounded-lg py-2 px-4 my-4 em-bg-neutral-100"
+      class="shadow rounded-lg py-2 px-4 my-4 em-white-bg"
     >
-      <div id="file-comment-header" class="flex flex-row justify-between">
-        <div class="file-comment-header-left">
+      <div class="file-comment-header flex flex-row justify-between">
+        <div class="file-comment-header-left flex flex-col">
           <span>{{ comment.date }}</span>
           <span>{{ comment.username }}</span>
         </div>
         <div class="file-comment-header-right">
           <span class="material-icons-outlined cursor-pointer" @click="replyToComment(comment.id)">reply</span>
-          <span class="material-icons-outlined cursor-pointer">trash</span>
+          <span class="material-icons-outlined cursor-pointer" @click="deleteComment(comment.id)">delete</span>
         </div>
       </div>
       <p>{{ comment.comment_body }}</p>
 
-      <div class="comment-children" :class="{'opened': openedCommentId === comment.id}">
-        <div v-for="child in childrenComments[comment.id]">
-
+      <div class="comment-children" :class="{'opened': openedCommentId === comment.id, 'hidden': openedCommentId !== comment.id}">
+        <hr>
+        <div v-for="child in childrenComments[comment.id]" :key="child.id" dir="ltr">
+          <div class="child-comment flex flex-col border-s-4 my-2 px-3">
+            <div class="file-comment-header flex flex-row justify-between">
+              <div class="file-comment-header-left flex flex-col">
+                <span>{{ child.date }}</span>
+                <span>{{ child.username }}</span>
+              </div>
+              <div class="file-comment-header-left">
+                <span class="material-icons-outlined cursor-pointer" @click="deleteComment(child.id)">delete</span>
+              </div>
+            </div>
+            <p>{{ child.comment_body }}</p>
+          </div>
+        </div>
+        <div class="add-child-comment">
+          <textarea class="mb-2" @keyup.enter="addComment" v-model="newCommentText"></textarea>
+          <button id="add-comment-btn" class="em-primary-button em-bg-main-500 em-neutral-300-color w-fit mt-2" @click="addComment(comment.id)">
+            <span>{{ translate('COM_EMUNDUS_COMMENTS_ADD_COMMENT') }}</span>
+            <span class="material-icons-outlined ml-1 em-neutral-300-color">send</span>
+          </button>
         </div>
       </div>
     </div>
     <div id="add-comment-container">
-      <textarea @keyup.enter="addComment" v-model="comment"></textarea>
+      <textarea @keyup.enter="addComment" v-model="newCommentText"></textarea>
       <div class="flex flex-row items-center">
         <div class="flex flex-row items-center">
           <input type="radio" name="visible_to_applicant" v-model="visible_to_applicant" :value="false" id="visible-to-coords">
@@ -33,7 +52,7 @@
           <label for="visible-to-applicant" class="m-0">{{ translate('COM_EMUNDUS_COMMENTS_VISIBLE_ALL') }}</label>
         </div>
       </div>
-      <button id="add-comment-btn" class="em-primary-button em-bg-main-500 em-neutral-300-color" @click="addComment">
+      <button id="add-comment-btn" class="em-primary-button em-bg-main-500 em-neutral-300-color" @click="addComment(0)">
         <span>{{ translate('COM_EMUNDUS_COMMENTS_ADD_COMMENT') }}</span>
         <span class="material-icons-outlined ml-1 em-neutral-300-color">send</span>
       </button>
@@ -71,7 +90,7 @@ export default {
   mixins: [mixins, errors],
   data: () => ({
     comments: [],
-    comment: '',
+    newCommentText: '',
     target: {
       target_type: 'element',
       target_id: 0,
@@ -96,9 +115,9 @@ export default {
         this.loading = false;
       });
     },
-    addComment() {
+    addComment(parent_id = 0) {
       this.loading = true;
-      commentsService.addComment(this.ccid, this.comment, this.target, this.visible_to_applicant).then((response) => {
+      commentsService.addComment(this.ccid, this.newCommentText, this.target, this.visible_to_applicant, parent_id).then((response) => {
         if (response.status) {
           this.comments.push(response.data);
           this.resetAddComment();
@@ -110,13 +129,21 @@ export default {
       });
     },
     resetAddComment() {
-      this.comment = '';
+      this.newCommentText = '';
       this.visible_to_applicant = false;
       this.target.target_id = 0;
       this.target.target_type = 'element';
     },
     replyToComment(commentId) {
-      this.openedCommentId = this.openedCommentId === commentId ? 0 : commentId;
+      if (commentId > 0) {
+        this.resetAddComment();
+        this.openedCommentId = this.openedCommentId === commentId ? 0 : commentId;
+      }
+    },
+    deleteComment(commentId) {
+      if (commentId > 0) {
+
+      }
     }
   },
   computed: {

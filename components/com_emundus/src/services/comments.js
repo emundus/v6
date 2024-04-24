@@ -15,7 +15,7 @@ export default {
             }
         }
     },
-    async addComment(ccid, comment, target, visible_to_applicant = 0) {
+    async addComment(ccid, comment, target, visible_to_applicant = 0, parent_id = 0) {
         if (ccid > 0 && comment.length > 0) {
             try {
                 const formData = new FormData();
@@ -23,6 +23,7 @@ export default {
                 formData.append('comment', comment);
                 formData.append('target', JSON.stringify(target));
                 formData.append('visible_to_applicant', visible_to_applicant);
+                formData.append('parent_id', parent_id);
 
                 const response = await client().post('index.php?option=com_emundus&controller=comments&task=addcomment', formData, {
                     headers: {
