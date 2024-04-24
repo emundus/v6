@@ -6,11 +6,15 @@
  * @author     EMUNDUS SAS
  */
 
+if ('undefined' === typeof jQuery) throw new Error('eMundus\'s JavaScript requires jQuery');
+
 var loading;
 var moduleFilters = null;
 var refreshModuleFiltersEvent = new Event('refresh-emundus-module-filters');
 
-var $ = jQuery.noConflict();
+if (typeof $ === 'undefined') {
+    var $ = jQuery.noConflict();
+}
 
 // to abort all AJAX query at once
 $.ajaxQ = (function(){
@@ -489,7 +493,7 @@ function openFiles(fnum, page = 0, vue = false) {
                         var numMenu = 0;
 
                         while (numMenu <= menus.length) {
-                            if (menus[numMenu].link.indexOf('layout=' + page) != -1) {
+                            if (menus[numMenu] && menus[numMenu].link && menus[numMenu].link.indexOf('layout=' + page) != -1) {
                                 break;
                             }
                             numMenu++;
@@ -1832,7 +1836,7 @@ $(document).ready(function() {
                                 '<div class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 em-mt-16">' +
 
                                 '<div>' +
-                                '<h5>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+'</h5>' +
+                                '<h5>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+'<span class="material-icons text-xxs text-red-500 mr-0" style="top: -5px;position: relative">emergency</span></h5>' +
                                 '</div>' +
 
                                 '<div class="em-mt-8">' +
@@ -1955,6 +1959,7 @@ $(document).ready(function() {
                                                         $('#em-export-camp').empty();
                                                         $('#em-export-camp').append('<option value="0" data-value="0">-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_CAMP')+' --</option>');
                                                         $('#em-export-camp').append(result.html);
+                                                        $("#em-export-camp").val(0);
                                                         $('#em-export-camp').chosen('destroy').chosen({width: "100%"});
 
                                                         $('#loadingimg-campaign').remove();
@@ -1976,15 +1981,20 @@ $(document).ready(function() {
                                     $('#em-export').empty();
                                     $('#elements_detail').hide();
                                     $('#elements-popup').hide();
+
+                                    document.getElementById('list-element-export').style.display = 'none';
+                                    document.getElementById('oelts').style.display = 'none';
+                                    document.getElementById('methode').style.display = 'none';
                                 }
                             });
 
                             $('#em-export-camp').on('change', function() {
 
                                 var code = $('#em-export-prg').val();
+                                var camp = $("#em-export-camp").val();
 
-                                if (code != 0) {
-                                    var camp = $("#em-export-camp").val();
+                                if (code != 0 && camp != 0) {
+
 
                                     $.ajax({
                                         type:'get',
@@ -2006,6 +2016,10 @@ $(document).ready(function() {
                                                     $('#th-adm').show();
                                                     $('#admelement').show();
                                                 }
+
+                                                document.getElementById('list-element-export').style.display = 'block';
+                                                document.getElementById('oelts').style.display = 'block';
+                                                document.getElementById('methode').style.display = 'block';
 
                                                 document.getElementsByClassName('em-swal-confirm-button')[0].style.opacity = 1;
 
@@ -2206,10 +2220,14 @@ $(document).ready(function() {
                                     $('.btn-success').hide();
                                     $('#elements_detail').hide();
                                     $('#elements-popup').hide();
+
+                                    document.getElementById('list-element-export').style.display = 'none';
+                                    document.getElementById('oelts').style.display = 'none';
+                                    document.getElementById('methode').style.display = 'none';
                                 }
                             });
 
-                            $('#data').append('<div id="main" class="em-grid-2 em-mt-16"><div id="list-element-export"></div><div id="oelts"></div></div>');
+                            $('#data').append('<div id="main" class="em-grid-2 em-mt-16"><div id="list-element-export" style="display: none"></div><div id="oelts" style="display:none;"></div></div>');
 
                             var defaults = '<div class="em-flex-row em-pointer em-mb-8" id="list-element-export-button"><p>'+Joomla.JText._('COM_EMUNDUS_CHOOSEN_FORM_ELEM')+'</p></div>' +
                                 '<div class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 em-mt-16" id="em-export-elts">' +
@@ -2245,7 +2263,7 @@ $(document).ready(function() {
                             // TODO: fix upper-case options
                             // '<div class="em-flex-row em-mb-4"><input class="em-ex-check0" type="checkbox" value="upper-case" name="upper-case" id="upper-case" style="max-height: 20px;"/>' +
                             // '<label for="upper-case" class="em-mb-0-important">'+Joomla.JText._('COM_EMUNDUS_TO_UPPER_CASE')+'</label></div>' +
-                            $('#data').append( '<div id="methode" class="em-grid-2 em-mt-16">'+
+                            $('#data').append( '<div id="methode" style="display: none" class="em-grid-2 em-mt-16">'+
                                 '<div><p>' +Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_OPTION')+ '</p>' +
                                 '<div id="exp" class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 em-mt-16">'+
                                 '<div id="exp1"><form style="margin-left:15px; margin-bottom:6px">'+
@@ -4890,8 +4908,12 @@ $(document).ready(function() {
                 var fnumUsed = urlUsed.searchParams.get('fnum');
 
                 checkIfSomeoneIsEditing(fnumUsed);
-                $('#em-appli-block').empty();
-                $('#em-appli-block').append(result);
+                const appBlock = $('#em-appli-block');
+
+                if (appBlock) {
+                    appBlock.empty();
+                    appBlock.append(result);
+                }
             },
             error: function (jqXHR) {
                 console.log(jqXHR.responseText);
@@ -6341,6 +6363,7 @@ function createScrollbarForElement(element, id) {
     new_scrollbar.firstChild.style.width = element.scrollWidth + 'px';
     new_scrollbar.firstChild.appendChild(document.createTextNode('\xA0'));
     new_scrollbar.id = id;
+    new_scrollbar.classList.add('em-double-scroll-bar')
     let running = false;
     new_scrollbar.onscroll = function () {
         if (running) {

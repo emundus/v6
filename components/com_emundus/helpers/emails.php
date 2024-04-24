@@ -845,7 +845,7 @@ class EmundusHelperEmails {
                 $is_correct = false;
                 JLog::add('Invalid email ' . $email, JLog::INFO, 'com_emundus.email');
             } else {
-                $emConfig = ComponentHelper::getParams('com_emundus');
+                $emConfig = JComponentHelper::getParams('com_emundus');
                 if ($emConfig->get('email_check_dns', 1) == 1)
                 {
                     $domain = substr($email, strpos($email, '@') + 1);

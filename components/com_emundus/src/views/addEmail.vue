@@ -1,5 +1,5 @@
 <template>
-  <div class="emails__add-email em-mt-24">
+  <div class="emails__add-email">
     <notifications
         group="foo-velocity"
         position="bottom left"
