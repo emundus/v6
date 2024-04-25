@@ -33,6 +33,8 @@ class EmundusModelEvaluation extends JModelList {
     public $fnum_assoc;
     public $code;
 
+    private $use_module_filters = false;
+
     /**
      * Constructor
      *
@@ -59,6 +61,7 @@ class EmundusModelEvaluation extends JModelList {
         }
 
         $menu_params = $menu->getParams($current_menu->id);
+        $this->use_module_filters = boolval($menu_params->get('em_use_module_for_filters', false));
 
         $session = JFactory::getSession();
         if (!$session->has('filter_order')) {
@@ -847,14 +850,22 @@ class EmundusModelEvaluation extends JModelList {
         }
     }
 
-
-
-    private function _buildWhere($tableAlias = array()) {
+    private function _buildWhere($already_joined_tables = array())
+    {
         $h_files = new EmundusHelperFiles();
-        return $h_files->_buildWhere($tableAlias, 'evaluation', array(
-            'fnum_assoc' => $this->fnum_assoc,
-            'code' => $this->code
-        ));
+
+        if ($this->use_module_filters) {
+            return $h_files->_moduleBuildWhere($already_joined_tables, 'files', array(
+                'fnum_assoc' => $this->fnum_assoc,
+                'code'       => $this->code
+            ));
+        }
+        else {
+            return $h_files->_buildWhere($already_joined_tables, 'files', array(
+                'fnum_assoc' => $this->fnum_assoc,
+                'code'       => $this->code
+            ));
+        }
     }
 
     public function getUsers($current_fnum = null) {

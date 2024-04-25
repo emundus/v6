@@ -4253,6 +4253,13 @@ if(in_array($applicant,$exceptions)){
                     $admin_ranking_model = new EmundusAdministrationModelRanking();
                     $succeed['install_ranking'] = $admin_ranking_model->install();
                 }
+
+
+                if (!class_exists('EmundusModelAdministratorCampaign')) {
+                    require_once(JPATH_ROOT . '/administrator/components/com_emundus/models/campaign.php');
+                }
+                $m_admin_campaign = new EmundusModelAdministratorCampaign();
+                $succeed['install_campaign_more'] = $m_admin_campaign->installCampaignMore();
 			}
 		}
 

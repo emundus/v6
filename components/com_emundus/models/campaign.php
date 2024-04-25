@@ -2959,4 +2959,58 @@ class EmundusModelCampaign extends JModelList {
 
         return $incoherences;
     }
+
+    /**
+     * @param $campaign_id int
+     * @return string
+     */
+    public function getCampaignMoreFormUrl($campaign_id): string
+    {
+        $form_url = '';
+
+        if (!empty($campaign_id)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            // get the form id where the table is jos_emundus_setup_campaigns_more
+            $query->select('form_id')
+                ->from($db->quoteName('#__fabrik_lists'))
+                ->where($db->quoteName('db_table_name') . ' = ' . $db->quote('jos_emundus_setup_campaigns_more'));
+
+            $db->setQuery($query);
+            $form_id = $db->loadResult();
+
+            if (!empty($form_id)) {
+                // check if there are more elements other than id, date_time and campaign_id
+                // otherwhise, we don't need to display the form
+                $query->clear()
+                    ->select('COUNT(jfe.id)')
+                    ->from($db->quoteName('#__fabrik_elements', 'jfe'))
+                    ->leftJoin($db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON ' . $db->quoteName('jffg.group_id') . ' = ' . $db->quoteName('jfe.group_id'))
+                    ->where($db->quoteName('jffg.form_id') . ' = ' . $db->quote($form_id))
+                    ->andWhere('jfe.published = 1')
+                    ->andWhere('jfe.name NOT IN ("id", "date_time", "campaign_id")');
+                $db->setQuery($query);
+                $nb_elements = $db->loadResult();
+
+                if ($nb_elements > 0) {
+                    $query->clear()
+                        ->select('id')
+                        ->from($db->quoteName('#__emundus_setup_campaigns_more'))
+                        ->where('campaign_id = ' . $db->quote($campaign_id));
+
+                    $db->setQuery($query);
+                    $row_id = $db->loadResult();
+
+                    if (!empty($row_id)) {
+                        $form_url = '/index.php?option=com_fabrik&view=form&formid=' . $form_id . '&rowid=' . $row_id . '&tmpl=component&iframe=1';
+                    } else {
+                        $form_url = '/index.php?option=com_fabrik&view=form&formid=' . $form_id . '&rowid=0&tmpl=component&iframe=1&jos_emundus_setup_campaigns_more___campaign_id=' . $campaign_id . '&Itemid=0';
+                    }
+                }
+            }
+        }
+
+        return $form_url;
+    }
 }
