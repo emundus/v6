@@ -41,9 +41,10 @@ class EmundusControllerRanking extends JControllerLegacy
             $limit = $jingput->getInt('limit', 10);
             $sort = $jingput->getString('order', 'ASC');
             $order_by = $jingput->getString('order_by', 'default');
+            $package_id = $jingput->getInt('package_id', 0);
 
             try {
-                $response['data'] = $this->model->getFilesUserCanRank($user->id, $page, $limit, $sort, $order_by);
+                $response['data'] = $this->model->getFilesUserCanRank($user->id, $page, $limit, $sort, $order_by, $package_id);
                 $response['status'] = true;
                 $response['msg'] = Text::_('SUCCESS');
                 $response['code'] = 200;
@@ -91,8 +92,10 @@ class EmundusControllerRanking extends JControllerLegacy
                 $files_user_can_rank = $this->model->getAllFilesRankerCanAccessTo($user->id);
 
                 if (!empty($files_user_can_rank) && in_array($id, $files_user_can_rank)) {
+                    $package_id = $this->model->getPackageIdOfFile($user->id, $id);
+
                     try {
-                        $response['status'] = $this->model->updateFileRanking($id, $user->id, $rank, $hierarchy_id);
+                        $response['status'] = $this->model->updateFileRanking($id, $user->id, $rank, $hierarchy_id, $package_id);
 
                         if ($response['status']) {
                             $response['msg'] = Text::_('SUCCESS');
@@ -165,6 +168,26 @@ class EmundusControllerRanking extends JControllerLegacy
                     $response['code'] = 500;
                     $response['msg'] = $e->getMessage();
                 }
+            }
+        }
+
+        $this->sendJSONResponse($response);
+    }
+
+    public function getPackages()
+    {
+        $response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'data' => [], 'code' => 403];
+        $user = Factory::getUser();
+
+        if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+            try {
+                $response['data'] = $this->model->getUserPackages($user->id);
+                $response['status'] = true;
+                $response['msg'] = Text::_('SUCCESS');
+                $response['code'] = 200;
+            } catch(Exception $e) {
+                $response['msg'] = $e->getMessage();
+                $response['code'] = 500;
             }
         }
 

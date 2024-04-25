@@ -114,7 +114,7 @@ Text::script('COM_EMUNDUS_FILES_FILTER_NO_ELEMENTS_FOUND');
 
         <p class="em-neutral-600-color em-mt-8 em-mb-8"><?= Text::_('COM_EMUNDUS_CLASSEMENT_HIERARCHY_LEVEL') . $this->hierarchy_id . ' - ' . Text::_('COM_EMUNDUS_CLASSEMENT_RANKER') . ' ' . $this->user->name ?></p>
         <div id="em-component-vue"
-             component="classement"
+             component="rankings"
              hash="<?= $hash ?>"
              user="<?= $this->user->id ?>"
              hierarchy_id="<?= $this->hierarchy_id ?>"

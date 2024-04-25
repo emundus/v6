@@ -71,6 +71,13 @@ class EmundusAdministrationModelRanking extends JModelList
                 'type' => 'INT',
                 'null' => 1,
             ],
+            [
+                'name' => 'package_by',
+                'type' => 'varchar',
+                'length' => 255,
+                'null' => 0,
+                'default' => 'jos_emundus_setup_campaigns.id',
+            ],
         ];
         $foreign_keys = [
             [
@@ -152,14 +159,20 @@ class EmundusAdministrationModelRanking extends JModelList
 
         $columns = [
             [
+                'name' => 'user_id',
+                'type' => 'INT',
+                'null' => 0,
+            ],
+            [
                 'name' => 'ccid',
                 'type' => 'INT',
                 'null' => 0,
             ],
             [
-                'name' => 'user_id',
-                'type' => 'INT',
+                'name' => $db->quoteName('rank'),
+                'type' => 'int',
                 'null' => 0,
+                'default' => -1,
             ],
             [
                 'name' => 'hierarchy_id',
@@ -167,16 +180,15 @@ class EmundusAdministrationModelRanking extends JModelList
                 'null' => 0,
             ],
             [
+                'name' => 'package',
+                'type' => 'INT',
+                'null' => 1,
+            ],
+            [
                 'name' => 'locked',
                 'type' => 'TINYINT',
                 'null' => 1,
                 'default' => 0,
-            ],
-            [
-                'name' => $db->quoteName('rank'),
-                'type' => 'int',
-                'null' => 0,
-                'default' => -1,
             ],
         ];
         $foreign_keys = [
@@ -208,7 +220,7 @@ class EmundusAdministrationModelRanking extends JModelList
         $unique_keys = [
             [
                 'name' => 'jos_emundus_classement_unicity_pk',
-                'columns' => ['ccid', 'user_id', 'hierarchy_id'],
+                'columns' => ['ccid', 'user_id', 'hierarchy_id', 'package'],
             ]
         ];
 
