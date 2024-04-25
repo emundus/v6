@@ -28,10 +28,21 @@
       <div class="form-group controls" v-if="selectedColumn.index === 1 && this.form.content.col2 != null">
         <editor :height="'30em'" :text="form.content.col2" :lang="actualLanguage" :enable_variables="false" :id="'editor_2'" :key="dynamicComponent" v-model="form.content.col2" @focusout="saveFooter"></editor>
       </div>
+      <button type="button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" @click="ReloadFooter">
+        <span>sauvegarder</span>
+      </button>
+      <button type="button" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded" @click="DefaultFooter">
+        <span>reset default</span>
+      </button>
     </div>
+
+
+
+
 
     <div class="em-page-loader" v-if="loading"></div>
   </div>
+
 </template>
 
 <script>
@@ -42,6 +53,7 @@ import Multiselect from 'vue-multiselect';
 /* SERVICES */
 import client from "com_emundus/src/services/axiosClient";
 import mixin from "com_emundus/src/mixins/mixin";
+
 
 export default {
   name: "EditFooter",
@@ -117,6 +129,22 @@ export default {
         this.$emit('updateLastSaving',this.formattedDate('','LT'));
       });
     },
+    ReloadFooter(){
+      this.goTo('/parametres-globaux?Menu=content_settings&section=footer', false);
+    },
+    goTo(url, newTab) {
+      if (newTab) {
+        window.open(url, '_blank');
+      } else {
+        window.location.href = url;
+      }
+    },
+    DefaultFooter(){
+      this.form.content.col1 = '';
+      this.form.content.col2 = '';
+      this.saveFooter();
+      this.ReloadFooter();
+    }
   },
 
   watch: {

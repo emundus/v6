@@ -180,7 +180,7 @@
   {
     "label": "COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_CONTENT",
     "icon": "notes",
-    "name": "content settings",
+    "name": "content_settings",
     "type": "Menu",
     "published": true,
     "sections": [
