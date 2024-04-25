@@ -1115,7 +1115,7 @@ $(document).ready(function () {
 
 	function runAction(id, url = '', option = '') {
 
-		if ($('#em-check-all').is(':checked')) {
+		if ($('#em-check-all-all').is(':checked')) {
 			var checkInput = 'all';
 		} else {
 			var i = 0;
