@@ -221,6 +221,11 @@ class EmundusModelRanking extends JModelList
                     JLog::add('getHierarchyPackages ' . $e->getMessage(), JLog::ERROR, 'com_emundus.ranking.php');
                     $packages = [];
                 }
+            } else {
+                $packages[] = [
+                    'id' => 0,
+                    'label' => 'All'
+                ];
             }
         }
 
