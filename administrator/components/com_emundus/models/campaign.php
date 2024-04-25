@@ -110,7 +110,8 @@ class EmundusModelAdministratorCampaign extends JModelList
                     'plugin'               => 'databasejoin',
                     'label'                => 'Campagne',
                     'show_in_list_summary' => 0,
-                    'hidden'               => 1
+                    'hidden'               => 1,
+                    'default'              => '$input = JFactory::getApplication()->input;return $input->getInt(\'jos_emundus_setup_campaigns_more___campaign_id\', 0);'
                 ];
                 $params = [
                     'database_join_display_type' => 'list',
