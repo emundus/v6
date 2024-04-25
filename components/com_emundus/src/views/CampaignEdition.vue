@@ -85,7 +85,7 @@
       </div>
 
       <div class="em-flex-row em-flex-space-between em-float-right"
-           v-if="['addDocumentsDropfiles', 'addFormulaire', 'addEmail'].includes(selectedMenu)">
+           v-if="['addDocumentsDropfiles', 'addFormulaire'].includes(selectedMenu)">
         <button
             type="button"
             class="em-primary-button em-w-auto mb-4"
