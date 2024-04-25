@@ -884,30 +884,30 @@ $(document).ready(function () {
 			case 6:
 				addLoader();
 
-				try {
-					const response = await fetch(url, {
-						method: 'POST',
-						body: new URLSearchParams({
-						})
+				await fetch(url, {
+					method: 'POST',
+					body: new URLSearchParams({})
+				})
+					.then((response) => {
+						if (!response.ok) {
+							throw new Error('Network response was not ok');
+						}
+						return response.text();
+					})
+					.then((result) => {
+						removeLoader();
+						swalForm = true;
+						title = 'COM_EMUNDUS_EXPORT_USER';
+						swal_confirm_button = 'COM_EMUNDUS_EXPORTS_GENERATE_EXCEL';
+						preconfirm = "var atLeastOneChecked = false; $('.form-group input[type=\"checkbox\"], .all-boxes input[type=\"checkbox\"]').each(function() { if ($(this).is(':checked')) { atLeastOneChecked = true; return false; } }); if (!atLeastOneChecked) { Swal.showValidationMessage(Joomla.JText._('COM_EMUNDUS_EXPORTS_SELECT_AT_LEAST_ONE_INFORMATION')); }";
+						html = result;
+					})
+					.catch((error) => {
+						removeLoader();
+						console.error('Error:', error);
 					});
 
-					if (!response.ok) {
-						throw new Error('Network response was not ok');
-					}
 
-					const result = await response.text();
-					removeLoader();
-
-					swalForm = true;
-					title = 'COM_EMUNDUS_EXPORT_USER';
-					swal_confirm_button = 'COM_EMUNDUS_EXPORTS_GENERATE_EXCEL';
-					preconfirm = "var atLeastOneChecked = false; $('.form-group input[type=\"checkbox\"], .all-boxes input[type=\"checkbox\"]').each(function() { if ($(this).is(':checked')) { atLeastOneChecked = true; return false; } }); if (!atLeastOneChecked) { Swal.showValidationMessage(Joomla.JText._('COM_EMUNDUS_EXPORTS_SELECT_AT_LEAST_ONE_INFORMATION')); }";
-					html = result;
-
-				} catch (error) {
-					removeLoader();
-					console.error('Error:', error);
-				}
 
 				break;
 
@@ -1152,29 +1152,27 @@ $(document).ready(function () {
 			case 6:
 				addLoader();
 
-				var checkInput = getUserCheck();
-
-				var checkBoxesProps = {};
-				var allChecked = $('#checkbox-all').prop('checked');
+				let checkBoxesProps = {};
+				let allChecked = $('#checkbox-all').prop('checked');
 
 				// First verify all checkboxes if they have been selected
 				$('input[type="checkbox"]').each(function() {
 					if ($(this).attr('value') !== 'all') {
-						var checkboxValue = $(this).attr('value');
+						let checkboxValue = $(this).attr('value');
 						checkBoxesProps[checkboxValue] = allChecked ? true : $(this).prop('checked');
 					}
 				});
 
 				// Then keep only the ones selected in the array checkedBoxes
-				var checkedBoxes = {};
-				for (var key in checkBoxesProps) {
+				let checkedBoxes = {};
+				for (let key in checkBoxesProps) {
 					if (checkBoxesProps.hasOwnProperty(key) && checkBoxesProps[key]) {
 						checkedBoxes[key] = true;
 					}
 				}
 
 				const formData = new FormData();
-				formData.append('users', checkInput);
+				formData.append('users', getUserCheck());
 				formData.append('checkboxes', JSON.stringify(checkedBoxes));
 
 				fetch('index.php?option=com_emundus&controller=users&task=exportusers&Itemid=' + itemId, {
@@ -1190,15 +1188,13 @@ $(document).ready(function () {
 					.then(function(result) {
 						removeLoader();
 
-						var fileName = result.fileName;
-
 						Swal.fire({
 							position: 'center',
 							type: 'success',
 							title: Joomla.JText._('COM_EMUNDUS_ATTACHMENTS_DOWNLOAD_READY'),
 							showCancelButton: true,
 							showConfirmButton: true,
-							confirmButtonText: '<a class="text-inherit" href="/tmp/'+fileName+'" download>'+Joomla.JText._('COM_EMUNDUS_ATTACHMENTS_DOWNLOAD')+'</a>',
+							confirmButtonText: '<a class="text-inherit" href="/tmp/'+result.fileName+'" download>'+Joomla.JText._('COM_EMUNDUS_ATTACHMENTS_DOWNLOAD')+'</a>',
 							cancelButtonText: Joomla.JText._('JCANCEL'),
 							reverseButtons: true,
 							allowOutsideClick: false,
