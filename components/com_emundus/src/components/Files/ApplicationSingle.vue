@@ -57,10 +57,8 @@
 <script>
 import axios from "axios";
 import filesService from 'com_emundus/src/services/files';
-import errors from "@/mixins/errors";
 import ApplicationTabs from "./ApplicationTabs.vue";
 import errors from "../../mixins/errors.js";
-import Comments from "@/components/Files/Comments";
 
 
 export default {
