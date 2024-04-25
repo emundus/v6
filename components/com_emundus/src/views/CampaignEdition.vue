@@ -192,9 +192,9 @@ export default {
 
   created() {
     // Get datas that we need with store
-    this.campaignId = Number(this.$store.getters['global/datas'].campaignId.value);
+    this.campaignId = parseInt(this.$store.getters['global/datas'].campaignId.value);
     this.actualLanguage = this.$store.getters['global/shortLang'];
-    this.manyLanguages = Number(this.$store.getters['global/manyLanguages']);
+    this.manyLanguages = parseInt(this.$store.getters['global/manyLanguages']);
     //
 
     this.getProgram();
