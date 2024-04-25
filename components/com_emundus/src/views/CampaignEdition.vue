@@ -29,7 +29,7 @@
         <div class="flex flex-row">
           <ul class="nav nav-tabs topnav">
 
-            <li v-for="menu in menus" :key="menu.component" @click="selectMenu(menu)" :class="{'w--current': selectedMenu === menu.component}">
+            <li v-for="menu in displayedMenus" :key="menu.component" @click="selectMenu(menu)" :class="{'w--current': selectedMenu === menu.component}">
               <span class="cursor-pointer">{{ translate(menu.label) }}</span>
             </li>
           </ul>
@@ -56,6 +56,7 @@
           <campaign-more
               v-if="selectedMenu === 'campaignMore' && campaignId !== ''"
               :campaignId="campaignId"
+              :defaultFormUrl="campaignMoreFormUrl"
           >
           </campaign-more>
           <addFormulaire
@@ -102,6 +103,7 @@
 <script>
 import mixin from '../mixins/mixin';
 import axios from "axios";
+import campaignService from '@/services/campaign.js';
 
 import addCampaign from "@/views/addCampaign";
 import ModalWarningFormBuilder from "@/components/AdvancedModals/ModalWarningFormBuilder";
@@ -140,31 +142,36 @@ export default {
         label: "COM_EMUNDUS_GLOBAL_INFORMATIONS",
         description: "COM_EMUNDUS_GLOBAL_INFORMATIONS_DESC",
         icon: "info",
-        component: "addCampaign"
+        component: "addCampaign",
+        displayed: true
       },
       {
         label: "COM_EMUNDUS_CAMPAIGN_MORE",
         description: "COM_EMUNDUS_CAMPAIGN_MORE_DESC",
         icon: "description",
-        component: "campaignMore"
+        component: "campaignMore",
+        displayed: false
       },
       {
         label: "COM_EMUNDUS_DOCUMENTS_CAMPAIGNS",
         description: "COM_EMUNDUS_DOCUMENTS_CAMPAIGNS_DESC",
         icon: "description",
-        component: "addDocumentsDropfiles"
+        component: "addDocumentsDropfiles",
+        displayed: true
       },
       {
         label: "COM_EMUNDUS_FORM_CAMPAIGN",
         description: "COM_EMUNDUS_FORM_CAMPAIGN_DESC",
         icon: "description",
-        component: "addFormulaire"
+        component: "addFormulaire",
+        displayed: true
       },
       {
         label: "COM_EMUNDUS_EMAILS",
         description: "COM_EMUNDUS_EMAILS_DESC",
         icon: "description",
-        component: "addEmail"
+        component: "addEmail",
+        displayed: true
       }
     ],
     selectedMenu: 'addCampaign',
@@ -176,6 +183,7 @@ export default {
     profiles: [],
     campaignsByProgram: [],
     form: {},
+    campaignMoreFormUrl: '',
     program: {
       id: 0,
       code: '',
@@ -197,6 +205,7 @@ export default {
     this.manyLanguages = parseInt(this.$store.getters['global/manyLanguages']);
     //
 
+    this.getCampaignMoreForm();
     this.getProgram();
 
     //this.loading = true;
@@ -205,6 +214,22 @@ export default {
     }
   },
   methods: {
+    getCampaignMoreForm() {
+      campaignService.getCampaignMoreFormUrl(this.campaignId)
+          .then(response => {
+            if (response.status && response.data.length > 0) {
+              this.menus.forEach(menu => {
+                if (menu.component === 'campaignMore') {
+                  menu.displayed = true;
+                }
+              });
+              this.campaignMoreFormUrl = response.data;
+            }
+          })
+          .catch(error => {
+            console.error(error);
+          });
+    },
     initInformations(campaign) {
       this.form.label = campaign.label;
       this.form.profile_id = campaign.profile_id;
@@ -289,16 +314,16 @@ export default {
       this.profileId = prid;
     },
     next() {
-      let index = this.menus.findIndex(menu => menu.component === this.selectedMenu);
-      if (index < this.menus.length - 1) {
-        this.selectedMenu = this.menus[index + 1].component;
+      let index = this.displayedMenus.findIndex(menu => menu.component === this.selectedMenu);
+      if (index < this.displayedMenus.length - 1) {
+        this.selectedMenu = this.displayedMenus[index + 1].component;
       }
     },
 
     previous() {
-      let index = this.menus.findIndex(menu => menu.component === this.selectedMenu);
+      let index = this.displayedMenus.findIndex(menu => menu.component === this.selectedMenu);
       if (index > 0) {
-        this.selectedMenu = this.menus[index - 1].component;
+        this.selectedMenu = this.displayedMenus[index - 1].component;
       }
     },
 
@@ -322,14 +347,16 @@ export default {
       return "";
     },
   },
-
   computed: {
     getProfileId() {
       return Number(this.profileId);
     },
     selectedMenuItem() {
       return this.menus.find(menu => menu.component === this.selectedMenu);
-    }
+    },
+    displayedMenus() {
+      return this.menus.filter(menu => menu.displayed);
+    },
   },
 };
 </script>

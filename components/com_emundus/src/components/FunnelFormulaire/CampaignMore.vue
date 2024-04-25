@@ -18,6 +18,11 @@ export default {
     campaignId: {
       type: Number,
       required: true
+    },
+    defaultFormUrl: {
+      type: String,
+      required: false,
+      default: ''
     }
   },
   data() {
@@ -26,7 +31,11 @@ export default {
     }
   },
   created() {
-    this.getFormUrl();
+    if (this.defaultFormUrl.length > 0) {
+      this.formUrl = this.defaultFormUrl;
+    } else {
+      this.getFormUrl();
+    }
   },
   methods: {
     getFormUrl() {

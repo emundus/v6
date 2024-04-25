@@ -59,7 +59,7 @@ class EmundusModelAdministratorCampaign extends JModelList
         $form_params = [
             'only_process_curl' => ['onAfterProcess'],
             'curl_code' => [
-                "echo '<script src=\"https://cdn.jsdelivr.net/npm/sweetalert2@8\"></script>';\r\necho '<script src=\"https://code.jquery.com/jquery-3.3.1.slim.js\" integrity=\"sha256-fNXJFIlca05BIO2Y5zh1xrShK3ME+/lYZ0j+ChxX2DA=\" crossorigin=\"anonymous\"></script>';\r\n\r\necho '<style>\r\n.em-swal-title{\r\n  margin: 8px 8px 32px 8px !important;\r\n  font-family: \"Maven Pro\", sans-serif;\r\n}\r\n</style>';\r\n\r\ndie(\"<script>\r\n      $(document).ready(function () {\r\n        Swal.fire({\r\n          position: 'top',\r\n          type: 'success',\r\n          title: '\".JText::_('COM_EMUNDUS_EVALUATION_SAVED').\"',\r\n          showConfirmButton: false,\r\n          timer: 2000,\r\n          customClass: {\r\n            title: 'em-swal-title',\r\n          },\r\n          onClose: () => {\r\n            let old_url = window.location.href;\r\n            let new_url = old_url.replace(/rowid=[0-9]+/, 'rowid=\" . \$data['rowid'] . \"');\r\n    \r\n            if(new_url.indexOf('rowid') === -1) {\r\n                new_url += '&rowid=\" . \$data['rowid'] . \"';\r\n            }\r\n            \r\n            window.location.href = new_url;\r\n          }\r\n        })\r\n      });\r\n      </script>\");'"
+                "echo '<script src=\"https://cdn.jsdelivr.net/npm/sweetalert2@8\"></script>';\r\necho '<script src=\"https://code.jquery.com/jquery-3.3.1.slim.js\" integrity=\"sha256-fNXJFIlca05BIO2Y5zh1xrShK3ME+/lYZ0j+ChxX2DA=\" crossorigin=\"anonymous\"></script>';\r\n\r\necho '<style>\r\n.em-swal-title{\r\n  margin: 8px 8px 32px 8px !important;\r\n  font-family: \"Maven Pro\", sans-serif;\r\n}\r\n</style>';\r\n\r\ndie(\"<script>\r\n      $(document).ready(function () {\r\n        Swal.fire({\r\n          position: 'top',\r\n          type: 'success',\r\n          title: '\".JText::_('SAVED').\"',\r\n          showConfirmButton: false,\r\n          timer: 2000,\r\n          customClass: {\r\n            title: 'em-swal-title',\r\n          },\r\n          onClose: () => {\r\n            let old_url = window.location.href;\r\n            let new_url = old_url.replace(/rowid=[0-9]+/, 'rowid=\" . \$data['rowid'] . \"');\r\n    \r\n            if(new_url.indexOf('rowid') === -1) {\r\n                new_url += '&rowid=\" . \$data['rowid'] . \"';\r\n            }\r\n            \r\n            window.location.href = new_url;\r\n          }\r\n        })\r\n      });\r\n      </script>\");"
             ],
             'plugins' => ['php'],
             'plugin_locations' => ['both'],
@@ -99,7 +99,7 @@ class EmundusModelAdministratorCampaign extends JModelList
                     'plugin'               => 'date',
                     'label'                => 'Date de création',
                     'show_in_list_summary' => 0,
-                    'hidden'               => 1
+                    'hidden'               => 0
                 ];
                 $result = EmundusHelperUpdate::addFabrikElement($datas);
                 $tasks[] = $result['status'];
