@@ -51,7 +51,6 @@ export default {
     getPackages() {
       rankingService.getPackages().then(response => {
         this.packages = response.data;
-        console.log(response.data);
       }).catch(error => {
         console.log(error);
       });
