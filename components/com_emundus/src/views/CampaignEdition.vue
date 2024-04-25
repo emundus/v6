@@ -1,5 +1,5 @@
 <template>
-  <div id="add-form-next-campaign">
+  <div id="edit-campaign">
     <div class="em-w-custom"></div>
     <div>
       <ModalWarningFormBuilder

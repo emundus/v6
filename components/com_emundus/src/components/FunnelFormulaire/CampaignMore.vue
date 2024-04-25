@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import campaignService from '@/services/campaign';
+import campaignService from '@/services/campaign.js';
 
 export default {
   name: 'CampaignMore',
