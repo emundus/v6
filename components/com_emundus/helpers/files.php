@@ -3943,6 +3943,28 @@ class EmundusHelperFiles
                                     }
 
                                     break;
+                                case 'users_assoc':
+                                    if (!in_array('jos_emundus_users_assoc', $already_joined)) {
+                                        $jecc_alias = array_search('jos_emundus_campaign_candidature', $already_joined);
+                                        $already_joined['jeua'] = 'jos_emundus_users_assoc';
+                                        $users_assoc_alias = 'jeua';
+                                        $where['join'] .= ' LEFT JOIN #__emundus_users_assoc as jeua on jeua.fnum = ' . $jecc_alias . '.fnum AND action_id = 1';
+                                    } else {
+                                        $users_assoc_alias = array_search('jos_emundus_group_assoc', $already_joined);
+                                    }
+
+                                    if ($filter['operator'] === 'NOT IN') {
+                                        $where['q'] .= ' AND jecc.fnum NOT IN (
+                                            SELECT DISTINCT jos_emundus_users_assoc.fnum
+                                            FROM jos_emundus_users_assoc
+                                            WHERE ' . $this->writeQueryWithOperator('jos_emundus_users_assoc.user_id', $filter['value'], 'IN') . '
+                                            AND jeua.action_id = 1 AND jeua.r = 1
+                                        )';
+                                    } else {
+                                        $where['q'] .= ' AND ' . $this->writeQueryWithOperator($users_assoc_alias . '.user_id', $filter['value'], $filter['operator']);
+                                    }
+
+                                    break;
                                 default:
                                     break;
                             }
@@ -4298,7 +4320,67 @@ class EmundusHelperFiles
 							$query = '(' . $element . ' != ' . $db->quote($values) . ' OR ' . $element . ' IS NULL ) ';
 						}
 						break;
-					case 'LIKE':
+                    case 'superior':
+                        if (is_array($values)) {
+                            $query = '(';
+                            foreach($values as $key => $value) {
+                                if ($key == 0) {
+                                    $query .= $element . ' > ' . $db->quote($value);
+                                } else {
+                                    $query .= ' AND ' . $element . ' > ' . $db->quote($value);
+                                }
+                            }
+                            $query .= ')';
+                        } else {
+                            $query = $element . ' > ' . $db->quote($values);
+                        }
+                        break;
+                    case 'superior_or_equal':
+                        if (is_array($values)) {
+                            $query = '(';
+                            foreach($values as $key => $value) {
+                                if ($key == 0) {
+                                    $query .= $element . ' >= ' . $db->quote($value);
+                                } else {
+                                    $query .= ' AND ' . $element . ' >= ' . $db->quote($value);
+                                }
+                            }
+                            $query .= ')';
+                        } else {
+                            $query = $element . ' >= ' . $db->quote($values);
+                        }
+                        break;
+                    case 'inferior':
+                        if (is_array($values)) {
+                            $query = '(';
+                            foreach($values as $key => $value) {
+                                if ($key == 0) {
+                                    $query .= $element . ' < ' . $db->quote($value);
+                                } else {
+                                    $query .= ' AND ' . $element . ' < ' . $db->quote($value);
+                                }
+                            }
+                            $query .= ')';
+                        } else {
+                            $query = $element . ' < ' . $db->quote($values);
+                        }
+                        break;
+                    case 'inferior_or_equal':
+                        if (is_array($values)) {
+                            $query = '(';
+                            foreach($values as $key => $value) {
+                                if ($key == 0) {
+                                    $query .= $element . ' <= ' . $db->quote($value);
+                                } else {
+                                    $query .= ' AND ' . $element . ' <= ' . $db->quote($value);
+                                }
+                            }
+                            $query .= ')';
+                        } else {
+                            $query = $element . ' <= ' . $db->quote($values);
+                        }
+                        break;
+                    case 'LIKE':
 						if (is_array($values)) {
 							$_values = implode(',', $db->quote($values));
 							$query = $element . ' IN (' . $_values . ')';

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension group="fabrik_cron" method="upgrade" type="plugin" version="30">
+	<name>plg_fabrik_cron_emunduseparapheur</name>
+	<author>eMundus</author>
+	<creationDate>January 2023</creationDate>
+	<copyright>Copyright (C) 2023 emundus.fr - All rights reserved.</copyright>
+	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+	<authorEmail>dev@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>1.39.0</version>
+	<description>PLG_FABRIK_CRON_EMUNDUSEPARAPHEUR_DESCRIPTION</description>
+	<files>
+		<filename plugin="emunduseparapheur">emunduseparapheur.php</filename>
+		<folder>forms</folder>
+		<filename>index.html</filename>
+		<folder>language</folder>
+	</files>
+</extension>
