@@ -1044,10 +1044,16 @@ die("<script>
         return $formattedValue;
     }
 
-    /*
-     * Format an element value
-     * According to its plugin name
-     */
+	/**
+	 * @param $elt_name string fabrik element name
+	 * @param $raw_value string value of the element
+	 * @param $groupId int group ID of the element
+	 *
+	 * @description This function format the value of an element according to its plugin name
+	 * @return mixed|string|null
+	 *
+	 * @throws Exception
+	 */
     static function formatElementValue($elt_name, $raw_value, $groupId = null)
     {
         $formatted_value = $raw_value;
@@ -1081,50 +1087,144 @@ die("<script>
                 $plugin = $element->plugin ;
             }
 
-            switch ($plugin) {
-                case 'date':
-					$date_format = $params['date_form_format'];
-                    $local = $params['date_store_as_local'] ? 1 : 0;
+            switch ($plugin)
+            {
+	            case 'date':
+		            $date_format = $params['date_form_format'];
+		            $local       = $params['date_store_as_local'] ? 1 : 0;
 
-                    $formatted_value = EmundusHelperDate::displayDate($raw_value, $date_format, $local);
-                    break;
+		            $formatted_value = EmundusHelperDate::displayDate($raw_value, $date_format, $local);
+		            break;
 
-                case 'emundus_phonenumber':
-                    $formatted_value = self::getFormattedPhoneNumberValue($raw_value);
-                    break;
 
-                case 'databasejoin':
-					$query->clear();
+	            case 'birthday':
+		            preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $raw_value, $matches);
+		            if (count($matches) != 0)
+		            {
+			            $format = $params->list_date_format;
 
-                    if (!empty($params['join_val_column_concat'])) {
-                        $lang = substr(Factory::getLanguage()->getTag(), 0, 2);
-                        $params['join_val_column_concat'] = str_replace('{thistable}', $params['join_db_name'], $params['join_val_column_concat']);
-                        $params['join_val_column_concat'] = str_replace('{shortlang}', $lang, $params['join_val_column_concat']);
+			            $d = DateTime::createFromFormat($format, $raw_value);
+			            if ($d && $d->format($format) == $raw_value)
+			            {
+				            $formatted_value = JHtml::_('date', $raw_value, Text::_('DATE_FORMAT_LC'));
+			            }
+			            else
+			            {
+				            $formatted_value = JHtml::_('date', $raw_value, $format);
+			            }
+		            }
+		            break;
 
-                        $query->select($db->quoteName($params['join_val_column_concat']));
-                    } else {
-                        $query->select($db->quoteName($params['join_val_column']));
-                    }
+	            case 'emundus_phonenumber':
+		            $formatted_value = self::getFormattedPhoneNumberValue($raw_value);
+		            break;
 
-                    $query->from($db->quoteName($params['join_db_name']))
-                        ->where($db->quoteName($params['join_key_column']) . ' = ' . $db->quote($raw_value));
+	            case 'databasejoin':
+		            $query->clear();
 
-                    try {
-                        $db->setQuery($query);
-                        $formatted_value = $db->loadResult();
-                    } catch (Exception $e) {
-                        Log::add('components/com_emundus/helpers/fabrik | Error when try to get value from databasejoin case : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
-                    }
-                    break;
+		            if (!empty($params['join_val_column_concat']))
+		            {
+			            $lang                             = substr(Factory::getLanguage()->getTag(), 0, 2);
+			            $params['join_val_column_concat'] = str_replace('{thistable}', $params['join_db_name'], $params['join_val_column_concat']);
+			            $params['join_val_column_concat'] = str_replace('{shortlang}', $lang, $params['join_val_column_concat']);
 
-                case 'radiobutton':
-				case 'dropdown':
-				case 'checkbox':
-                    $index = array_search($raw_value, $params['sub_options']['sub_values']);
-                    if ($index !== false) {
-                        $formatted_value = $params['sub_options']['sub_labels'][$index];
-                    }
-                    break;
+			            $query->select($db->quoteName($params['join_val_column_concat']));
+		            }
+		            else
+		            {
+			            $query->select($db->quoteName($params['join_val_column']));
+		            }
+
+		            $query->from($db->quoteName($params['join_db_name']))
+			            ->where($db->quoteName($params['join_key_column']) . ' = ' . $db->quote($raw_value));
+
+		            try
+		            {
+			            $db->setQuery($query);
+			            $formatted_value = $db->loadResult();
+		            }
+		            catch (Exception $e)
+		            {
+			            Log::add('components/com_emundus/helpers/fabrik | Error when try to get value from databasejoin case : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
+		            }
+		            break;
+
+	            case 'cascadingdropdown':
+
+		            $emundusUser = JFactory::getSession()->get('emundusUser');
+		            $fnum        = $emundusUser->fnum;
+
+		            $query->select('applicant_id')
+			            ->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+			            ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+
+		            try
+		            {
+			            $db->setQuery($query);
+			            $applicant_id = $db->loadResult();
+		            }
+		            catch (Exception $e)
+		            {
+			            JLog::add("Failed to get applicant_id from fnum $fnum : " . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+		            }
+
+		            $query->clear();
+
+		            $cascadingdropdown_id    = $params['cascadingdropdown_id'];
+		            $cascadingdropdown_label = Text::_($params['cascadingdropdown_label']);
+
+
+		            $r1     = explode('___', $cascadingdropdown_id);
+		            $r2     = explode('___', $cascadingdropdown_label);
+		            $select = !empty($params['cascadingdropdown_label_concat'] ? "CONCAT(" . $params['cascadingdropdown_label_concat'] . ")" : $r2[1]);
+		            $from   = $r2[0];
+		            $where  = $r1[1] . '=' . $db->Quote($raw_value);
+		            $query  = "SELECT " . $select . " FROM " . $from . " WHERE " . $where;
+		            $query  = preg_replace('#{thistable}#', $from, $query);
+		            $query  = preg_replace('#{my->id}#', $applicant_id, $query);
+		            $query  = preg_replace('#{shortlang}#', substr(JFactory::getLanguage()->getTag(), 0, 2), $query);
+
+		            $db->setQuery($query);
+		            $ret = $db->loadResult();
+		            if (empty($ret))
+		            {
+			            $ret = $raw_value;
+		            }
+		            $formatted_value = Text::_($ret);
+		            break;
+
+	            case 'radiobutton':
+	            case 'dropdown':
+	            case 'checkbox':
+		            $data = json_decode($raw_value);
+		            if (count($data) <= 1 && $element->plugin !== 'checkbox')
+		            {
+			            $index = array_search($raw_value, $params['sub_options']['sub_values']);
+			            if ($index !== false)
+			            {
+				            $formatted_value = $params['sub_options']['sub_labels'][$index];
+			            }
+		            }
+		            else
+		            {
+			            $elm = array();
+			            $index = $params['sub_options']['sub_values'];
+						if(!empty($data))
+						{
+							$index = array_intersect($data, $params['sub_options']['sub_values']);
+							if($index == ''){
+								$index = array_intersect(array($data), $params['sub_options']['sub_values']);
+							}
+						}
+			            foreach ($index as $sub_value)
+			            {
+				            $key   = array_search($sub_value, $params['sub_options']['sub_values']);
+				            $elm[] = Text::_($params['sub_options']['sub_labels'][$key]);
+			            }
+			            $formatted_value = implode(",", @$elm);
+		            }
+
+		            break;
 
                 case 'yesno':
                     $formatted_value = $raw_value == 1 ? Text::_('JYES') : Text::_('JNO');
@@ -1133,6 +1233,16 @@ die("<script>
                 case 'textarea':
                     $formatted_value = nl2br($raw_value);
                     break;
+
+	            case 'field':
+		            if ($params['password'] == 1) {
+			            $formatted_value = '******';
+		            } elseif ($params['password'] == 3) {
+			            $formatted_value = $raw_value . ' ' . Text::_($element->label)  . $raw_value ;
+		            } elseif ($params['password'] == 5) {
+			            $formatted_value = $raw_value . ' ' . Text::_($element->label) . ' ' . $raw_value;
+		            }
+		            break;
 
                 default:
                     break;

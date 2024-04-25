@@ -897,7 +897,7 @@ $(document).ready(function () {
 					.then((result) => {
 						removeLoader();
 						swalForm = true;
-						title = 'COM_EMUNDUS_EXPORT_USER';
+						title = 'COM_EMUNDUS_EXPORT_EXCEL';
 						swal_confirm_button = 'COM_EMUNDUS_EXPORTS_GENERATE_EXCEL';
 						preconfirm = "var atLeastOneChecked = false; $('.form-group input[type=\"checkbox\"], .all-boxes input[type=\"checkbox\"]').each(function() { if ($(this).is(':checked')) { atLeastOneChecked = true; return false; } }); if (!atLeastOneChecked) { Swal.showValidationMessage(Joomla.JText._('COM_EMUNDUS_EXPORTS_SELECT_AT_LEAST_ONE_INFORMATION')); }";
 						html = result;
