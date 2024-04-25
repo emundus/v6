@@ -2,6 +2,7 @@
 
 
 use PHPUnit\Framework\TestCase;
+use Joomla\CMS\Log\Log;
 
 ini_set('display_errors', false);
 error_reporting(E_ALL);
@@ -116,7 +117,29 @@ class EmundusHelperFabrikTest extends TestCase
                     $formatted_date = $helperDate->displayDate($date, $date_format, $local);
                     $this->assertEquals($formatted_date, $this->h_fabrik->formatElementValue($element->name, $date, $element->group_id));
 
-                    break;
+	                $date = '2024-01-01 10:00:00';
+	                $params['date_form_format'] = 'd/m/Y H\hi';
+	                $params['date_store_as_local'] = 1;
+	                $new_params_json = json_encode($params);
+
+	                $query = $db->getQuery(true);
+
+	                $query->update($db->quoteName('#__fabrik_elements'))
+		                ->set($db->quoteName('params') . ' = ' . $db->quote($new_params_json))
+		                ->where($db->quoteName('id') . ' = ' . $db->quote($element->id));
+
+	                try {
+		                $db->setQuery($query);
+		                $db->execute();
+	                } catch (Exception $e) {
+		                Log::add('components/com_emundus/unittest/EmundusHelperFabrikTest | Error when try to get fabrik elements table data : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
+	                }
+
+	                $formatted_date = $this->h_fabrik->formatElementValue($element->name, $date, $element->group_id);
+
+	                $this->assertEquals('01/01/2024 10h00', $formatted_date, 'The date is correctly formatted');
+
+	                break;
                 case 'radiobutton':
                 case 'checkbox':
                 case 'dropdown':
@@ -128,8 +151,7 @@ class EmundusHelperFabrikTest extends TestCase
                     $this->assertEquals(JText::_('JNO'), $this->h_fabrik->formatElementValue($element->name, 0, $element->group_id));
                     break;
                 case 'textarea':
-                    $formated_value = "This is<br />\n a test";
-                    $this->assertEquals($formated_value, $this->h_fabrik->formatElementValue($element->name, "This is
+                    $this->assertEquals("This is<br />\n a test", $this->h_fabrik->formatElementValue($element->name, "This is
  a test", $element->group_id));
                     break;
                 case 'databasejoin':

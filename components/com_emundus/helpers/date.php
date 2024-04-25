@@ -69,9 +69,9 @@ class EmundusHelperDate {
                 }
 
                 $date_time = new DateTime($date, new DateTimeZone($timezone));
+	            $date_time->setTimezone(new DateTimeZone('UTC'));
             } else {
                 $date_time = new DateTime($date);
-                $date_time->setTimezone(new DateTimeZone('UTC'));
             }
 
             $display_date = HtmlHelper::date($date_time->format('Y-m-d H:i:s'), Text::_($format));

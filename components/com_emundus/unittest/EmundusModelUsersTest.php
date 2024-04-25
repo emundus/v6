@@ -135,7 +135,6 @@ class EmundusModelUsersTest extends TestCase
         $columns = $this->m_users->getColumnsForm();
         foreach ($columns as $column)
         {
-            // Should contain
             $this->assertObjectHasAttribute('id', $column, 'Columns form details should contain id');
             $this->assertObjectHasAttribute('name', $column, 'Columns form details should contain name');
             $this->assertObjectHasAttribute('plugin', $column, 'Columns form details should contain plugin');
@@ -143,7 +142,6 @@ class EmundusModelUsersTest extends TestCase
             $this->assertObjectHasAttribute('group_id', $column, 'Columns form details should contain group form id');
             $this->assertObjectHasAttribute('params', $column, 'Columns form details should contain params');
 
-            // Should not contain
             $this->assertObjectNotHasAttribute('hidden', $column, 'Columns form details should not contain hidden attribute');
             $this->assertObjectNotHasAttribute('published', $column, 'Columns form details should not contain published attribute');
         }
@@ -167,13 +165,11 @@ class EmundusModelUsersTest extends TestCase
         $columns = $this->m_users->getJoomlaUserColumns();
         foreach ($columns as $column)
         {
-            // Should contain
             $this->assertObjectHasAttribute('id', $column, 'Joomla user columns details should contain id');
             $this->assertObjectHasAttribute('name', $column, 'Joomla user columns details should contain name');
             $this->assertObjectHasAttribute('plugin', $column, 'Joomla user columns details should contain plugin');
             $this->assertObjectHasAttribute('label', $column, 'Joomla user columns details should contain label');
 
-            // Should not contain
             $this->assertObjectNotHasAttribute('value', $column, 'Joomla user columns details should not contain value attribute');
         }
 
@@ -204,13 +200,11 @@ class EmundusModelUsersTest extends TestCase
         foreach ($data as $key => $dataType) {
             foreach ($dataType as $element) {
 
-                // Should contain
                 $this->assertObjectHasAttribute('id', $element, 'Data array details should contain id');
                 $this->assertObjectHasAttribute('name', $element, 'Data array details should contain name');
                 $this->assertObjectHasAttribute('plugin', $element, 'Data array details should contain plugin');
                 $this->assertObjectHasAttribute('label', $element, 'Data array details should contain label');
 
-                // Should not contain
                 $this->assertObjectNotHasAttribute('hidden', $element, 'Data array form details should not contain hidden attribute');
                 $this->assertObjectNotHasAttribute('published', $element, 'Data array form details should not contain published attribute');
 
