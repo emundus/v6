@@ -1175,7 +1175,7 @@ $(document).ready(function () {
 
 				const formData = new FormData();
 				formData.append('users', checkInput);
-				formData.append('checkboxes', checkedBoxes);
+				formData.append('checkboxes', JSON.stringify(checkedBoxes));
 
 				fetch('index.php?option=com_emundus&controller=users&task=exportusers&Itemid=' + itemId, {
 					method: 'POST',

@@ -4275,15 +4275,13 @@ if(in_array($applicant,$exceptions)){
 			                'component_id' => 0,
 			                'note'         => '12|r|1|6'
 		                ];
-		                EmundusHelperUpdate::addJoomlaMenu($datas,$export_menu['id']);
+		                $export_action = EmundusHelperUpdate::addJoomlaMenu($datas,$export_menu['id']);
 
-                        EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_EXPORT_EXCEL', 'Exporter vers Excel');
-                        EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_EXPORT_EXCEL', 'Export to Excel', 'override', null, null, null, 'en-GB');
-
-                        EmundusHelperUpdate::insertFalangTranslation(1, 3314, 'menu', 'title', 'Export');
-
-
-
+						if($export_action['status'])
+						{
+							EmundusHelperUpdate::insertFalangTranslation(1, $export_menu['id'], 'menu', 'title', 'Export');
+							EmundusHelperUpdate::insertFalangTranslation(1, $export_action['id'], 'menu', 'title', 'Export to Excel');
+						}
                     }
                 }
 			}
