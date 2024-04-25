@@ -296,6 +296,10 @@ export default {
       type: Boolean,
       default: true
     },
+    packageId: {
+      type: Number,
+      default: 0
+    }
   },
   mixins: [translate],
   data() {
@@ -470,7 +474,7 @@ export default {
         this.pagination.page = 1;
       }
 
-      return await rankingService.getMyRanking(this.pagination, this.ordering).then(response => {
+      return await rankingService.getMyRanking(this.pagination, this.ordering, this.packageId).then(response => {
         if (response.status) {
           this.rankings.myRanking = response.data.data;
           this.rankings.nbFiles = response.data.total;

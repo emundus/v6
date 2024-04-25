@@ -22,13 +22,13 @@
         :ratio="data.ratio"
     ></ApplicationSingle>
 
-    <classement
-        v-else-if="component === 'classement'"
+    <rankings
+        v-else-if="component === 'rankings'"
         :hierarchy_id="datas.hierarchy_id.value"
         :user="datas.user.value"
         :fileTabsStr="datas.fileTabsStr.value"
         :specificTabs="datas.specificTabs.value"
-    ></classement>
+    ></rankings>
 
     <transition v-else name="slide-right">
       <component v-bind:is="$props.component"/>
@@ -51,7 +51,7 @@ import formbuilder from "./views/formBuilder"
 import settings from "./views/globalSettings"
 import messagescoordinator from "./components/Messages/MessagesCoordinator";
 import messages from "./components/Messages/Messages";
-import Classement from "./views/classement.vue";
+import rankings from "./views/rankings.vue";
 
 import settingsService from "./services/settings.js";
 import ApplicationSingle from "@/components/Files/ApplicationSingle.vue";
@@ -91,7 +91,7 @@ export default {
     Files,
 		list_v2,
 		TranslationTool,
-    Classement
+    rankings
 	},
 
   created() {

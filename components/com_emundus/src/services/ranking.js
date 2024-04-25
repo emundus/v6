@@ -1,9 +1,14 @@
 import client from './axiosClient';
 
 export default {
-    async getMyRanking(pagination, ordering) {
+    async getMyRanking(pagination, ordering, packageId = 0) {
         try {
-            const response = await client().get('index.php?option=com_emundus&controller=ranking&task=getMyFilesToRank&page=' + pagination.page + '&limit=' + pagination.perPage + '&order_by=' + ordering.orderBy + '&order=' + ordering.order);
+            let urlparams = '&page=' + pagination.page + '&limit=' + pagination.perPage + '&order_by=' + ordering.orderBy + '&order=' + ordering.order;
+            if (packageId > 0) {
+                urlparams += '&package_id=' + packageId;
+            }
+
+            const response = await client().get('index.php?option=com_emundus&controller=ranking&task=getMyFilesToRank' + urlparams);
             return response.data;
         } catch (e) {
             return {
@@ -80,6 +85,17 @@ export default {
                         'Content-Type': 'multipart/form-data'
                     }
                 });
+            return response.data;
+        } catch (e) {
+            return {
+                status: false,
+                msg: e.message
+            };
+        }
+    },
+    async getPackages() {
+        try {
+            const response = await client().get('index.php?option=com_emundus&controller=ranking&task=getPackages');
             return response.data;
         } catch (e) {
             return {
