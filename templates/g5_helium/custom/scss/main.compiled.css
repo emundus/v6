@@ -3854,6 +3854,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .text-green-500 {
   color: var(--main-500);
 }
+.text-inherit {
+  color: inherit;
+}
 .text-neutral-600 {
   color: var(--neutral-600);
 }
@@ -4554,6 +4557,9 @@ legend {
     .swal2-actions button.swal2-confirm.em-swal-confirm-button.btn.btn-success.swal2-styled:hover {
         border: none !important;
     }*/
+.swal2-popup {
+        border-radius: calc(var(--em-default-br) * 2) !important;
+    }
 button.swal2-styled.swal2-confirm {
         background: var(--blue-500);
         border-radius: var(--em-coordinator-br);
@@ -4704,6 +4710,10 @@ button.swal2-cancel.goback-btn:hover,
     .has-error .radio-inline,
     .has-error .checkbox-inline {
         color: #b94a48;
+    }
+
+    .has-error .\!checkbox {
+        color: #b94a48 !important;
     }
 .has-error .form-control {
         border-color: #b94a48;

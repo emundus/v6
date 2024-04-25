@@ -9,6 +9,7 @@
 
 // No direct access
 
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 
 require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php');
@@ -1302,7 +1303,8 @@ class EmundusControllerUsers extends JControllerLegacy {
      */
     public function exportusers()
     {
-        if (!EmundusHelperAccess::asAccessAction(12, 'r')) {
+		$current_user = Factory::getUser();
+        if (!EmundusHelperAccess::asAccessAction(12, 'r',$current_user->id)) {
             $this->setRedirect('index.php', JText::_('ACCESS_DENIED'), 'error');
             return;
         }
@@ -1332,7 +1334,7 @@ class EmundusControllerUsers extends JControllerLegacy {
         }
 
         // Fill CSV
-        $export_filename = 'export_users_' . date('Y-m-d H:i:s') . '.csv';
+        $export_filename = 'export_users_'. $current_user->id .'_' . date('Y-m-d_H:i') . '.csv';
         $path = JPATH_SITE . '/tmp/' . $export_filename;
 
         $seen_keys = [];
@@ -1386,38 +1388,6 @@ class EmundusControllerUsers extends JControllerLegacy {
 
         // Encode file's path and file's name if necessary
         echo json_encode(['csvFilePath' => $path, 'fileName' => $export_filename]);
-        exit;
-    }
-
-    /**
-     * @return void
-     *
-     * @description Delete the file containing the users' data once it has been downloaded (or canceled by the user).
-     *
-     * @throws Exception
-     */
-    public function deleteusersfile() {
-        if (!EmundusHelperAccess::asAccessAction(12, 'r')) {
-            $this->setRedirect('index.php', JText::_('ACCESS_DENIED'), 'error');
-            return;
-        }
-
-        $data = json_decode(file_get_contents('php://input'), true);
-
-        $file_name = $data['fileName'];
-
-        // Verification to be sure that the file's name is not an extern command, etc...
-        if (!preg_match('/^export_users_[0-9\-_: ]+\.csv$/', $file_name)) {
-            JFactory::getApplication()->enqueueMessage(JText::_('INVALID_FILE_NAME'), 'error');
-            return;
-        }
-
-        $file_path = JPATH_SITE . '/tmp/' . $file_name;
-
-        // Deleting the file
-        if (file_exists($file_path)) {
-            unlink($file_path);
-        }
         exit;
     }
 }

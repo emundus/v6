@@ -1198,7 +1198,7 @@ $(document).ready(function () {
 							title: Joomla.JText._('COM_EMUNDUS_ATTACHMENTS_DOWNLOAD_READY'),
 							showCancelButton: true,
 							showConfirmButton: true,
-							confirmButtonText: Joomla.JText._('COM_EMUNDUS_ATTACHMENTS_DOWNLOAD'),
+							confirmButtonText: '<a class="text-inherit" href="/tmp/'+fileName+'" download>'+Joomla.JText._('COM_EMUNDUS_ATTACHMENTS_DOWNLOAD')+'</a>',
 							cancelButtonText: Joomla.JText._('JCANCEL'),
 							reverseButtons: true,
 							allowOutsideClick: false,
@@ -1207,25 +1207,6 @@ $(document).ready(function () {
 								confirmButton: 'em-swal-confirm-button btn btn-success',
 								title: 'w-full justify-center',
 							}
-						}).then(function(result) {
-							if (result.value) {
-								download("/tmp/" + fileName, fileName);
-							}
-							// Avoid deleting the file before being downloaded
-							setTimeout(function() {
-								fetch('index.php?option=com_emundus&controller=users&task=deleteusersfile&Itemid=' + itemId, {
-									method: 'POST',
-									body: JSON.stringify({ fileName: fileName })
-								})
-									.then(function(response) {
-										if (!response.ok) {
-											throw new Error('Network response was not ok');
-										}
-									})
-									.catch(function(error) {
-										console.error('Error:', error);
-									});
-							}, 1000);
 						});
 					})
 					.catch(function(error) {
@@ -1732,16 +1713,6 @@ function createScrollbarForElement(element, id) {
 		new_scrollbar.scrollLeft = element.scrollLeft;
 	};
 	element.parentNode.insertBefore(new_scrollbar, element);
-}
-
-/*
- * Send the file in parameters to the browser to be download
- */
-function download(fileUrl, fileName) {
-	var a = document.createElement("a");
-	a.href = fileUrl;
-	a.setAttribute("download", fileName);
-	a.click();
 }
 
 /*
