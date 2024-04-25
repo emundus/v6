@@ -49,9 +49,7 @@
                 </div>
 
               </div>
-              <div v-if="SubMenus[indexMenuClick][index1].helptext !== '' ">
-                <span class="material-icons-outlined scale-150 ml-2 mt-2">info</span>
-              </div>
+
             </div>
             <i class="material-icons-outlined scale-150" :id="'SubtitleArrow'+index1" name="SubtitleArrows"
                style="transform-origin: unset">expand_more</i>
@@ -60,6 +58,10 @@
 
 
         <div :id="'SubMenu-'+index1" name="SubMenuContent" style="display: none" class="flex flex-col ">
+          <div v-if="SubMenus[indexMenuClick][index1].helptext !== '' " class="bg-blue-300 rounded flex items-center pb-2">
+            <span class="material-icons-outlined scale-150 ml-2 mt-2">info</span>
+            <p class="ml-2 mt-2">{{translate(SubMenus[indexMenuClick][index1].helptext) }}</p>
+          </div>
           <div v-for="(option,index2) in SubMenus[indexMenuClick][index1].options">
             <div class="flex flex-col" v-if="(option.type_field === 'Title') && (option.published === true)">
               <h2 v-if="option.published === true">{{ translate(option.label) }}</h2>

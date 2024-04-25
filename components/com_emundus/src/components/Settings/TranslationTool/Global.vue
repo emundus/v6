@@ -139,7 +139,7 @@ export default {
         showCancelButton: true,
         cancelButtonText: this.translate('COM_EMUNDUS_ONBOARD_CANCEL'),
         confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SUGGEST_LANGUAGE_SEND'),
-        showLoaderOnConfirm: true,
+        showLoaderOnConfirm: false,
         reverseButtons: true,
         customClass: {
           title: 'em-swal-title',
