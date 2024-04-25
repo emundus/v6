@@ -160,8 +160,8 @@ if (!empty($this->custom_title)) :?>
             $div .= '<div>';
 
 	        if ($attachment->has_sample && !empty($attachment->sample_filepath)) {
-		        $div .= '<div class="em-ml-8 em-mb-8 em-flex-row attachment_model">
-                            <span>'.JText::_('COM_EMUNDUS_ATTACHMENTS_SAMPLE') . '</span><a class="em-flex-row" href="'.JUri::root() . $attachment->sample_filepath.'" target="_blank"> <span> ' . JText::_('COM_EMUNDUS_ATTACHMENTS_SAMPLE_FILE').'</span><span class="material-icons-outlined em-ml-8 em-text-neutral-900">cloud_download</span></a>
+		        $div .= '<div class="em-ml-8 em-mb-8 flex items-center gap-1 attachment_model">
+                            <span>'.JText::_('COM_EMUNDUS_ATTACHMENTS_SAMPLE') . '</span><a class="flex items-center" href="'.JUri::root() . $attachment->sample_filepath.'" target="_blank"> <span> ' . JText::_('COM_EMUNDUS_ATTACHMENTS_SAMPLE_FILE').'</span><span class="material-icons-outlined em-ml-8 em-text-neutral-900">cloud_download</span></a>
                          </div>';
 	        }
 
