@@ -466,7 +466,7 @@ class EmundusModelProfile extends JModelList {
                 $res = $db->loadAssoc();
 
                 $query->clear()
-                    ->select('esp.id AS profile, esp.label, esp.menutype, esp.published')
+                    ->select('esp.id AS profile, esp.label, esp.menutype, esp.published, 1 as phase')
                     ->from('#__emundus_setup_profiles AS esp')
                     ->where('esp.id = ' . $this->_db->quote($workflow->profile));
                 $this->_db->setQuery($query);
@@ -478,7 +478,7 @@ class EmundusModelProfile extends JModelList {
 
             if(empty($res['profile'])){
                 $query->clear()
-                    ->select('eu.firstname, eu.lastname, esp.id AS profile, eu.university_id, esp.label, esp.menutype, esp.published, cc.campaign_id as campaign_id')
+                    ->select('eu.firstname, eu.lastname, esp.id AS profile, eu.university_id, esp.label, esp.menutype, esp.published, cc.campaign_id as campaign_id, 1 as phase')
                     ->from($this->_db->quoteName('jos_emundus_campaign_candidature', 'cc'))
                     ->leftJoin($this->_db->quoteName('jos_emundus_users', 'eu').' ON '.$this->_db->quoteName('eu.user_id').' = '.$this->_db->quoteName('cc.applicant_id'))
                     ->leftJoin($this->_db->quoteName('jos_emundus_setup_status', 'ss').' ON '.$this->_db->quoteName('ss.step').' = '.$this->_db->quoteName('cc.status'))
@@ -490,7 +490,7 @@ class EmundusModelProfile extends JModelList {
 
                 if(empty($res['profile'])){
                     $query->clear()
-                        ->select('eu.firstname, eu.lastname, esp.id AS profile, eu.university_id, esp.label, esp.menutype, esp.published, cc.campaign_id as campaign_id')
+                        ->select('eu.firstname, eu.lastname, esp.id AS profile, eu.university_id, esp.label, esp.menutype, esp.published, cc.campaign_id as campaign_id, 0 as phase')
                         ->from($this->_db->quoteName('jos_emundus_campaign_candidature', 'cc'))
                         ->leftJoin($this->_db->quoteName('jos_emundus_users', 'eu').' ON '.$this->_db->quoteName('eu.user_id').' = '.$this->_db->quoteName('cc.applicant_id'))
                         ->leftJoin($this->_db->quoteName('jos_emundus_setup_campaigns', 'sc').' ON '.$this->_db->quoteName('sc.id').' = '.$this->_db->quoteName('cc.campaign_id'))

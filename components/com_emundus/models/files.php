@@ -1629,7 +1629,15 @@ class EmundusModelFiles extends JModelLegacy
                         $current_profile = $m_profile->getProfileByStatus($fnum);
 
                         if (!empty($current_profile)) {
-                            $this->makeAttachmentsEditableByApplicant($fnum, $current_profile['profile']);
+                            if ($current_profile['phase'] == 1) {
+                                $this->makeAttachmentsEditableByApplicant($fnum, $current_profile['profile']);
+                            } else {
+                                $status_for_send = explode(',',ComponentHelper::getParams('com_emundus')->get('status_for_send', '0'));
+                                $edit_status = array_unique(array_merge(['0'], $status_for_send));
+                                if (in_array($state, $edit_status)) {
+                                    $this->makeAttachmentsEditableByApplicant($fnum, $current_profile['profile']);
+                                }
+                            }
                         }
                     }
                 }
