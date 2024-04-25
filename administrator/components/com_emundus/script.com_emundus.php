@@ -4249,6 +4249,13 @@ if(in_array($applicant,$exceptions)){
                     EmundusHelperUpdate::insertTranslationsTag('SETUP_GROUPS_AVAILABLE_STATUS', 'Statuts');
                     EmundusHelperUpdate::insertTranslationsTag('SETUP_GROUPS_AVAILABLE_STATUS', 'Statuses', 'override', null, null, null, 'en-GB');
                 }
+
+
+                if (!class_exists('EmundusModelAdministratorCampaign')) {
+                    require_once(JPATH_ROOT . '/administrator/components/com_emundus/models/campaign.php');
+                }
+                $m_admin_campaign = new EmundusModelAdministratorCampaign();
+                $succeed['install_campaign_more'] = $m_admin_campaign->installCampaignMore();
 			}
 		}
 
