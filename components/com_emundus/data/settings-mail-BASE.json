@@ -1,0 +1,14 @@
+{
+  "mailfrom": {
+    "displayed": true,
+    "component": "joomla",
+    "label": "Email du site",
+    "param": "mailfrom"
+  },
+  "fromname": {
+    "displayed": true,
+    "component": "joomla",
+    "label": "nom de l'expéditeur",
+    "param": "fromname"
+  }
+}

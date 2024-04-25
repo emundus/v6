@@ -35,6 +35,7 @@
            data-accordion-target="#accordion-collapse-body-1" aria-expanded="true"
            aria-controls="accordion-collapse-body-1"
            style="box-shadow:0.1em 0.05em 0.05em grey;">
+
         <div @click="handleSubMenuClick(index1)">
           <h1 id="accordion-collapse-heading-1" class="flex flex-row justify-between cursor-pointer">
             <div class="flex flex-row">
@@ -60,12 +61,12 @@
 
         <div :id="'SubMenu-'+index1" name="SubMenuContent" style="display: none" class="flex flex-col ">
           <div v-for="(option,index2) in SubMenus[indexMenuClick][index1].options">
-            <div class="flex flex-col" v-if="option.type_field === 'Title'">
-              <h2>{{ translate(option.label) }}</h2>
+            <div class="flex flex-col" v-if="(option.type_field === 'Title') && (option.published === true)">
+              <h2 v-if="option.published === true">{{ translate(option.label) }}</h2>
               <hr>
             </div>
 
-            <div v-else-if="option.type ==='subSection'">
+            <div v-else-if="(option.type ==='subSection') && (option.published === true)">
               <div @click="handleSubSectionClick(index2)">
                 <span :id="'SubSectionTile'+index2" class="em-font-size-16">{{ translate(option.label) }}</span>
                 <i class="material-icons-outlined scale-150" :id="'SubSectionArrow'+index2" name="SubSectionArrows"
@@ -85,22 +86,29 @@
             </div>
 
 
-            <div v-else class="block text-xl ">
+            <div v-else-if="(option.type_field !== 'Button')&&(option.published === true)" name="labelOfElements" class="block text-xl ">
               {{ translate(option.label) }}
             </div>
 
-            <div class="flex flex-col" v-if="option.type_field === 'Input'">
+            <div class="flex flex-col" v-if="(option.type_field === 'Button') && (option.published === true)">
+              <button type="button"  class="bg-green-600 p-2 border border-gray-200 rounded">
+                <i class="material-icons-outlined scale-150 mr-2" :id="'IconButton-'+index2" name="IconsButton" style="color: white">{{option.icon}}</i>
+                <span style="color: white">{{translate(option.label)}}</span>
+              </button>
+            </div>
+
+            <div class="flex flex-col" v-if="(option.type_field === 'Input') && (option.published === true)">
               <input :placeholder="option.placeholder" class="w-full p-2 border border-gray-200 rounded"
                      v-model="option.value">
             </div>
 
-            <div class="flex flex-col" v-if="option.type_field === 'dropdown'">
+            <div class="flex flex-col" v-if="(option.type_field === 'dropdown') && (option.published === true)">
               <select>
                 <option v-for="choice in option.choices">{{ translate(choice.label) }}</option>
               </select>
             </div>
 
-            <div class="flex flex-col" v-if="option.type_field === 'sqldropdown'">
+            <div class="flex flex-col" v-if="(option.type_field === 'sqldropdown') && (option.published === true)">
               <div v-if="option.name === 'offset'">
                 <multiselect
                     :filteredOptions=[]
@@ -123,7 +131,7 @@
               </div>
             </div>
 
-            <div class="flex flex-col" v-if="option.type_field === 'yesno'">
+            <div class="flex flex-col" v-if="(option.type_field === 'yesno') && (option.published === true)">
               <div class="flex-row flex items-center">
                 <button type="button" :id="'BtN'+index2" @click="clickYN(false, index2)"
                         :class="{'red-YesNobutton': true, 'active': option.defaultVal === '0'}"
@@ -138,20 +146,20 @@
               </div>
             </div>
 
-            <div class="flex flex-col" v-if="option.type_field === 'checkbox'">
+            <div class="flex flex-col" v-if="(option.type_field === 'checkbox')&& (option.published === true)">
               <div class="flex items-center " v-for="(x,choice) in option.choices">
                 <input type="checkbox" :id="'myCheck'+ choice" :value="x.value">
                 <label class="mt-2.5 ml-1">{{ translate(x.label) }}</label>
               </div>
             </div>
 
-            <div class="flex flex-col" v-if="option.type_field === 'textarea'">
+            <div class="flex flex-col" v-if="(option.type_field === 'textarea')&& (option.published === true)">
               <editor-quill :height="'30em'" :text="''" :enable_variables="false" :id="'editor'" :key="0"
                             v-model="form.content"></editor-quill>
             </div>
 
-            <div class="flex flex-col" v-if="option.type_field === 'component'">
-              <component :is="option.component" v-bind="option.props"></component>
+            <div class="flex flex-col" v-if="(option.type_field === 'component')&& (option.published === true)">
+              <component :is="option.component" :key="ComponantReload" v-bind="option.props"></component>
             </div>
 
           </div>
@@ -207,7 +215,6 @@ import axios from "axios"
 import GlobalLang from "@/components/Settings/TranslationTool/Global.vue";
 
 import Multiselect from 'vue-multiselect';
-import {forEach} from "lodash";
 
 
 export default {
@@ -255,6 +262,7 @@ export default {
     loading: null,
 
     MenuisClicked: [],
+    ComponantReload: 0,
     SubMenuisClicked: [],
     SubSectionisClicked: [],
     indexMenuClick: null,
@@ -344,6 +352,7 @@ export default {
     handleMenuButtonClick(index, item) {
       this.resetMenuButtons();
       this.toggleMenuButton(index, item);
+      this.$data.ComponantReload++;
     },
     resetMenuButtons() {
       this.MenuisClicked.fill(false);
