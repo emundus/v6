@@ -1020,5 +1020,26 @@ class EmundusControllerCampaign extends JControllerLegacy {
         echo json_encode((object)$response);
         exit;
     }
+
+    public function getcampaignmoreformurl()
+    {
+        $response = ['status' => 0, 'msg' => JText::_('ACCESS_DENIED'), 'code' => 403];
+
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+            $jinput = JFactory::getApplication()->input;
+            $campaign_id = $jinput->getInt('cid', 0);
+
+            $url = $this->m_campaign->getCampaignMoreFormUrl($campaign_id);
+
+            if (!empty($url)) {
+                $response = ['status' => 1, 'msg' => JText::_('URL_RETRIEVED'), 'data' => $url, 'code' => 200];
+            } else {
+                $response = ['status' => 0, 'msg' => JText::_('NO_URL'), 'data' => $url, 'code' => 404];
+            }
+        }
+
+        echo json_encode((object)$response);
+        exit;
+    }
 }
 ?>

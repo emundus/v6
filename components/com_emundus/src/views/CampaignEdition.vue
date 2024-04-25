@@ -54,7 +54,7 @@
               @updateHeader="updateHeader"
           ></add-campaign>
           <campaign-more
-              v-if="selectedMenu === 'campaignMore' && campaignId > 0"
+              v-if="selectedMenu === 'campaignMore' && campaignId !== ''"
               :campaignId="campaignId"
           >
           </campaign-more>
@@ -85,7 +85,7 @@
       </div>
 
       <div class="em-flex-row em-flex-space-between em-float-right"
-           v-if="selectedMenu">
+           v-if="['addDocumentsDropfiles', 'addFormulaire', 'addEmail'].includes(selectedMenu)">
         <button
             type="button"
             class="em-primary-button em-w-auto mb-4"
@@ -108,17 +108,15 @@ import ModalWarningFormBuilder from "@/components/AdvancedModals/ModalWarningFor
 import AddDocumentsDropfiles from "@/components/FunnelFormulaire/addDocumentsDropfiles";
 import addEmail from "@/components/FunnelFormulaire/addEmail";
 import addFormulaire from "@/components/FunnelFormulaire/addFormulaire";
-import AddEvaluationGrid from "@/components/FunnelFormulaire/addEvaluationGrid";
 import campaignMore from "@/components/FunnelFormulaire/CampaignMore";
 import Swal from "sweetalert2";
 
 const qs = require("qs");
 
 export default {
-  name: "addFormNextCampaign",
+  name: 'CampaignEdition',
 
   components: {
-    AddEvaluationGrid,
     AddDocumentsDropfiles,
     addCampaign,
     ModalWarningFormBuilder,
@@ -267,23 +265,7 @@ export default {
     getProgram() {
       axios.get(`/index.php?option=com_emundus&controller=campaign&task=getProgrammeByCampaignID&campaign_id=${this.campaignId}`)
           .then(rep => {
-            this.program.id = rep.data.data.id;
-            this.program.code = rep.data.data.code;
-            this.program.label = rep.data.data.label;
-            this.program.notes = rep.data.data.notes;
-            this.program.programmes = rep.data.data.programmes;
-            this.program.tmpl_badge = rep.data.data.tmpl_badge;
-            this.program.published = rep.data.data.published;
-            this.program.apply_online = rep.data.data.apply_online;
-            if (rep.data.data.synthesis != null) {
-              this.program.synthesis = rep.data.data.synthesis.replace(/>\s+</g, "><");
-            }
-            if (rep.data.data.tmpl_trombinoscope != null) {
-              this.program.tmpl_trombinoscope = rep.data.data.tmpl_trombinoscope.replace(
-                  />\s+</g,
-                  "><"
-              );
-            }
+            this.program = rep.data.data;
             axios({
               method: "get",
               url: "index.php?option=com_emundus&controller=programme&task=getcampaignsbyprogram",

@@ -1,38 +1,51 @@
 <template>
   <div>
-    <h1>More</h1>
-    <p>{{ campaign_id }}</p>
     <iframe
-      :src="formUrl"
-      width="100%"
-      height="100%"
+        v-if="formUrl.length > 0"
+        id="more-form-iframe"
+        :src="formUrl"
+        width="100%"
     ></iframe>
   </div>
 </template>
 
 <script>
+import campaignService from '@/services/campaign';
+
 export default {
   name: 'CampaignMore',
   props: {
-    campaign_id: {
+    campaignId: {
       type: Number,
       required: true
     }
   },
-  data: {
-    formUrl: ''
+  data() {
+    return {
+      formUrl: ''
+    }
   },
   created() {
     this.getFormUrl();
   },
   methods: {
     getFormUrl() {
-      this.formUrl = '/index.php?option=com_fabrik&view=form&formid=386&tmpl=component&iframe=1&rowid=';
+      campaignService.getCampaignMoreFormUrl(this.campaignId)
+        .then(response => {
+          if (response.status) {
+            this.formUrl = response.data;
+          }
+        })
+        .catch(error => {
+          console.error(error);
+        });
     }
   }
 }
 </script>
 
 <style scoped>
-
+#more-form-iframe {
+  height: 50vh;
+}
 </style>
