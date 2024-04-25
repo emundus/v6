@@ -2712,7 +2712,10 @@ class EmundusHelperUpdate
 				}
 				$db->setQuery($query);
 				$result['status'] = $db->execute();
-			}
+			} else {
+                $result['message'] = 'CREATE TABLE : Table already exists.';
+                $result['status'] = true;
+            }
 		} catch (Exception $e) {
 			$result['message'] = 'ADDING TABLE : Error : ' . $e->getMessage();
 		}

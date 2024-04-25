@@ -22,7 +22,6 @@ class EmundusModelAdministratorCampaign extends JModelList
         $tasks = [];
 
         require_once (JPATH_ROOT . '/administrator/components/com_emundus/helpers/update.php');
-        $db = JFactory::getDbo();
 
         /**
          * Tables that must exists
@@ -35,7 +34,6 @@ class EmundusModelAdministratorCampaign extends JModelList
                 'name' => 'date_time',
                 'type' => 'DATE',
                 'null' => 0,
-                'default' => 'NOW()'
             ],
             [
                 'name' => 'campaign_id',
@@ -54,25 +52,67 @@ class EmundusModelAdministratorCampaign extends JModelList
             ],
         ];
 
-        $response = EmundusHelperUpdate::createTable('jos_emundus_setup_campaigns_more', $columns, $foreign_keys);
-        $tasks[] = $response['status'];
-
-
-        $result = EmundusHelperUpdate::addFabrikForm([
-            'label' => 'Campagnes - Informations spécifiques',
-            'form_template' => 'emundus',
-            'view_only_template' => 'emundus',
-        ]);
-        $tasks[] = $result['status'];
-        $form_id = $result['id'];
-
-        $result = EmundusHelperUpdate::addFabrikList([
-            'label' => 'Campagnes - Informations spécifiques',
-            'db_table_name' => 'jos_emundus_setup_campaigns_more',
-            'form_id' => $form_id
-        ]);
+        $result = EmundusHelperUpdate::createTable('jos_emundus_setup_campaigns_more', $columns, $foreign_keys);
         $tasks[] = $result['status'];
 
+
+        $form = EmundusHelperUpdate::addFabrikForm(['label' => 'Campagnes - Informations spécifiques'], ['form_template' => 'emundus', 'view_only_template' => 'emundus']);
+        $tasks[] = $form['status'];
+        if ($form['status']) {
+            $form_id = $form['id'];
+            $group = EmundusHelperUpdate::addFabrikGroup(['name' => 'Informations spécifiques'], [], 1, true);
+
+            if ($group['status']) {
+                EmundusHelperUpdate::joinFormGroup($form_id, [$group['id']]);
+
+                $datas = [
+                    'name'                 => 'id',
+                    'group_id'             => $group['id'],
+                    'plugin'               => 'internalid',
+                    'label'                => 'id',
+                    'show_in_list_summary' => 0,
+                    'hidden'               => 1
+                ];
+                $result = EmundusHelperUpdate::addFabrikElement($datas);
+                $tasks[] = $result['status'];
+
+                $datas = [
+                    'name'                 => 'date_time',
+                    'group_id'             => $group['id'],
+                    'plugin'               => 'date',
+                    'label'                => 'Date de création',
+                    'show_in_list_summary' => 0,
+                    'hidden'               => 1
+                ];
+                $result = EmundusHelperUpdate::addFabrikElement($datas);
+                $tasks[] = $result['status'];
+
+                $datas = [
+                    'name'                 => 'campaign_id',
+                    'group_id'             => $group['id'],
+                    'plugin'               => 'databasejoin',
+                    'label'                => 'Campagne',
+                    'show_in_list_summary' => 0,
+                    'hidden'               => 1
+                ];
+                $params = [
+                    'database_join_display_type' => 'list',
+                    'join_db_name' => 'jos_emundus_setup_campaigns',
+                    'join_key_column' => 'id',
+                    'join_val_column' => 'label',
+                    'advanced_behavior' => 1
+                ];
+                $result = EmundusHelperUpdate::addFabrikElement($datas, $params);
+                $tasks[] = $result['status'];
+            }
+
+            $result = EmundusHelperUpdate::addFabrikList([
+                'label' => 'Campagnes - Informations spécifiques',
+                'db_table_name' => 'jos_emundus_setup_campaigns_more',
+                'form_id' => $form_id
+            ]);
+            $tasks[] = $result['status'];
+        }
         if (!in_array(false, $tasks)) {
             $installed = true;
         }
