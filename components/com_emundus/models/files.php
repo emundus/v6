@@ -5110,8 +5110,10 @@ class EmundusModelFiles extends JModelLegacy
 
             $query->select('attachment_id')
                 ->from('#__emundus_setup_attachment_profiles')
-                ->where('profile_id = ' . $db->quote($profile))
-                ->andWhere('attachment_id NOT IN (' . implode(',', $db->quote($attachment_to_keep_non_deletable)) . ')');
+                ->where('profile_id = ' . $db->quote($profile));
+            if (!empty($attachment_to_keep_non_deletable)) {
+                $query->andWhere('attachment_id NOT IN (' . implode(',', $db->quote($attachment_to_keep_non_deletable)) . ')');
+            }
             $db->setQuery($query);
             $attachments = $db->loadColumn();
 
