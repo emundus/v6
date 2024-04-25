@@ -6,6 +6,7 @@ module.exports = {
   testEnvironment: 'jsdom',
   moduleNameMapper: {
     '^@/components/(.*)$': '<rootDir>/com_emundus/src/components/$1',
-    '^@/views/(.*)$': '<rootDir>/com_emundus/src/views/$1'
+    '^@/views/(.*)$': '<rootDir>/com_emundus/src/views/$1',
+    '^@/services/(.*)$': '<rootDir>/com_emundus/src/services/$1',
   }
 };
