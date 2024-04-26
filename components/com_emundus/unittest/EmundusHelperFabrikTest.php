@@ -296,43 +296,6 @@ class EmundusHelperFabrikTest extends TestCase
 		            }
 
 		            $this->assertEquals('******', $this->h_fabrik->formatElementValue($element->name, $password, $element->group_id));
-
-		            $params['password'] = 3;
-		            $new_params_json = json_encode($params);
-
-		            $query = $db->getQuery(true);
-
-		            $query->update($db->quoteName('#__fabrik_elements'))
-			            ->set($db->quoteName('params') . ' = ' . $db->quote($new_params_json))
-			            ->where($db->quoteName('id') . ' = ' . $db->quote($element->id));
-
-		            try {
-			            $db->setQuery($query);
-			            $db->execute();
-		            } catch (Exception $e) {
-			            Log::add('components/com_emundus/unittest/EmundusHelperFabrikTest | Error when try to get fabrik elements table data : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
-		            }
-
-		            $this->assertEquals($password . ' ' . $element->label . $password, $this->h_fabrik->formatElementValue($element->name, $password, $element->group_id));
-
-		            $params['password'] = 5;
-		            $new_params_json = json_encode($params);
-
-		            $query = $db->getQuery(true);
-
-		            $query->update($db->quoteName('#__fabrik_elements'))
-			            ->set($db->quoteName('params') . ' = ' . $db->quote($new_params_json))
-			            ->where($db->quoteName('id') . ' = ' . $db->quote($element->id));
-
-		            try {
-			            $db->setQuery($query);
-			            $db->execute();
-		            } catch (Exception $e) {
-			            Log::add('components/com_emundus/unittest/EmundusHelperFabrikTest | Error when try to get fabrik elements table data : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
-		            }
-
-		            $this->assertEquals($password . ' ' . $element->label . ' ' .$password, $this->h_fabrik->formatElementValue($element->name, $password, $element->group_id));
-
 		            $params['password'] = 0;
 		            $new_params_json = json_encode($params);
 

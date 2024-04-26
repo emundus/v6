@@ -1048,13 +1048,14 @@ die("<script>
 	 * @param $elt_name string fabrik element name
 	 * @param $raw_value string value of the element
 	 * @param $groupId int group ID of the element
+	 * @param $html bool if the value should be formatted with HTML tags
 	 *
 	 * @description This function format the value of an element according to its plugin name
 	 * @return mixed|string|null
 	 *
 	 * @throws Exception
 	 */
-    static function formatElementValue($elt_name, $raw_value, $groupId = null)
+    static function formatElementValue($elt_name, $raw_value, $groupId = null, $html = false)
     {
         $formatted_value = $raw_value;
 
@@ -1106,11 +1107,11 @@ die("<script>
 			            $d = DateTime::createFromFormat($format, $raw_value);
 			            if ($d && $d->format($format) == $raw_value)
 			            {
-				            $formatted_value = EmundusHelperDate::displayDate($raw_value);
+				            $formatted_value = $html ? JHtml::_('date', $raw_value, JText::_('DATE_FORMAT_LC')) : EmundusHelperDate::displayDate($raw_value);
 			            }
 			            else
 			            {
-				            $formatted_value = EmundusHelperDate::displayDate($raw_value, $format);
+				            $formatted_value = $html ? JHtml::_('date', $raw_value, $format) : EmundusHelperDate::displayDate($raw_value, $format);
 			            }
 		            }
 		            break;
@@ -1119,7 +1120,7 @@ die("<script>
 		            $formatted_value = self::getFormattedPhoneNumberValue($raw_value);
 		            break;
 
-	            case 'databasejoin':
+		            case 'databasejoin':
 		            $query->clear();
 
 		            if (!empty($params['join_val_column_concat']))
@@ -1148,6 +1149,7 @@ die("<script>
 			            Log::add('components/com_emundus/helpers/fabrik | Error when try to get value from databasejoin case : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 		            }
 		            break;
+
 
 	            case 'cascadingdropdown':
 
@@ -1203,7 +1205,7 @@ die("<script>
 		            $index = array_search($raw_value, $params['sub_options']['sub_values']);
 		            if ($index !== false)
 		            {
-			            $formatted_value = $params['sub_options']['sub_labels'][$index];
+			            $formatted_value = $html ? "<ul><li>" . implode("</li><li>", json_decode(@$raw_value)) . "</li></ul>" : $params['sub_options']['sub_labels'][$index];
 		            }
 		            elseif (!is_null(json_decode($raw_value)))
 		            {
@@ -1222,7 +1224,7 @@ die("<script>
 				            $key   = array_search($sub_value, $params['sub_options']['sub_values']);
 				            $elm[] = Text::_($params['sub_options']['sub_labels'][$key]);
 			            }
-			            $formatted_value = implode(",", @$elm);
+			            $formatted_value = $html ? "<li>" . implode("</li><li>", @$elm) . "</li>" : implode(",", @$elm);
 		            }
 		            break;
 
@@ -1237,10 +1239,10 @@ die("<script>
 	            case 'field':
 		            if ($params['password'] == 1) {
 			            $formatted_value = '******';
-		            } elseif ($params['password'] == 3) {
-			            $formatted_value = $raw_value . ' ' . Text::_($element->label)  . $raw_value ;
+		            } elseif ($params['password'] == 3 && $html) {
+			            $formatted_value = '<a href="mailto:' . $raw_value . '" title="' . JText::_($element->label) . '">' . $raw_value . '</a>';
 		            } elseif ($params['password'] == 5) {
-			            $formatted_value = $raw_value . ' ' . Text::_($element->label) . ' ' . $raw_value;
+			            $formatted_value = '<a href="' . $raw_value . '" target="_blank" title="' . JText::_($element->label) . '">' . $raw_value . '</a>';
 		            }
 		            break;
 
