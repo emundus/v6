@@ -13,7 +13,7 @@
     "component": "joomla",
     "label": "COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SITEDESCRIPTION",
     "param": "MetaDesc",
-    "type": "text",
+    "type": "textarea",
     "maxlength": 255,
     "placeholder": ""
   },

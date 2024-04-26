@@ -422,3 +422,14 @@
   background : gray;
   border: 3px solid yellow;
 }*/
+
+.tchoozy-corner-bottom-left-bakground-mask-image {
+  mask-image: url(../../../../media/com_emundus/images/tchoozy/backgrounds/corner-bottom-left-background.svg);
+  -webkit-mask-image: url(../../../../media/com_emundus/images/tchoozy/backgrounds/corner-bottom-left-background.svg);
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-position: bottom left;
+  mask-size: contain;
+  -webkit-mask-size: cover;
+}

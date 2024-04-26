@@ -3,7 +3,7 @@
     <div class="em-w-80" v-if="!loading">
 
       <div class="form-group em-flex-center em-w-100 em-mb-16" v-for="(param, indexParam) in displayedParams" :key="param.param">
-          <label :for="'param_' + param.param" class="flex items-center" v-if="(param.param !== 'smtpuser')&&(param.param !== 'smtppass')">
+          <label :for="'param_' + param.param" class="flex items-center font-medium" v-if="(param.param !== 'smtpuser')&&(param.param !== 'smtppass')">
             {{ translate(param.label) }}
             <span v-if="param.helptext" class="material-icons-outlined ml-2" @click="displayHelp(param.helptext)">help_outline</span>
           </label>
@@ -42,6 +42,8 @@
         <input  type="email" class="form-control" :id="'param_' + param.param" v-model="param.value" style="margin-bottom: 0" @change="validate(param)">
           <div id="emailCheck" :style="{ color: emailValidationColor }">{{ emailValidationMessage }}</div>
         </div>
+        <textarea v-if="param.type === 'textarea'" :id="'param_' + param.param" v-model="param.value" :maxlength="param.maxlength" style="margin-bottom: 0" @change="saveEmundusParam(param)">
+        </textarea>
 
         <input v-if="param.type==='text'" type="text"  class="form-control" :placeholder="param.placeholder" :id="'param_' + param.param" v-model="param.value" :maxlength="param.maxlength" style="margin-bottom: 0" @change="saveEmundusParam(param)">
         <input v-if="param.type==='number'" type="number" class="form-control" :placeholder="param.placeholder" :id="'param_' + param.param" v-model="param.value" :maxlength="param.maxlength" style="margin-bottom: 0" @change="saveEmundusParam(param)">

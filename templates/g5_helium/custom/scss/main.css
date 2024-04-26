@@ -119,14 +119,6 @@ body {
     margin-right: 5px;
 }
 
-/* Page settings */
-.com_emundus.view-settings #g-page-surround {
-    background-image: var(--display-setting-tools), var(--display-corner-bottom-right-background);
-    background-position: bottom 65px right, bottom 60px right ;
-    background-repeat : no-repeat, no-repeat ;
-    background-size :  30%, 50% ;
-}
-
 /* Historique des emails */
 .view-list.email-history-indicators-page #g-container-main {
     background-image: var(--display-email-history);
@@ -163,14 +155,6 @@ body {
     .login > #g-page-surround {
         background-position: top 120px left 20px, top 500px right 20px;
         background-size : 25%, 25%;
-    }
-
-    /* Page settings */
-    .com_emundus.view-settings #g-page-surround {
-        background-image: var(--display-corner-bottom-right-background);
-        background-position: bottom 60px right;
-        background-repeat : no-repeat;
-        background-size : 90%;
     }
 
     /* Coin haut droite des pages mentions légales, cookies, indicateurs, groupes, campagnes... */
@@ -210,14 +194,6 @@ body {
     .login > #g-page-surround {
         background-image : none, none;
         background-size : 80%, 80%;
-    }
-
-    /* Page settings */
-    .com_emundus.view-settings #g-page-surround {
-        background-image: var(--display-corner-bottom-right-background);
-        background-position: bottom 60px right;
-        background-repeat : no-repeat;
-        background-size : 100%;
     }
 
     /* Coin haut droite des pages mentions légales, cookies, indicateurs, groupes, campagnes... */
