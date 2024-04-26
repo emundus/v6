@@ -2,17 +2,34 @@
   <div class="em-settings-menu">
     <div class="em-w-80" v-if="!loading">
 
-      <div class="form-group em-flex-center em-w-100 em-mb-16" v-for="(param) in displayedParams" :key="param.param">
+      <div class="form-group em-flex-center em-w-100 em-mb-16" v-for="(param, index2) in displayedParams" :key="param.param">
           <label :for="'param_' + param.param" class="flex items-center">
             {{ translate(param.label) }}
             <span v-if="param.helptext" class="material-icons-outlined ml-2" @click="displayHelp(param.helptext)">help_outline</span>
           </label>
 
-
-        <select v-if="param.options" class="dropdown-toggle w-select" :id="'param_' + param.param" v-model="param.value" style="margin-bottom: 0" @change="saveEmundusParam(param)">
+        <div v-if="param.type === 'yesno'">
+          <div class="flex-row flex items-center">
+            <button type="button" :id="'BtN'+index2" @click="clickYN(false, index2 , param)"
+                    :class="{'red-YesNobutton': true, 'active': param.value === '0'}"
+                    class="red-YesNobutton  focus:ring-neutral-50 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
+              Non
+            </button>
+            <button type="button" :id="'BtY'+index2" @click="clickYN(true, index2, param)"
+                    :class="{'green-YesNobutton': true, 'active': param.value === '1'}"
+                    class="focus:ring-neutral-50 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
+              Oui
+            </button>
+          </div>
+        </div>
+        <select v-if="(param.type !== 'yesno') && (param.options)" class="dropdown-toggle w-select" :id="'param_' + param.param" v-model="param.value" style="margin-bottom: 0" @focusout="saveEmundusParam(param)">
           <option v-for="option in param.options" :key="option.value" :value="option.value">{{ translate(option.label) }}</option>
         </select>
-        <input v-else type="text" class="form-control" :id="'param_' + param.param" v-model="param.value" :maxlength="param.maxlength" style="margin-bottom: 0" @change="saveEmundusParam(param)">
+        <div v-else-if="param.type === 'email'">
+        <input  type="email" class="form-control" :id="'param_' + param.param" v-model="param.value" style="margin-bottom: 0" @change="validate(param)">
+          <div id="emailCheck" :style="{ color: emailValidationColor }">{{ emailValidationMessage }}</div>
+        </div>
+        <input v-else-if="param.type==='text'" type="text" class="form-control" :id="'param_' + param.param" v-model="param.value" :maxlength="param.maxlength" style="margin-bottom: 0" @change="saveEmundusParam(param)">
       </div>
 
     </div>
@@ -43,6 +60,10 @@ export default {
       loading: true,
       params: {},
       config: {},
+
+      emailValidationMessage: "",
+      emailValidationColor: "",
+      YNButtons: [],
     };
   },
 
@@ -99,7 +120,37 @@ export default {
           actions: "em-swal-single-action",
         },
       });
-    }
+    },
+    validateEmail(email) {
+  let res = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+  return res.test(email);
+},
+    validate(paramEmail) {
+      let paramEmailId = paramEmail.param;
+      let email = this.params[paramEmailId].value;
+      this.emailValidationMessage = "";
+      if(this.validateEmail(email)) {
+        this.emailValidationMessage = email + " is valid";
+        this.emailValidationColor = "green";
+        this.saveEmundusParam(paramEmail);
+      } else {
+        this.emailValidationMessage = email + " is not valid";
+        this.emailValidationColor = "red";
+      }
+      return false;
+    },
+    clickYN(bool, index, param) {
+      param.value = bool ? 1 : 0;
+      this.saveEmundusParam(param)
+      this.YNButtons[index] = bool;
+      if (bool) {
+        document.getElementById('BtY' + index).classList.add('active');
+        document.getElementById('BtN' + index).classList.remove('active');
+      } else {
+        document.getElementById('BtN' + index).classList.add('active');
+        document.getElementById('BtY' + index).classList.remove('active');
+      }
+    },
   },
 	computed: {
 		displayedParams() {
@@ -116,5 +167,37 @@ export default {
 }
 .dropdown-toggle{
   width: 30%;
+}
+
+.green-YesNobutton {
+  border: 1px solid #008A35;
+  background-color: white;
+  color: #008A35;
+}
+
+.green-YesNobutton:hover {
+  background-color: #008A35;
+  color: black;
+}
+
+.green-YesNobutton.active {
+  background-color: #008A35;
+  color: white;
+}
+
+.red-YesNobutton {
+  border: 1px solid #FF0000;
+  background-color: white;
+  color: #FF0000;
+}
+
+.red-YesNobutton:hover {
+  background-color: #FF0000;
+  color: white;
+}
+
+.red-YesNobutton.active {
+  background-color: #FF0000;
+  color: white;
 }
 </style>

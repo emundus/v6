@@ -2,13 +2,29 @@
   "mailfrom": {
     "displayed": true,
     "component": "joomla",
-    "label": "Email du site",
-    "param": "mailfrom"
+    "label": "Email d'envoie du site",
+    "param": "mailfrom",
+    "type": "email"
   },
   "fromname": {
     "displayed": true,
     "component": "joomla",
     "label": "nom de l'expéditeur",
-    "param": "fromname"
+    "param": "fromname",
+    "type": "text"
+  },
+  "replyto": {
+    "displayed": true,
+    "component": "joomla",
+    "label": "Email de récéption du site",
+    "param": "replyto",
+    "type": "email"
+  },
+  "replytoname": {
+    "displayed": true,
+    "component": "joomla",
+    "label": "nom du récépteur",
+    "param": "replytoname",
+    "type": "text"
   }
 }

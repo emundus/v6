@@ -1469,9 +1469,13 @@ class EmundusModelsettings extends JModelList {
 
 		$settings_applicants = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings-applicants.json');
 		$settings_general = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings-general.json');
+        $settings_mail_base = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings-mail-BASE.json');
+        $settings_mail_server_custom = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings-mail-SERVERCUSTOM.json');
 
 		$settings_applicants = json_decode($settings_applicants, true);
 		$settings_general = json_decode($settings_general, true);
+        $settings_mail_base = json_decode($settings_mail_base, true);
+        $settings_mail_server_custom = json_decode($settings_mail_server_custom, true);
 
 		$emundus_parameters = ComponentHelper::getParams('com_emundus');
 
@@ -1490,6 +1494,22 @@ class EmundusModelsettings extends JModelList {
 				$params['joomla'][$setting_general['param']] = JFactory::getConfig()->get($setting_general['param']);
 			}
 		}
+
+        foreach($settings_mail_base as $setting_mail_base) {
+            if ($setting_mail_base['component'] === 'emundus') {
+                $params['emundus'][$setting_mail_base['param']] = $emundus_parameters->get($setting_mail_base['param']);
+            } else {
+                $params['joomla'][$setting_mail_base['param']] = JFactory::getConfig()->get($setting_mail_base['param']);
+            }
+        }
+
+        foreach($settings_mail_server_custom as $setting_mail_server_custom) {
+            if ($setting_mail_server_custom['component'] === 'emundus') {
+                $params['emundus'][$setting_mail_server_custom['param']] = $emundus_parameters->get($setting_mail_server_custom['param']);
+            } else {
+                $params['joomla'][$setting_mail_server_custom['param']] = JFactory::getConfig()->get($setting_mail_server_custom['param']);
+            }
+        }
 
 		return $params;
 	}

@@ -135,7 +135,7 @@
         "helptext": "cela permet de pouvoir envoyer des mails au candidats",
         "options": [
           {
-            "published": false,
+            "published": true,
             "type_field": "component",
             "component": "EditSettingJoomla",
             "props": {
@@ -143,7 +143,7 @@
             }
           },
           {
-            "published": false,
+            "published": true,
             "name": "config_server_mail",
             "label": "Configuration du serveur de mail (SMTP)",
             "type": "subSection",
@@ -160,14 +160,14 @@
             ]
           },
           {
-            "published": false,
+            "published": true,
             "name": "Test_mail_BT",
             "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_MAIL_TEST_BT",
             "type_field": "Button",
             "icon": "send"
           },
           {
-            "published": false,
+            "published": true,
             "name": "Custom_model_mails_BT",
             "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_MAIL_CUSTOM_MODEL_BT",
             "type_field": "Button",

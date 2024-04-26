@@ -29,6 +29,7 @@
     "component": "emundus",
     "label": "COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANT_CAN_EDIT_UNTIL_DEADLINE",
     "param": "can_edit_until_deadline",
+    "type": "yesno",
     "options": [
       {
         "label": "JNO",
@@ -46,6 +47,7 @@
     "component": "emundus",
     "label": "COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANT_CAN_SUBMIT_ENCRYPTED",
     "param": "can_submit_encrypted",
+    "type": "yesno",
     "options": [
       {
         "label": "JNO",
@@ -64,6 +66,7 @@
     "label": "COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_OTHER_USER_EDITING_SAME_FILE",
     "param": "display_other_user_editing_same_file",
     "helptext": "COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_OTHER_USER_EDITING_SAME_FILE_HELPTEXT",
+    "type": "yesno",
     "options": [
       {
         "label": "JNO",
@@ -81,6 +84,7 @@
     "component": "emundus",
     "label": "COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANT_CAN_SUBMIT_ANONYM_FILE",
     "param": "allow_anonym_files",
+    "type": "yesno",
     "options": [
       {
         "label": "JNO",

@@ -68,8 +68,8 @@
               <hr>
             </div>
 
-            <div v-else-if="(option.type ==='subSection') && (option.published === true)">
-              <div @click="handleSubSectionClick(index2)">
+            <div v-else-if="(option.type ==='subSection') && (option.published === true)" name="ComponentsubSections" :id="'ComponentsubSection-'+index2" style=" " >
+              <div @click="handleSubSectionClick(index2)" >
                 <span :id="'SubSectionTile'+index2" class="em-font-size-16">{{ translate(option.label) }}</span>
                 <i class="material-icons-outlined scale-150" :id="'SubSectionArrow'+index2" name="SubSectionArrows"
                    style="transform-origin: unset">expand_more</i>
@@ -442,11 +442,13 @@ export default {
       if (this.SubSectionisClicked[index]) {
         document.getElementById('SubSectionArrow' + index).style.rotate = '-180deg';
         document.getElementById('SubSection-' + index).style.display = 'flex';
+        document.getElementById('ComponentsubSection-'+index).style.backgroundColor = '#CBCBCBEB';
       }
     },
     resetSubSectionStyles() {
       document.getElementsByName("SubSectionArrows").forEach(element => element.style.rotate = '0deg');
       document.getElementsByName("SubSectionContent").forEach(element => element.style.display = 'none');
+      document.getElementsByName("ComponentsubSections").forEach(element => element.style.backgroundColor = '');
     },
 
     clickYN(bool, index) {
