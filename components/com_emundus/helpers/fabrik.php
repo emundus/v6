@@ -1152,27 +1152,29 @@ die("<script>
 	            case 'cascadingdropdown':
 
 		            $emundusUser = JFactory::getSession()->get('emundusUser');
-		            $fnum        = $emundusUser->fnum;
+		            $fnum        = isset($emundusUser->fnum) ? $emundusUser->fnum : '';
 
-		            $query->select('applicant_id')
-			            ->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
-			            ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+					if(!empty($fnum))
+					{
+						$query->select('applicant_id')
+							->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+							->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
 
-		            try
-		            {
-			            $db->setQuery($query);
-			            $applicant_id = $db->loadResult();
-		            }
-		            catch (Exception $e)
-		            {
-			            JLog::add("Failed to get applicant_id from fnum $fnum : " . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
-		            }
+						try
+						{
+							$db->setQuery($query);
+							$applicant_id = $db->loadResult();
+						}
+						catch (Exception $e)
+						{
+							JLog::add("Failed to get applicant_id from fnum $fnum : " . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+						}
 
-		            $query->clear();
+						$query->clear();
+					}
 
 		            $cascadingdropdown_id    = $params['cascadingdropdown_id'];
 		            $cascadingdropdown_label = Text::_($params['cascadingdropdown_label']);
-
 
 		            $r1     = explode('___', $cascadingdropdown_id);
 		            $r2     = explode('___', $cascadingdropdown_label);
@@ -1181,7 +1183,9 @@ die("<script>
 		            $where  = $r1[1] . '=' . $db->Quote($raw_value);
 		            $query  = "SELECT " . $select . " FROM " . $from . " WHERE " . $where;
 		            $query  = preg_replace('#{thistable}#', $from, $query);
-		            $query  = preg_replace('#{my->id}#', $applicant_id, $query);
+		            if(!empty($fnum)){
+			            $query  = preg_replace('#{my->id}#', $applicant_id, $query);
+		            }
 		            $query  = preg_replace('#{shortlang}#', substr(JFactory::getLanguage()->getTag(), 0, 2), $query);
 
 		            $db->setQuery($query);

@@ -96,7 +96,7 @@ class EmundusHelperFabrikTest extends TestCase
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        $query->select('fe.id, fe.name, fe.group_id as group_id, fe.plugin as plugin, fe.params as params')
+        $query->select('fe.id, fe.name, fe.group_id as group_id, fe.plugin as plugin, fe.params as params, fe.label as label')
             ->from($db->quoteName('#__fabrik_elements', 'fe'))
             ->leftJoin($db->quoteName('#__fabrik_formgroup', 'ff') . ' ON ff.group_id = fe.group_id')
             ->where($db->quoteName('ff.form_id') . ' = ' . $form_id);
@@ -228,6 +228,52 @@ class EmundusHelperFabrikTest extends TestCase
                     $this->assertEquals($formatted_value, $this->h_fabrik->formatElementValue($element->name, $firstKeyValue, $element->group_id));
 
                     break;
+
+	            case 'cascadingdropdown':
+
+		            $emundusUser = JFactory::getSession()->get('emundusUser');
+		            $fnum        = isset($emundusUser->fnum) ? $emundusUser->fnum : '';
+
+		            $query->select('applicant_id')
+			            ->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+			            ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+
+		            try
+		            {
+			            $db->setQuery($query);
+			            $applicant_id = $db->loadResult();
+		            }
+		            catch (Exception $e)
+		            {
+			            JLog::add("Failed to get applicant_id from fnum $fnum : " . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+		            }
+
+		            $query = $db->getQuery(true);
+
+		            $r     = explode('___', Text::_($params['cascadingdropdown_label']));
+		            $select = $r[1];
+		            $from   = $r[0];
+
+		            $query->select($db->quoteName($select))
+			            ->from($db->quoteName($from))
+			            ->setLimit(1);
+
+		            $db->setQuery($query);
+		            $firstKeyValue = $db->loadResult();
+
+		            $query->clear();
+
+		            $query  = "SELECT " . $select . " FROM " . $from;
+		            $query  = preg_replace('#{thistable}#', $from, $query);
+		            $query  = preg_replace('#{my->id}#', $applicant_id, $query);
+		            $query  = preg_replace('#{shortlang}#', substr(JFactory::getLanguage()->getTag(), 0, 2), $query);
+
+		            $db->setQuery($query);
+		            $ret = $db->loadResult();
+		            $formatted_value = Text::_($ret);
+
+		            $this->assertEquals($formatted_value, $this->h_fabrik->formatElementValue($element->name, $firstKeyValue, $element->group_id));
+		            break;
 
 	            case 'field':
 
