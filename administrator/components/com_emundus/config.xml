@@ -110,6 +110,11 @@
 			<option value="1">JYES</option>
 		</field>
 
+		<field name="base64_images_preview" label="COM_EMUNDUS_BASE64_IMAGE_PREVIEW" type="list" default="1" description="">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+
 		<field
 				name="spacer0"
 				type="spacer"

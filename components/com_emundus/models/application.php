@@ -5069,6 +5069,7 @@ class EmundusModelApplication extends JModelList
         $fileExists = File::exists($filePath);
 
         if ($fileExists) {
+            $siteUrl = JURI::base();
             // create preview based on filetype
             if ($extension == 'pdf') {
                 $preview['content'] = '<iframe src="/index.php?option=com_emundus&task=getfile&u=images/emundus/files/'. $user . '/' . $fileName . '" style="width:100%;height:100%;" border="0"></iframe>';
@@ -5078,8 +5079,33 @@ class EmundusModelApplication extends JModelList
                 $preview['content'] = '<div class="wrapper" style="max-width: 100%;margin: 5px;padding: 20px;background-color: white;"><pre style="white-space: break-spaces;">' . $content . '</pre></div>';
             } else if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif'])) {
                 $mimeType = mime_content_type($extension);
-                $content = base64_encode(file_get_contents(JPATH_SITE . DS . $filePath));
-                $preview['content'] = '<div class="wrapper" style="height: 100%;display: flex;justify-content: center;align-items: center;"><img src="data:'. $mimeType .';base64,' . $content . '" style="display: block;max-width:100%;max-height:100%;width: auto;height: auto;" /></div>';
+
+                if (empty($mimeType)) {
+                    switch ($extension) {
+                        case 'jpeg':
+                        case 'jpg':
+                            $mimeType = 'image/jpeg';
+                            break;
+                        case 'png':
+                            $mimeType = 'image/png';
+                            break;
+                        case 'gif':
+                            $mimeType = 'image/gif';
+                            break;
+                        default:
+                            $mimeType = 'text/plain';
+                            break;
+                    }
+                }
+
+                $base64_images_preview = JComponentHelper::getParams('com_emundus')->get('base64_images_preview', 1);
+
+                if ($base64_images_preview) {
+                    $content = base64_encode(file_get_contents(JPATH_SITE . DS . $filePath));
+                    $preview['content'] = '<div class="wrapper" style="height: 100%;display: flex;justify-content: center;align-items: center;"><img src="data:'. $mimeType .';base64,' . $content . '" style="display: block;max-width:100%;max-height:100%;width: auto;height: auto;" /></div>';
+                } else {
+                    $preview['content'] = '<div class="wrapper" style="height: 100%;display: flex;justify-content: center;align-items: center;"><img src="' . $siteUrl . $filePath . '" style="display: block;max-width:100%;max-height:100%;width: auto;height: auto;" /></div>';
+                }
             } else if (in_array($extension, ['doc', 'docx', 'odt', 'rtf'])) {
                 require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
