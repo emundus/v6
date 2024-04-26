@@ -5,7 +5,8 @@
     "label": "COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SITENAME",
     "param": "sitename",
     "type": "text",
-    "maxlength": 50
+    "maxlength": 50,
+    "placeholder": ""
   },
   "sitedescription": {
     "displayed": true,
@@ -13,14 +14,16 @@
     "label": "COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SITEDESCRIPTION",
     "param": "MetaDesc",
     "type": "text",
-    "maxlength": 255
+    "maxlength": 255,
+    "placeholder": ""
   },
     "keyword": {
         "displayed": true,
         "component": "joomla",
         "label": "COM_EMUNDUS_ATTACHMENTS_KEYWORDS",
         "param": "MetaKeys",
-      "type": "text"
+      "type": "text",
+      "placeholder": ""
     },
   "list_limit": {
     "displayed": true,
@@ -107,6 +110,7 @@
     "label": "COM_EMUNDUS_MODULES_EXTERNAL_STORAGE_GED_ALFRESCO_SITE",
     "param": "external_storage_ged_alfresco_site",
     "type": "text",
+    "placeholder": "",
     "maxlength": 255
   },
   "external_storage_ged_alfresco_max_level": {
@@ -115,6 +119,7 @@
     "label": "COM_EMUNDUS_MODULES_EXTERNAL_STORAGE_GED_ALFRESCO_MAX_LEVEL",
     "param": "external_storage_ged_alfresco_max_level",
     "type": "text",
-    "maxlength": 50
+    "maxlength": 50,
+    "placeholder": ""
   }
 }

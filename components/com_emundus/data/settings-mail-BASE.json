@@ -1,4 +1,12 @@
 {
+  "mailonline": {
+    "displayed": true,
+    "component": "joomla",
+    "label": "activer l'envoie de mail",
+    "param": "mailonline",
+    "type": "toggle",
+    "value": 1
+  },
   "mailfrom": {
     "displayed": true,
     "component": "joomla",
@@ -11,7 +19,8 @@
     "component": "joomla",
     "label": "nom de l'expéditeur",
     "param": "fromname",
-    "type": "text"
+    "type": "text",
+    "placeholder": "adam"
   },
   "replyto": {
     "displayed": true,
@@ -25,6 +34,7 @@
     "component": "joomla",
     "label": "nom du récépteur",
     "param": "replytoname",
-    "type": "text"
+    "type": "text",
+    "placeholder": "eve"
   }
 }

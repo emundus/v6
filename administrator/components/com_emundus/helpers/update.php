@@ -422,9 +422,9 @@ class EmundusHelperUpdate
 	public static function updateConfigurationFile($param, $value)
 	{
 		$updated = false;
-        //TODO talk with Brice about this
-            //suppr 'mailfrom','smtpuser', 'smpthost', 'smtppass', 'smtpport'
-		if (!empty($param) && !empty($value) && !in_array($param, ['host', 'user', 'password', 'db', 'secret',  'smtpsecure'])) {
+
+            // 'mailfrom','smtpuser', 'smpthost', 'smtppass', 'smtpport', 'smtpsecure'
+		if (!empty($param) && !empty($value) && !in_array($param, ['host', 'user', 'password', 'db', 'secret',  ])) {
 			require_once(JPATH_SITE . '/components/com_config/model/cms.php');
 			require_once(JPATH_SITE . '/components/com_config/model/form.php');
 			require_once(JPATH_ROOT . '/administrator/components/com_config/model/application.php');

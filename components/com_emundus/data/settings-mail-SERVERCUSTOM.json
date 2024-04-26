@@ -4,65 +4,70 @@
     "component": "joomla",
     "label": "SMTP Host",
     "param": "smtphost",
-    "type": "text"
+    "type": "text",
+    "placeholder": "smtp.example.com"
   },
-    "smtpport": {
-        "displayed": true,
-        "component": "joomla",
-        "label": "SMTP Port",
-        "param": "smtpport",
-        "type": "text"
-    },
-    "smtpsecure": {
-        "displayed": true,
-        "component": "joomla",
-        "label": "securité",
-        "param": "smtpsecure",
-        "options": [
-            {
-                "value": "0",
-                "label": "None"
-            },
-            {
-                "value": "1",
-                "label": "SSL"
-            },
-            {
-                "value": "2",
-                "label": "TLS"
-            }
-        ]
-    },
-    "smtpauth": {
-        "displayed": true,
-        "component": "joomla",
-        "label": "SMTP Authentification",
-        "param": "smtpauth",
-        "type": "yesno",
-        "options": [
-            {
-                "value": "0",
-                "label": "No"
-            },
-            {
-                "value": "1",
-                "label": "Yes"
-            }
-        ],
-      "value": 1
-    },
-    "smtpuser": {
-        "displayed": true,
-        "component": "joomla",
-        "label": "SMTP User",
-        "param": "smtpuser",
-        "type": "text"
-    },
-    "smtppass": {
-        "displayed": true,
-        "component": "joomla",
-        "label": "SMTP Password",
-        "param": "smtppass",
-      "type": "text"
-    }
+  "smtpport": {
+    "displayed": true,
+    "component": "joomla",
+    "label": "SMTP Port",
+    "param": "smtpport",
+    "type": "text",
+    "placeholder": "25 ,465, 587"
+  },
+  "smtpsecure": {
+    "displayed": true,
+    "component": "joomla",
+    "label": "securité",
+    "param": "smtpsecure",
+    "options": [
+      {
+        "value": "0",
+        "label": "None"
+      },
+      {
+        "value": "1",
+        "label": "SSL"
+      },
+      {
+        "value": "2",
+        "label": "TLS"
+      }
+    ]
+  },
+  "smtpauth": {
+    "displayed": true,
+    "component": "joomla",
+    "label": "SMTP Authentification",
+    "param": "smtpauth",
+    "type": "yesno",
+    "options": [
+      {
+        "value": "0",
+        "label": "No"
+      },
+      {
+        "value": "1",
+        "label": "Yes"
+      }
+    ],
+    "value": 1
+  },
+  "smtpuser": {
+    "displayed": true,
+    "component": "joomla",
+    "label": "SMTP User",
+    "param": "smtpuser",
+    "type": "login",
+    "placeholder": "",
+    "section": "smtpauth"
+  },
+  "smtppass": {
+    "displayed": true,
+    "component": "joomla",
+    "label": "SMTP Password",
+    "param": "smtppass",
+    "type": "password",
+    "section": "smtpauth"
+  }
 }

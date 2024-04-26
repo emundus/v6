@@ -58,17 +58,18 @@
 
 
         <div :id="'SubMenu-'+index1" name="SubMenuContent" style="display: none" class="flex flex-col ">
-          <div v-if="SubMenus[indexMenuClick][index1].helptext !== '' " class="bg-blue-300 rounded flex items-center pb-2">
-            <span class="material-icons-outlined scale-150 ml-2 mt-2">info</span>
+          <div v-if="SubMenus[indexMenuClick][index1].helptext !== '' " class="rounded flex items-center pb-2" style="background-color: #EBEEFA">
+            <span class="material-icons scale-150 ml-2 mt-2">info</span>
             <p class="ml-2 mt-2">{{translate(SubMenus[indexMenuClick][index1].helptext) }}</p>
           </div>
+
           <div v-for="(option,index2) in SubMenus[indexMenuClick][index1].options">
             <div class="flex flex-col" v-if="(option.type_field === 'Title') && (option.published === true)">
               <h2 v-if="option.published === true">{{ translate(option.label) }}</h2>
               <hr>
             </div>
 
-            <div v-else-if="(option.type ==='subSection') && (option.published === true)" name="ComponentsubSections" :id="'ComponentsubSection-'+index2" style=" " >
+            <div v-else-if="(option.type ==='subSection') && (option.published === true)" name="ComponentsubSections" :id="'ComponentsubSection-'+index2" style="" class="rounded" >
               <div @click="handleSubSectionClick(index2)" >
                 <span :id="'SubSectionTile'+index2" class="em-font-size-16">{{ translate(option.label) }}</span>
                 <i class="material-icons-outlined scale-150" :id="'SubSectionArrow'+index2" name="SubSectionArrows"
@@ -100,7 +101,7 @@
             </div>
 
             <div class="flex flex-col" v-if="(option.type_field === 'Input') && (option.published === true)">
-              <input :placeholder="option.placeholder" class="w-full p-2 border border-gray-200 rounded"
+              <input :placeholder="option.placeholder" class="w-full p-2 border border-gray-200 rounded hover:bg-gray-300"
                      v-model="option.value">
             </div>
 
@@ -519,5 +520,6 @@ export default {
   background-color: #FF0000;
   color: white;
 }
+
 
 </style>
