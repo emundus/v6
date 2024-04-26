@@ -73,7 +73,7 @@
                 <span :id="'SubSectionTile'+index2" class="em-font-size-16">{{ translate(option.label) }}</span>
                 <i class="material-icons-outlined scale-150" :id="'SubSectionArrow'+index2" name="SubSectionArrows"
                    style="transform-origin: unset">expand_more</i>
-                <div v-if="$data.notifCheck[index2]===true"
+                <div v-if="$data.notifCheck[index2]===true && SubMenus[indexMenuClick][index1].notify === 1"
                      class="inline-flex w-6 h-6 bg-red-500 border-2 border-white rounded-full -top-2 -end-2 ">
                 </div>
               </div>
