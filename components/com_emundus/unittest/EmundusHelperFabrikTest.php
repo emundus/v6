@@ -3,6 +3,7 @@
 
 use PHPUnit\Framework\TestCase;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\Language\Text;
 
 ini_set('display_errors', false);
 error_reporting(E_ALL);
@@ -140,7 +141,48 @@ class EmundusHelperFabrikTest extends TestCase
 	                $this->assertEquals('01/01/2024 10h00', $formatted_date, 'The date is correctly formatted');
 
 	                break;
-                case 'radiobutton':
+	            case 'birthday':
+
+		            $helperDate = new EmundusHelperDate();
+
+		            $format = $params['list_date_format'];
+
+		            $date = $helperDate->getNow();
+		            $d = DateTime::createFromFormat($format, $date);
+		            if ($d && $d->format($format) == $date)
+		            {
+			            $formatted_date = EmundusHelperDate::displayDate($date, Text::_('DATE_FORMAT_LC'));
+		            }
+		            else
+		            {
+			            $formatted_date = EmundusHelperDate::displayDate($date, $format);
+		            }
+
+		            $this->assertEquals($formatted_date, $this->h_fabrik->formatElementValue($element->name, $date, $element->group_id), 'The birhday is correctly formatted');
+
+		            $date = '2015-12-01';
+		            $params['list_date_format'] = 'd/m/Y';
+		            $new_params_json = json_encode($params);
+
+		            $query = $db->getQuery(true);
+
+		            $query->update($db->quoteName('#__fabrik_elements'))
+			            ->set($db->quoteName('params') . ' = ' . $db->quote($new_params_json))
+			            ->where($db->quoteName('id') . ' = ' . $db->quote($element->id));
+
+		            try {
+			            $db->setQuery($query);
+			            $db->execute();
+		            } catch (Exception $e) {
+			            Log::add('components/com_emundus/unittest/EmundusHelperFabrikTest | Error when try to get fabrik elements table data : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
+		            }
+
+		            $this->assertEquals('01/12/2015', $this->h_fabrik->formatElementValue($element->name, $date, $element->group_id), 'The birthday is correctly formatted');
+
+		            break;
+
+
+	            case 'radiobutton':
                 case 'checkbox':
                 case 'dropdown':
                     $this->assertEquals($params['sub_options']['sub_labels'][0], $this->h_fabrik->formatElementValue($element->name, $params['sub_options']['sub_values'][0], $element->group_id));
@@ -186,6 +228,83 @@ class EmundusHelperFabrikTest extends TestCase
                     $this->assertEquals($formatted_value, $this->h_fabrik->formatElementValue($element->name, $firstKeyValue, $element->group_id));
 
                     break;
+
+	            case 'field':
+
+					$password = 'test';
+
+		            $params['password'] = 1;
+		            $new_params_json = json_encode($params);
+
+		            $query = $db->getQuery(true);
+
+		            $query->update($db->quoteName('#__fabrik_elements'))
+			            ->set($db->quoteName('params') . ' = ' . $db->quote($new_params_json))
+			            ->where($db->quoteName('id') . ' = ' . $db->quote($element->id));
+
+		            try {
+			            $db->setQuery($query);
+			            $db->execute();
+		            } catch (Exception $e) {
+			            Log::add('components/com_emundus/unittest/EmundusHelperFabrikTest | Error when try to get fabrik elements table data : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
+		            }
+
+		            $this->assertEquals('******', $this->h_fabrik->formatElementValue($element->name, $password, $element->group_id));
+
+		            $params['password'] = 3;
+		            $new_params_json = json_encode($params);
+
+		            $query = $db->getQuery(true);
+
+		            $query->update($db->quoteName('#__fabrik_elements'))
+			            ->set($db->quoteName('params') . ' = ' . $db->quote($new_params_json))
+			            ->where($db->quoteName('id') . ' = ' . $db->quote($element->id));
+
+		            try {
+			            $db->setQuery($query);
+			            $db->execute();
+		            } catch (Exception $e) {
+			            Log::add('components/com_emundus/unittest/EmundusHelperFabrikTest | Error when try to get fabrik elements table data : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
+		            }
+
+		            $this->assertEquals($password . ' ' . $element->label . $password, $this->h_fabrik->formatElementValue($element->name, $password, $element->group_id));
+
+		            $params['password'] = 5;
+		            $new_params_json = json_encode($params);
+
+		            $query = $db->getQuery(true);
+
+		            $query->update($db->quoteName('#__fabrik_elements'))
+			            ->set($db->quoteName('params') . ' = ' . $db->quote($new_params_json))
+			            ->where($db->quoteName('id') . ' = ' . $db->quote($element->id));
+
+		            try {
+			            $db->setQuery($query);
+			            $db->execute();
+		            } catch (Exception $e) {
+			            Log::add('components/com_emundus/unittest/EmundusHelperFabrikTest | Error when try to get fabrik elements table data : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
+		            }
+
+		            $this->assertEquals($password . ' ' . $element->label . ' ' .$password, $this->h_fabrik->formatElementValue($element->name, $password, $element->group_id));
+
+		            $params['password'] = 0;
+		            $new_params_json = json_encode($params);
+
+		            $query = $db->getQuery(true);
+
+		            $query->update($db->quoteName('#__fabrik_elements'))
+			            ->set($db->quoteName('params') . ' = ' . $db->quote($new_params_json))
+			            ->where($db->quoteName('id') . ' = ' . $db->quote($element->id));
+
+		            try {
+			            $db->setQuery($query);
+			            $db->execute();
+		            } catch (Exception $e) {
+			            Log::add('components/com_emundus/unittest/EmundusHelperFabrikTest | Error when try to get fabrik elements table data : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
+		            }
+
+		            $this->assertEquals($password, $this->h_fabrik->formatElementValue($element->name, $password, $element->group_id));
+
             }
         }
     }

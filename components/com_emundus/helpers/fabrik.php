@@ -1065,7 +1065,7 @@ die("<script>
 
             $element = null;
 
-            $query->select('fe.name,fe.params,fe.plugin')
+            $query->select('fe.name,fe.params,fe.plugin, fe.label')
                 ->from($db->quoteName('#__fabrik_elements', 'fe'))
                 ->where($db->quoteName('name') . ' = ' . $db->quote($elt_name))
                 ->andWhere($db->quoteName('fe.group_id') . ' = ' . $db->quote($groupId));
@@ -1101,16 +1101,16 @@ die("<script>
 		            preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $raw_value, $matches);
 		            if (count($matches) != 0)
 		            {
-			            $format = $params->list_date_format;
+			            $format = $params['list_date_format'];
 
 			            $d = DateTime::createFromFormat($format, $raw_value);
 			            if ($d && $d->format($format) == $raw_value)
 			            {
-				            $formatted_value = JHtml::_('date', $raw_value, Text::_('DATE_FORMAT_LC'));
+				            $formatted_value = EmundusHelperDate::displayDate($raw_value);
 			            }
 			            else
 			            {
-				            $formatted_value = JHtml::_('date', $raw_value, $format);
+				            $formatted_value = EmundusHelperDate::displayDate($raw_value, $format);
 			            }
 		            }
 		            break;
@@ -1193,29 +1193,26 @@ die("<script>
 		            $formatted_value = Text::_($ret);
 		            break;
 
-	            case 'radiobutton':
 	            case 'dropdown':
+	            case 'radiobutton':
 	            case 'checkbox':
-		            $data = json_decode($raw_value);
-		            if (count($data) <= 1 && $element->plugin !== 'checkbox')
+		            $index = array_search($raw_value, $params['sub_options']['sub_values']);
+		            if ($index !== false)
 		            {
-			            $index = array_search($raw_value, $params['sub_options']['sub_values']);
-			            if ($index !== false)
-			            {
-				            $formatted_value = $params['sub_options']['sub_labels'][$index];
-			            }
+			            $formatted_value = $params['sub_options']['sub_labels'][$index];
 		            }
-		            else
+		            elseif (!is_null(json_decode($raw_value)))
 		            {
-			            $elm = array();
-			            $index = $params['sub_options']['sub_values'];
-						if(!empty($data))
-						{
-							$index = array_intersect($data, $params['sub_options']['sub_values']);
-							if($index == ''){
-								$index = array_intersect(array($data), $params['sub_options']['sub_values']);
-							}
-						}
+			            $data  = json_decode($raw_value);
+			            $index = array_intersect($data, $params['sub_options']['sub_values']);
+			            if (!empty($data))
+			            {
+				            $index = array_intersect($data, $params['sub_options']['sub_values']);
+				            if ($index == '')
+				            {
+					            $index = array_intersect(array($data), $params['sub_options']['sub_values']);
+				            }
+			            }
 			            foreach ($index as $sub_value)
 			            {
 				            $key   = array_search($sub_value, $params['sub_options']['sub_values']);
@@ -1223,7 +1220,6 @@ die("<script>
 			            }
 			            $formatted_value = implode(",", @$elm);
 		            }
-
 		            break;
 
                 case 'yesno':

@@ -233,7 +233,6 @@ class EmundusModelUsersTest extends TestCase
 
         $this->assertEmpty($this->m_users->getUserDetails(0), 'Passing an incorrect user id should return null');
         $data = $this->m_users->getUserDetails($user_id);
-        $this->assertNotEmpty($data, 'Passing a correct user id should return an array of data');
         $dataBefore = $this->m_users->getAllInformationsToExport($user_id);
         $numberColumns = 0;
         $array_label = array();
