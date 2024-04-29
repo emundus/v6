@@ -3784,6 +3784,12 @@ class EmundusModelUsers extends JModelList {
                 'plugin' => null,
                 'label' => 'COM_EMUNDUS_PROFILE',
             ),
+            'oprofiles' => (object)array(
+	            'id' => null,
+	            'name' => 'oprofiles',
+	            'plugin' => null,
+	            'label' => 'COM_EMUNDUS_O_PROFILES',
+            ),
             'groups' => (object)array(
                 'id' => null,
                 'name' => 'groups',
@@ -3849,6 +3855,15 @@ class EmundusModelUsers extends JModelList {
                 }
 
                 $user_groups = $this->getUserGroupsLabelById($uid);
+				$user_oprofiles = $this->getUserOprofiles($uid);
+
+				if (empty($user_groups)) {
+					$user_groups = array();
+				}
+
+	            if (empty($user_oprofiles)) {
+		            $user_oprofiles = array();
+	            }
 
                 $register_date = $user->registerDate ?? '';
                 $lastvisit_date = $user->lastvisitDate ?? '';
@@ -3861,13 +3876,19 @@ class EmundusModelUsers extends JModelList {
                     $lastvisit_date = EmundusHelperDate::displayDate($lastvisit_date, 'DATE_FORMAT_LC2', $timezone === 'UTC' ? 1 : 0);
                 }
 
-                // We only need the labal of each group
                 $groups = array();
                 foreach ($user_groups as $group) {
                     $groups[] = $group->label;
                 }
 
-                // Create an array with array of each data not in the profile form
+				$oprofiles = array();
+	            foreach ($user_oprofiles as $profileId => $profileLabel) {
+		            if ((int)$profileId !== (int)$user->profile) {
+			            $oprofiles[] = $profileLabel === "Formulaire de base candidat" ? Text::_('COM_EMUNDUS_APPLICANT') : $profileLabel;
+		            }
+	            }
+
+	            // Create an array with array of each data not in the profile form
                 // Necessary to be coherent with the data in the profile form
                 // We indeed need id, name, plugin, and label at least for each
                 $j_columns = $this->getJoomlaUserColumns();
@@ -3899,6 +3920,9 @@ class EmundusModelUsers extends JModelList {
                         case 'profile':
                             $j_column->value = $user_profile ?? '';
                             break;
+	                    case 'oprofiles':
+		                    $j_column->value = implode(', ', $oprofiles);
+		                    break;
                         default :
                             $j_column->value = '';
                             break;
