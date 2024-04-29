@@ -8,6 +8,14 @@ $jinput = JFactory::getApplication()->input;
 $euser_columns = $m_users->getColumnsForm();
 $user_columns = $m_users->getJoomlaUserColumns();
 
+$user_column_labels = array_map(function($field) {
+	return Text::_($field->label);
+}, $user_columns);
+
+$euser_columns = array_filter($euser_columns, function($column) use ($user_column_labels) {
+	return !in_array(Text::_($column->label), $user_column_labels);
+});
+
 ?>
 
 <div>
@@ -25,36 +33,27 @@ $user_columns = $m_users->getJoomlaUserColumns();
 <hr class="w-full border-t border-gray-300 my-2">
 <div class="flex justify-between items-start">
     <div class="w-1/2">
-        <?php
-        foreach ($euser_columns as $column) {
-            ?>
+		<?php
+		foreach ($euser_columns as $column) {
+			?>
             <div class="form-group flex items-center mb-1">
                 <input type="checkbox" id="checkbox-<?= $column->name ?>" name="checkbox-csv" value="<?= $column->label ?>" onchange="uncheckCheckboxAllElement(this)" class="mr-1 mt-2">
                 <label for="checkbox-<?= $column->name ?>" class="checkbox-label align-middle mt-1.5"><?= Text::_($column->label) ?></label>
             </div>
-            <?php
-        }
-        ?>
+			<?php
+		}
+		?>
     </div>
     <div class="w-1/2">
-        <?php
-        foreach ($user_columns as $field) {
-            ?>
+		<?php
+		foreach ($user_columns as $field) {
+			?>
             <div class="form-group flex items-center mb-1">
                 <input type="checkbox" id="checkbox-<?= $field->name ?>" name="checkbox-csv" value="<?= $field->label ?>" onchange="uncheckCheckboxAllElement(this)" class="mr-1 mt-2">
                 <label for="checkbox-<?= $field->name ?>" class="checkbox-label align-middle mt-1.5"><?= Text::_($field->label) ?></label>
             </div>
-            <?php
-        }
-        ?>
+			<?php
+		}
+		?>
     </div>
 </div>
-
-
-
-
-
-
-
-
-

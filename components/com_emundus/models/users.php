@@ -3751,10 +3751,6 @@ class EmundusModelUsers extends JModelList {
 			{
 				$db->setQuery($query);
 				$columns = $db->loadObjectList();
-                // Sort alphabetically all the columns
-                usort($columns, function ($a, $b) {
-                    return strcmp(Text::_(strtoupper($a->label)), Text::_(strtoupper($b->label)));
-                });
 			}
 			catch (Exception $e)
 			{
@@ -3772,6 +3768,18 @@ class EmundusModelUsers extends JModelList {
     public function getJoomlaUserColumns()
     {
         $user_columns = array(
+	        'lastname' => (object)array(
+		        'id' => null,
+		        'name' => 'lastname',
+		        'plugin' => null,
+		        'label' => 'COM_EMUNDUS_LASTNAME',
+	        ),
+	        'firstname' => (object)array(
+		        'id' => null,
+		        'name' => 'firstname',
+		        'plugin' => null,
+		        'label' => 'COM_EMUNDUS_FIRSTNAME',
+	        ),
             'email' => (object)array(
                 'id' => null,
                 'name' => 'email',
@@ -3790,30 +3798,26 @@ class EmundusModelUsers extends JModelList {
 	            'plugin' => null,
 	            'label' => 'COM_EMUNDUS_O_PROFILES',
             ),
+            'registerDate' => (object)array(
+	            'id' => null,
+	            'name' => 'registerDate',
+	            'plugin' => null,
+	            'label' => 'COM_EMUNDUS_REGISTERDATE',
+            ),
+            'lastvisitDate' => (object)array(
+	            'id' => null,
+	            'name' => 'lastvisitDate',
+	            'plugin' => null,
+	            'label' => 'COM_EMUNDUS_LASTVISITDATE',
+            ),
             'groups' => (object)array(
                 'id' => null,
                 'name' => 'groups',
                 'plugin' => null,
                 'label' => 'COM_EMUNDUS_GROUPE',
             ),
-            'registerDate' => (object)array(
-                'id' => null,
-                'name' => 'registerDate',
-                'plugin' => null,
-                'label' => 'COM_EMUNDUS_REGISTERDATE',
-            ),
-            'lastvisitDate' => (object)array(
-                'id' => null,
-                'name' => 'lastvisitDate',
-                'plugin' => null,
-                'label' => 'COM_EMUNDUS_LASTVISITDATE',
-            )
         );
 
-        // Sort alphabetically all the columns
-        usort($user_columns, function ($a, $b) {
-            return strcmp(Text::_(strtoupper($a->label)), Text::_(strtoupper($b->label)));
-        });
         return $user_columns;
     }
 
@@ -3902,6 +3906,12 @@ class EmundusModelUsers extends JModelList {
 
                 foreach ($j_columns as $j_column) {
                     switch ($j_column->name) {
+	                    case 'lastname' :
+		                    $j_column->value = $user->lastname ?? '';
+							break;
+	                    case 'firstname' :
+		                    $j_column->value = $user->firstname ?? '';
+		                    break;
                         case 'email':
                             $j_column->value = $user->email ?? '';
                             break;
@@ -3926,10 +3936,10 @@ class EmundusModelUsers extends JModelList {
                         default :
                             $j_column->value = '';
                             break;
-                    }
+					}
                 }
 
-                // Create a complete array with all the data we want
+	            // Create a complete array with all the data we want
                 $data = array(
                     'columns' => $columns,
                     'j_columns' => $j_columns
@@ -3955,6 +3965,12 @@ class EmundusModelUsers extends JModelList {
 			if(!empty($user))
 			{
 				$user = $user[0];
+
+				foreach ($columns['j_columns'] as $field)
+				{
+					$user_details[$field->label] = $field->value;
+				}
+
                 foreach ($columns['columns'] as $column) {
                     if (isset($column->value)) {
                         $user_details[$column->label] = $column->value;
@@ -3962,18 +3978,6 @@ class EmundusModelUsers extends JModelList {
                         $user_details[$column->label] = EmundusHelperFabrik::formatElementValue($column->name, $user->{$column->name}, $column->group_id);
                     }
                 }
-
-
-                foreach ($columns['j_columns'] as $field)
-				{
-					$user_details[$field->label] = $field->value;
-				}
-
-                // Sort alphabetically all the columns
-                uksort($user_details, function ($a, $b) {
-                    return strcmp(Text::_(strtoupper($a)), Text::_(strtoupper($b)));
-                });
-
 			}
         }
         return $user_details;

@@ -145,13 +145,6 @@ class EmundusModelUsersTest extends TestCase
             $this->assertObjectNotHasAttribute('hidden', $column, 'Columns form details should not contain hidden attribute');
             $this->assertObjectNotHasAttribute('published', $column, 'Columns form details should not contain published attribute');
         }
-
-        // Check if it is sorted alphabetically
-        for ($i = 1; $i < count($columns); $i++) {
-            $currentLabel = Text::_(strtoupper($columns[$i]->label));
-            $previousLabel = Text::_(strtoupper($columns[$i - 1]->label));
-            $this->assertLessThanOrEqual(0, strcmp($previousLabel, $currentLabel), 'The table should be sorted alphabetically.');
-        }
     }
 
     /**
@@ -171,13 +164,6 @@ class EmundusModelUsersTest extends TestCase
             $this->assertObjectHasAttribute('label', $column, 'Joomla user columns details should contain label');
 
             $this->assertObjectNotHasAttribute('value', $column, 'Joomla user columns details should not contain value attribute');
-        }
-
-        // Check if it is sorted alphabetically
-        for ($i = 1; $i < count($columns); $i++) {
-            $currentLabel = Text::_(strtoupper($columns[$i]->label));
-            $previousLabel = Text::_(strtoupper($columns[$i - 1]->label));
-            $this->assertLessThanOrEqual(0, strcmp($previousLabel, $currentLabel), 'The table should be sorted alphabetically.');
         }
     }
 
@@ -249,15 +235,6 @@ class EmundusModelUsersTest extends TestCase
         }
 
         $this->assertCount($numberColumns, $data, 'Not the number of columns expected');
-
-        $data_keys = array_keys($data);
-
-        // Check if it is sorted alphabetically
-        for ($i = 1; $i < count($data_keys); $i++) {
-            $currentLabel = Text::_(strtoupper($data_keys[$i]));
-            $previousLabel = Text::_(strtoupper($data_keys[$i - 1]));
-            $this->assertLessThanOrEqual(0, strcmp($previousLabel, $currentLabel), 'The table should be sorted alphabetically.');
-        }
 
     }
 }
