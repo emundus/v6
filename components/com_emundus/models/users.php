@@ -3944,7 +3944,6 @@ class EmundusModelUsers extends JModelList {
                     'columns' => $columns,
                     'j_columns' => $j_columns
                 );
-
             }
         }
         return $data;
@@ -3975,7 +3974,7 @@ class EmundusModelUsers extends JModelList {
                     if (isset($column->value)) {
                         $user_details[$column->label] = $column->value;
                     } else {
-                        $user_details[$column->label] = EmundusHelperFabrik::formatElementValue($column->name, $user->{$column->name}, $column->group_id);
+                        $user_details[$column->label] = EmundusHelperFabrik::formatElementValue($column->name, $user->{$column->name}, $column->group_id, $uid);
                     }
                 }
 			}

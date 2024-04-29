@@ -1048,6 +1048,7 @@ die("<script>
 	 * @param $elt_name string fabrik element name
 	 * @param $raw_value string value of the element
 	 * @param $groupId int group ID of the element
+	 * @param $uid int user ID
 	 * @param $html bool if the value should be formatted with HTML tags
 	 *
 	 * @description This function format the value of an element according to its plugin name
@@ -1055,7 +1056,7 @@ die("<script>
 	 *
 	 * @throws Exception
 	 */
-    static function formatElementValue($elt_name, $raw_value, $groupId = null, $html = false)
+    static function formatElementValue($elt_name, $raw_value, $groupId = null, $uid = null, $html = false)
     {
         $formatted_value = $raw_value;
 
@@ -1066,7 +1067,7 @@ die("<script>
 
             $element = null;
 
-            $query->select('fe.name,fe.params,fe.plugin, fe.label')
+            $query->select('fe.name,fe.params,fe.plugin, fe.label, fe.group_id')
                 ->from($db->quoteName('#__fabrik_elements', 'fe'))
                 ->where($db->quoteName('name') . ' = ' . $db->quote($elt_name))
                 ->andWhere($db->quoteName('fe.group_id') . ' = ' . $db->quote($groupId));
@@ -1120,36 +1121,102 @@ die("<script>
 		            $formatted_value = self::getFormattedPhoneNumberValue($raw_value);
 		            break;
 
-		            case 'databasejoin':
+	            case 'databasejoin':
+
+		            $emundusUser = JFactory::getSession()->get('emundusUser');
+		            $fnum        = isset($emundusUser->fnum) ? $emundusUser->fnum : '';
+
+		            if (!empty($fnum))
+		            {
+			            $query->select('applicant_id')
+				            ->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+				            ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+			            try
+			            {
+				            $db->setQuery($query);
+				            $applicant_id = $db->loadResult();
+			            }
+			            catch (Exception $e)
+			            {
+				            JLog::add("Failed to get applicant_id from fnum $fnum : " . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			            }
+		            }
 		            $query->clear();
 
-		            if (!empty($params['join_val_column_concat']))
+		            if ($params['database_join_display_type'] == 'checkbox' || $params['database_join_display_type'] == 'multilist')
 		            {
-			            $lang                             = substr(Factory::getLanguage()->getTag(), 0, 2);
-			            $params['join_val_column_concat'] = str_replace('{thistable}', $params['join_db_name'], $params['join_val_column_concat']);
-			            $params['join_val_column_concat'] = str_replace('{shortlang}', $lang, $params['join_val_column_concat']);
+			            $select    = $db->quoteName($params['join_val_column']);
+			            if (!empty($params['join_val_column_concat']))
+			            {
+				            $select = 'CONCAT(' . $params['join_val_column_concat'] . ')';
+				            $select = preg_replace('#{thistable}#', 'jd', $select);
+				            $select = preg_replace('#{shortlang}#', substr(JFactory::getLanguage()->getTag(), 0, 2), $select);
+				            if(!empty($applicant_id)){
+					            $query  = preg_replace('#{my->id}#', $applicant_id, $query);
+				            }
+			            }
 
-			            $query->select($db->quoteName($params['join_val_column_concat']));
+			            $query->clear()
+				            ->select($db->quoteName('fl.db_table_name'))
+				            ->from($db->quoteName('#__fabrik_lists', 'fl'))
+				            ->leftJoin($db->quoteName('#__fabrik_forms', 'ff') . ' ON ' . $db->quoteName('ff.id') . ' = ' . $db->quoteName('fl.form_id'))
+				            ->leftJoin($db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $db->quoteName('ffg.form_id') . ' = ' . $db->quoteName('ff.id'))
+				            ->leftJoin($db->quoteName('#__fabrik_elements', 'fe') . ' ON ' . $db->quoteName('fe.group_id') . ' = ' . $db->quoteName('ffg.group_id'))
+				            ->where($db->quoteName('fe.group_id') . ' = ' . $db->quote($groupId));
+
+
+			            $db->setQuery($query);
+			            $table = $db->loadResult();
+
+			            $query->clear()
+				            ->select($select)
+				            ->from($db->quoteName($table . '_repeat_' . $element->name, 't'))
+				            ->leftJoin($db->quoteName($params['join_db_name'], 'jd') . ' ON ' . $db->quoteName('jd.' . $params['join_key_column']) . ' = ' . $db->quoteName('t.' . $element->name))
+				            ->where($db->quoteName('parent_id') . ' = ' . $db->quote($uid));
+
+			            try
+			            {
+				            $db->setQuery($query);
+				            $res = $db->loadColumn();
+				            $formatted_value = $html ? "<ul><li>" . implode("</li><li>", $res) . "</li></ul>" : implode(",", $res);
+			            }
+			            catch (Exception $e)
+			            {
+				            JLog::add('components/com_emundus/helpers/fabrik | Error when try to get value from databasejoin case with query : ' . $query, JLog::ERROR, 'com_emundus');
+				            throw $e;
+			            }
 		            }
+
 		            else
 		            {
-			            $query->select($db->quoteName($params['join_val_column']));
-		            }
+			            if (!empty($params['join_val_column_concat']))
+			            {
+				            $lang                             = substr(Factory::getLanguage()->getTag(), 0, 2);
+				            $params['join_val_column_concat'] = str_replace('{thistable}', $params['join_db_name'], $params['join_val_column_concat']);
+				            $params['join_val_column_concat'] = str_replace('{shortlang}', $lang, $params['join_val_column_concat']);
 
-		            $query->from($db->quoteName($params['join_db_name']))
-			            ->where($db->quoteName($params['join_key_column']) . ' = ' . $db->quote($raw_value));
+				            $query->select($db->quoteName($params['join_val_column_concat']));
+			            }
+			            else
+			            {
+				            $query->select($db->quoteName($params['join_val_column']));
+			            }
 
-		            try
-		            {
-			            $db->setQuery($query);
-			            $formatted_value = $db->loadResult();
-		            }
-		            catch (Exception $e)
-		            {
-			            Log::add('components/com_emundus/helpers/fabrik | Error when try to get value from databasejoin case : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
+			            $query->from($db->quoteName($params['join_db_name']))
+				            ->where($db->quoteName($params['join_key_column']) . ' = ' . $db->quote($raw_value));
+
+			            try
+			            {
+				            $db->setQuery($query);
+				            $formatted_value = $db->loadResult();
+			            }
+			            catch (Exception $e)
+			            {
+				            Log::add('components/com_emundus/helpers/fabrik | Error when try to get value from databasejoin case : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
+			            }
+			            break;
 		            }
 		            break;
-
 
 	            case 'cascadingdropdown':
 
@@ -1185,7 +1252,7 @@ die("<script>
 		            $where  = $r1[1] . '=' . $db->Quote($raw_value);
 		            $query  = "SELECT " . $select . " FROM " . $from . " WHERE " . $where;
 		            $query  = preg_replace('#{thistable}#', $from, $query);
-		            if(!empty($fnum)){
+		            if(!empty($applicant_id)){
 			            $query  = preg_replace('#{my->id}#', $applicant_id, $query);
 		            }
 		            $query  = preg_replace('#{shortlang}#', substr(JFactory::getLanguage()->getTag(), 0, 2), $query);
