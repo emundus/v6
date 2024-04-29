@@ -17,7 +17,10 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
 JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus/models'); // call com_emundus model
 
+include_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
+
 use Joomla\CMS\Filesystem\File;
+
 
 class EmundusModelApplication extends JModelList
 {
@@ -5369,7 +5372,7 @@ class EmundusModelApplication extends JModelList
 			}
             if (!empty($values) || $element->plugin == 'yesno') {
 	            foreach ($values as $value) {
-		            $elt[] = $this->formatElementValue($element, $value, $table, $aid);
+		            $elt[] = EmundusHelperFabrik::formatElementValue($element->name, $value, $element->group_id, $uid, true);
 	            }
             }
 
