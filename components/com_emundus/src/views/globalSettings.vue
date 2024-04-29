@@ -18,7 +18,7 @@
                   :class="activeMenu === indexMenu ? 'green-Menubutton' : 'hover:bg-gray-100'"
             >
               <i class="material-icons-outlined font-bold" :class="activeMenu === indexMenu ? 'text-green-700' : ''" name="icon-Menu" :id="'icon-'+indexMenu">{{ menu.icon }}</i>
-              <span class="ms-2 font-bold">{{ translate(menu.label) }}</span>
+              <span class="ms-2 font-bold" :class="activeMenu === indexMenu ? 'text-green-700' : ''">{{ translate(menu.label) }}</span>
             </span>
           </li>
         </ul>

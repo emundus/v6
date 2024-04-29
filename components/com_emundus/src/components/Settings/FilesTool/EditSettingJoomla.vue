@@ -10,8 +10,7 @@
 
         <div v-if="param.type === 'toggle'">
           <label class="inline-flex items-center cursor-pointer">
-
-            <input type="checkbox" class="sr-only peer" v-model="param.value"  @change="toggle(param)">
+            <input type="checkbox" class="sr-only peer" v-model="param.value"  @click="toggle(param)">
             <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
             <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300"></span>
           </label>
@@ -22,12 +21,12 @@
         <div v-if="param.type === 'yesno'">
           <div class="flex-row flex items-center">
             <button type="button" :id="'BtN'+indexParam" @click="clickYN(false, indexParam , param)"
-                    :class="{'red-YesNobutton': true, 'active': param.value === '0'}"
+                    :class="{'red-YesNobutton': true, 'active': param.value === false}"
                     class="red-YesNobutton  focus:ring-neutral-50 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
               Non
             </button>
             <button type="button" :id="'BtY'+indexParam" @click="clickYN(true, indexParam, param)"
-                    :class="{'green-YesNobutton': true, 'active': param.value === '1'}"
+                    :class="{'green-YesNobutton': true, 'active': param.value === true}"
                     class="focus:ring-neutral-50 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
               Oui
             </button>
@@ -96,6 +95,9 @@ export default {
 
   created() {
     this.params = require('../../../../data/settings-'+this.$props.type+'.json');
+
+  },
+  mounted() {
     this.getEmundusParams();
   },
 
@@ -111,7 +113,6 @@ export default {
 
             this.loading = false;
           });
-      console.log(this.params);
     },
 
     saveEmundusParam(param) {
@@ -154,7 +155,7 @@ export default {
       this.saveEmundusParam(param);
     },
     validateEmail(email) {
-  let res = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+  let res = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
   return res.test(email);
 },
     validate(paramEmail) {
@@ -175,16 +176,15 @@ export default {
       if(param.param === 'smtpauth') {
         this.AuthSMTP = bool;
       }
-      param.value = bool ? 1 : 0;
+      console.log("param");
+      console.log(param);
+      param.value = bool? 1 : 0;
       this.saveEmundusParam(param)
+
       this.YNButtons[index] = bool;
-      if (bool) {
-        document.getElementById('BtY' + index).classList.add('active');
-        document.getElementById('BtN' + index).classList.remove('active');
-      } else {
-        document.getElementById('BtN' + index).classList.add('active');
-        document.getElementById('BtY' + index).classList.remove('active');
-      }
+    },
+    set_toggle() {
+      this.showAllEmailparams = this.params['mailonline'].value;
     },
   },
 	computed: {

@@ -4,15 +4,26 @@
     "component": "joomla",
     "label": "activer l'envoie de mail",
     "param": "mailonline",
-    "type": "toggle",
-    "value": 1
+    "section": "mail",
+    "type": "yesno",
+    "options": [
+      {
+        "value": "0",
+        "label": "No"
+      },
+      {
+        "value": "1",
+        "label": "Yes"
+      }
+      ]
   },
   "mailfrom": {
     "displayed": true,
     "component": "joomla",
     "label": "Email d'envoie du site",
     "param": "mailfrom",
-    "type": "email"
+    "type": "email",
+    "section": "mail"
   },
   "fromname": {
     "displayed": true,
@@ -20,14 +31,16 @@
     "label": "nom de l'expéditeur",
     "param": "fromname",
     "type": "text",
-    "placeholder": "adam"
+    "placeholder": "adam",
+    "section": "mail"
   },
   "replyto": {
     "displayed": true,
     "component": "joomla",
     "label": "Email de récéption du site",
     "param": "replyto",
-    "type": "email"
+    "type": "email",
+    "section": "mail"
   },
   "replytoname": {
     "displayed": true,
@@ -35,6 +48,7 @@
     "label": "nom du récépteur",
     "param": "replytoname",
     "type": "text",
-    "placeholder": "eve"
+    "placeholder": "eve",
+    "section": "mail"
   }
 }

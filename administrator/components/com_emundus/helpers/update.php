@@ -424,7 +424,7 @@ class EmundusHelperUpdate
 		$updated = false;
 
             // 'mailfrom','smtpuser', 'smpthost', 'smtppass', 'smtpport', 'smtpsecure'
-		if (!empty($param) && !empty($value) && !in_array($param, ['host', 'user', 'password', 'db', 'secret',  ])) {
+		if (!empty($param) && isset($value) && !in_array($param, ['host', 'user', 'password', 'db', 'secret',  ])) {
 			require_once(JPATH_SITE . '/components/com_config/model/cms.php');
 			require_once(JPATH_SITE . '/components/com_config/model/form.php');
 			require_once(JPATH_ROOT . '/administrator/components/com_config/model/application.php');

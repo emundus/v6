@@ -5,7 +5,8 @@
     "label": "SMTP Host",
     "param": "smtphost",
     "type": "text",
-    "placeholder": "smtp.example.com"
+    "placeholder": "smtp.example.com",
+    "section": "mail"
   },
   "smtpport": {
     "displayed": true,
@@ -13,13 +14,15 @@
     "label": "SMTP Port",
     "param": "smtpport",
     "type": "text",
-    "placeholder": "25 ,465, 587"
+    "placeholder": "Port : 25 ,465, 587",
+    "section": "mail"
   },
   "smtpsecure": {
     "displayed": true,
     "component": "joomla",
     "label": "securité",
     "param": "smtpsecure",
+    "section": "mail",
     "options": [
       {
         "value": "0",
@@ -41,6 +44,7 @@
     "label": "SMTP Authentification",
     "param": "smtpauth",
     "type": "yesno",
+    "section": "mail",
     "options": [
       {
         "value": "0",
@@ -55,12 +59,16 @@
   },
   "smtpuser": {
     "displayed": true,
+    "displayed_on": {
+      "element": "smptauth",
+      "value": 1
+    },
     "component": "joomla",
     "label": "SMTP User",
     "param": "smtpuser",
     "type": "login",
     "placeholder": "",
-    "section": "smtpauth"
+    "section": "mail"
   },
   "smtppass": {
     "displayed": true,
@@ -68,6 +76,6 @@
     "label": "SMTP Password",
     "param": "smtppass",
     "type": "password",
-    "section": "smtpauth"
+    "section": "mail"
   }
 }
