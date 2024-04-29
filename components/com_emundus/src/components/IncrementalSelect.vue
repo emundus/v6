@@ -159,8 +159,9 @@ export default {
 		background: white;
 		position: absolute;
 		top: 42px;
-		max-height: 33vh;
+		max-height: 20vh;
 		overflow-y: auto;
+    z-index: 10;
 
 		li {
 			transition: .3s all;
