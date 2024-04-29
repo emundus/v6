@@ -4,7 +4,7 @@
     "component": "joomla",
     "label": "COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SITENAME",
     "param": "sitename",
-    "type": "text",
+    "type_field": "text",
     "maxlength": 50,
     "placeholder": ""
   },
@@ -13,7 +13,7 @@
     "component": "joomla",
     "label": "COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SITEDESCRIPTION",
     "param": "MetaDesc",
-    "type": "textarea",
+    "type_field": "textarea",
     "maxlength": 255,
     "placeholder": ""
   },
@@ -22,7 +22,7 @@
         "component": "joomla",
         "label": "COM_EMUNDUS_ATTACHMENTS_KEYWORDS",
         "param": "MetaKeys",
-      "type": "text",
+      "type_field": "text",
       "placeholder": ""
     },
   "list_limit": {
@@ -30,6 +30,7 @@
     "component": "joomla",
     "label": "COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_LIST_LIMIT",
     "param": "list_limit",
+    "type_field": "select",
     "options": [
       {
         "label": "5",
@@ -75,7 +76,7 @@
     "component": "emundus",
     "label": "COM_EMUNDUS_MODULES_ATTACHMENT_STORAGE",
     "param": "attachment_storage",
-    "type": "yesno",
+    "type_field": "yesno",
     "options": [
       {
         "label": "JNO",
@@ -92,7 +93,7 @@
     "component": "emundus",
     "label": "COM_EMUNDUS_MODULES_EXTERNAL_STORAGE_GED_ALFRESCO_INTEGRATION",
     "param": "external_storage_ged_alfresco_integration",
-    "type": "yesno",
+    "type_field": "yesno",
     "options": [
       {
         "label": "JNO",
@@ -109,7 +110,7 @@
     "component": "emundus",
     "label": "COM_EMUNDUS_MODULES_EXTERNAL_STORAGE_GED_ALFRESCO_SITE",
     "param": "external_storage_ged_alfresco_site",
-    "type": "text",
+    "type_field": "text",
     "placeholder": "",
     "maxlength": 255
   },
@@ -118,7 +119,7 @@
     "component": "emundus",
     "label": "COM_EMUNDUS_MODULES_EXTERNAL_STORAGE_GED_ALFRESCO_MAX_LEVEL",
     "param": "external_storage_ged_alfresco_max_level",
-    "type": "text",
+    "type_field": "text",
     "maxlength": 50,
     "placeholder": ""
   }
