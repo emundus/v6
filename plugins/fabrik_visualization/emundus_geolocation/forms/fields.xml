@@ -16,10 +16,30 @@
                     observe="params_geoloc_connection"
             />
             <field
-                    name="element"
+                    name="geoloc_element"
                     type="listfields"
                     label="Element"
                     description="Element cible"
+                    connection_in_repeat="true"
+                    table="params_table"
+                    valueformat="raw"
+                    connection="params_geoloc_connection"
+            />
+
+        </fieldset>
+        <fieldset
+                name="elements_in_popup"
+                label="Élements de description des marqueurs"
+                description="Liste des éléments à afficher dans la popup"
+                repeat="1"
+                repeatcontrols="1"
+                repeatmin="1"
+        >
+            <field
+                    name="elements_in_popup"
+                    type="listfields"
+                    label="Élement"
+                    description="Liste des éléments à afficher dans la popup"
                     connection_in_repeat="true"
                     table="params_table"
                     valueformat="raw"
