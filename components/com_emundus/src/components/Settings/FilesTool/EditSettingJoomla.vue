@@ -4,14 +4,16 @@
 
       <div class="form-group em-flex-center em-w-100 em-mb-16" v-for="(param, indexParam) in displayedParams"
            :key="param.param">
-        <label :for="'param_' + param.param" class="flex items-center font-medium" v-if="visibility(param)">
+        <label :for="'param_' + param.param" class="flex items-center font-medium"
+               v-if="visibility(param) && param.type_field !== 'authentification'">
           {{ translate(param.label) }}
           <span v-if="param.helptext" class="material-icons-outlined ml-2" @click="displayHelp(param.helptext)">help_outline</span>
         </label>
 
         <div v-if="(param.type_field === 'toggle')&&(visibility(param))">
           <label class="inline-flex items-center cursor-pointer">
-            <input type="checkbox" class="sr-only peer" v-model="param.value" @click="toggle(param)" >
+            <input type="checkbox" class="sr-only peer" :v-model="param.value" v-model="param.value"
+                   @click="toggle(param)">
             <div
                 class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
             <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300"></span>
@@ -23,9 +25,11 @@
           <div class="flex-row flex items-center">
             <button v-for="(option, indexOfOptions) in param.options" type="button"
                     :id="'BtYN'+indexParam+'_'+indexOfOptions" :name="'YNbuttton'+param.name"
-                   :class="['YesNobutton'+option.value ,{'active': param.value ===1} , {'click':param.value === 0}]"
+                    :class="['YesNobutton'+option.value ,{'active': param.value ===1} , {'click':param.value === 0}]"
                     class="focus:ring-neutral-50 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
-                    v-model="param.value" @click="clickYN(param,indexParam, indexOfOptions)">{{ translate(option.label) }}
+                    v-model="param.value" @click="clickYN(param,indexParam, indexOfOptions)">{{
+                translate(option.label)
+              }}
             </button>
           </div>
         </div>
@@ -41,29 +45,26 @@
 
         <input v-if="(param.type_field ==='text')&&(visibility(param))" :type="param.type" class="form-control"
                :placeholder="param.placeholder" :id="'param_' + param.param" v-model="param.value"
-               :maxlength="param.maxlength" style="margin-bottom: 0" @change="handleInput(param)">
+               :maxlength="param.maxlength" style="margin-bottom: 0" @focusout="handleInput(param)">
         <div v-if="param.type==='email'" id="emailCheck" :style="{ color: emailValidationColor }">
           {{ emailValidationMessage }}
         </div>
-
 
         <textarea v-if="param.type_field === 'textarea'" :id="'param_' + param.param" v-model="param.value"
                   :maxlength="param.maxlength" style="margin-bottom: 0" @change="saveEmundusParam(param)">
         </textarea>
 
-
-        <div v-if="(AuthSMTP===true )">
-          <label :for="'param_' + param.param" class="flex items-center"
-                 v-if="(param.param === 'smtpuser')&&(param.param === 'smtppass')">
+        <div v-if="(param.type_field ==='authentification')&&(visibility(param)&&AuthSMTP)">
+          <label :for="'param_' + param.param" class="flex items-center font-medium" v-if="visibility(param)">
             {{ translate(param.label) }}
             <span v-if="param.helptext" class="material-icons-outlined ml-2" @click="displayHelp(param.helptext)">help_outline</span>
           </label>
-          <input v-if="param.type_field==='login'" type="text" class="form-control" :id="'param_' + param.param"
-                 v-model="param.value" :maxlength="param.maxlength" style="margin-bottom: 0"
-                 @change="saveEmundusParam(param)">
-          <input v-if="param.type_field==='password'" type="password" class="form-control" :id="'param_' + param.param"
-                 v-model="param.value" :maxlength="param.maxlength" style="margin-bottom: 0"
-                 @change="saveEmundusParam(param)"></div>
+          <input :type="param.type" class="form-control"
+                 :placeholder="param.placeholder" :id="'param_' + param.param" v-model="param.value"
+                 :maxlength="param.maxlength" style="margin-bottom: 0" @focusout="saveEmundusParam(param)">
+        </div>
+
+
       </div>
 
     </div>
@@ -84,7 +85,12 @@ export default {
   name: "EditSettingJoomla",
   components: {},
   props: {
-    type: String
+    type: String,
+    showValue: {
+      type: Number,
+      default: -1,
+      required: false
+    }
   },
 
   mixins: [mixin],
@@ -98,14 +104,25 @@ export default {
       emailValidationMessage: "",
       emailValidationColor: "",
       YNButtons: Array(30).fill(false),
-      AuthSMTP: true,
-      showAllEmailparams: true,
+      AuthSMTP: false,
+      showAllEmailparams: false,
     };
   },
 
   created() {
     this.params = require('../../../../data/settings-' + this.$props.type + '.json');
+    let firstWord = this.$props.type.split('-')[0];
+    if (firstWord === 'mail') {
+      setTimeout(() => {
+        if (this.params['mailonline']) {
+          this.$emit("manage_server_mail", this.params['mailonline'].value)
+        }
+        if (this.params['smtpauth']) {
+          this.AuthSMTP = this.params['smtpauth'].value
+        }
 
+      }, 1000);
+    }
   },
   mounted() {
     this.getEmundusParams();
@@ -119,10 +136,10 @@ export default {
 
             Object.values(this.params).forEach((param) => {
               param.value = this.config[param.component][param.param];
-              if (param.value==="1"){
+              if (param.value === "1") {
                 param.value = 1;
               }
-              if (param.value==="0"){
+              if (param.value === "0") {
                 param.value = 0;
               }
             });
@@ -132,18 +149,19 @@ export default {
 
     },
     visibility(param) {
-      if (typeof param.displayed_on !== 'undefined') {
-        for (let condition of param.displayed_on) {
-          if (this.params[condition.element].value !== condition.value) {
-            return false;
-          } else {
-            return true;
-          }
+      if (param.displayed_on) {
+        if (param.section === 'mail') {
+          return this.$props.showValue === 1 || this.showAllEmailparams || param.displayed_on.every(condition => {
+            let conditionParam = this.params[condition.element];
+            return conditionParam && conditionParam.value === condition.value;
+          });
         }
-        return true;
-      } else {
-        return true;
+        return param.displayed_on.every(condition => {
+          let conditionParam = this.params[condition.element];
+          return conditionParam && conditionParam.value === condition.value;
+        });
       }
+      return true;
     },
 
     saveEmundusParam(param) {
@@ -184,8 +202,9 @@ export default {
       param.value = !param.value;
       param.value = param.value ? 1 : 0;
       this.saveEmundusParam(param);
-      if(param.section === "mail"){
-        this.goTo('/parametres-globaux?Menu=email_settings&section=manage_server_mail', false);
+      if (param.section === "mail") {
+        this.showAllEmailparams = param.value
+        this.$emit("manage_server_mail", this.showAllEmailparams)
       }
 
     },

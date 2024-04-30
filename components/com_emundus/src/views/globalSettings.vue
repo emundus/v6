@@ -74,7 +74,7 @@
 
             <div v-else-if="(option.type ==='subSection') && (option.published === true)" name="ComponentsubSections"
                  :id="'ComponentsubSection-'+indexOption" style=" ">
-              <div @click="handleSubSection(indexOption)">
+              <div @click="handleSubSection(indexOption)" class="pb-3 cursor-pointer">
                 <span :id="'SubSectionTile'+indexOption" class="em-font-size-16">{{ translate(option.label) }}</span>
                 <i class="material-icons-outlined scale-150" :id="'SubSectionArrow'+indexOption" name="SubSectionArrows"
                    style="transform-origin: unset">expand_more</i>
@@ -82,11 +82,11 @@
                      class="inline-flex w-6 h-6 bg-red-500 border-2 border-white rounded-full -top-2 -end-2 ">
                 </div>
               </div>
-              <div :id="'SubSection-'+indexOption" name="SubSectionContent" v-if="subSectionOpen == indexOption" class="flex flex-col ">
+              <div :id="'SubSection-'+indexOption" name="SubSectionContent" v-if="subSectionOpen == indexOption" class="flex flex-col bg-gray-200 rounded subSection">
                 <div v-for="(option1,index3) in option.elements">
                   <div class="flex flex-col" v-if="option1.type_field === 'component'">
                     <component :is="option1.component" v-bind="option1.props"
-                               @NeedNotify="value =>countNotif(value,indexOption)"></component>
+                               @NeedNotify="value =>countNotif(value,indexOption)" :key="keySubContent" :showValue="displayEmail"></component>
                   </div>
                 </div>
               </div>
@@ -164,7 +164,7 @@
             </div>
 
             <div class="flex flex-col" v-if="(option.type_field === 'component')&& (option.published === true)">
-              <component :is="option.component" :key="ComponantReload" v-bind="option.props"></component>
+              <component :is="option.component" :key="ComponantReload" v-bind="option.props" @manage_server_mail="setdisplayEmail"></component>
             </div>
 
           </div>
@@ -281,7 +281,8 @@ export default {
     timeZoneLand: [],
     baseTimeZone: null,
 
-
+    displayEmail: 0,
+    keySubContent:0,
     form: {
       content: ''
     },
@@ -411,7 +412,11 @@ export default {
        */
       window.location.href = link;
     },
-
+    setdisplayEmail(value) {
+      this.displayEmail = value;
+      this.keySubContent++;
+      console.log(this.displayEmail)
+    }
   },
 
   computed: {},
@@ -461,5 +466,9 @@ export default {
   color: white;
 }
 
-
+.subSection{
+  padding-left: 1em;
+  padding-right: 1em;
+  margin-bottom: 1em;
+}
 </style>

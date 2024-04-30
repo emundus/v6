@@ -65,21 +65,21 @@
     "section": "mail",
     "options": [
       {
-        "value": "0",
+        "value": 0,
         "label": "No"
       },
       {
-        "value": "1",
+        "value": 1,
         "label": "Yes"
       }
     ],
-    "value": 1
+    "value": 0
   },
   "smtpuser": {
     "displayed": true,
     "displayed_on": [
       {
-      "element": "smptauth",
+      "element": "smtpauth",
       "value": 1
     },
       {
@@ -89,7 +89,8 @@
     "component": "joomla",
     "label": "SMTP User",
     "param": "smtpuser",
-    "type_field": "text",
+    "type_field": "authentification",
+    "type": "login",
     "placeholder": "",
     "section": "mail"
   },
@@ -97,7 +98,7 @@
     "displayed": true,
     "displayed_on": [
       {
-        "element": "smptauth",
+        "element": "smtpauth",
         "value": 1
       },
       {
@@ -107,7 +108,7 @@
     "component": "joomla",
     "label": "SMTP Password",
     "param": "smtppass",
-    "type_field": "text",
+    "type_field": "authentification",
     "type": "password",
     "section": "mail"
   }
