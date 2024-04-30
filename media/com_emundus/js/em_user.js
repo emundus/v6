@@ -906,9 +906,6 @@ $(document).ready(function () {
 						removeLoader();
 						console.error('Error:', error);
 					});
-
-
-
 				break;
 
 
@@ -1152,24 +1149,18 @@ $(document).ready(function () {
 			case 6:
 				addLoader();
 
-				let checkBoxesProps = {};
+				let checkedBoxes = {};
 				let allChecked = $('#checkbox-all').prop('checked');
 
-				// First verify all checkboxes if they have been selected
-				$('input[type="checkbox"]').each(function() {
+				// Verify which checkboxes have been selected
+				$('input[type="checkbox"]').each(function () {
 					if ($(this).attr('value') !== 'all') {
 						let checkboxValue = $(this).attr('value');
-						checkBoxesProps[checkboxValue] = allChecked ? true : $(this).prop('checked');
+						if (allChecked || $(this).prop('checked')) {
+							checkedBoxes[checkboxValue] = true;
+						}
 					}
 				});
-
-				// Then keep only the ones selected in the array checkedBoxes
-				let checkedBoxes = {};
-				for (let key in checkBoxesProps) {
-					if (checkBoxesProps.hasOwnProperty(key) && checkBoxesProps[key]) {
-						checkedBoxes[key] = true;
-					}
-				}
 
 				const formData = new FormData();
 				formData.append('users', getUserCheck());
@@ -1179,13 +1170,13 @@ $(document).ready(function () {
 					method: 'POST',
 					body: formData
 				})
-					.then(function(response) {
+					.then(function (response) {
 						if (!response.ok) {
 							throw new Error('Network response was not ok');
 						}
 						return response.json();
 					})
-					.then(function(result) {
+					.then(function (result) {
 						removeLoader();
 
 						Swal.fire({
@@ -1194,18 +1185,18 @@ $(document).ready(function () {
 							title: Joomla.JText._('COM_EMUNDUS_ATTACHMENTS_DOWNLOAD_READY'),
 							showCancelButton: true,
 							showConfirmButton: true,
-							confirmButtonText: '<a class="text-inherit" href="/tmp/'+result.fileName+'" download>'+Joomla.JText._('COM_EMUNDUS_ATTACHMENTS_DOWNLOAD')+'</a>',
+							confirmButtonText: '<a class="text-inherit" href="/tmp/' + result.fileName + '" download>' + Joomla.JText._('COM_EMUNDUS_ATTACHMENTS_DOWNLOAD') + '</a>',
 							cancelButtonText: Joomla.JText._('JCANCEL'),
 							reverseButtons: true,
 							allowOutsideClick: false,
 							customClass: {
-								cancelButton : 'em-swal-cancel-button',
+								cancelButton: 'em-swal-cancel-button',
 								confirmButton: 'em-swal-confirm-button btn btn-success',
 								title: 'w-full justify-center',
 							}
 						});
 					})
-					.catch(function(error) {
+					.catch(function (error) {
 						removeLoader();
 						console.error('Error:', error);
 					});
