@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension group="fabrik_visualization" method="upgrade" type="plugin" version="3">
+    <name>plg_fabrik_visualization_emundus_geolocation</name>
+    <author>eMundus</author>
+    <creationDate>May 2024</creationDate>
+    <copyright>Copyright (C) All rights reserved.</copyright>
+    <license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+    <authorUrl>emundus.fr</authorUrl>
+    <version>3.10</version>
+    <description>PLG_VISUALIZATION_GEOLOCATION_DESCRIPTION</description>
+    <files>
+        <filename plugin="emundus_geolocation">emundus_geolocation.js</filename>
+        <filename>index.html</filename>
+        <filename>emundus_geolocation.php</filename>
+        <filename>emundus_geolocation.js</filename>
+        <filename>emundus_geolocation-min.js</filename>
+        <folder>controllers</folder>
+        <folder>forms</folder>
+        <folder>language</folder>
+        <folder>models</folder>
+        <folder>views</folder>
+    </files>
+</extension>

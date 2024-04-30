@@ -111,5 +111,11 @@
     "icon": "file_upload",
     "name": "COM_EMUNDUS_ONBOARD_TYPE_FILE",
     "published": false
+  },
+  {
+    "value": "emundus_geolocalisation",
+    "icon": "map",
+    "name": "COM_EMUNDUS_ONBOARD_TYPE_GEOLOCATION",
+    "published": true
   }
 ]
