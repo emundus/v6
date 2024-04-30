@@ -5,7 +5,7 @@ defined('_JEXEC') or die('Restricted access');
 
 <?php if ($this->params->get('show-title', 0))
 {?>
-    <h1><?php echo $this->row->label;?></h1>
+    <h1 class="mb-2"><?php echo $this->row->label;?></h1>
 <?php }
 ?>
 
