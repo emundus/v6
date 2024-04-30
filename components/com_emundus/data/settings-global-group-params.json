@@ -34,7 +34,6 @@
             "placeholder": "",
             "published": false
           },
-
           {
             "label": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_FORMAT",
             "type_field": "dropdown",
@@ -91,9 +90,7 @@
             "helptext": "",
             "placeholder": "",
             "elements": [
-
             ]
-
           }
         ]
       },
@@ -141,6 +138,18 @@
             "props": {
               "type": "mail-BASE"
             }
+          },
+          {
+            "published": true,
+            "type_field": "Title",
+            "label": "configuration custom du serveur de mail"
+          },
+          {
+            "published": true,
+            "name": "custom_config_mail",
+            "label_right": "configuration personnaliser",
+            "type_field": "toggle",
+            "value": 1
           },
           {
             "published": true,
@@ -194,7 +203,7 @@
             "component": "EditArticle",
             "props": {
               "name": "text_campaign",
-              "article_id":52,
+              "article_id": 52,
               "article_alias": "bienvenue-sur-votre-espace-de-candidature",
               "field": "introtext",
               "category": "homepage",
@@ -257,7 +266,6 @@
                 "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CAMP_ORGANIZE_BY_CLOSE_DATE",
                 "value": "CloseDate"
               }
-
             ]
           }
         ]
@@ -440,11 +448,11 @@
         "type": "section",
         "helptext": "",
         "options": [
-
           {
             "published": true,
             "type_field": "Title",
-            "label": "Partie candidats"},
+            "label": "Partie candidats"
+          },
           {
             "published": true,
             "name": "intro_text_for_candidate",
@@ -482,7 +490,8 @@
           {
             "published": true,
             "type_field": "Title",
-            "label": "Partie gestionnaire"},
+            "label": "Partie gestionnaire"
+          },
           {
             "published": false,
             "name": "number_of_files_in_list",
