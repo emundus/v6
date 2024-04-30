@@ -2,60 +2,68 @@
   <div class="em-settings-menu">
     <div class="em-w-80" v-if="!loading">
 
-      <div class="form-group em-flex-center em-w-100 em-mb-16" v-for="(param, indexParam) in displayedParams" :key="param.param">
-          <label :for="'param_' + param.param" class="flex items-center font-medium" v-if="visibility(param)">
-            {{ translate(param.label) }}
-            <span v-if="param.helptext" class="material-icons-outlined ml-2" @click="displayHelp(param.helptext)">help_outline</span>
-          </label>
+      <div class="form-group em-flex-center em-w-100 em-mb-16" v-for="(param, indexParam) in displayedParams"
+           :key="param.param">
+        <label :for="'param_' + param.param" class="flex items-center font-medium" v-if="visibility(param)">
+          {{ translate(param.label) }}
+          <span v-if="param.helptext" class="material-icons-outlined ml-2" @click="displayHelp(param.helptext)">help_outline</span>
+        </label>
 
         <div v-if="(param.type_field === 'toggle')&&(visibility(param))">
           <label class="inline-flex items-center cursor-pointer">
-            <input type="checkbox" class="sr-only peer" v-model="param.value"  @click="toggle(param)">
-            <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+            <input type="checkbox" class="sr-only peer" v-model="param.value" @click="toggle(param)" >
+            <div
+                class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
             <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300"></span>
           </label>
-          </div>
-
+        </div>
 
 
         <div v-if="(param.type_field === 'yesno')&&(visibility(param))">
           <div class="flex-row flex items-center">
-            <!--<button type="button" :id="'BtN'+indexParam" @click="clickYN(false, indexParam , param)"
-                    :class="{'red-YesNobutton': true, 'active': param.value === false}"
-                    class="red-YesNobutton  focus:ring-neutral-50 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
-              Non
+            <button v-for="(option, indexOfOptions) in param.options" type="button"
+                    :id="'BtYN'+indexParam+'_'+indexOfOptions" :name="'YNbuttton'+param.name"
+                   :class="['YesNobutton'+option.value ,{'active': param.value ===1} , {'click':param.value === 0}]"
+                    class="focus:ring-neutral-50 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+                    v-model="param.value" @click="clickYN(param,indexParam, indexOfOptions)">{{ translate(option.label) }}
             </button>
-            <button type="button" :id="'BtY'+indexParam" @click="clickYN(true, indexParam, param)"
-                    :class="{'green-YesNobutton': true, 'active': param.value === true}"
-                    class="focus:ring-neutral-50 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
-              Oui
-            </button> -->
-<button v-for="(option, indexOfOptions) in param.options" type="button" :id="'BtYN'+indexParam+'_'+indexOfOptions" :class="'YesNobutton' + option.value"
-        class="focus:ring-neutral-50 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2" v-model="param.value" @click="toggle(param,indexParam, indexOfOptions , option.value)">{{option.label}}  </button>
           </div>
         </div>
 
-        <select v-if="(param.type_field === 'select')&&(visibility(param)) " class="dropdown-toggle w-select" :id="'param_' + param.param" v-model="param.value" style="margin-bottom: 0" @focusout="saveEmundusParam(param)">
-          <option v-for="option in param.options" :key="option.value" :value="option.value">{{ translate(option.label) }}</option>
+        <select v-if="(param.type_field === 'select')&&(visibility(param)) " class="dropdown-toggle w-select"
+                :id="'param_' + param.param" v-model="param.value" style="margin-bottom: 0"
+                @focusout="saveEmundusParam(param)">
+          <option v-for="option in param.options" :key="option.value" :value="option.value">{{
+              translate(option.label)
+            }}
+          </option>
         </select>
 
-        <input v-if="(param.type_field ==='text')&&(visibility(param))" :type="param.type"  class="form-control" :placeholder="param.placeholder" :id="'param_' + param.param" v-model="param.value" :maxlength="param.maxlength" style="margin-bottom: 0" @change="handleInput(param)">
-        <div v-if="param.type==='email'" id="emailCheck" :style="{ color: emailValidationColor }">{{ emailValidationMessage }}</div>
+        <input v-if="(param.type_field ==='text')&&(visibility(param))" :type="param.type" class="form-control"
+               :placeholder="param.placeholder" :id="'param_' + param.param" v-model="param.value"
+               :maxlength="param.maxlength" style="margin-bottom: 0" @change="handleInput(param)">
+        <div v-if="param.type==='email'" id="emailCheck" :style="{ color: emailValidationColor }">
+          {{ emailValidationMessage }}
+        </div>
 
 
-        <textarea v-if="param.type_field === 'textarea'" :id="'param_' + param.param" v-model="param.value" :maxlength="param.maxlength" style="margin-bottom: 0" @change="saveEmundusParam(param)">
+        <textarea v-if="param.type_field === 'textarea'" :id="'param_' + param.param" v-model="param.value"
+                  :maxlength="param.maxlength" style="margin-bottom: 0" @change="saveEmundusParam(param)">
         </textarea>
 
 
-
-
         <div v-if="(AuthSMTP===true )">
-          <label :for="'param_' + param.param" class="flex items-center" v-if="(param.param === 'smtpuser')&&(param.param === 'smtppass')">
+          <label :for="'param_' + param.param" class="flex items-center"
+                 v-if="(param.param === 'smtpuser')&&(param.param === 'smtppass')">
             {{ translate(param.label) }}
             <span v-if="param.helptext" class="material-icons-outlined ml-2" @click="displayHelp(param.helptext)">help_outline</span>
           </label>
-        <input v-if="param.type_field==='login'" type="text" class="form-control" :id="'param_' + param.param" v-model="param.value" :maxlength="param.maxlength" style="margin-bottom: 0" @change="saveEmundusParam(param)">
-        <input v-if="param.type_field==='password'" type="password" class="form-control" :id="'param_' + param.param" v-model="param.value" :maxlength="param.maxlength" style="margin-bottom: 0" @change="saveEmundusParam(param)"></div>
+          <input v-if="param.type_field==='login'" type="text" class="form-control" :id="'param_' + param.param"
+                 v-model="param.value" :maxlength="param.maxlength" style="margin-bottom: 0"
+                 @change="saveEmundusParam(param)">
+          <input v-if="param.type_field==='password'" type="password" class="form-control" :id="'param_' + param.param"
+                 v-model="param.value" :maxlength="param.maxlength" style="margin-bottom: 0"
+                 @change="saveEmundusParam(param)"></div>
       </div>
 
     </div>
@@ -73,7 +81,7 @@ import Swal from "sweetalert2";
 const qs = require("qs");
 
 export default {
-  name: "EditApplicants",
+  name: "EditSettingJoomla",
   components: {},
   props: {
     type: String
@@ -96,7 +104,7 @@ export default {
   },
 
   created() {
-    this.params = require('../../../../data/settings-'+this.$props.type+'.json');
+    this.params = require('../../../../data/settings-' + this.$props.type + '.json');
 
   },
   mounted() {
@@ -111,15 +119,35 @@ export default {
 
             Object.values(this.params).forEach((param) => {
               param.value = this.config[param.component][param.param];
+              if (param.value==="1"){
+                param.value = 1;
+              }
+              if (param.value==="0"){
+                param.value = 0;
+              }
             });
             this.loading = false;
 
           });
 
     },
+    visibility(param) {
+      if (typeof param.displayed_on !== 'undefined') {
+        for (let condition of param.displayed_on) {
+          if (this.params[condition.element].value !== condition.value) {
+            return false;
+          } else {
+            return true;
+          }
+        }
+        return true;
+      } else {
+        return true;
+      }
+    },
 
     saveEmundusParam(param) {
-      this.$emit('updateSaving',true);
+      this.$emit('updateSaving', true);
 
       axios({
         method: "post",
@@ -133,8 +161,8 @@ export default {
           value: param.value,
         })
       }).then(() => {
-        this.$emit('updateSaving',false);
-        this.$emit('updateLastSaving',this.formattedDate('','LT'));
+        this.$emit('updateSaving', false);
+        this.$emit('updateLastSaving', this.formattedDate('', 'LT'));
       });
     },
 
@@ -152,17 +180,17 @@ export default {
         },
       });
     },
-    toggle(param, indexParam, indexOption , value) {
-      //document.getElementById('BtYN'+indexParam+'_'+value).classList.toggle('active');
-        //document.getElementById('BtYN'+indexParam+'_'+indexOption).classList.toggle('active');
-        param.value = !param.value;
-        param.value = param.value? 1 : 0;
-        this.showAllEmailparams = param.value;
-        this.saveEmundusParam(param);
+    toggle(param) {
+      param.value = !param.value;
+      param.value = param.value ? 1 : 0;
+      this.saveEmundusParam(param);
+      if(param.section === "mail"){
+        this.goTo('/parametres-globaux?Menu=email_settings&section=manage_server_mail', false);
+      }
 
     },
     handleInput(param) {
-      if(param.type === 'email') {
+      if (param.type === 'email') {
         this.validate(param);
       } else {
         this.saveEmundusParam(param);
@@ -170,16 +198,15 @@ export default {
     },
 
 
-
     validateEmail(email) {
-  let res = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
-  return res.test(email);
-},
+      let res = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
+      return res.test(email);
+    },
     validate(paramEmail) {
       let paramEmailId = paramEmail.param;
       let email = this.params[paramEmailId].value;
       this.emailValidationMessage = "";
-      if(this.validateEmail(email)) {
+      if (this.validateEmail(email)) {
         this.emailValidationMessage = email + " is valid";
         this.emailValidationColor = "green";
         this.saveEmundusParam(paramEmail);
@@ -189,48 +216,39 @@ export default {
       }
       return false;
     },
-    clickYN(bool, index, param) {
-      if(param.param === 'smtpauth') {
-        this.AuthSMTP = bool;
+    clickYN(param, index, indexOfOptions) {
+      param.value = indexOfOptions;
+      param.value = param.value ? 1 : 0;
+      if (param.param === 'smtpauth') {
+        this.AuthSMTP = indexOfOptions;
       }
-      param.value = bool? 1 : 0;
       this.saveEmundusParam(param)
 
-      this.YNButtons[index] = bool;
+      this.YNButtons[index] = indexOfOptions;
     },
-  visibility(param) {
-    if (typeof param.displayed_on !== 'undefined') {
-      for (let condition of param.displayed_on) {
-        console.log("verfiy the value")
-        console.log(this.params[condition.element].value);
-        console.log("-----------------")
-        console.log(condition.value);
-        if (this.params[condition.element].value !== condition.value) {
-          console.log("test")
-          return false;
-        }
+    goTo(url, newTab) {
+      if (newTab) {
+        window.open(url, '_blank');
+      } else {
+        window.location.href = url;
       }
-      console.log("testValidate")
-      return true;
-    } else {
-      return true;
-    }
     }
   },
-	computed: {
-		displayedParams() {
-			return Object.values(this.params).filter((param) => {
-				return param.displayed;
-			});
-		}
-	}
+  computed: {
+    displayedParams() {
+      return Object.values(this.params).filter((param) => {
+        return param.displayed;
+      });
+    }
+  }
 };
 </script>
 <style scoped>
-.form-group label{
+.form-group label {
   width: 100%;
 }
-.dropdown-toggle{
+
+.dropdown-toggle {
   width: 30%;
 }
 
@@ -261,7 +279,7 @@ export default {
   color: white;
 }
 
-.YesNobutton0.active {
+.YesNobutton0.click {
   background-color: #FF0000;
   color: white;
 }

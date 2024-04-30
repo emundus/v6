@@ -5,7 +5,7 @@
     "label": "activer l'envoie de mail",
     "param": "mailonline",
     "section": "mail",
-    "type_field": "yesno",
+    "type_field": "toggle",
     "options": [
       {
         "value": "0",
@@ -34,7 +34,7 @@
     "displayed": true,
     "displayed_on": [{
       "element": "mailonline",
-      "value": 1
+      "value":  1
     }],
     "component": "joomla",
     "label": "nom de l'expéditeur",
@@ -47,7 +47,7 @@
     "displayed": true,
     "displayed_on": [{
       "element": "mailonline",
-      "value": 1
+      "value":  1
     }],
     "component": "joomla",
     "label": "Email de récéption du site",
@@ -60,7 +60,7 @@
     "displayed": true,
     "displayed_on": [{
       "element": "mailonline",
-      "value": 1
+      "value":  1
     }],
     "component": "joomla",
     "label": "nom du récépteur",

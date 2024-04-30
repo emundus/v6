@@ -142,15 +142,11 @@
 
             <div class="flex flex-col" v-if="(option.type_field === 'yesno') && (option.published === true)">
               <div class="flex-row flex items-center">
-                <button type="button" :id="'BtN'+indexOption" @click="clickYN(false, indexOption)"
-                        :class="{'red-YesNobutton': true, 'active': option.defaultVal === '0'}"
-                        class="red-YesNobutton  focus:ring-neutral-50 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
-                  Non
-                </button>
-                <button type="button" :id="'BtY'+indexOption" @click="clickYN(true, indexOption)"
-                        :class="{'green-YesNobutton': true, 'active': option.defaultVal === '1'}"
-                        class="focus:ring-neutral-50 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
-                  Oui
+                <button v-for="( button, indexOfbutton) in option.options" type="button"
+                        :id="'BtYN'+indexOption+'_'+indexOfbutton" :name="'YNbuttton'+option.name"
+                        :class="['YesNobutton'+button.value ,{'active': option.value ===1} , {'click':option.value === 0}]"
+                        class="focus:ring-neutral-50 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+                        v-model="option.value" @click="clickYN(option,indexOption, indexOfbutton)">{{ translate(button.label) }}
                 </button>
               </div>
             </div>
@@ -269,7 +265,7 @@ export default {
     loading: null,
 
     ComponantReload: 0,
-    subMenuOpen: 0,
+    subMenuOpen: -1,
     subSectionOpen: 0,
     activeMenu: null,
 
@@ -345,7 +341,7 @@ export default {
         if (indexSubSection !== -1) {
           setTimeout(() => {
             this.handleSubMenu(indexSubSection);
-          }, 10);//wait thant this.handleMenu(indexMenu  , this.menus[indexMenu]) is finished
+          }, 100);//wait thant this.handleMenu(indexMenu  , this.menus[indexMenu]) is finished
         }
       } else {
         this.handleMenu(0, this.menus[0]);
@@ -396,15 +392,11 @@ export default {
       }
     },
 
-    clickYN(bool, index) {
-      this.YNButtons[index] = bool;
-      if (bool) {
-        document.getElementById('BtY' + index).classList.add('active');
-        document.getElementById('BtN' + index).classList.remove('active');
-      } else {
-        document.getElementById('BtN' + index).classList.add('active');
-        document.getElementById('BtY' + index).classList.remove('active');
-      }
+
+      clickYN(param, index, indexOfOptions) {
+        param.value = indexOfOptions;
+        param.value = param.value ? 1 : 0;
+        this.YNButtons[index] = indexOfOptions;
     },
 
     backButton() {
@@ -437,34 +429,34 @@ export default {
 }
 
 
-.green-YesNobutton {
+.YesNobutton1 {
   border: 1px solid #008A35;
   background-color: white;
   color: #008A35;
 }
 
-.green-YesNobutton:hover {
+.YesNobutton1:hover {
   background-color: #008A35;
   color: black;
 }
 
-.green-YesNobutton.active {
+.YesNobutton1.active {
   background-color: #008A35;
   color: white;
 }
 
-.red-YesNobutton {
+.YesNobutton0 {
   border: 1px solid #FF0000;
   background-color: white;
   color: #FF0000;
 }
 
-.red-YesNobutton:hover {
+.YesNobutton0:hover {
   background-color: #FF0000;
   color: white;
 }
 
-.red-YesNobutton.active {
+.YesNobutton0.click {
   background-color: #FF0000;
   color: white;
 }

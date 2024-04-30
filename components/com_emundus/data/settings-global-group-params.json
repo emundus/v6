@@ -124,13 +124,13 @@
   {
     "label": "COM_EMUNDUS_GLOBAL_PARMAS_MENUS_EMAIL",
     "icon": "email",
-    "name": "email settings",
+    "name": "email_settings",
     "type": "Menu",
     "published": true,
     "sections": [
       {
         "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_MANAG_SERVER_MAIL",
-        "name": "manage server mail",
+        "name": "manage_server_mail",
         "type": "section",
         "helptext": "cela permet de pouvoir envoyer des mails au candidats",
         "options": [
@@ -165,13 +165,6 @@
             "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_MAIL_TEST_BT",
             "type_field": "Button",
             "icon": "send"
-          },
-          {
-            "published": true,
-            "name": "Custom_model_mails_BT",
-            "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_MAIL_CUSTOM_MODEL_BT",
-            "type_field": "Button",
-            "icon": "brush"
           }
         ]
       }
@@ -474,7 +467,17 @@
             "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CONTENT_CANDIDATE_SHOW_HISTORY",
             "type_field": "yesno",
             "helptext": "",
-            "defaultVal": "1"
+            "options": [
+              {
+                "label": "JNO",
+                "value": 0
+              },
+              {
+                "label": "JYES",
+                "value": 1
+              }
+            ],
+            "value": 1
           },
           {
             "published": true,
@@ -488,7 +491,6 @@
             "helptext": "",
             "placeholder": "",
             "choices": [
-
               {
                 "label": "10",
                 "value": "10"
@@ -513,7 +515,17 @@
             "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CONTENT_SHOW_DELETED_FILES",
             "type_field": "yesno",
             "helptext": "",
-            "defaultVal": "1"
+            "options": [
+              {
+                "label": "JNO",
+                "value": 0
+              },
+              {
+                "label": "JYES",
+                "value": 1
+              }
+            ],
+            "value": 1
           },
           {
             "published": false,
@@ -521,7 +533,17 @@
             "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CONTENT_ALLOW_COPY_OF_FILES",
             "type_field": "yesno",
             "helptext": "",
-            "defaultVal": "1"
+            "options": [
+              {
+                "label": "JNO",
+                "value": 0
+              },
+              {
+                "label": "JYES",
+                "value": 1
+              }
+            ],
+            "value": 1
           }
         ]
       }

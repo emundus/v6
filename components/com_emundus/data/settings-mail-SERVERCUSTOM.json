@@ -3,7 +3,7 @@
     "displayed": true,
     "displayed_on": [{
       "element": "mailonline",
-      "value": 1
+      "value":  1
     }],
     "component": "joomla",
     "label": "SMTP Host",
@@ -16,7 +16,7 @@
     "displayed": true,
     "displayed_on": [{
       "element": "mailonline",
-      "value": 1
+      "value":  1
     }],
     "component": "joomla",
     "label": "SMTP Port",
@@ -30,7 +30,7 @@
     "displayed": true,
     "displayed_on": [{
       "element": "mailonline",
-      "value": 1
+      "value":  1
     }],
     "component": "joomla",
     "label": "securité",
@@ -56,7 +56,7 @@
     "displayed": true,
     "displayed_on": [{
       "element": "mailonline",
-      "value": 1
+      "value":  1
     }],
     "component": "joomla",
     "label": "SMTP Authentification",
@@ -84,7 +84,7 @@
     },
       {
       "element": "mailonline",
-      "value": 1
+      "value":  1
     }],
     "component": "joomla",
     "label": "SMTP User",
@@ -102,7 +102,7 @@
       },
       {
         "element": "mailonline",
-        "value": 1
+        "value":  1
       }],
     "component": "joomla",
     "label": "SMTP Password",
