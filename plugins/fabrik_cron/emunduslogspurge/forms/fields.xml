@@ -3,49 +3,27 @@
 	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
 		<fieldset name="plg-cron-emunduslogspurge" label="COM_FABRIK_OPTIONS">
 
-			<field name="reminder_mail_id"
-				   type="text"
-				   description="PLG_CRON_EMAIL_TEMPLATE_DESC"
-				   label="PLG_CRON_EMAIL_TEMPLATE"
+			<field name="amount_time"
+				   type="number"
+				   description="PLG_CRON_LOGSPURGE_CHOOSE_NUMBER"
+				   label="PLG_CRON_LOGSPURGE_DATING_FROM"
 				   size="30"
-				   default="" />
+				   default="0"
+				   min="0" />
 
-			<field name="acl_aro_groups"
-				   type="text"
-				   description="PLG_CRON_ACL_ARO_GROUPS_DESC"
-				   label="PLG_CRON_ACL_ARO_GROUPS"
-				   size="50"
-				   default="" />
+			<field name="unit_time"
+				   type="list"
+				   description="PLG_CRON_LOGSPURGE_CHOOSE_UNIT"
+				   label="PLG_CRON_LOGSPURGE_UNIT"
+				   size="1"
+				   default="heure">
+				<option value="heure">Heure</option>
+				<option value="jour">Jour</option>
+				<option value="semaine">Semaine</option>
+				<option value="mois">Mois</option>
+				<option value="année">Année</option>
+			</field>
 
-			<field name="emundus_groups"
-				   type="text"
-				   description="PLG_CRON_EMUNDUS_GROUPS_DESC"
-				   label="PLG_CRON_EMUNDUS_GROUPS"
-				   size="50"
-				   default="" />
-
-			<field name="emundus_profiles"
-				   type="text"
-				   description="PLG_CRON_EMUNDUS_PROFILES_DESC"
-				   label="PLG_CRON_EMUNDUS_PROFILES"
-				   size="50"
-				   default="" />
-
-			<field name="status"
-				   type="text"
-				   cols="60"
-				   description="PLG_CRON_STATUS_DESC"
-				   label="PLG_CRON_STATUS"
-				   size="30"
-				   default="1" />
-
-			<field name="tags"
-				   type="text"
-				   cols="60"
-				   description="PLG_CRON_TAGS_DESC"
-				   label="PLG_CRON_TAGS"
-				   size="30"
-				   default="" />
 
 		</fieldset>
 
