@@ -12,7 +12,6 @@
         <filename plugin="emundus_geolocation">emundus_geolocation.js</filename>
         <filename>index.html</filename>
         <filename>emundus_geolocation.php</filename>
-        <filename>emundus_geolocation.js</filename>
         <filename>emundus_geolocation-min.js</filename>
         <folder>controllers</folder>
         <folder>forms</folder>

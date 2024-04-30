@@ -22,8 +22,7 @@ jimport('joomla.application.component.view');
  */
 class FabrikViewEmundus_Geolocation extends JViewLegacy
 {
-    private $markers = [];
-
+    public $markers = [];
 
     /**
      * Execute and display a template script.
@@ -34,14 +33,46 @@ class FabrikViewEmundus_Geolocation extends JViewLegacy
      */
     public function display($tpl = 'default')
     {
+        $app = JFactory::getApplication();
+        $input = $app->input;
+        $usersConfig = JComponentHelper::getParams('com_fabrik');
         $model = $this->getModel();
+        $id = $input->getInt('id', $usersConfig->get('visualizationid', $input->getInt('visualizationid', 0)));
+        $model->setId($id);
+        $this->row = $model->getVisualization();
+        $params = $model->getParams();
+        $this->params = $params;
+
+        if (!$model->canView())
+        {
+            echo FText::_('JERROR_ALERTNOAUTHOR');
+            return false;
+        }
+
+        $this->containerId = $model->getContainerId();
+        $this->markers = $model->getMarkers($params);
+
+        $srcs = FabrikHelperHTML::framework();
+        $srcs['Emundus_Geolocation'] = 'plugins/fabrik_visualization/emundus_geolocation/emundus_geolocation.js';
+
+        $opts = json_encode([
+            'lat' => $params->get('geoloc_lat'),
+            'lng' => $params->get('geoloc_lng'),
+            'zoom' => $params->get('geoloc_zoom'),
+            'markers' => $this->markers,
+        ]);
+        $js                         = array();
+        $js[]                       = "\tvar GeolocationVizInstance = new FbEmundusGeolocationViz({$opts})";
+        $js[]                       = "\n";
+
+
+        FabrikHelperHTML::iniRequireJs($model->getShim());
+        FabrikHelperHTML::script($srcs, $js);
+
+        FabrikHelperHTML::stylesheetFromPath('plugins/fabrik_visualization/emundus_geolocation/views/emundus_geolocation/tmpl/' . $tpl . '/template.css');
         $tmplpath = JPATH_ROOT . '/plugins/fabrik_visualization/emundus_geolocation/views/emundus_geolocation/tmpl/' . $tpl;
         $this->_setPath('template', $tmplpath);
         $template = null;
-
-        $this->containerId = $model->getContainerId();
-        $this->markers = $model->getMarkers();
-
         echo parent::display($template);
     }
 }
