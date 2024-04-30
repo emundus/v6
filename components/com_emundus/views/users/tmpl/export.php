@@ -34,11 +34,11 @@ $euser_columns = array_filter($euser_columns, function($column) use ($user_colum
 <div class="flex justify-between items-start">
     <div class="w-1/2">
 		<?php
-		foreach ($euser_columns as $column) {
+		foreach ($user_columns as $field) {
 			?>
             <div class="form-group flex items-center mb-1">
-                <input type="checkbox" id="checkbox-<?= $column->name ?>" name="checkbox-csv" value="<?= $column->label ?>" onchange="uncheckCheckboxAllElement(this)" class="mr-1 mt-2">
-                <label for="checkbox-<?= $column->name ?>" class="checkbox-label align-middle mt-1.5"><?= Text::_($column->label) ?></label>
+                <input type="checkbox" id="checkbox-<?= $field->name ?>" name="checkbox-csv" value="<?= $field->label ?>" onchange="uncheckCheckboxAllElement(this)" class="mr-1 mt-2">
+                <label for="checkbox-<?= $field->name ?>" class="checkbox-label align-middle mt-1.5"><?= Text::_($field->label) ?></label>
             </div>
 			<?php
 		}
@@ -46,11 +46,11 @@ $euser_columns = array_filter($euser_columns, function($column) use ($user_colum
     </div>
     <div class="w-1/2">
 		<?php
-		foreach ($user_columns as $field) {
+		foreach ($euser_columns as $column) {
 			?>
             <div class="form-group flex items-center mb-1">
-                <input type="checkbox" id="checkbox-<?= $field->name ?>" name="checkbox-csv" value="<?= $field->label ?>" onchange="uncheckCheckboxAllElement(this)" class="mr-1 mt-2">
-                <label for="checkbox-<?= $field->name ?>" class="checkbox-label align-middle mt-1.5"><?= Text::_($field->label) ?></label>
+                <input type="checkbox" id="checkbox-<?= $column->name ?>" name="checkbox-csv" value="<?= $column->label ?>" onchange="uncheckCheckboxAllElement(this)" class="mr-1 mt-2">
+                <label for="checkbox-<?= $column->name ?>" class="checkbox-label align-middle mt-1.5"><?= Text::_($column->label) ?></label>
             </div>
 			<?php
 		}
