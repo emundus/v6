@@ -14,7 +14,6 @@ var FbEmundusGeolocationViz = new Class({
             attribution: '© OpenStreetMap'
         }).addTo(this.mapContainer);
 
-        console.log(options.markers);
         // add all markers
         options.markers.forEach(this.addMarker.bind(this));
     },
