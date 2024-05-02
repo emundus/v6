@@ -18,6 +18,7 @@ include_once(JPATH_BASE . 'includes/defines.php' );
 include_once(JPATH_BASE . 'includes/framework.php' );
 include_once(JPATH_SITE . '/components/com_emundus/unittest/helpers/samples.php');
 include_once(JPATH_SITE . '/components/com_emundus/models/application.php');
+include_once(JPATH_SITE . '/components/com_emundus/models/messages.php');
 
 jimport('joomla.user.helper');
 jimport( 'joomla.application.application' );
@@ -101,4 +102,67 @@ class EmundusModelLogsTest extends TestCase
         $logs = $this->m_logs->getActionsOnFnum($fnum, null, 1, 'd');
         $this->assertEmpty($logs, 'Logs should not be returned if fnum is given but not the crud');
     }
+
+	/**
+	 * @covers EmundusModelUsers::deleteLogsAfterADate
+	 * Function deleteLogsAfterADate deletes logs after a certain date
+	 * It should return the amount of logs deleted
+	 * @return void
+	 * @throws Exception
+	 */
+	public function testDeleteLogsAfterADate() {
+		$db = JFactory::getDbo();
+		$m_messages = new EmundusModelMessages();
+
+		$params = '';
+		$user_from = 95;
+		$user_to = $this->user_sample_id;
+		$action = 1;
+		$crud = 'r';
+		$message = 'test' . rand(0, 1000);
+		$referenceDate = '2000-01-01 10:00:00';
+
+		for ($i = 0; $i < 10; $i++) {
+			$logged = $this->m_logs->log($user_from, $user_to, 1, $action, $crud, $message, $params);
+			$this->assertTrue($logged, 'Log should be created if all information are given');
+
+			$query = $db->getQuery(true);
+
+			$query->clear()
+				->update($db->quoteName('#__emundus_logs'))
+				->set($db->quoteName('timestamp') . ' = ' . $db->quote($referenceDate))
+				->where($db->quoteName('user_id_from') . ' = ' . $db->quote($user_from))
+				->where($db->quoteName('user_id_to') . ' = ' . $db->quote($user_to))
+				->where($db->quoteName('fnum_to') . ' = ' . $db->quote(1))
+				->where($db->quoteName('action_id') . ' = ' . $db->quote($action))
+				->where($db->quoteName('verb') . ' = ' . $db->quote($crud))
+				->order($db->quoteName('timestamp') . ' DESC')
+				->limit(1);
+
+			$db->setQuery($query);
+			$db->execute();
+		}
+		for ($i = 0; $i < 10; $i++) {
+			$message_log = $m_messages->sendMessage($user_to, $message, $user_from);
+			$this->assertTrue($message_log, 'Message should be created if all minimum information are given');
+
+			$query = $db->getQuery(true);
+
+			$query->clear()
+				->update($db->quoteName('#__messages'))
+				->set($db->quoteName('date_time') . ' = ' . $db->quote($referenceDate))
+				->where($db->quoteName('message') . ' = ' . $db->quote($message))
+				->where($db->quoteName('user_id_to') . ' = ' . $db->quote($user_to))
+				->where($db->quoteName('user_id_from') . ' = ' . $db->quote($user_from))
+				->order($db->quoteName('date_time') . ' DESC')
+				->limit(1);
+
+			$db->setQuery($query);
+			$db->execute();
+
+		}
+		$this->assertEquals(20, $this->m_logs->deleteLogsAfterADate(new DateTime('2000-01-01 11:00:00')), 'All logs created in the test should be deleted');
+	}
+
+
 }
