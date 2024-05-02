@@ -1364,10 +1364,13 @@ class EmundusControllerUsers extends JControllerLegacy {
                 if (in_array($key, $seen_keys)) {
                     if ($key === 'COM_EMUNDUS_USERNAME') {
                         // We force to put Username as the first column
-                        array_unshift($userData, Text::_($value));
-                    } else {
-                        $userData[] = Text::_($value);
+                        array_unshift($userData, $value);
+                    } else if ($key === 'COM_EMUNDUS_FIRSTNAME' || $key === 'COM_EMUNDUS_LASTNAME') {
+                        $userData[] = $value;
                     }
+					else {
+						$userData[] = Text::_($value);
+					}
                 }
             }
             if (!empty(array_filter($userData))) {

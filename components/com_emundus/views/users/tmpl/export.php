@@ -5,7 +5,7 @@ use Joomla\CMS\Language\Text;
 $m_users = new EmundusModelUsers();
 $jinput = JFactory::getApplication()->input;
 
-$euser_columns = $m_users->getColumnsForm();
+$euser_columns = $m_users->getColumnsFromProfileForm();
 $user_columns = $m_users->getJoomlaUserColumns();
 
 $user_column_labels = array_map(function($field) {

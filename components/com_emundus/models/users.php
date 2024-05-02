@@ -2435,33 +2435,31 @@ class EmundusModelUsers extends JModelList {
         return $db->loadObjectList();
     }
 
-    public function getUsersByIds($ids, $emundusTable = false) {
-        $users = [];
+	public function getUsersByIds($ids)
+	{
+		$users = [];
 
-        if (!empty($ids)) {
-            $db = JFactory::getDBO();
+		if (!empty($ids))
+		{
+			$db = JFactory::getDBO();
 
-            $query = $db->getQuery(true);
-            if(!$emundusTable) {
-                $query->select('*')
-                    ->from('#__users')
-                    ->where('id IN ('.implode(',', $ids).')');
-            }
-            else{
-                $query->select('*')
-                    ->from('#__emundus_users')
-                    ->where('user_id IN ('.implode(',', $ids).')');
-            }
+			$query = $db->getQuery(true);
+			$query->select('*')
+				->from('#__users')
+				->where('id IN (' . implode(',', $ids) . ')');
 
-            try {
-                $db->setQuery($query);
-                $users = $db->loadObjectList();
-            } catch (Exception $e) {
-                JLog::add('Failed to get users by ids ' . implode(',', $ids) . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
-            }
-        }
+			try
+			{
+				$db->setQuery($query);
+				$users = $db->loadObjectList();
+			}
+			catch (Exception $e)
+			{
+				JLog::add('Failed to get users by ids ' . implode(',', $ids) . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			}
+		}
 
-        return $users;
+		return $users;
     }
 
 
@@ -3715,7 +3713,7 @@ class EmundusModelUsers extends JModelList {
 
             try {
                 $db->setQuery($query);
-	            $groups_label = $db->loadObjectList();
+	            $groups_label = $db->loadColumn();
 
             } catch (Exception $e) {
                 Log::add('component/com_emundus/models/users | Error when try to get group(s) label : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
@@ -3728,7 +3726,7 @@ class EmundusModelUsers extends JModelList {
      * @description Return all columns of a profile form
      * @return array|mixed|null
      */
-    public function getColumnsForm() {
+    public function getColumnsFromProfileForm() {
 
         $columns = null;
 
@@ -3834,7 +3832,7 @@ class EmundusModelUsers extends JModelList {
         $data = [];
 
         if (!empty($uid)) {
-            $columns = $this->getColumnsForm();
+            $columns = $this->getColumnsFromProfileForm();
 
             // Configure the hour according to the location
             if (version_compare(JVERSION, '4.0', '>=')) {
@@ -3880,11 +3878,6 @@ class EmundusModelUsers extends JModelList {
                     $lastvisit_date = EmundusHelperDate::displayDate($lastvisit_date, 'DATE_FORMAT_LC2', $timezone === 'UTC' ? 1 : 0);
                 }
 
-                $groups = array();
-                foreach ($user_groups as $group) {
-                    $groups[] = $group->label;
-                }
-
 				$oprofiles = array();
 	            foreach ($user_oprofiles as $profileId => $profileLabel) {
 		            if ((int)$profileId !== (int)$user->profile) {
@@ -3925,7 +3918,7 @@ class EmundusModelUsers extends JModelList {
                             $j_column->value = $lastvisit_date;
                             break;
                         case 'groups':
-                            $j_column->value = implode(', ', $groups);
+                            $j_column->value = implode(', ', $user_groups);
                             break;
                         case 'profile':
                             $j_column->value = $user_profile ?? '';

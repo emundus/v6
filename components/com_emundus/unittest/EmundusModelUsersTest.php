@@ -125,14 +125,14 @@ class EmundusModelUsersTest extends TestCase
     }
 
     /**
-     * @covers EmundusModelUsers::getColumnsForm
-     * Function getColumnsForm return an array of columns form details
+     * @covers EmundusModelUsers::getColumnsFromProfileForm
+     * Function getColumnsFromProfileForm return an array of columns form details
      * It should return an id, name, plugin, label, group_id and a list of params
      * @return void
      */
-    public function testgetColumnsForm() {
+    public function testgetColumnsFromProfileForm() {
 
-        $columns = $this->m_users->getColumnsForm();
+        $columns = $this->m_users->getColumnsFromProfileForm();
         foreach ($columns as $column)
         {
             $this->assertObjectHasAttribute('id', $column, 'Columns form details should contain id');
