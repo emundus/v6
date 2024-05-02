@@ -236,5 +236,34 @@ class EmundusModelUsersTest extends TestCase
         $this->assertCount($numberColumns, $data, 'Not the number of columns expected');
 
     }
+
+	/**
+	 * @covers EmundusModelUsers::getUsersByIds
+	 * Function getUsersByIds return an array of user(s) details
+	 * It should return id, name, email, username, registerDate, params etc... but not password
+	 * @return void
+	 */
+	public function testgetUsersByIds() {
+
+		$user1_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr' );
+		$user2_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr' );
+
+		$this->assertEmpty($this->m_users->getUsersByIds(0), 'Passing an incorrect user id should return null');
+		$users_array = array($user1_id, $user2_id);
+		$data = $this->m_users->getUsersByIds($users_array);
+		$this->assertNotEmpty($data, 'Passing correct users id should return an array of data');
+		$this->assertCount(count($data), $data, 'Data array should contain as many elements as the number of users id passed');
+
+		foreach ($data as $user_details) {
+			$this->assertObjectHasAttribute('id', $user_details, 'User details should contain id');
+			$this->assertObjectHasAttribute('name', $user_details, 'User details should contain name');
+			$this->assertObjectHasAttribute('email', $user_details, 'User details should contain email');
+			$this->assertObjectHasAttribute('username', $user_details, 'User details should contain groups');
+			$this->assertObjectHasAttribute('registerDate', $user_details, 'User details should contain profile');
+			$this->assertObjectHasAttribute('params', $user_details, 'User details should contain columns');
+
+			$this->assertObjectNotHasAttribute('password', $user_details, 'User details should not contain password');
+		}
+	}
 }
 

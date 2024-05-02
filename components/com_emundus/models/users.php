@@ -2452,15 +2452,19 @@ class EmundusModelUsers extends JModelList {
 			{
 				$db->setQuery($query);
 				$users = $db->loadObjectList();
+
+				foreach ($users as $user)
+				{
+					unset($user->password);
+				}
 			}
 			catch (Exception $e)
 			{
 				JLog::add('Failed to get users by ids ' . implode(',', $ids) . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
 			}
 		}
-
 		return $users;
-    }
+	}
 
 
     /**
