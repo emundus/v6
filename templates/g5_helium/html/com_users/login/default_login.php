@@ -64,7 +64,7 @@ if(!empty($this->campaign)){
                             <?php echo $field->input; ?>
                             <?php if ($eMConfig["reveal_password"] && $field->type === "Password"): ?>
                                 <button type="button" title="<?php echo JText::_('COM_USERS_LOGIN_SHOW_PASSWORD'); ?>" id="toggle-password-visibility" class="material-icons-outlined em-pointer" aria-pressed="false" style="position: absolute;margin-top: 4px;right: 10px;opacity: 0.3;user-select: none;">visibility_off</button>
-                                <div aria-live="polite" aria-atomic="true" style="display: none" id="show_password_text"><p>Le mot de passe est masqué</p></div>
+                                <div aria-live="polite" aria-atomic="true" style="display: none" id="show_password_text"><p><?php echo JText::_('COM_USERS_LOGIN_SHOW_PASSWORD'); ?></p></div>
                             <?php endif; ?>
                         </div>
                     </div>
