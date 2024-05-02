@@ -1048,10 +1048,32 @@ class EmundusModelProfile extends JModelList {
         $session = JFactory::getSession();
         $app = JFactory::getApplication();
 
-        if (empty($fnum)) {
-	        $profile = $this->getProfileByApplicant($current_user->id);
+        // if $fnum is not mine, then I should not create the session firstname, lastname using it
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('applicant_id')
+            ->from('#__emundus_campaign_candidature')
+            ->where('fnum = ' . $db->quote($fnum));
+        try {
+            $db->setQuery($query);
+            $fnum_applicant_id = $db->loadResult();
+        } catch(Exception $e) {
+            $fnum_applicant_id = null;
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus.error');
+        }
+
+        if (!empty($fnum)) {
+            if ($fnum_applicant_id == $current_user->id) {
+                $profile = $this->getFullProfileByFnum($fnum);
+                $user_profile = $profile;
+            } else {
+                $profile = $this->getFullProfileByFnum($fnum);
+                $user_profile = $this->getProfileByApplicant($current_user->id);
+            }
         } else {
-	        $profile = $this->getFullProfileByFnum($fnum);
+            $user_profile = $this->getProfileByApplicant($current_user->id);
+            $profile = $user_profile;
         }
 
         if (empty($profile["profile"])) {
@@ -1064,8 +1086,8 @@ class EmundusModelProfile extends JModelList {
             $emundusSession->{$key} = $value;
         }
 
-        $emundusSession->firstname = $profile["firstname"];
-        $emundusSession->lastname = strtoupper($profile["lastname"]);
+        $emundusSession->firstname = $user_profile["firstname"];
+        $emundusSession->lastname = strtoupper($user_profile["lastname"]);
         $emundusSession->emGroups = array_keys($m_users->getUserGroups($current_user->id));
         $emundusSession->emProfiles = $this->getUserProfiles($current_user->id);
 
