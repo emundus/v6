@@ -15,6 +15,18 @@ defined('_JEXEC') or die;
  */
 class PlgSystemOauth2 extends JPlugin {
 
+	function __construct(&$subject, $config) {
+		parent::__construct($subject, $config);
+		$this->loadLanguage();
+
+		JLog::addLogger(['text_file' => 'plugins.oauth2.php'], JLog::ALL, 'plugins.oauth2');
+
+		if (!isset($this->params)) {
+			$plugin = JPluginHelper::getPlugin('system', 'oauth2');
+			$this->params = new JRegistry($plugin->params);
+		}
+	}
+
 	/**
 	 * This plugin runs OAuth2 logic if it is detected that we are trying to login/register via an OAuth2 source.
 	 *
@@ -22,7 +34,6 @@ class PlgSystemOauth2 extends JPlugin {
 	 * @throws Exception
 	 */
 	public function onAfterRoute() {
-
 		$app = JFactory::getApplication();
 
 		JPluginHelper::importPlugin('authentication');
@@ -34,18 +45,30 @@ class PlgSystemOauth2 extends JPlugin {
 		$task = JArrayHelper::getValue($queries, 'task');
 
 		if ($task == 'oauth2.authenticate') {
-
 			$data = $app->getUserState('users.login.form.data', array());
 			$data['return'] = $app->input->get('return', null);
 			$app->setUserState('users.login.form.data', $data);
 			$dispatcher->trigger('onOauth2Authenticate', array());
 
 		} else {
-
 			$code = JArrayHelper::getValue($queries, 'code', null, 'WORD');
 			$session_state = JArrayHelper::getValue($queries, 'session_state', null, 'WORD');
-			
-			if (!empty($session_state) && !empty($code)) {
+			if(empty($session_state)) {
+				$session_state = JArrayHelper::getValue($queries, 'state', null, 'WORD');
+			}
+
+			$session_state_required = $this->params->get('session_state_required', 1);
+
+			if (!$session_state_required) {
+				$type = JArrayHelper::getValue($queries, 'type', null, 'WORD');
+				if (count($queries) > 1 && empty($type)) {
+					return;
+				}
+			} else if (empty($session_state)) {
+				return;
+			}
+
+			if (!empty($code)) {
 				$array = $dispatcher->trigger('onOauth2Authorise', array());
 
 				// redirect user to appropriate area of site.
