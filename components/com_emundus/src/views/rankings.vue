@@ -1,10 +1,13 @@
 <template>
   <div id="rankings-by-package">
     <nav id="ranking-navigation" class="mt-4 mb-4">
-      <ul class="flex flex-row list-none">
+      <ul class="flex flex-row list-none overflow-auto pt-4">
         <li v-for="rankingPackage in packages" :key="rankingPackage.id"
-            class="ranking-navigation-item cursor-pointer shadow rounded-t-lg px-2.5 py-3"
-            :class="{'em-bg-main-500 em-text-neutral-300': selectedPackage === rankingPackage.id}"
+            class="ranking-navigation-item cursor-pointer shadow rounded-t-lg px-2.5 py-3 text-center"
+            :class="{
+              'em-bg-main-500 em-text-neutral-300': selectedPackage === rankingPackage.id,
+              'em-bg-neutral-100': selectedPackage !== rankingPackage.id
+            }"
             @click="selectedPackage = rankingPackage.id"
             :title="rankingPackage.label"
         >
@@ -84,6 +87,7 @@ export default {
 <style scoped>
 #rankings-by-package {
   .ranking-navigation-item {
+    min-width: 200px;
     max-width: 200px;
     overflow: hidden;
     text-overflow: ellipsis;

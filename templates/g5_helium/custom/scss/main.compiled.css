@@ -3806,6 +3806,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
   padding-top: 1px;
   padding-bottom: 1px;
 }
+.pt-4 {
+  padding-top: var(--em-spacing-4);
+}
 .pt-6 {
   padding-top: var(--em-spacing-6);
 }
