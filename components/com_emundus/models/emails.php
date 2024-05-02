@@ -1345,7 +1345,7 @@ class EmundusModelEmails extends JModelList {
                                     'keyid'         => $key1,
                                     'attachment_id' => $attachment_id,
                                     'campaign_id'   => $fnum_info['campaign_id'],
-                                    'email'         => -$m_to,
+                                    'email'         => $m_to,
                                     'fnum'          => $fnum_info['fnum']
                                 ];
 
