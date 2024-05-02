@@ -187,7 +187,7 @@ class EmundusHelperFabrikTest extends TestCase
 					break;
 	            case 'radiobutton':
                 case 'dropdown':
-					if($params['multiple'] == 1) {
+					if(isset($params['multiple']) && $params['multiple'] == 1) {
 						$this->assertEquals($params['sub_options']['sub_labels'][0], EmundusHelperFabrik::formatElementValue($element->name, '['.$params['sub_options']['sub_values'][0].']', $element->group_id));
 					} else
 					{
