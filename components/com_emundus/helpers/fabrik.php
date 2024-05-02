@@ -1216,7 +1216,7 @@ die("<script>
 			            if($raw_value == '0'){
 				            $formatted_value = '';
 			            } else {
-				            $formatted_value = Text::_($params->sub_options->sub_labels[$index]);
+				            $formatted_value = Text::_($params['sub_options']['sub_labels'][$index]);
 			            }
 		            }
 					elseif (isset($params->multiple) && $params->multiple == 1) {
