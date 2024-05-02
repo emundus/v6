@@ -291,3 +291,9 @@
     }
   }
 }
+
+/* Widget to show a scrollable table */
+.tchooz-widget .widget-table .widget-table-scrollable {
+  overflow-y: scroll;
+  height: 300px;
+}
