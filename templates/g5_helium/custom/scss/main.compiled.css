@@ -4665,6 +4665,10 @@ button.swal2-cancel.goback-btn:hover,
         right: unset;
         background: transparent;
     }
+.alert-danger .close,
+    .alert-error .close {
+          color: var(--em-alert-error-color);
+    }
 .alert h4 {
         font-weight: 500;
     }
