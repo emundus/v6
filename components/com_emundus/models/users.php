@@ -1895,17 +1895,22 @@ class EmundusModelUsers extends JModelList {
     }
 
     public function getUserOprofiles($uid) {
+		$o_profiles = [];
+		
         try {
-            $query = "select esp.id, esp.label
-                      from #__emundus_setup_profiles as esp
-                      left join #__emundus_users_profiles as eup on eup.profile_id = esp.id
-                      where eup.user_id = " .$uid;
-            $db = $this->getDbo();
+			$db = Factory::getDbo();
+			$query = $db->getQuery(true);
+			$query->select('esp.id,esp.label')
+				->from($db->quoteName('#__emundus_setup_profiles','esp'))
+				->leftJoin($db->quoteName('#__emundus_users_profiles','eup').' ON '.$db->quoteName('eup.profile_id').' = '.$db->quoteName('esp.id'))
+				->where($db->quoteName('eup.user_id').' = '.$uid);
             $db->setQuery($query);
-            return $db->loadAssocList('id', 'label');
+            $o_profiles =  $db->loadAssocList('id', 'label');
         } catch(Exception $e) {
-            return false;
+            Log::add('Failed to get user o-profiles ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
         }
+		
+		return $o_profiles;
     }
 
     public function countUserEvaluations($uid) {
@@ -3861,15 +3866,11 @@ class EmundusModelUsers extends JModelList {
                 }
 
                 $user_groups = $this->getUserGroupsLabelById($uid);
-				$user_oprofiles = $this->getUserOprofiles($uid);
+	            $oprofiles = $this->getUserOprofiles($uid);
 
 				if (empty($user_groups)) {
 					$user_groups = array();
 				}
-
-	            if (empty($user_oprofiles)) {
-		            $user_oprofiles = array();
-	            }
 
                 $register_date = $user->registerDate ?? '';
                 $lastvisit_date = $user->lastvisitDate ?? '';
@@ -3881,13 +3882,6 @@ class EmundusModelUsers extends JModelList {
                 if (!empty($lastvisit_date)) {
                     $lastvisit_date = EmundusHelperDate::displayDate($lastvisit_date, 'DATE_FORMAT_LC2', $timezone === 'UTC' ? 1 : 0);
                 }
-
-				$oprofiles = array();
-	            foreach ($user_oprofiles as $profileId => $profileLabel) {
-		            if ((int)$profileId !== (int)$user->profile) {
-			            $oprofiles[] = $profileLabel === "Formulaire de base candidat" ? Text::_('COM_EMUNDUS_APPLICANT') : $profileLabel;
-		            }
-	            }
 
 	            // Create an array with array of each data not in the profile form
                 // Necessary to be coherent with the data in the profile form

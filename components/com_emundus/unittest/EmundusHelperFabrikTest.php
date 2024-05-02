@@ -50,31 +50,31 @@ class EmundusHelperFabrikTest extends TestCase
     public function testgetFormattedPhoneNumberValue()
     {
         $unformatted_phone_number = '';
-        $formatted_phone_number = $this->h_fabrik->getFormattedPhoneNumberValue($unformatted_phone_number);
+        $formatted_phone_number = EmundusHelperFabrik::getFormattedPhoneNumberValue($unformatted_phone_number);
         $this->assertSame('', $formatted_phone_number, 'Empty phone number returns empty string');
 
         $unformatted_phone_number = 'zkljhdqopsjdpzhfklqsjnd';
-        $formatted_phone_number = $this->h_fabrik->getFormattedPhoneNumberValue($unformatted_phone_number);
+        $formatted_phone_number = EmundusHelperFabrik::getFormattedPhoneNumberValue($unformatted_phone_number);
         $this->assertSame('', $formatted_phone_number, 'Random string with incorrect characters returns empty string');
 
         $unformatted_phone_number = '+33 6 12 34 56 78';
-        $formatted_phone_number = $this->h_fabrik->getFormattedPhoneNumberValue($unformatted_phone_number);
+        $formatted_phone_number = EmundusHelperFabrik::getFormattedPhoneNumberValue($unformatted_phone_number);
         $this->assertNotEmpty($formatted_phone_number, 'Correct phone number returns not empty string and by default format is E164');
         $this->assertSame('FR+33612345678', $formatted_phone_number, 'Correct phone number returns correct formatted string');
 
         $unformatted_phone_number = 'FR+33 612 3456 7 8';
-        $formatted_phone_number = $this->h_fabrik->getFormattedPhoneNumberValue($unformatted_phone_number);
+        $formatted_phone_number = EmundusHelperFabrik::getFormattedPhoneNumberValue($unformatted_phone_number);
         $this->assertNotEmpty($formatted_phone_number, 'Correct phone number returns not empty string');
         $this->assertSame('FR+33612345678', $formatted_phone_number, 'Correct phone number with weird spacing returns correct formatted string');
 
         $unformatted_phone_number = 'FR+33 612 3456 7 8';
-        $formatted_phone_number = $this->h_fabrik->getFormattedPhoneNumberValue($unformatted_phone_number, 2);
+        $formatted_phone_number = EmundusHelperFabrik::getFormattedPhoneNumberValue($unformatted_phone_number, 2);
         $this->assertNotEmpty($formatted_phone_number, 'Correct phone number returns not empty string');
         $this->assertSame('FR06 12 34 56 78', $formatted_phone_number, 'Setting format 2 (national) returns formatted number correctly');
 
 
         $unformatted_phone_number = 'FR+33 612 34za 7 8';
-        $formatted_phone_number = $this->h_fabrik->getFormattedPhoneNumberValue($unformatted_phone_number, 2);
+        $formatted_phone_number = EmundusHelperFabrik::getFormattedPhoneNumberValue($unformatted_phone_number, 2);
         $this->assertEmpty($formatted_phone_number, 'Incorrect phone number returns empty string');
     }
 
@@ -87,9 +87,9 @@ class EmundusHelperFabrikTest extends TestCase
     public function testformatElementValue()
     {
         // Test cases with empty values
-        $this->assertEquals('', $this->h_fabrik->formatElementValue('', ''), 'Passing an empty element name and raw value should return nothing');
-        $this->assertEquals('', $this->h_fabrik->formatElementValue('name', ''), 'Passing an empty raw value should return nothing');
-        $this->assertEquals('element', $this->h_fabrik->formatElementValue('', 'element'), 'Passing an empty element name should return raw_value');
+        $this->assertEquals('', EmundusHelperFabrik::formatElementValue('', ''), 'Passing an empty element name and raw value should return nothing');
+        $this->assertEquals('', EmundusHelperFabrik::formatElementValue('name', ''), 'Passing an empty raw value should return nothing');
+        $this->assertEquals('element', EmundusHelperFabrik::formatElementValue('', 'element'), 'Passing an empty element name should return raw_value');
 
         $form_id = $this->h_sample->getUnitTestFabrikForm();
 		$user_id = $this->h_sample->createSampleUser();
@@ -117,7 +117,7 @@ class EmundusHelperFabrikTest extends TestCase
                     $local = $params['date_store_as_local'] ? 1 : 0;
 
                     $formatted_date = $helperDate->displayDate($date, $date_format, $local);
-                    $this->assertEquals($formatted_date, $this->h_fabrik->formatElementValue($element->name, $date, $element->group_id));
+                    $this->assertEquals($formatted_date, EmundusHelperFabrik::formatElementValue($element->name, $date, $element->group_id));
 
 	                $date = '2024-01-01 10:00:00';
 	                $params['date_form_format'] = 'd/m/Y H\hi';
@@ -137,7 +137,7 @@ class EmundusHelperFabrikTest extends TestCase
 		                Log::add('components/com_emundus/unittest/EmundusHelperFabrikTest | Error when try to get fabrik elements table data : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 	                }
 
-	                $formatted_date = $this->h_fabrik->formatElementValue($element->name, $date, $element->group_id);
+	                $formatted_date = EmundusHelperFabrik::formatElementValue($element->name, $date, $element->group_id);
 
 	                $this->assertEquals('01/01/2024 10h00', $formatted_date, 'The date is correctly formatted');
 
@@ -159,7 +159,7 @@ class EmundusHelperFabrikTest extends TestCase
 			            $formatted_date = EmundusHelperDate::displayDate($date, $format);
 		            }
 
-		            $this->assertEquals($formatted_date, $this->h_fabrik->formatElementValue($element->name, $date, $element->group_id), 'The birhday is correctly formatted');
+		            $this->assertEquals($formatted_date, EmundusHelperFabrik::formatElementValue($element->name, $date, $element->group_id), 'The birhday is correctly formatted');
 
 		            $date = '2015-12-01';
 		            $params['list_date_format'] = 'd/m/Y';
@@ -178,7 +178,7 @@ class EmundusHelperFabrikTest extends TestCase
 			            Log::add('components/com_emundus/unittest/EmundusHelperFabrikTest | Error when try to get fabrik elements table data : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 		            }
 
-		            $this->assertEquals('01/12/2015', $this->h_fabrik->formatElementValue($element->name, $date, $element->group_id), 'The birthday is correctly formatted');
+		            $this->assertEquals('01/12/2015', EmundusHelperFabrik::formatElementValue($element->name, $date, $element->group_id), 'The birthday is correctly formatted');
 
 		            break;
 
@@ -186,15 +186,15 @@ class EmundusHelperFabrikTest extends TestCase
 	            case 'radiobutton':
                 case 'checkbox':
                 case 'dropdown':
-                    $this->assertEquals($params['sub_options']['sub_labels'][0], $this->h_fabrik->formatElementValue($element->name, $params['sub_options']['sub_values'][0], $element->group_id));
-                    $this->assertEquals($params['sub_options']['sub_labels'][1], $this->h_fabrik->formatElementValue($element->name, $params['sub_options']['sub_values'][1], $element->group_id));
+                    $this->assertEquals($params['sub_options']['sub_labels'][0], EmundusHelperFabrik::formatElementValue($element->name, $params['sub_options']['sub_values'][0], $element->group_id));
+                    $this->assertEquals($params['sub_options']['sub_labels'][1], EmundusHelperFabrik::formatElementValue($element->name, $params['sub_options']['sub_values'][1], $element->group_id));
                     break;
                 case 'yesno':
-                    $this->assertEquals(JText::_('JYES'), $this->h_fabrik->formatElementValue($element->name, 1, $element->group_id));
-                    $this->assertEquals(JText::_('JNO'), $this->h_fabrik->formatElementValue($element->name, 0, $element->group_id));
+                    $this->assertEquals(JText::_('JYES'), EmundusHelperFabrik::formatElementValue($element->name, 1, $element->group_id));
+                    $this->assertEquals(JText::_('JNO'), EmundusHelperFabrik::formatElementValue($element->name, 0, $element->group_id));
                     break;
                 case 'textarea':
-                    $this->assertEquals("This is<br />\n a test", $this->h_fabrik->formatElementValue($element->name, "This is
+                    $this->assertEquals("This is<br />\n a test", EmundusHelperFabrik::formatElementValue($element->name, "This is
  a test", $element->group_id));
                     break;
                 case 'databasejoin':
@@ -228,7 +228,7 @@ class EmundusHelperFabrikTest extends TestCase
 		                $db->setQuery($query);
 		                $formatted_value = $db->loadResult();
 
-		                $this->assertEquals($formatted_value, $this->h_fabrik->formatElementValue($element->name, $firstKeyValue, $element->group_id, $user_id));
+		                $this->assertEquals($formatted_value, EmundusHelperFabrik::formatElementValue($element->name, $firstKeyValue, $element->group_id, $user_id));
 	                }
 					else
 					{
@@ -264,7 +264,7 @@ class EmundusHelperFabrikTest extends TestCase
 						$db->setQuery($query);
 						$formatted_value = $db->loadResult();
 
-						$this->assertEquals($formatted_value, $this->h_fabrik->formatElementValue($element->name, $firstKeyValue, $element->group_id, $user_id));
+						$this->assertEquals($formatted_value, EmundusHelperFabrik::formatElementValue($element->name, $firstKeyValue, $element->group_id, $user_id));
 					}
                     break;
 
@@ -313,7 +313,7 @@ class EmundusHelperFabrikTest extends TestCase
 		            $ret = $db->loadResult();
 		            $formatted_value = Text::_($ret);
 
-		            $this->assertEquals($formatted_value, $this->h_fabrik->formatElementValue($element->name, $firstKeyValue, $element->group_id));
+		            $this->assertEquals($formatted_value, EmundusHelperFabrik::formatElementValue($element->name, $firstKeyValue, $element->group_id));
 		            break;
 
 	            case 'field':
@@ -336,7 +336,7 @@ class EmundusHelperFabrikTest extends TestCase
 			            Log::add('components/com_emundus/unittest/EmundusHelperFabrikTest | Error when try to get fabrik elements table data : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 		            }
 
-		            $this->assertEquals('******', $this->h_fabrik->formatElementValue($element->name, $password, $element->group_id));
+		            $this->assertEquals('******', EmundusHelperFabrik::formatElementValue($element->name, $password, $element->group_id));
 		            $params['password'] = 0;
 		            $new_params_json = json_encode($params);
 
@@ -353,7 +353,7 @@ class EmundusHelperFabrikTest extends TestCase
 			            Log::add('components/com_emundus/unittest/EmundusHelperFabrikTest | Error when try to get fabrik elements table data : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 		            }
 
-		            $this->assertEquals($password, $this->h_fabrik->formatElementValue($element->name, $password, $element->group_id));
+		            $this->assertEquals($password, EmundusHelperFabrik::formatElementValue($element->name, $password, $element->group_id));
 
             }
         }

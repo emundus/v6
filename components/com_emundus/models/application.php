@@ -5390,6 +5390,7 @@ class EmundusModelApplication extends JModelList
      * @param $table table name
      * @param $applicant_id
      * @return $elt
+     * @deprecated Use EmundusHelperFabrik::formatElementValue instead
      * @throws Exception
      */
     public function formatElementValue($element, $value, $table, $applicant_id)
