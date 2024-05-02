@@ -76,7 +76,7 @@ class EmundusAdministrationModelRanking extends JModelList
                 'type' => 'varchar',
                 'length' => 255,
                 'null' => 0,
-                'default' => 'jos_emundus_setup_campaigns.id',
+                'default' => $db->quote('jos_emundus_setup_campaigns.id'),
             ],
         ];
         $foreign_keys = [
@@ -105,7 +105,7 @@ class EmundusAdministrationModelRanking extends JModelList
             if ($response['status']) {
                 $app->enqueueMessage('Table jos_emundus_ranking_hierarchy exists or has been created');
             } else {
-                $app->enqueueMessage('Table jos_emundus_ranking_hierarchy not created', 'error');
+                $app->enqueueMessage('Table jos_emundus_ranking_hierarchy not created ' .json_encode($response), 'error');
             }
         }
 

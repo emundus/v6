@@ -6,7 +6,7 @@
             class="ranking-navigation-item cursor-pointer shadow rounded-t-lg px-2.5 py-3 text-center"
             :class="{
               'em-bg-main-500 em-text-neutral-300': selectedPackage === rankingPackage.id,
-              'em-bg-neutral-100': selectedPackage !== rankingPackage.id
+              'em-white-bg': selectedPackage !== rankingPackage.id
             }"
             @click="selectedPackage = rankingPackage.id"
             :title="rankingPackage.label"
