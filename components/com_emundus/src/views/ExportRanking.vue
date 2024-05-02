@@ -1,6 +1,6 @@
 <template>
   <div id="export-ranking" class="p-4">
-    <h4>Export ranking</h4>
+    <h4>Export ranking - WORK IN PROGRESS</h4>
 
     <div class="p-2">
       <h5>{{ translate('COM_EMUNDUS_RANKING_EXPORT_PACKAGES') }}</h5>
