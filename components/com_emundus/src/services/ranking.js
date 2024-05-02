@@ -114,5 +114,26 @@ export default {
                 msg: e.message
             };
         }
+    },
+    exportRanking(packageIds, hierarchyIds, columns) {
+        try {
+            const Form = new FormData();
+            Form.append('packageIds', JSON.stringify(packageIds));
+            Form.append('hierarchyIds', JSON.stringify(hierarchyIds));
+            Form.append('columns', JSON.stringify(columns));
+
+            return client().post('index.php?option=com_emundus&controller=ranking&task=exportRanking',
+                Form,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+        } catch (e) {
+            return {
+                status: false,
+                msg: e.message
+            };
+        }
     }
 };

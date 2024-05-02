@@ -34,6 +34,7 @@
 
     <div class="w-full flex justify-end">
       <button class="em-primary-button w-fit" @click="exportRanking">Export</button>
+      <a v-if="downloadLink" :href="downloadLink" download>Download</a>
     </div>
   </div>
 </template>
@@ -61,13 +62,12 @@ export default {
       hierarchies: [],
       selectedHierarchies: [],
       columns: [
-        {id: 'fnum', label: 'Fnum'},
         {id: 'name', label: 'Name'},
         {id: 'status', label: 'Status'},
-        {id: 'rank', label: 'Rank'},
         {id: 'ranker', label: 'Ranker'},
       ],
       selectedColumns: ['fnum', 'name', 'status', 'rank', 'ranker'],
+      downloadLink: null
     }
   },
   created() {
@@ -101,8 +101,22 @@ export default {
       }
     },
     exportRanking() {
-      //
-      console.log('export ranking');
+      if (this.selectedPackages.length === 0) {
+        alert('Please select at least one package');
+        return;
+      }
+
+      rankingService.exportRanking(this.selectedPackages, this.selectedHierarchies, this.selectedColumns).then(response => {
+        if (response.data) {
+          // Download the file
+          console.log(response.data);
+
+          // force download response.data.data
+          this.downloadLink = response.data.data;
+        }
+      }).catch(error => {
+        console.log(error);
+      });
     }
   }
 }

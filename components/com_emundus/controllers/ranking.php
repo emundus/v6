@@ -213,6 +213,37 @@ class EmundusControllerRanking extends JControllerLegacy
         $this->sendJSONResponse($response);
     }
 
+    public function exportRanking()
+    {
+        $response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'data' => [], 'code' => 403];
+        $user = Factory::getUser();
+
+        if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+            $jinput = $this->app->input;
+            $package_ids = $jinput->getString('packageIds', '');
+
+            $package_ids = json_decode($package_ids, true);
+            if (!empty($package_ids)) {
+                $hierarchy_ids = $jinput->getString('hierarchy_id', '');
+                $hierarchy_ids = json_decode($hierarchy_ids, true);
+                $columns = $jinput->getString('columns', '');
+                $columns = json_decode($columns, true);
+
+                try {
+                    $response['data'] = $this->model->exportRanking($user->id, $package_ids, $hierarchy_ids, $columns);
+                    $response['status'] = true;
+                    $response['msg'] = Text::_('SUCCESS');
+                    $response['code'] = 200;
+                } catch(Exception $e) {
+                    $response['msg'] = $e->getMessage();
+                    $response['code'] = 500;
+                }
+            }
+        }
+
+        $this->sendJSONResponse($response);
+    }
+
     private function sendJSONResponse($response) {
         if ($response['code'] === 403) {
             header('HTTP/1.1 403 Forbidden');

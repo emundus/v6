@@ -361,8 +361,11 @@ class EmundusModelRanking extends JModelList
                             LEFT JOIN `jos_emundus_ranking` AS `er` ON `cc`.`id` = `er`.`ccid`
                             WHERE `cc`.`id` IN (' . implode(',', $ids) . ')
                             AND `er`.`hierarchy_id` = ' . $this->db->quote($hierarchy_order_by) . ')'
-                        )
-                        ->setLimit($limit, $offset);
+                        );
+
+                    if ($limit !== -1) {
+                        $sub_query->setLimit($limit, $offset);
+                    }
 
                     if ($sort === 'ASC') {
                         $sub_query->order('IFNULL(IF(`er`.`hierarchy_id` = ' . $this->db->quote($hierarchy_order_by) . ' AND `rank` != -1, `rank`, null), ' . $MAX_RANK_VALUE . ') ASC');
@@ -387,8 +390,11 @@ class EmundusModelRanking extends JModelList
                     }
                 } else {
                     $query->where($this->db->quoteName('cc.id') . ' IN (' . implode(',', $ids) . ')')
-                        ->andWhere('(er.hierarchy_id = ' . $this->db->quote($hierarchy) . ') OR er.id IS NULL')
-                        ->setLimit($limit, $offset);
+                        ->andWhere('(er.hierarchy_id = ' . $this->db->quote($hierarchy) . ') OR er.id IS NULL');
+
+                    if ($limit !== -1) {
+                        $query->setLimit($limit, $offset);
+                    }
                 }
 
                 try {
@@ -1340,5 +1346,80 @@ class EmundusModelRanking extends JModelList
         }
 
         return $response;
+    }
+
+    /**
+     * Returns a link to a csv file containing the ranking of the files
+     * @param $user_id, the user id
+     * @param $package_ids, the package ids to export
+     * @param $hierachy_ids, the additional hieararchies we want to export
+     * @param $columns, the additional columns we want to export
+     * @return void
+     */
+    public function exportRanking($user_id, $package_ids, $hierachy_ids, $columns): string
+    {
+        $export_link = '';
+
+        if (!empty($package_ids)) {
+            $export_array = [];
+
+            $files_by_package = [];
+            foreach($package_ids as $package_id) {
+                $files_by_package[$package_id] = $this->getFilesUserCanRank($user_id, 1, -1, 'ASC', 'default', $package_id)['data'];
+            }
+
+            if (!empty($files_by_package)) {
+                $user_packages = $this->getUserPackages($user_id);
+
+                foreach ($files_by_package as $package_id => $files) {
+                    $package_label = '';
+                    foreach ($user_packages as $user_package) {
+                        if ($user_package['id'] == $package_id) {
+                            $package_label = $user_package['label'];
+                            break;
+                        }
+                    }
+
+                    foreach ($files as $file) {
+                        $export_array[] = [
+                            'fnum' => $file['fnum'],
+                            'applicant' => $file['applicant'],
+                            'status' => $file['status'],
+                            'rank' => $file['rank'],
+                            'package_label' => $package_label
+                        ];
+                    }
+                }
+
+                if (!empty($export_array)) {
+                    // generate a csv, add a line by file
+                    $today  = date("MdYHis");
+                    $name   = md5($today.rand(0,10));
+                    $name   = $name.'.csv';
+                    $path = JPATH_SITE . '/tmp/' . $name;
+
+                    if (!$csv_file = fopen($path, 'w+')) {
+                        throw new Exception(Text::_('COM_EMUNDUS_EXPORTS_ERROR_CANNOT_CREATE_CSV_FILE'));
+                    } else {
+                        fprintf($csv_file, chr(0xEF).chr(0xBB).chr(0xBF));
+
+                        // add header
+                        $header = ['Numéro de dossier', 'Candidat', 'Statut', 'Classement', 'Campagne'];
+                        fputcsv($csv_file, $header, ';');
+
+                        // add a line by file
+                        foreach ($export_array as $line) {
+                            fputcsv($csv_file, $line, ';');
+                        }
+
+                        fclose($csv_file);
+
+                        $export_link = JUri::root() . 'tmp/' . $name;
+                    }
+                }
+            }
+        }
+
+        return $export_link;
     }
 }
