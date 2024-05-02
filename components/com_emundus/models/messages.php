@@ -1422,4 +1422,55 @@ class EmundusModelMessages extends JModelList {
             return false;       /// no fnum or no email template, cannot add tag
         }
     }
+
+	public function deleteMessagesAfterADate($date, $export = false)
+	{
+		$deleted_messages = 0;
+		$csv_filename = '';
+
+		if(!(empty($date)))
+		{
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('*')
+				->from($db->quoteName('#__messages'))
+				->where($db->quoteName('date_time') . ' < ' . $db->quote($date->format('Y-m-d H:i:s')));
+
+			try {
+				$db->setQuery($query);
+				$logs = $db->loadAssocList();
+			} catch (Exception $e) {
+				JLog::add('Could not fetch logs from jos_messages table in model messages at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+				return $deleted_messages;
+			}
+
+			if ($export) {
+				$csv_filename = JPATH_SITE . '/tmp/messages_' . date('Y-m-d_H-i-s') . '.csv';
+				$csv_file = fopen($csv_filename, 'w');
+				fputcsv($csv_file, array_keys($logs[0]));
+				foreach ($logs as $log) {
+					fputcsv($csv_file, $log);
+				}
+
+				fclose($csv_file);
+			}
+
+			$query->clear()
+				->delete($db->quoteName('#__messages'))
+				->where($db->quoteName('date_time') . ' < ' . $db->quote($date->format('Y-m-d H:i:s')));
+
+			try
+			{
+				$db->setQuery($query);
+				$db->execute();
+				$deleted_messages = $db->getAffectedRows();
+			}
+			catch (Exception $e)
+			{
+				JLog::add('Could not delete messages from jos_messages table in model messages at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			}
+		}
+		return array('deletedMessages' => $deleted_messages, 'csvFilename' => $csv_filename);
+	}
 }

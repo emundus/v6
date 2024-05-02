@@ -18,7 +18,6 @@ include_once(JPATH_BASE . 'includes/defines.php' );
 include_once(JPATH_BASE . 'includes/framework.php' );
 include_once(JPATH_SITE . '/components/com_emundus/unittest/helpers/samples.php');
 include_once(JPATH_SITE . '/components/com_emundus/models/application.php');
-include_once(JPATH_SITE . '/components/com_emundus/models/messages.php');
 
 jimport('joomla.user.helper');
 jimport( 'joomla.application.application' );
@@ -111,18 +110,19 @@ class EmundusModelLogsTest extends TestCase
 	 * @throws Exception
 	 */
 	public function testDeleteLogsAfterADate() {
+
+		$this->assertEquals(0, $this->m_logs->deleteLogsAfterADate(''), 'No logs should be deleted if no date is given');
 		$db = JFactory::getDbo();
-		$m_messages = new EmundusModelMessages();
 
 		$params = '';
 		$user_from = 95;
 		$user_to = $this->user_sample_id;
 		$action = 1;
 		$crud = 'r';
-		$message = 'test' . rand(0, 1000);
 		$referenceDate = '2000-01-01 10:00:00';
 
 		for ($i = 0; $i < 10; $i++) {
+			$message = 'test' . rand(0, 1000);
 			$logged = $this->m_logs->log($user_from, $user_to, 1, $action, $crud, $message, $params);
 			$this->assertTrue($logged, 'Log should be created if all information are given');
 
@@ -142,26 +142,7 @@ class EmundusModelLogsTest extends TestCase
 			$db->setQuery($query);
 			$db->execute();
 		}
-		for ($i = 0; $i < 10; $i++) {
-			$message_log = $m_messages->sendMessage($user_to, $message, $user_from);
-			$this->assertTrue($message_log, 'Message should be created if all minimum information are given');
-
-			$query = $db->getQuery(true);
-
-			$query->clear()
-				->update($db->quoteName('#__messages'))
-				->set($db->quoteName('date_time') . ' = ' . $db->quote($referenceDate))
-				->where($db->quoteName('message') . ' = ' . $db->quote($message))
-				->where($db->quoteName('user_id_to') . ' = ' . $db->quote($user_to))
-				->where($db->quoteName('user_id_from') . ' = ' . $db->quote($user_from))
-				->order($db->quoteName('date_time') . ' DESC')
-				->limit(1);
-
-			$db->setQuery($query);
-			$db->execute();
-
-		}
-		$this->assertEquals(20, $this->m_logs->deleteLogsAfterADate(new DateTime('2000-01-01 11:00:00')), 'All logs created in the test should be deleted');
+		$this->assertEquals(10, $this->m_logs->deleteLogsAfterADate(new DateTime('2000-01-01 11:00:00')), 'All logs created in the test should be deleted');
 	}
 
 

@@ -2,7 +2,6 @@
 <form>
 	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
 		<fieldset name="plg-cron-emunduslogspurge" label="COM_FABRIK_OPTIONS">
-
 			<field name="amount_time"
 				   type="number"
 				   description="PLG_CRON_LOGSPURGE_CHOOSE_NUMBER"
@@ -24,8 +23,10 @@
 				<option value="year">PLG_CRON_LOGSPURGE_YEAR</option>
 			</field>
 
+			<field name="export_zip"
+				   type="checkbox"
+				   label="PLG_CRON_LOGSPURGE_ZIP" />
 
 		</fieldset>
-
 	</fields>
 </form>

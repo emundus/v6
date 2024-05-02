@@ -528,36 +528,54 @@ class EmundusModelLogs extends JModelList {
         return $logs;
     }
 
-	public function deleteLogsAfterADate($date) {
-		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
+	public function deleteLogsAfterADate($date, $export = false) {
 
-		$query->delete($db->quoteName('#__emundus_logs'))
-			->where($db->quoteName('timestamp') . ' < ' . $db->quote($date->format('Y-m-d H:i:s')));
+		$deleted_logs = 0;
+		$csv_filename = '';
 
-		try {
-			$db->setQuery($query);
-			$db->execute();
-			$deletedLogs = $db->getAffectedRows();
-		} catch (Exception $e) {
-			JLog::add('Could not delete logs from jos_emundus_logs table in model logs at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
-			$deletedLogs = 0;
+		if(!(empty($date)))
+		{
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('*')
+				->from($db->quoteName('#__emundus_logs'))
+				->where($db->quoteName('timestamp') . ' < ' . $db->quote($date->format('Y-m-d H:i:s')));
+
+			try {
+				$db->setQuery($query);
+				$logs = $db->loadAssocList();
+			} catch (Exception $e) {
+				JLog::add('Could not fetch logs from jos_emundus_logs table in model logs at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+				return $deleted_logs;
+			}
+
+			if ($export) {
+				$csv_filename = JPATH_SITE . '/tmp/logs_' . date('Y-m-d_H-i-s') . '.csv';
+				$csv_file = fopen($csv_filename, 'w');
+				fputcsv($csv_file, array_keys($logs[0]));
+				foreach ($logs as $log) {
+					fputcsv($csv_file, $log);
+				}
+				fclose($csv_file);
+			}
+
+			$query->clear()
+				->delete($db->quoteName('#__emundus_logs'))
+				->where($db->quoteName('timestamp') . ' < ' . $db->quote($date->format('Y-m-d H:i:s')));
+
+			try
+			{
+				$db->setQuery($query);
+				$db->execute();
+				$deleted_logs = $db->getAffectedRows();
+			}
+			catch (Exception $e)
+			{
+				JLog::add('Could not delete logs from jos_emundus_logs table in model logs at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			}
 		}
-
-		$query->clear();
-		$query->delete($db->quoteName('#__messages'))
-			->where($db->quoteName('date_time') . ' < ' . $db->quote($date->format('Y-m-d H:i:s')));
-
-		try {
-			$db->setQuery($query);
-			$db->execute();
-			$deletedMessages = $db->getAffectedRows();
-		} catch (Exception $e) {
-			JLog::add('Could not delete logs from jos_messages in model logs at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
-			$deletedMessages = 0;
-		}
-
-		return $deletedLogs + $deletedMessages;
-
+		return array('deletedLogs' => $deleted_logs, 'csvFilename' => $csv_filename);
 	}
+
 }

@@ -52,17 +52,19 @@ class PlgFabrik_Cronemunduslogspurge extends PlgFabrik_Cron{
 	public function process(&$data, &$listModel)
 	{
 		include_once(JPATH_SITE . '/components/com_emundus/models/logs.php');
+		include_once(JPATH_SITE . '/components/com_emundus/models/messages.php');
 		include_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
 		$m_logs = new EmundusModelLogs();
+		$m_messages = new EmundusModelMessages();
 
-		$params      = $this->getParams();
+		$params = $this->getParams();
 		$amount_time = $params->get('amount_time');
-		$unit_time   = $params->get('unit_time');
+		$unit_time = $params->get('unit_time');
+		$export = $params->get('export_zip');
 
 		$now = DateTime::createFromFormat('Y-m-d H:i:s', EmundusHelperDate::getNow());
 
-		switch ($unit_time)
-		{
+		switch ($unit_time) {
 			case 'hour':
 				$now->modify('-' . $amount_time . ' hours');
 				break;
@@ -80,6 +82,19 @@ class PlgFabrik_Cronemunduslogspurge extends PlgFabrik_Cron{
 				break;
 		}
 
-		return $m_logs->deleteLogsAfterADate($now);
+		$logs = $m_logs->deleteLogsAfterADate($now, $export);
+		$messages = $m_messages->deleteMessagesAfterADate($now, $export);
+
+		$zipFilename = JPATH_SITE . '/tmp/logs_and_messages_' . date('Y-m-d_H-i-s') . '.zip';
+		$zip = new ZipArchive();
+		if ($export && $zip->open($zipFilename, ZipArchive::CREATE) === TRUE) {
+			$zip->addFile($logs['csvFilename'], basename($logs['csvFilename']));
+			$zip->addFile($messages['csvFilename'], basename($messages['csvFilename']));
+			$zip->close();
+			unlink($messages['csvFilename']);
+			unlink($logs['csvFilename']);
+		}
+		return $logs['amount'] + $messages['amount'];
 	}
+
 }
