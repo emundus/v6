@@ -6,52 +6,60 @@
 
         <div id="pagination" class="ml-2 flex flex-row items-center">
           <select v-model="pagination.perPage" @change="updatePerPage">
-            <option v-for="option in pagination.perPageOptions" :key="option" :value="option">{{ translate('COM_EMUNDUS_DISPLAY') }} {{ option }}</option>
+            <option v-for="option in pagination.perPageOptions" :key="option" :value="option">
+              {{ translate('COM_EMUNDUS_DISPLAY') }} {{ option }}
+            </option>
           </select>
         </div>
       </div>
       <div id="header-right" class="flex flex-row" v-show="nbPagesMax > 1">
         <!-- pagination navigation -->
-        <span id="prev" class="material-icons-outlined cursor-pointer" @click="changePage('-1')">keyboard_arrow_left</span>
+        <span id="prev" class="material-icons-outlined cursor-pointer"
+              @click="changePage('-1')">keyboard_arrow_left</span>
         <span id="position"> {{ pagination.page }} / {{ nbPagesMax }}</span>
-        <span id="next" class="material-icons-outlined cursor-pointer" @click="changePage('1')">keyboard_arrow_right</span>
+        <span id="next" class="material-icons-outlined cursor-pointer"
+              @click="changePage('1')">keyboard_arrow_right</span>
       </div>
     </header>
     <div id="btns-section" class="flex flex-row justify-end mb-8">
-      <button v-if="rankingsToLock" id="ask-to-lock-ranking" class="em-secondary-button w-fit cursor-pointer" @click="askToLockRankings">
+      <button v-if="rankingsToLock" id="ask-to-lock-ranking" class="em-secondary-button w-fit cursor-pointer"
+              @click="askToLockRankings">
         <span class="material-icons-outlined em-mr-4">lock</span>
         {{ translate('COM_EMUNDUS_CLASSEMENT_ASK_LOCK_RANKING') }}
       </button>
-      <button v-if="!ismyRankingLocked && rankings.myRanking.length > 0" id="lock-ranking" class="em-primary-button em-ml-4 w-fit cursor-pointer" @click="lockRanking">
+      <button v-if="!ismyRankingLocked && rankings.myRanking.length > 0" id="lock-ranking"
+              class="em-primary-button em-ml-4 w-fit cursor-pointer" @click="lockRanking">
         <span class="material-icons-outlined em-mr-4">check_circle_outline</span>
         {{ translate('COM_EMUNDUS_CLASSEMENT_LOCK_RANKING') }}
       </button>
     </div>
-    <p class="w-full alert mb-2" v-if="ordering.orderBy !== 'default'">{{ translate('COM_EMUNDUS_RANKING_CANNOT_DRAG_AND_DROP') }}</p>
-    <div v-if="rankings.myRanking && rankings.myRanking.length > 0" id="ranking-lists-container" class="em-flex-row em-flex-space-between">
+    <p class="w-full alert mb-2" v-if="ordering.orderBy !== 'default'">
+      {{ translate('COM_EMUNDUS_RANKING_CANNOT_DRAG_AND_DROP') }}</p>
+    <div v-if="rankings.myRanking && rankings.myRanking.length > 0" id="ranking-lists-container"
+         class="em-flex-row em-flex-space-between">
       <div id="my-ranking-list"
            class="w-full mr-2"
            :class="{'dragging': dragging}"
       >
         <table id="ranked-files" class="w-full">
           <thead>
-            <tr>
-              <th>
-                <span class="material-icons-outlined" v-if="ismyRankingLocked">lock</span>
-                <span class="material-icons-outlined" v-else>lock_open</span>
-              </th>
-              <th>{{ translate('COM_EMUNDUS_CLASSEMENT_FILE') }}</th>
-              <th @click="reorder('default')">
-                <div class="flex flex-row items-center">
-                  <span>{{ translate('COM_EMUNDUS_CLASSEMENT_YOUR_RANKING') }}</span>
-                  <div v-if="ordering.orderBy === 'default'">
-                    <span class="material-icons-outlined" v-if="ordering.order === 'ASC'">arrow_drop_up</span>
-                    <span class="material-icons-outlined" v-else>arrow_drop_down</span>
-                  </div>
+          <tr>
+            <th>
+              <span class="material-icons-outlined" v-if="ismyRankingLocked">lock</span>
+              <span class="material-icons-outlined" v-else>lock_open</span>
+            </th>
+            <th>{{ translate('COM_EMUNDUS_CLASSEMENT_FILE') }}</th>
+            <th @click="reorder('default')">
+              <div class="flex flex-row items-center">
+                <span>{{ translate('COM_EMUNDUS_CLASSEMENT_YOUR_RANKING') }}</span>
+                <div v-if="ordering.orderBy === 'default'">
+                  <span class="material-icons-outlined" v-if="ordering.order === 'ASC'">arrow_drop_up</span>
+                  <span class="material-icons-outlined" v-else>arrow_drop_down</span>
                 </div>
-              </th>
-              <th>{{ translate('COM_EMUNDUS_RANKING_FILE_STATUS') }}</th>
-            </tr>
+              </div>
+            </th>
+            <th>{{ translate('COM_EMUNDUS_RANKING_FILE_STATUS') }}</th>
+          </tr>
           </thead>
           <!-- only ranked files -->
           <draggable
@@ -209,15 +217,23 @@
           </div>
         </template>
         <template v-slot:files-to-compare-with>
-          <classement :key="subRankingKey" @other-selected-file="onSelectOtherFile" :hierarchy_id="hierarchy_id"
-                      :user="user" context="modal" :showOtherHierarchies="false"></classement>
+          <classement :key="subRankingKey"
+                      @other-selected-file="onSelectOtherFile"
+                      :hierarchy_id="hierarchy_id"
+                      :user="user" context="modal"
+                      :showOtherHierarchies="false"
+                      :package-id="packageId"
+          >
+          </classement>
         </template>
       </compare-files>
     </transition>
     <modal name="askToLockRankings" id="ask-to-lock-rankings-modal">
       <div class="em-flex-column em-p-16">
         <div class="swal2-header em-mb-16">
-          <h2 id="swal2-title" class="swal2-title em-swal-title">{{ translate('COM_EMUNDUS_CLASSEMENT_ASK_LOCK_RANKING') }}</h2>
+          <h2 id="swal2-title" class="swal2-title em-swal-title">{{
+              translate('COM_EMUNDUS_CLASSEMENT_ASK_LOCK_RANKING')
+            }}</h2>
         </div>
         <div class="swal2-content em-mt-16" style="z-index: 2;">
           <label>{{ translate('COM_EMUNDUS_CLASSEMENT_ASK_HIERARCHIES_LOCK_RANKING') }}</label>
@@ -352,7 +368,7 @@ export default {
       let tmpTabs = this.fileTabsStr.split(',');
 
       tmpTabs.forEach(tab => {
-        switch(tab) {
+        switch (tab) {
           case 'forms':
             this.fileTabs.push({
               label: this.translate('COM_EMUNDUS_FILES_APPLICANT_FILE'),
@@ -545,7 +561,7 @@ export default {
       }
     },
     askToLockRankings() {
-      if(this.rankingsToLock && this.rankings.myRanking.length > 0) {
+      if (this.rankingsToLock && this.rankings.myRanking.length > 0) {
         this.$modal.show('askToLockRankings', {
           rankingsToLock: this.rankingsToLock
         });
@@ -871,5 +887,9 @@ export default {
   overflow: unset !important;
   border-radius: .3125em !important;
   height: fit-content !important;
+}
+
+#compareFiles #my-ranking-list {
+  overflow-x: auto;
 }
 </style>
