@@ -1381,18 +1381,24 @@ class EmundusModelRanking extends JModelList
                     }
 
                     foreach ($files as $file) {
-                        $export_array[] = [
+                        $file_data = [
                             'fnum' => $file['fnum'],
-                            'applicant' => $file['applicant'],
-                            'status' => $file['status'],
                             'rank' => $file['rank'],
                             'package_label' => $package_label
                         ];
+
+                        if (in_array('applicant', $columns)) {
+                            $file_data['applicant'] = $file['applicant'];
+                        }
+                        if (in_array('status', $columns)) {
+                            $file_data['status'] = $file['status'];
+                        }
+
+                        $export_array[] = $file_data;
                     }
                 }
 
                 if (!empty($export_array)) {
-                    // generate a csv, add a line by file
                     $today  = date("MdYHis");
                     $name   = md5($today.rand(0,10));
                     $name   = $name.'.csv';
@@ -1403,8 +1409,14 @@ class EmundusModelRanking extends JModelList
                     } else {
                         fprintf($csv_file, chr(0xEF).chr(0xBB).chr(0xBF));
 
-                        // add header
-                        $header = ['Numéro de dossier', 'Candidat', 'Statut', 'Classement', 'Campagne'];
+                        $header = ['Numéro de dossier', 'Classement', 'Campagne'];
+                        if (in_array('applicant', $columns)) {
+                            $header[] = 'Candidat';
+                        }
+                        if (in_array('status', $columns)) {
+                            $header[] = 'Statut';
+                        }
+
                         fputcsv($csv_file, $header, ';');
 
                         // add a line by file
@@ -1413,7 +1425,6 @@ class EmundusModelRanking extends JModelList
                         }
 
                         fclose($csv_file);
-
                         $export_link = JUri::root() . 'tmp/' . $name;
                     }
                 }
