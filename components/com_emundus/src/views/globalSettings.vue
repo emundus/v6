@@ -17,8 +17,10 @@
                   class="flex items-start p-2 cursor-pointer rounded-lg group user-select-none"
                   :class="activeMenu === indexMenu ? 'green-Menubutton' : 'hover:bg-gray-100'"
             >
-              <i class="material-icons-outlined font-bold" :class="activeMenu === indexMenu ? 'text-green-700' : ''" name="icon-Menu" :id="'icon-'+indexMenu">{{ menu.icon }}</i>
-              <span class="ms-2 font-bold" :class="activeMenu === indexMenu ? 'text-green-700' : ''">{{ translate(menu.label) }}</span>
+              <i class="material-icons-outlined font-bold" :class="activeMenu === indexMenu ? 'text-green-700' : ''"
+                 name="icon-Menu" :id="'icon-'+indexMenu">{{ menu.icon }}</i>
+              <span class="ms-2 font-bold"
+                    :class="activeMenu === indexMenu ? 'text-green-700' : ''">{{ translate(menu.label) }}</span>
             </span>
           </li>
         </ul>
@@ -34,39 +36,39 @@
         {{ translate(this.aMenu.label) }}
       </h1>
 
-      <div id="accordion-collapse" v-for="(x, menu) in subMenus[activeMenu]"
-           v-if="subMenus[activeMenu][menu].type !== 'Tile'"
+      <div id="accordion-collapse" v-for="(section, indexSection) in subMenus[activeMenu]"
+           v-if="subMenus[activeMenu][indexSection].type !== 'Tile'"
            class="flex flex-col justify-between w-full p-5 font-medium rtl:text-right text-black border border-gray-200 rounded-[15px] bg-white mb-3 gap-3 shadow"
            data-accordion-target="#accordion-collapse-body-1" aria-expanded="true"
            aria-controls="accordion-collapse-body-1">
 
-        <div @click="handleSubMenu(menu)" class="flex items-center justify-between cursor-pointer">
+        <div @click="handleSubMenu(indexSection)" class="flex items-center justify-between cursor-pointer">
           <div class="flex">
             <h1 id="accordion-collapse-heading-1" class="user-select-none flex flex-row justify-between">
-              <span :id="'Subtile'+menu" class="text-2xl user-select-none">{{
-                  translate(subMenus[activeMenu][menu].label)
+              <span :id="'Subtile'+indexSection" class="text-2xl user-select-none">{{
+                  translate(subMenus[activeMenu][indexSection].label)
                 }}</span>
             </h1>
-            <div v-if="subMenus[activeMenu][menu].notify === 1 ">
+            <div v-if="subMenus[activeMenu][indexSection].notify === 1 ">
               <div v-if="$data.notifRemain > -1"
                    class="inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-2 -end-2 ">
                 <div v-if="$data.notifRemain >0">{{ $data.notifRemain }}</div>
               </div>
             </div>
           </div>
-          <span class="material-icons-outlined scale-150 user-select-none" :id="'SubtitleArrow'+menu"
+          <span class="material-icons-outlined scale-150 user-select-none" :id="'SubtitleArrow'+indexSection"
                 name="SubtitleArrows"
-                :class="subMenuOpen == menu ? 'rotate-180' : ''">expand_more</span>
+                :class="subMenuOpen == indexSection ? 'rotate-180' : ''">expand_more</span>
         </div>
 
 
-        <div name="SubMenuContent" class="flex flex-col" v-show="subMenuOpen == menu">
-          <div v-if="subMenus[activeMenu][menu].helptext !== '' "
+        <div name="SubMenuContent" class="flex flex-col" v-show="subMenuOpen == indexSection">
+          <div v-if="subMenus[activeMenu][indexSection].helptext !== '' "
                class="bg-blue-300 rounded flex items-center pb-2">
             <span class="material-icons-outlined scale-150 ml-2 mt-2">info</span>
-            <p class="ml-2 mt-2">{{ translate(subMenus[activeMenu][menu].helptext) }}</p>
+            <p class="ml-2 mt-2">{{ translate(subMenus[activeMenu][indexSection].helptext) }}</p>
           </div>
-          <div v-for="(option,indexOption) in subMenus[activeMenu][menu].options">
+          <div v-for="(option,indexOption) in subMenus[activeMenu][indexSection].options">
             <div class="flex flex-col" v-if="(option.type_field === 'Title') && (option.published === true)">
               <h2 v-if="option.published === true">{{ translate(option.label) }}</h2>
               <hr>
@@ -74,31 +76,37 @@
 
             <div v-else-if="(option.type ==='subSection') && (option.published === true)" name="ComponentsubSections"
                  :id="'ComponentsubSection-'+indexOption" style=" ">
-              <div @click="handleSubSection(indexOption)" class="pb-3 cursor-pointer">
+              <div @click="handleSubSection(activeMenu,indexSection,indexOption)" class="pb-3 cursor-pointer">
                 <span :id="'SubSectionTile'+indexOption" class="em-font-size-16">{{ translate(option.label) }}</span>
                 <i class="material-icons-outlined scale-150" :id="'SubSectionArrow'+indexOption" name="SubSectionArrows"
                    style="transform-origin: unset">expand_more</i>
-                <div v-if="$data.notifCheck[indexOption]===true && subMenus[activeMenu][menu].notify === 1"
+                <div v-if="$data.notifCheck[indexOption]===true && subMenus[activeMenu][indexSection].notify === 1"
                      class="inline-flex w-6 h-6 bg-red-500 border-2 border-white rounded-full -top-2 -end-2 ">
                 </div>
               </div>
-              <div :id="'SubSection-'+indexOption" name="SubSectionContent" v-if="subSectionOpen == indexOption" class="flex flex-col bg-gray-200 rounded subSection">
-                <div v-for="(option1,index3) in option.elements">
-                  <div class="flex flex-col" v-if="option1.type_field === 'component'">
-                    <component :is="option1.component" v-bind="option1.props"
-                               @NeedNotify="value =>countNotif(value,indexOption)" :key="keySubContent" :showValue="displayEmail"></component>
+
+              <div :key="reloadTheSubSection" :id="'SubSection-'+indexOption" name="SubSectionContent" v-show=" showTheSubSection(indexSection,indexOption) "
+                   class="flex flex-col bg-gray-200 rounded subSection">
+                <div v-for="(element,indexElement) in option.elements">
+                  <div class="flex flex-col" v-if="element.type_field === 'component'">
+                    <component :is="element.component" v-bind="element.props"
+                               @NeedNotify="value =>countNotif(value,indexOption)" :key="keySubContent"
+                               :customValue="CustomParam" :showValue="displayEmail" @stateOfConfig="getStateConf"></component>
                   </div>
                 </div>
               </div>
             </div>
 
 
-            <div v-if="(option.type_field === 'toggle')&&(option.published === true)" class="inline-flex items-center cursor-pointer">
+            <div v-if="(option.type_field === 'toggle')&&(option.published === true)"
+                 class="inline-flex items-center cursor-pointer">
               <label>
-                <input type="checkbox" class="sr-only peer" :v-model="option.value" v-model="option.value">
-                <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                <input v-if="option.name === 'mailonline'" type="checkbox"  class="sr-only peer" :value="testN1" @click="toggleButton(option)">
+                <input v-else  type="checkbox"  class="sr-only peer" v-model="option.value" @click="toggleButton(option)">
+                <div
+                    class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
               </label>
-              <span>{{option.label_right}}</span>
+              <span>{{ option.label_right }}</span>
             </div>
 
             <div class="flex flex-col" v-if="(option.type_field === 'Button') && (option.published === true)">
@@ -110,7 +118,8 @@
             </div>
 
             <div class="flex flex-col" v-if="(option.type_field === 'Input') && (option.published === true)">
-              <input :placeholder="option.placeholder" class="w-full p-2 border border-gray-200 rounded hover:bg-gray-300"
+              <input :placeholder="option.placeholder"
+                     class="w-full p-2 border border-gray-200 rounded hover:bg-gray-300"
                      v-model="option.value">
             </div>
 
@@ -149,7 +158,8 @@
                         :id="'BtYN'+indexOption+'_'+indexOfbutton" :name="'YNbuttton'+option.name"
                         :class="['YesNobutton'+button.value ,{'active': option.value ===1} , {'click':option.value === 0}]"
                         class="focus:ring-neutral-50 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
-                        v-model="option.value" @click="clickYN(option,indexOption, indexOfbutton)">{{ translate(button.label) }}
+                        v-model="option.value" @click="clickYN(option,indexOption, indexOfbutton)">
+                  {{ translate(button.label) }}
                 </button>
               </div>
             </div>
@@ -167,7 +177,7 @@
             </div>
 
             <div class="flex flex-col" v-if="(option.type_field === 'component')&& (option.published === true)">
-              <component :is="option.component" :key="ComponantReload" v-bind="option.props" @manage_server_mail="setdisplayEmail"></component>
+              <component :is="option.component" :key="ComponantReload" v-bind="option.props" ></component>
             </div>
 
           </div>
@@ -269,7 +279,7 @@ export default {
 
     ComponantReload: 0,
     subMenuOpen: -1,
-    subSectionOpen: 0,
+    subSectionOpen: [],
     activeMenu: null,
 
     aMenu: [],
@@ -284,8 +294,13 @@ export default {
     timeZoneLand: [],
     baseTimeZone: null,
 
-    displayEmail: 0,
-    keySubContent:0,
+    displayEmail: -1,
+    keySubContent: 0,
+    CustomParam: -1,
+    reloadTheSubSection: 0,
+    configJoomla: {
+    },
+    testN1: 0,
     form: {
       content: ''
     },
@@ -300,6 +315,7 @@ export default {
   },
   mounted() {
     this.URLMenu();
+
   },
 
   methods: {
@@ -366,7 +382,7 @@ export default {
       this.activeMenu = index;
     },
     handleSubMenu(index) {
-      if(this.subMenuOpen == index) {
+      if (this.subMenuOpen == index) {
         this.subMenuOpen = -1;
       } else {
         this.subMenuOpen = index;
@@ -388,19 +404,29 @@ export default {
     },
 
 
-    handleSubSection(index) {
-      if(this.subSectionOpen == index) {
-        this.subSectionOpen = -1;
-      } else {
-        this.subSectionOpen = index;
-      }
+    handleSubSection(indexMenu, indexSection ,indexoption) {
+  let indexOfArray =indexMenu + '-' + indexSection + '-' + indexoption;
+  if (this.subSectionOpen[indexOfArray] === undefined || this.subSectionOpen[indexOfArray] === "0") {
+    this.subSectionOpen[indexOfArray] = "1";
+  } else if (this.subSectionOpen[indexOfArray] === "1") {
+    this.subSectionOpen[indexOfArray] = "0";
+  }
+  this.reloadTheSubSection++;
+},
+    showTheSubSection( indexSection , indexoption) {
+      let indexOfArray = this.activeMenu + '-' + indexSection + '-' + indexoption;
+      return this.subSectionOpen[indexOfArray] === "1";
     },
 
+    getStateConf(value) {
+      this.configJoomla = value;
+      this.testN1 =  this.configJoomla['joomla'].mailonline;
+    },
 
-      clickYN(param, index, indexOfOptions) {
-        param.value = indexOfOptions;
-        param.value = param.value ? 1 : 0;
-        this.YNButtons[index] = indexOfOptions;
+    clickYN(param, index, indexOfOptions) {
+      param.value = indexOfOptions;
+      param.value = param.value ? 1 : 0;
+      this.YNButtons[index] = indexOfOptions;
     },
 
     backButton() {
@@ -418,10 +444,18 @@ export default {
     setdisplayEmail(value) {
       this.displayEmail = value;
       this.keySubContent++;
-      console.log(this.displayEmail)
+    },
+    toggleButton(element) {
+      element.value = !element.value;
+      if (element.name === 'custom_config_mail') {
+        this.CustomParam = element.value ? 1 : 0;
+        this.keySubContent++;
+      }
+      if (element.name === 'mailonline') {
+      this.setdisplayEmail(element.value ? 1 : 0);
+      }1
     }
   },
-
   computed: {},
   watch: {}
 };
@@ -469,7 +503,7 @@ export default {
   color: white;
 }
 
-.subSection{
+.subSection {
   padding-left: 1em;
   padding-right: 1em;
   margin-bottom: 1em;

@@ -1,72 +1,43 @@
 {
   "mailonline": {
-    "displayed": true,
+    "displayed": false,
     "component": "joomla",
-    "label": "activer l'envoie de mail",
-    "param": "mailonline",
-    "section": "mail",
-    "type_field": "toggle",
-    "options": [
-      {
-        "value": "0",
-        "label": "No"
-      },
-      {
-        "value": "1",
-        "label": "Yes"
-      }
-      ]
+    "param": "mailonline"
   },
   "mailfrom": {
     "displayed": true,
-    "displayed_on": [{
-      "element": "mailonline",
-      "value": 1
-    }],
     "component": "joomla",
     "label": "Email d'envoie du site",
     "param": "mailfrom",
     "type_field": "text",
     "type": "email",
-    "section": "mail"
+    "section": ["mail"]
   },
   "fromname": {
     "displayed": true,
-    "displayed_on": [{
-      "element": "mailonline",
-      "value":  1
-    }],
     "component": "joomla",
     "label": "nom de l'expéditeur",
     "param": "fromname",
     "type_field": "text",
     "placeholder": "adam",
-    "section": "mail"
+    "section": ["mail"]
   },
   "replyto": {
     "displayed": true,
-    "displayed_on": [{
-      "element": "mailonline",
-      "value":  1
-    }],
     "component": "joomla",
     "label": "Email de récéption du site",
     "param": "replyto",
     "type_field": "text",
     "type": "email",
-    "section": "mail"
+    "section": ["mail"]
   },
   "replytoname": {
     "displayed": true,
-    "displayed_on": [{
-      "element": "mailonline",
-      "value":  1
-    }],
     "component": "joomla",
     "label": "nom du récépteur",
     "param": "replytoname",
     "type_field": "text",
     "placeholder": "eve",
-    "section": "mail"
+    "section": ["mail"]
   }
 }

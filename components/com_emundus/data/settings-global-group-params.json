@@ -133,16 +133,13 @@
         "options": [
           {
             "published": true,
-            "type_field": "component",
-            "component": "EditSettingJoomla",
-            "props": {
-              "type": "mail-BASE"
-            }
-          },
-          {
-            "published": true,
-            "type_field": "Title",
-            "label": "configuration custom du serveur de mail"
+            "name": "mailonline",
+            "label": "activer l'envoie de mail",
+            "settings": "joomla",
+            "param": "mailonline",
+            "label_right": "activer la fonction d'envoie de mail",
+            "type_field": "toggle",
+            "value": 1
           },
           {
             "published": true,
@@ -150,6 +147,23 @@
             "label_right": "configuration personnaliser",
             "type_field": "toggle",
             "value": 1
+          },
+          {
+            "published": true,
+            "name": "config_server_mail",
+            "label": "Configuration des information de connexion",
+            "type": "subSection",
+            "helptext": "",
+            "placeholder": "",
+            "elements": [
+              {
+                "type_field": "component",
+                "component": "EditSettingJoomla",
+                "props": {
+                  "type": "mail-BASE"
+                }
+              }
+            ]
           },
           {
             "published": true,

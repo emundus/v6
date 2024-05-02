@@ -1,37 +1,25 @@
 {
   "smtphost": {
     "displayed": true,
-    "displayed_on": [{
-      "element": "mailonline",
-      "value":  1
-    }],
     "component": "joomla",
     "label": "SMTP Host",
     "param": "smtphost",
     "type_field": "text",
     "placeholder": "smtp.example.com",
-    "section": "mail"
+    "section": ["mail","server"]
   },
   "smtpport": {
     "displayed": true,
-    "displayed_on": [{
-      "element": "mailonline",
-      "value":  1
-    }],
     "component": "joomla",
     "label": "SMTP Port",
     "param": "smtpport",
     "type_field": "text",
     "type": "number",
     "placeholder": "Port : 25 ,465, 587",
-    "section": "mail"
+    "section": ["mail","server"]
   },
   "smtpsecure": {
     "displayed": true,
-    "displayed_on": [{
-      "element": "mailonline",
-      "value":  1
-    }],
     "component": "joomla",
     "label": "securité",
     "param": "smtpsecure",
@@ -50,19 +38,15 @@
         "label": "TLS"
       }
     ],
-    "section": "mail"
+    "section": ["mail","server"]
   },
   "smtpauth": {
     "displayed": true,
-    "displayed_on": [{
-      "element": "mailonline",
-      "value":  1
-    }],
     "component": "joomla",
     "label": "SMTP Authentification",
     "param": "smtpauth",
     "type_field": "yesno",
-    "section": "mail",
+    "section": ["mail","server"],
     "options": [
       {
         "value": 0,
@@ -77,39 +61,21 @@
   },
   "smtpuser": {
     "displayed": true,
-    "displayed_on": [
-      {
-      "element": "smtpauth",
-      "value": 1
-    },
-      {
-      "element": "mailonline",
-      "value":  1
-    }],
     "component": "joomla",
     "label": "SMTP User",
     "param": "smtpuser",
     "type_field": "authentification",
     "type": "login",
     "placeholder": "",
-    "section": "mail"
+    "section": ["mail","server"]
   },
   "smtppass": {
     "displayed": true,
-    "displayed_on": [
-      {
-        "element": "smtpauth",
-        "value": 1
-      },
-      {
-        "element": "mailonline",
-        "value":  1
-      }],
     "component": "joomla",
     "label": "SMTP Password",
     "param": "smtppass",
     "type_field": "authentification",
     "type": "password",
-    "section": "mail"
+    "section": ["mail","server"]
   }
 }
