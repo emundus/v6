@@ -78,7 +78,11 @@ requirejs(['fab/fabrik'], function () {
                     });
                 } else {
                     if(e.srcElement.classList.contains('goback-btn')) {
-                        window.history.back();
+                        if(window.history.length > 1) {
+                            window.history.back();
+                        } else {
+                            window.close();
+                        }
                     }
                 }
             }
@@ -121,13 +125,15 @@ requirejs(['fab/fabrik'], function () {
         for (title of grouptitle){
             title.style.opacity = 1;
         }
-        grouptitle = document.querySelectorAll('.fabrikGroup h2');
+        grouptitle = document.querySelectorAll('.fabrikGroup h2, .fabrikGroup h3');
         for (title of grouptitle){
             title.style.opacity = 1;
         }
-        let groupintro = document.querySelector('.groupintro');
-        if (groupintro) {
-            groupintro.style.opacity = 1;
+        let groupintros = document.querySelectorAll('.groupintro');
+        if (groupintros) {
+            groupintros.forEach((groupintro) => {
+                groupintro.style.opacity = 1;
+            });
         }
 
         let elements = document.querySelectorAll('.fabrikGroup .row-fluid');
@@ -150,19 +156,19 @@ requirejs(['fab/fabrik'], function () {
             let repeat_groups = form.repeatGroupMarkers;
             repeat_groups.forEach(function (repeatGroupsMarked, group) {
                 if(repeatGroupsMarked !== 0) {
-                    let maxRepeat = form.options.maxRepeat[group];
                     let minRepeat = form.options.minRepeat[group];
+                    let maxRepeat = form.options.maxRepeat[group];
 
                     let deleteButtons = document.querySelectorAll('#group' + group + ' .fabrikGroupRepeater.pull-right');
 
-                    if (repeatGroupsMarked > 1 || minRepeat === 0) {
-                        deleteButtons.forEach(function (button, index) {
+                    if (repeatGroupsMarked > 1) {
+                        deleteButtons.forEach(function (button) {
                             button.show();
-                        })
-                    } else {
-                        deleteButtons.forEach(function (button, index) {
+                        });
+                    } else if (minRepeat > 0) {
+                        deleteButtons.forEach(function (button) {
                             button.hide();
-                        })
+                        });
                     }
 
                     let addButtons = document.querySelectorAll('#group' + group + ' .fabrikGroupRepeater .addGroup');

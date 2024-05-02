@@ -54,6 +54,9 @@ class EmundusFilters
 		$created_filters = [];
 
 		if (!empty($elements)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
 			foreach($elements as $element) {
                 $label = strip_tags(JText::_($element['label']));
 
@@ -65,7 +68,8 @@ class EmundusFilters
 					'group_label' => $element['element_form_label'],
 					'group_id' => $element['element_form_id'],
 					'available' => true,
-                    'plugin' => $element['plugin']
+                    'plugin' => $element['plugin'],
+                    'operator' => '='
                 ];
 
 				switch ($element['plugin']) {
@@ -75,6 +79,7 @@ class EmundusFilters
 					case 'databasejoin':
 						$filter['type'] = 'select';
 						$filter['values'] = [];
+                        $filter['operator'] = 'IN';
 						break;
 					case 'yesno':
 						$filter['type'] = 'select';
@@ -93,6 +98,59 @@ class EmundusFilters
 						$filter['type'] = 'time';
 						$filter['value'] = ['', ''];
 						break;
+                    case 'field':
+                    case 'calc':
+                        // field and calc maybe are integers or floats
+                        // check sql column type of element and set type accordingly
+                        $query->clear()
+                            ->select('jfl.db_table_name, jfe.name')
+                            ->from('jos_fabrik_elements as jfe')
+                            ->leftJoin('jos_fabrik_formgroup as jffg ON jffg.group_id = jfe.group_id')
+                            ->leftJoin('jos_fabrik_lists as jfl ON jfl.form_id = jffg.form_id')
+                            ->where('jfe.id = ' . $element['id']);
+
+                        try {
+                            $db->setQuery($query);
+                            $table_infos = $db->loadAssoc();
+                        } catch (Exception $e) {
+                            Log::add('Failed to get infos from fabrik element id ' . $element['id'] . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
+                        }
+
+                        if (!empty($table_infos)) {
+                            $query->clear()
+                                ->select('DATA_TYPE')
+                                ->from('INFORMATION_SCHEMA.COLUMNS')
+                                ->where('table_name = ' . $db->quote($table_infos['db_table_name']))
+                                ->where('column_name = ' . $db->quote($table_infos['name']));
+
+                            try {
+                                $db->setQuery($query);
+                                $column_type = $db->loadResult();
+
+                                switch($column_type) {
+                                    case 'int':
+                                    case 'tinyint':
+                                    case 'smallint':
+                                    case 'mediumint':
+                                    case 'bigint':
+                                    case 'decimal':
+                                    case 'float':
+                                    case 'double':
+                                        $filter['type'] = 'number';
+                                        break;
+                                    default:
+                                        $filter['type'] = 'text';
+                                        $filter['operator'] = 'LIKE';
+                                        break;
+                                }
+                            } catch (Exception $e) {
+                                Log::add('Failed to get column type from table ' . $table_infos['db_table_name'] . ' and column ' . $table_infos['name'] . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
+                            }
+                        }
+
+                        break;
+                    default:
+                        $filter['operator'] = 'LIKE';
 				}
 
 				$created_filters[] = $filter;
@@ -255,6 +313,10 @@ class EmundusFilters
 				break;
 		}
 
+        foreach($values as $key => $value) {
+           $values[$key]['label'] = JText::_($value['label']);
+        }
+
 		return $values;
 	}
 
@@ -279,7 +341,9 @@ class EmundusFilters
 			if (!empty($element)) {
 				$values = $this->getFabrikElementValues($element);
 
-				$this->saveFiltersAllValues(['id' => $element_id, 'values' => $values]);
+				if (!empty($values)) {
+					$this->saveFiltersAllValues(['id' => $element_id, 'values' => $values]);
+				}
 			}
 		}
 
@@ -294,8 +358,11 @@ class EmundusFilters
 			$filters_all_values[$element_values['id']] = $element_values['values'];
 		} else {
 			$filters_all_values = [];
+
 			foreach($this->filters as $filter) {
-				$filters_all_values[$filter['id']] = $filter['values'];
+				if (!empty($filter['values'])) {
+					$filters_all_values[$filter['id']] = $filter['values'];
+				}
 			}
 
 			foreach($this->applied_filters as $filter) {

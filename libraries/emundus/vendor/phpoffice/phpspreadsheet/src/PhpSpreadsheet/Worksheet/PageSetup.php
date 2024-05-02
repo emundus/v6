@@ -639,7 +639,7 @@ class PageSetup
     public function getPrintArea($index = 0)
     {
         if ($index == 0) {
-            return (string) $this->printArea;
+            return $this->printArea;
         }
         $printAreas = explode(',', (string) $this->printArea);
         if (isset($printAreas[$index - 1])) {
@@ -884,5 +884,20 @@ class PageSetup
         }
 
         return $this;
+    }
+
+    /**
+     * Implement PHP __clone to create a deep clone, not just a shallow copy.
+     */
+    public function __clone()
+    {
+        $vars = get_object_vars($this);
+        foreach ($vars as $key => $value) {
+            if (is_object($value)) {
+                $this->$key = clone $value;
+            } else {
+                $this->$key = $value;
+            }
+        }
     }
 }

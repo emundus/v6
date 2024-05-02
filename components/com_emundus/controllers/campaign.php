@@ -147,7 +147,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
             $filter = $jinput->getString('filter', '');
             $sort = $jinput->getString('sort', '');
             $recherche = $jinput->getString('recherche', '');
-            $lim = $jinput->getInt('lim', 25);
+            $lim = $jinput->getInt('lim', 0);
             $page = $jinput->getInt('page', 0);
             $program = $jinput->getString('program', 'all');
             $session = $jinput->getString('session', 'all');
@@ -179,8 +179,11 @@ class EmundusControllerCampaign extends JControllerLegacy {
                         $campaign_time_state_class = 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius';
                     }
 
-                    $start_date = date('d/m/Y H\hi', strtotime($campaign->start_date));
-                    $end_date = date('d/m/Y H\hi', strtotime($campaign->end_date));
+                    if (!class_exists('EmundusHelperDate')) {
+                        require_once JPATH_ROOT . '/components/com_emundus/helpers/date.php';
+                    }
+                    $start_date = EmundusHelperDate::displayDate($campaign->start_date, 'DATE_FORMAT_LC5');
+                    $end_date = EmundusHelperDate::displayDate($campaign->end_date, 'DATE_FORMAT_LC5');
 
                     $state_values = [
                         [
@@ -216,7 +219,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
                         ],
                         [
                             'key' => JText::_('COM_EMUNDUS_ONBOARD_NB_FILES'),
-                            'value' => '<a target="_blank" href="/index.php?option=com_emundus&controller=campaign&task=gotocampaign&campaign_id=' . $campaign->id . '" style="line-height: unset;font-size: unset;">' . $campaign->nb_files . '</a>',
+                            'value' => '<a target="_blank" class="em-profile-color em-text-underline" href="/index.php?option=com_emundus&controller=campaign&task=gotocampaign&campaign_id=' . $campaign->id . '" style="line-height: unset;font-size: unset;">' . $campaign->nb_files . '</a>',
                             'classes' => 'go-to-campaign-link',
                             'display' => 'table'
                         ],
@@ -233,8 +236,8 @@ class EmundusControllerCampaign extends JControllerLegacy {
                                 $state_values[1],
                                 [
                                     'key' => JText::_('COM_EMUNDUS_FILES_FILES'),
-                                    'value' => '<a target="_blank" href="/index.php?option=com_emundus&controller=campaign&task=gotocampaign&campaign_id=' . $campaign->id . '" style="line-height: unset;font-size: unset;">' . $campaign->nb_files . ' ' . ( $campaign->nb_files > 1 ? JText::_('COM_EMUNDUS_FILES_FILES') : JText::_('COM_EMUNDUS_FILES_FILE')) . '</a>',
-                                    'classes' => 'em-p-5-12 em-font-weight-600  em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius go-to-campaign-link',
+                                    'value' => '<a class="go-to-campaign-link em-font-weight-600 em-profile-color em-flex-row em-text-underline" href="/index.php?option=com_emundus&controller=campaign&task=gotocampaign&campaign_id=' . $campaign->id . '" style="line-height: unset;font-size: unset;font-size:14px;">' . $campaign->nb_files . ' ' . ( $campaign->nb_files > 1 ? JText::_('COM_EMUNDUS_FILES_FILES') : JText::_('COM_EMUNDUS_FILES_FILE')) . '</a>',
+                                    'classes' => 'py-1',
                                 ]
                             ],
                             'classes' => 'em-mt-8 em-mb-8',
@@ -287,10 +290,22 @@ class EmundusControllerCampaign extends JControllerLegacy {
                 'published' => 1
             ]);
 
+            require_once JPATH_ROOT . '/components/com_emundus/models/profile.php';
+            $m_profile = new EmundusModelProfile();
+            $current_profile = $m_profile->getProfileById(JFactory::getSession()->get('emundusUser')->profile);
             $menu = $app->getMenu();
-            $items = $menu->getItems('link', 'index.php?option=com_emundus&view=files', true);
-            if (!empty($items)) {
-                $app->redirect('/' . $items->alias);
+            
+            $items = $menu->getItems('link', 'index.php?option=com_emundus&view=files');
+
+            $redirect_item = $items[0];
+            foreach ($items as $item) {
+                if($item->menutype == $current_profile['menutype']) {
+                    $redirect_item = $item;
+                }
+            }
+
+            if (!empty($redirect_item)) {
+                $app->redirect('/' . $redirect_item->route);
             } else {
                 $response['msg'] = JText::_('NO_FILES_VIEW_AVAILABLE');
             }

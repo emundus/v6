@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" version="2.5" method="upgrade" group="system">
+    <name>Emundus - Send attachments to eParapheur</name>
+    <creationDate>Jaunary 2024</creationDate>
+    <version>1.39.0</version>
+    <author>eMundus</author>
+    <authorEmail>dev@emundus.fr</authorEmail>
+    <authorUrl>https://www.emundus.fr</authorUrl>
+    <copyright>(C) 2010-2022 EMUNDUS SOFTWARE. All rights reserved.</copyright>
+    <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+    <description>PLG_EMUNDUS_EPARAPHEUR_DESC</description>
+    <files>
+        <filename plugin="eparapheur">eparapheur.php</filename>
+        <folder>language</folder>
+    </files>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+            </fieldset>
+        </fields>
+    </config>
+</extension>

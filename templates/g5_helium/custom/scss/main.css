@@ -86,26 +86,23 @@ body {
  ***********/
 
 /* Accueil */
-.view-featured.homepage #g-page-surround {
-    background-image: var(--display-wide-background);
-    background-size: 60%;
-    background-repeat: repeat;
-    background-position: 60vw 120px;
-}
-
-.homepage #g-container-main .g-container {
+.homepage #g-container-main .g-container .mod_emundus_campaign__intro {
     background-image: var(--display-demonstration);
     background-size: 250px;
     background-repeat: no-repeat;
-    background-position: top right 30px;
+    background-position: top -6px right 30px;
+    width: 100%;
+    padding-right: 28%;
+    min-height: 150px;
 }
 
 /* Connexion */
 .login > #g-page-surround {
-    background-image: var(--display-digital-testing), var(--display-corner-bottom-left-background), var(--display-candidate-button), var(--display-corner-top-right-background);
-    background-position: top 120px left 20px, bottom left, bottom 50px right 20px, top right;
-    background-repeat : no-repeat, no-repeat, no-repeat, no-repeat;
-    background-size : 25%, 50%, 25%, 50%;
+    background-image: var(--display-digital-testing), var(--display-candidate-button);
+    background-position: top 120px left 20px, bottom 50px right 20px;
+    background-repeat : no-repeat, no-repeat;
+    background-size : 25%, 25%;
+    overflow: hidden;
 }
 
 .login #g-navigation .g-container {
@@ -128,14 +125,6 @@ body {
     background-position: bottom 65px right, bottom 60px right ;
     background-repeat : no-repeat, no-repeat ;
     background-size :  30%, 50% ;
-}
-
-/* Coin haut droite des pages mentions légales, cookies, indicateurs, groupes, campagnes... */
-.view-article #g-page-surround, .view-list #g-page-surround, .view-form #g-page-surround, .view-emails #g-page-surround, .view-campaigns #g-page-surround, .view-form.mon-profil #g-page-surround {
-    background-image: var(--display-corner-top-right-background);
-    background-position: top 70px right;
-    background-repeat: no-repeat;
-    background-size: 50%;
 }
 
 /* Historique des emails */
@@ -172,8 +161,8 @@ body {
 
     /* Connexion */
     .login > #g-page-surround {
-        background-position: top 120px left 20px, bottom left, top 500px right 20px, top 72px right;
-        background-size : 25%, 50%, 25%, 50%;
+        background-position: top 120px left 20px, top 500px right 20px;
+        background-size : 25%, 25%;
     }
 
     /* Page settings */
@@ -212,11 +201,15 @@ body {
     .homepage #g-container-main .g-container {
         background-image : none;
     }
+    .homepage #g-container-main .g-container .mod_emundus_campaign__intro {
+        background-image: none;
+        padding-right: 0;
+    }
 
     /* Connexion */
     .login > #g-page-surround {
-        background-image : none, var(--display-corner-bottom-left-background), none, var(--display-corner-top-right-background);
-        background-size : 80%, 80%, 80%, 80%;
+        background-image : none, none;
+        background-size : 80%, 80%;
     }
 
     /* Page settings */

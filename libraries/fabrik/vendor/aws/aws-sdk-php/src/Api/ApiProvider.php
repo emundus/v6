@@ -165,7 +165,7 @@ class ApiProvider
     }
 
     /**
-     * Execute the provider.
+     * Execute the the provider.
      *
      * @param string $type    Type of data ('api', 'waiter', 'paginator').
      * @param string $service Service name.

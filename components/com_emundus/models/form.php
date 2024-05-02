@@ -42,7 +42,7 @@ class EmundusModelForm extends JModelList {
      * @param Int $page
      * @return array|stdClass
      */
-    function getAllForms(String $filter = '', String $sort = '', String $recherche = '', Int $lim = 0, Int $page = 0) : Array {
+    function getAllForms($filter = '', $sort = '', $recherche = '', $lim = 0, $page = 0): array {
         $data = ['datas' => [], 'count' => 0];
 		require_once (JPATH_ROOT . '/components/com_emundus/models/users.php');
 
@@ -50,13 +50,13 @@ class EmundusModelForm extends JModelList {
         $query = $db->getQuery(true);
 
         // Build filter / limit / pagination part of the query
-        if (empty($lim)) {
-            $limit = 25;
+        if (empty($lim) || $lim == 'all') {
+            $limit = '';
         } else {
             $limit = $lim;
         }
 
-        if (empty($page)) {
+        if (empty($page) || empty($limit)) {
             $offset = 0;
         } else {
             $offset = ($page - 1) * $limit;
@@ -1680,6 +1680,8 @@ class EmundusModelForm extends JModelList {
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $modules = $eMConfig->get('form_builder_page_creation_modules', [93,102,103,104,168,170]);
 
+        require_once (JPATH_ADMINISTRATOR.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'update.php');
+
         try {
             // Create the menu
             $submittion_page = $this->getSubmittionPage($prid);
@@ -2068,7 +2070,6 @@ class EmundusModelForm extends JModelList {
         try {
             $db->setQuery($query);
             $group_id=$db->loadRow();
-            //var_dump($group_id);
 
 
             $query->clear()
@@ -2078,7 +2079,7 @@ class EmundusModelForm extends JModelList {
 
             $db->setQuery($query);
             $programme = $db->loadObject();
-            //var_dump($programme);
+
             return $programme;
 
         } catch(Exception $e) {

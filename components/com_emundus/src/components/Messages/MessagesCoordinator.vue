@@ -19,16 +19,24 @@
         </div>
       </div>
       <transition :name="'slide-up'" type="transition">
-        <AttachDocument :user="user" :fnum="fnum" :applicant="false" v-if="attachOpen" @pushAttachmentMessage="pushAttachmentMessage" ref="attachment"/>
+        <AttachDocument :user="user" :fnum="fnum" :applicant="false" v-if="attachOpen" @pushAttachmentMessage="pushAttachmentMessage" @close="attachDocument" ref="attachment"/>
       </transition>
       <div class="messages__bottom-input">
-        <textarea type="text" class="messages__input_text" rows="1" spellcheck="true" v-model="message" :placeholder="translations.writeMessage" @keydown.enter.exact.prevent="sendMessage($event)"/>
+        <textarea type="text"
+                  class="messages__input_text"
+                  :disabled="attachOpen"
+                  rows="1"
+                  spellcheck="true"
+                  v-model="message"
+                  :placeholder="translations.writeMessage"
+                  @keydown.enter.exact.prevent="sendMessage($event)"
+        />
       </div>
       <div class="messages__bottom-input-actions">
         <div class="messages__actions_bar">
-          <img class="messages__send-icon" src="/images/emundus/messenger/attached.svg" @click="attachDocument"/>
+          <span class="material-icons-outlined em-pointer"  @click="attachDocument">attach_file</span>
         </div>
-        <button type="button" class="messages__send_button" @click="sendMessage">
+        <button type="button" class="messages__send_button btn btn-primary" @click="sendMessage">
           {{ translations.send }}
         </button>
       </div>
@@ -140,24 +148,30 @@ export default {
               fnum: this.fileSelected
             })
           }).then(response => {
-            this.message = '';
-            this.pushToDatesArray(response.data);
-            this.scrollToBottom();
+            if (response.data.status) {
+              this.message = '';
+              this.pushToDatesArray(response.data.data);
+              this.scrollToBottom();
+            }
           });
         }
       }
     },
 
-    pushToDatesArray(message){
-      var pushToDate = false;
-      var message_date = message.date_time.split(' ')[0];
+    pushToDatesArray(message) {
+      let pushToDate = false;
+
+      let message_date = this.moment().format("YYYY-MM-DD");
+      if (message.date_time) {
+        message_date = message.date_time.split(' ')[0];
+      }
       this.dates.forEach((elt,index) => {
         if(elt.dates == message_date){
           this.dates[index].messages.push(message.message_id);
           pushToDate = true;
         }
       });
-      if(!pushToDate){
+      if(!pushToDate) {
         var new_date = {
           dates: this.moment().format("YYYY-MM-DD"),
           messages: []
@@ -195,12 +209,12 @@ export default {
     this.fnum = this.$store.getters['global/datas'].fnum.value;
     this.user = this.$store.getters['global/datas'].user.value;
 
-    if(typeof this.fnum != 'undefined'){
+    if (typeof this.fnum != 'undefined') {
       this.fileSelected = this.fnum;
       this.getMessagesByFnum();
       setInterval(() => {
         this.getMessagesByFnum(false, false);
-      },20000);
+      }, 20000);
     }
   },
 
@@ -216,8 +230,9 @@ export default {
 .messages__vue_attach_document{
   width: 100%;
   position: absolute;
-  background: #f8f8f8;
+  background: white;
   bottom: 120px;
+	z-index: 9999;
 }
 .messages__list-block{
   padding: 0px 55px;

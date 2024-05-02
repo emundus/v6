@@ -12,10 +12,12 @@
 						  <span class="material-icons-outlined em-pointer" @click="removeGlobalSearchValue(value.value, value.scope)">clear</span>
 					  </div>
 				  </div>
-				  <input id="current-global-search" ref="globalSearchInput" class="em-border-radius-8" v-model="currentGlobalSearch" type="text" @keyup.enter="onGlobalSearchChange('everywhere')" :placeholder="globalSearchPlaceholder">
+				  <input id="current-global-search" ref="globalSearchInput" class="em-border-radius-8" v-model="currentGlobalSearch" type="text" @keyup.enter="(e) => {this.onGlobalSearchChange(e, 'everywhere')}" :placeholder="globalSearchPlaceholder">
 			  </div>
 			  <ul id="select-scopes" class="em-w-100 em-w-100 em-border-radius-8 em-white-bg em-border-neutral-400 em-box-shadow" :class="{'hidden': currentGlobalSearch.length < 1}">
-				  <li v-for="option in globalSearchScopes" :key="option.value" @click="onGlobalSearchChange(option.value)" class="em-pointer">{{ currentGlobalSearch }} {{ translate('MOD_EMUNDUS_FILTERS_SCOPE_IN') }}  {{ translate(option.label) }}</li>
+				  <li v-for="option in globalSearchScopes" :key="option.value" @click="(e) => {this.onGlobalSearchChange(e, option.value)}" class="em-pointer global-search-scope">
+					  <button>{{ currentGlobalSearch }} {{ translate('MOD_EMUNDUS_FILTERS_SCOPE_IN') }}  {{ translate(option.label) }}</button>
+				  </li>
 			  </ul>
 		  </div>
 		  <div id="save-filters-inputs-btns">
@@ -40,8 +42,7 @@
 				<MultiSelect v-if="appliedFilter.type === 'select'" :filter="appliedFilter" :module-id="moduleId" :countFilterValues="countFilterValues" class="em-w-100" @remove-filter="onRemoveFilter(appliedFilter)" @filter-changed="onFilterChanged"></MultiSelect>
 				<DateFilter v-else-if="appliedFilter.type === 'date'" :filter="appliedFilter" :module-id="moduleId" class="em-w-100" @remove-filter="onRemoveFilter(appliedFilter)" @filter-changed="onFilterChanged"></DateFilter>
 				<TimeFilter v-else-if="appliedFilter.type === 'time'" :filter="appliedFilter" :module-id="moduleId" class="em-w-100" @remove-filter="onRemoveFilter(appliedFilter)"></TimeFilter>
-				<DefaultFilter v-else :filter="appliedFilter" :module-id="moduleId" class="em-w-100" @remove-filter="onRemoveFilter(appliedFilter)" @filter-changed="onFilterChanged"></DefaultFilter>
-			</div>
+        <DefaultFilter v-else :filter="appliedFilter" :module-id="moduleId" :type="appliedFilter.type" class="em-w-100" @remove-filter="onRemoveFilter(appliedFilter)" @filter-changed="onFilterChanged"></DefaultFilter>			</div>
 	  </section>
 	  <div id="filters-selection-wrapper" class="em-w-100 em-mt-16 em-mb-16" :class="{'hidden': !openFilterOptions}">
 		  <label for="filters-selection"> {{ translate('MOD_EMUNDUS_FILTERS_SELECT_FILTER_LABEL') }} </label>
@@ -88,7 +89,7 @@ export default {
 			type: Array,
 			default: () => []
 		},
-		filters: {
+		defaultFilters: {
 			type: Array,
 			default: () => []
 		},
@@ -112,11 +113,13 @@ export default {
 			globalSearch: [],
 			currentGlobalSearchScope: 'everywhere',
 			globalSearchScopes: [],
+      filters: [],
 		}
 	},
 	mounted() {
 		this.applySuccessEvent = new Event('emundus-apply-filters-success');
 		this.startApplyFilters = new Event('emundus-start-apply-filters');
+    this.filters = this.defaultFilters;
 
 		this.getRegisteredFilters();
 		this.selectedRegisteredFilter = sessionStorage.getItem('emundus-current-filter') || 0;
@@ -132,12 +135,60 @@ export default {
 		});
 		this.globalSearch = this.defaultQuickSearchFilters;
 		this.mapSearchScopesToAppliedFilters();
+		this.addKeyEvents();
 
     window.addEventListener('refresh-emundus-module-filters', () => {
       this.applyFilters();
     });
   },
 	methods: {
+		addKeyEvents()
+		{
+			// add key events on up and down to focus on the next or previous global search scope
+			const globalSearchScope = document.getElementById('global-search-wrapper');
+			globalSearchScope.addEventListener('keydown', (event) => {
+				const currentFocusedScope = globalSearchScope.querySelector('.global-search-scope button:focus');
+				const currentFocusedInput = globalSearchScope.querySelector('#current-global-search:focus');
+
+				if (currentFocusedScope || currentFocusedInput) {
+					if (event.code === 'ArrowUp') {
+						event.preventDefault();
+
+						if (currentFocusedScope) {
+							// focus on the previous scope
+							const previousScope = currentFocusedScope.parentElement.previousElementSibling;
+							if (previousScope) {
+								const previousScopeButton = previousScope.querySelector('button');
+								previousScopeButton.focus();
+							} else {
+								// focus on the input
+								this.$refs.globalSearchInput.focus();
+							}
+						} else {
+							// focus on the last scope
+							const lastScope = globalSearchScope.querySelector('.global-search-scope:last-child button');
+							lastScope.focus();
+						}
+					} else if (event.code === 'ArrowDown') {
+						event.preventDefault();
+						if (currentFocusedScope) {
+							// focus on the next scope
+							const nextScope = currentFocusedScope.parentElement.nextElementSibling;
+							if (nextScope) {
+								const nextScopeButton = nextScope.querySelector('button');
+								nextScopeButton.focus();
+							} else {
+								this.$refs.globalSearchInput.focus();
+							}
+						} else {
+							// focus on the first scope
+							const firstScope = globalSearchScope.querySelector('.global-search-scope:first-child button');
+							firstScope.focus();
+						}
+					}
+				}
+			});
+		},
 		onSelectNewFilter(filterId) {
 			let added = false;
 
@@ -148,9 +199,21 @@ export default {
 
 				newFilter.uid = new Date().getTime();
 				newFilter.default = false;
-				newFilter.operator = newFilter.type === 'select' ? 'IN' : '=';
+				newFilter.operator = newFilter.hasOwnProperty('operator') && newFilter.operator != '' ? newFilter.operator : '=';
 				newFilter.andorOperator = 'OR';
-				newFilter.value = newFilter.type === 'select' ? ['all'] : '';
+
+				switch (newFilter.type) {
+					case 'select':
+						newFilter.value = ['all'];
+						newFilter.operator = 'IN';
+						break;
+					case 'date':
+						newFilter.value = ['', ''];
+						break;
+					default:
+						newFilter.value = '';
+						break;
+				}
 
 				if (newFilter.type === 'select' && newFilter.values.length < 1) {
 					filtersService.getFilterValues(newFilter.id).then((values) => {
@@ -161,7 +224,6 @@ export default {
 						this.applyFilters();
 
 						return true;
-
 					});
 				} else {
 					this.appliedFilters.push(newFilter);
@@ -186,6 +248,12 @@ export default {
             }
           });
         }
+
+        filtersService.getFiltersAvailable(this.moduleId).then((filters) => {
+          this.filters = filters;
+        }).catch((error) => {
+          console.error(error);
+        });
       });
 		},
 		clearFilters() {
@@ -193,7 +261,11 @@ export default {
 			this.globalSearch = [];
 			// reset applied filters values
 			this.appliedFilters = this.appliedFilters.map((filter) => {
-				if (filter.type === 'select') {
+				filter.operator = '=';
+
+        if (filter.type === 'select') {
+          filter.operator = 'IN';
+
 					// TODO: too specific to the published filter, should create a default_value field.
 					if (filter.uid === 'published') {
 						filter.value = [1];
@@ -297,7 +369,10 @@ export default {
 		onFilterChanged() {
 			this.applyFilters();
 		},
-		onGlobalSearchChange(scope = 'everywhere') {
+		onGlobalSearchChange(event, scope = 'everywhere') {
+			event.stopPropagation();
+			event.preventDefault();
+
 			if (this.currentGlobalSearch.length > 0) {
 				// if the current search is already in the list, no need to add it again
 				const foundSearch = this.globalSearch.find((search) => search.value === this.currentGlobalSearch && search.scope === scope);
@@ -313,7 +388,14 @@ export default {
 			this.$refs.globalSearchValues.scrollTop = 0;
 		},
 		removeGlobalSearchValue(value, scope) {
-			this.globalSearch = this.globalSearch.filter((search) => search.value !== value && search.scope !== scope);
+			this.globalSearch = this.globalSearch.filter((search) => {
+				return search.value !== value || search.scope !== scope;
+			});
+
+			// scroll to top of the div #global-search-values
+			// remove focus from the input #global-search-input
+			document.activeElement.blur();
+			this.$refs.globalSearchValues.scrollTop = 0;
 			this.applyFilters();
 		},
 		onEnterGlobalSearchDiv() {
@@ -385,6 +467,11 @@ export default {
 #global-search-values {
 	height: 42px;
 	overflow-y: auto;
+}
+
+.global-search-scope button {
+	white-space: break-spaces;
+	text-align: left;
 }
 
 #current-global-search {

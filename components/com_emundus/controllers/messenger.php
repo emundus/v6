@@ -79,8 +79,9 @@ class EmundusControllerMessenger extends JControllerLegacy
     public function sendmessage(){
 	    $response = ['data' => null, 'status' => false, 'msg' => JText::_('BAD_REQUEST'), 'code' => 403];
         $jinput = JFactory::getApplication()->input;
-        $message = $jinput->getString('message');
-        $fnum = $jinput->getString('fnum');
+
+        $message = $jinput->getString('message', '');
+        $fnum = $jinput->getString('fnum', '');
 
 		if (!empty($fnum) && !empty($message)) {
 			$response['msg'] = JText::_('ACCESS_DENIED');

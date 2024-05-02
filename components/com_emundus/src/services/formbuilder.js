@@ -794,5 +794,34 @@ export default {
         }
 
         return response;
+    },
+
+    async getSqlDropdownOptions(table,key,value,translate) {
+        let response = {
+            status: false,
+            msg: 'MISSING_PARAMS'
+        };
+
+        if (table && key && value) {
+            try {
+                const result = await client().get(
+                    'index.php?option=com_emundus&controller=formbuilder&task=getsqldropdownoptions',
+                    {
+                        params: {
+                            table: table,
+                            key: key,
+                            value: value,
+                            translate: translate
+                        }
+                    }
+                );
+
+                response = result.data;
+            } catch (e) {
+                response.msg = e.message;
+            }
+        }
+
+        return response;
     }
 };

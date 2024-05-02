@@ -1074,7 +1074,13 @@ class EmundusModelPayment extends JModelList
         return $hikashop_user;
     }
 
-    public function getGeneratedCoupon($fnum, $hikashop_product_category)
+	/**
+	 * @param $fnum
+	 * @param $hikashop_product_category
+	 * @param $code_like
+	 * @return int
+	 */
+    public function getGeneratedCoupon($fnum, $hikashop_product_category, $code_like = null)
     {
         $discount_id = 0;
 
@@ -1088,11 +1094,17 @@ class EmundusModelPayment extends JModelList
                 $query->select('discount_code')
                     ->from($db->quoteName('#__hikashop_discount'))
                     ->where('discount_user_id = ' . $hikashop_user->user_id)
-                    ->andWhere('discount_code LIKE ' . $db->quote($fnum . '-REDUCTION-%'))
                     ->andWhere('discount_published = 1')
                     ->andWhere('discount_used_times < 1')
                     ->andWhere('discount_start <= ' . time())
-                    ->andWhere('discount_end > '  . time());
+                    ->andWhere('discount_end > '  . time())
+                    ->andWhere('discount_category_id = ' . $db->quote($hikashop_product_category) . ' OR discount_category_id = ' . $db->quote($hikashop_product_category . ',%'));
+
+				if (!empty($code_like)) {
+					$query->andWhere('discount_code LIKE ' . $db->quote($code_like));
+				}
+
+				$query->order('discount_id DESC');
 
                 try {
                     $db->setQuery($query);
@@ -1157,5 +1169,55 @@ class EmundusModelPayment extends JModelList
 				}
 			}
 		}
+	}
+
+
+	public function didUserPay($user, $fnum, $product_id) {
+		$paid = false;
+		$hika_user_id = $this->getHikashopUserId($user);
+
+		if (!empty($hika_user_id)) {
+			// Select all order confirmed or shipped for this user and product
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select($db->quoteName('jho.order_id'))
+				->from($db->quoteName('#__hikashop_order', 'jho'))
+				->join('INNER', $db->quoteName('#__hikashop_order_product', 'jhop') . ' ON (' . $db->quoteName('jho.order_id') . ' = ' . $db->quoteName('jhop.order_id') . ')')
+				->where($db->quoteName('jho.order_user_id') . ' = ' . $hika_user_id)
+				->andWhere($db->quoteName('jho.order_type') . ' = ' . $db->quote('sale'))
+				->andWhere($db->quoteName('jho.order_status') . ' IN ("confirmed", "shipped")')
+				->andWhere($db->quoteName('jhop.product_id') . ' = ' . $product_id);
+
+			try {
+				$db->setQuery($query);
+				$order_ids = $db->loadColumn();
+
+				if (!empty($order_ids)) {
+					// check if order ids are all linked to user in emundus_hikashop table
+					$query->clear()
+						->select('order_id, fnum')
+						->from($db->quoteName('#__emundus_hikashop'))
+						->where($db->quoteName('order_id') . ' IN (' . implode(',', $order_ids) . ')')
+						->andWhere($db->quoteName('user') . ' = ' . $user);
+
+					$emundus_orders = $db->setQuery($query)->loadObjectList();
+
+					$emundus_order_ids = array_column($emundus_orders, 'order_id');
+					$emundus_fnums = array_column($emundus_orders, 'fnum');
+
+					$not_linked_order_ids = array_diff($order_ids, $emundus_order_ids);
+					if (!empty($not_linked_order_ids)) {
+						$paid = true;
+					} else if (in_array($fnum, $emundus_fnums)) {
+						$paid = true;
+					}
+				}
+			} catch (Exception $e) {
+				JLog::add('Error getting hikashop orders for user ID: '.$hika_user_id . ' - ' . $e->getMessage(), JLog::ERROR, 'com_emundus.emundus_hikashop_plugin');
+			}
+		}
+
+		return $paid;
 	}
 }

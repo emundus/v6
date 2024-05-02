@@ -205,16 +205,19 @@ class SmartAgenda
 		return $response;
 	}
 
-    private function generateToken()
-    {
-        $response = $this->get('token', $this->getAuth());
+	private function generateToken()
+	{
+		$params = $this->getAuth();
+		$params['pwd'] = sha1($params['pwd']);
 
-        if (!empty($response) && !empty($response->token)) {
-            $this->setToken($response->token);
-        } else {
-            JLog::add('Failed to generate token for smart agenda ', JLog::WARNING, 'com_emundus.smart_agenda');
-        }
-    }
+		$response = $this->get('token', $params);
+
+		if (!empty($response) && !empty($response->token)) {
+			$this->setToken($response->token);
+		} else {
+			JLog::add('Failed to generate token for smart agenda ' . json_encode($response), JLog::WARNING, 'com_emundus.smart_agenda');
+		}
+	}
 
     public function getClientFromFnum($fnum)
     {
@@ -352,6 +355,19 @@ class SmartAgenda
 
 					if (!$updated) {
 						JLog::add('Failed to save smart agenda user_id ' . $response->id . ' for user with mail ' . $params['mail'] . ' and fnum ' . $params['id_interne_candidat'], JLog::WARNING, 'com_emundus.smart_agenda');
+					} else {
+						JLog::add('User invitation succeeded for user with mail ' . $params['mail'] . ' and fnum ' . $params['id_interne_candidat'], JLog::INFO, 'com_emundus.smart_agenda');
+
+						require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
+						$m_files = new EmundusModelFiles();
+						$fnum_infos = $m_files->getFnumInfos($params['id_interne_candidat']);
+
+						if (!empty($fnum_infos) && !empty($fnum_infos['applicant_id'])) {
+							require_once(JPATH_SITE . '/components/com_emundus/models/logs.php');
+							$applicant_id = $fnum_infos['applicant_id'];
+							$user = JFactory::getUser();
+							EmundusModelLogs::log($user->id, $applicant_id, $params['id_interne_candidat'], 9, 'c', 'SMART_AGENDA_USER_INVITATION_SENT', json_encode(['created' => ['details' => 'SMART_AGENDA_USER_INVITATION_SENT']]));
+						}
 					}
 				} catch (Exception $e) {
 					JLog::add('Failed to save smart agenda user_id ' . $response->id . ' for user with mail ' . $params['mail'] . ' and fnum ' . $params['id_interne_candidat'] . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.smart_agenda');

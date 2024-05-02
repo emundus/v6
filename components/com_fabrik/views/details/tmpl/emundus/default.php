@@ -55,15 +55,6 @@ endif;
 	<?php if ($this->params->get('show-title', 1)) : ?>
         <div class="page-header em-mb-12 em-flex-row em-flex-space-between">
             <h1><?php echo $form->label; ?></h1>
-
-			<?php if (!empty($model->data['rowid'])) : ?>
-                <button class="em-secondary-button em-w-auto">
-                    <a target="_blank"
-                       href="index.php?option=com_fabrik&view=form&formid=<?php echo $form->id ?>&rowid=<?php echo $model->data['rowid'] ?>">
-						<?php echo JText::_('COM_FABRIK_EDIT'); ?>
-                    </a>
-                </button>
-			<?php endif; ?>
         </div>
 	<?php
 	endif;
@@ -119,3 +110,9 @@ endif;
 	echo $form->outro;
 	echo $this->pluginend; ?>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.title = "<?php echo $form->label; ?>";
+    });
+</script>

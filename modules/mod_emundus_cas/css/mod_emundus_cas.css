@@ -6,7 +6,7 @@
     display: flex !important;
     flex-direction: column;
     align-items: center;
-    background: white;
+    background: var(--neutral-0);
     width: 50%;
     margin: 50px auto;
     border-radius: var(--em-default-br);
@@ -63,7 +63,9 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 0px;
+    margin: 0;
+    background: var(--em-primary-color);
+    border: 1px solid var(--em-primary-color);
 }
 
 .container-module-cas  .sous-container-module-cas #inscription  a.btn.btn-primary {
@@ -75,6 +77,17 @@
     justify-content: center;
     align-items: center;
     border-radius: 4px;
+    background: var(--em-primary-color);
+    border: 1px solid var(--em-primary-color);
+    color: var(--neutral-0);
+}
+
+.container-module-cas  .sous-container-module-cas #inscription  a.btn.btn-primary:hover,
+.container-module-cas  .sous-container-module-cas #inscription  a.btn.btn-primary:active,
+.container-module-cas  .sous-container-module-cas #inscription  a.btn.btn-primary:focus{
+    background: var(--neutral-0);
+    border: 1px solid var(--em-primary-color);
+    color: var(--em-primary-color);
 }
 
 
@@ -91,7 +104,6 @@
     width: 100%;
     margin-left: auto;
     margin-right: auto;
-    width: 100%;
 }
 
 .container-module-cas  .sous-container-module-cas #inscription .formulaire .btn.btn-danger {
@@ -129,14 +141,14 @@
 }
 
 .container-module-cas  .sous-container-module-cas li:nth-child(1):not(.couleurFoncee) {
-    -webkit-box-shadow: 5px -6px 6px 0px rgb(0 0 0 / 4%);
-    box-shadow: 5px -6px 6px 0px rgb(0 0 0 / 4%);
+    -webkit-box-shadow: 5px -6px 6px 0 rgb(0 0 0 / 4%);
+    box-shadow: 5px -6px 6px 0 rgb(0 0 0 / 4%);
     z-index: 1;
 }
 
 .container-module-cas  .sous-container-module-cas li:nth-child(2):not(.couleurFoncee) {
-    -webkit-box-shadow: -5px -6px 6px 0px rgb(0 0 0 / 4%);
-    box-shadow: -5px -6px 6px 0px rgb(0 0 0 / 4%);
+    -webkit-box-shadow: -5px -6px 6px 0 rgb(0 0 0 / 4%);
+    box-shadow: -5px -6px 6px 0 rgb(0 0 0 / 4%);
     z-index: 1;
 }
 
@@ -175,11 +187,22 @@
     justify-content: center;
     align-items: center;
     width: 100%;
+    background: var(--em-primary-color);
+    border: 1px solid var(--em-primary-color);
+    color: var(--neutral-0);
 }
+
+.container-module-cas .sous-container-module-cas #connexion .btn-cas a.btn.btn-primary:not(.logo):hover,
+.container-module-cas .sous-container-module-cas #connexion .btn-cas a.btn.btn-primary:not(.logo):active,
+.container-module-cas .sous-container-module-cas #connexion .btn-cas a.btn.btn-primary:not(.logo):focus{
+    background-color: var(--neutral-0);
+    color: var(--em-primary-color);
+    border: 1px solid var(--em-primary-color);
+}
+
 .container-module-cas .sous-container-module-cas #connexion .btn-cas a.btn.btn-primary.rounded:not(.logo) {
     border-radius: var(--em-default-br) !important;
 }
-
 
 #login-form .control-group button.login-button {
     text-transform: capitalize;
@@ -189,6 +212,17 @@
     justify-content: center;
     align-items: center;
     border-radius: var(--em-default-br) !important;
+    background-color: var(--em-secondary-color);
+    border-color: var(--em-secondary-color);
+    color: var(--neutral-0);
+}
+
+#login-form .control-group button.login-button:hover,
+#login-form .control-group button.login-button:active,
+#login-form .control-group button.login-button:focus {
+    background-color: var(--neutral-0);
+    border-color: var(--em-secondary-color) !important;
+    color: var(--em-secondary-color);
 }
 
 @media all and (max-width: 479px) {

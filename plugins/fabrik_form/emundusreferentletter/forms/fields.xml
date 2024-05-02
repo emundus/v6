@@ -8,6 +8,9 @@
 				<option value="true">JYES</option>
 			</field>
 			<field name="email_tmpl" type="field" default="referent_letter" description="PLG_FABRIK_FORM_EMUNDUS_REFERENT_LETTER_EMAIL_TMPL_DESC" label="PLG_FABRIK_FORM_EMUNDUS_REFERENT_LETTER_EMAIL_TMPL_LABEL" />
+			<field name="emails" type="textarea" default="jos_emundus_references___Email_1,jos_emundus_references___Email_2,jos_emundus_references___Email_3,jos_emundus_references___Email_4" description="PLG_FABRIK_FORM_EMUNDUS_REFERENT_LETTER_EMAILS_DESC" label="PLG_FABRIK_FORM_EMUNDUS_REFERENT_LETTER_EMAILS_LABEL" />
+			<field name="names" type="textarea" default="jos_emundus_references___Last_Name_1,jos_emundus_references___Last_Name_2,jos_emundus_references___Last_Name_3,jos_emundus_references___Last_Name_4" description="PLG_FABRIK_FORM_EMUNDUS_REFERENT_LETTER_NAMES_DESC" label="PLG_FABRIK_FORM_EMUNDUS_REFERENT_LETTER_NAMES_LABEL" />
+			<field name="firstnames" type="textarea" default="jos_emundus_references___First_Name_1,jos_emundus_references___First_Name_2,jos_emundus_references___First_Name_3,jos_emundus_references___First_Name_4" description="PLG_FABRIK_FORM_EMUNDUS_REFERENT_LETTER_FIRSTNAMES_DESC" label="PLG_FABRIK_FORM_EMUNDUS_REFERENT_LETTER_FIRSTNAMES_LABEL" />
 		</fieldset>
 	</fields>
 </form>

@@ -186,7 +186,7 @@ if ($allowed_attachments !== true) {
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </select>
-                <a class="em-font-size-14 em-pointer" href="emails"
+                <a class="em-font-size-14 em-pointer em-text-underline" href="emails"
                    target="_blank"><?= JText::_('COM_EMUNDUS_EMAILS_ADD_TEMPLATE'); ?>
                 </a>
             </div>
@@ -354,7 +354,7 @@ if ($allowed_attachments !== true) {
 
                         <label for="em-file_to_upload"
                                type="button"><?= JText::_('COM_EMUNDUS_ATTACHMENTS_SELECT_FILE_TO_UPLOAD') ?>
-                            <input type="file" id="em-file_to_upload" onChange="addFile();">
+                            <input type="file" accept=".xls,.xlsx,.doc,.docx,.pdf,.png,.jpg,.jpeg,.gif,.odf,.ppt,.pptx,.svg,.csv" id="em-file_to_upload" onChange="addFile();">
                         </label>
                     </div>
                     <div id="em-progress-wrp" class="loading-bar">
@@ -1196,7 +1196,13 @@ if ($allowed_attachments !== true) {
                 return myXhr;
             },
             success: function (data) {
-                data = JSON.parse(data);
+                try {
+                    data = JSON.parse(data);
+                } catch (e) {
+                    document.getElementById('em-progress-wrp').remove();
+                    $("#upload_file").append('<span class="alert"> <?= JText::_('UPLOAD_FAILED'); ?> </span>')
+                    return false; // error in the above string (in this case, yes)!
+                }
 
                 if (data.status) {
                     $('#em-attachment-list').append(

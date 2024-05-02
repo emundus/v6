@@ -14,6 +14,8 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
 use Joomla\CMS\Date\Date;
+use Joomla\CMS\Component\ComponentHelper;
+use Symfony\Component\Yaml\Yaml;
 
 class EmundusModelsettings extends JModelList {
 
@@ -1452,5 +1454,119 @@ class EmundusModelsettings extends JModelList {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Get only accessibles parameters based on settings-applicants.json and settings-general.json files
+	 * This function is used to avoid exposing all parameters to the front-end
+	 * @return array
+	 */
+	public function getEmundusParams()
+	{
+		$params = ['emundus' => [], 'joomla' => []];
+
+		$settings_applicants = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings-applicants.json');
+		$settings_general = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings-general.json');
+
+		$settings_applicants = json_decode($settings_applicants, true);
+		$settings_general = json_decode($settings_general, true);
+
+		$emundus_parameters = ComponentHelper::getParams('com_emundus');
+
+		foreach($settings_applicants as $settings_applicant) {
+			if ($settings_applicant['component'] === 'emundus') {
+				$params['emundus'][$settings_applicant['param']] = $emundus_parameters->get($settings_applicant['param']);
+			} else {
+				$params['joomla']->$settings_applicant['param'] = JFactory::getConfig()->get($settings_applicant['param']);
+			}
+		}
+
+		foreach($settings_general as $setting_general) {
+			if ($setting_general['component'] === 'emundus') {
+				$params['emundus'][$setting_general['param']] = $emundus_parameters->get($setting_general['param']);
+			} else {
+				$params['joomla'][$setting_general['param']] = JFactory::getConfig()->get($setting_general['param']);
+			}
+		}
+
+		return $params;
+	}
+
+	/**
+	 * @param $component
+	 * @param $param
+	 * @param $value
+	 * @return bool
+	 */
+	public function updateEmundusParam($component, $param, $value) {
+		$updated = false;
+
+		if (!empty($param)) {
+			$params = $this->getEmundusParams();
+			switch($component) {
+				case 'emundus':
+					if (array_key_exists($param, $params['emundus'])) {
+						$eMConfig = ComponentHelper::getParams('com_emundus');
+						$eMConfig->set($param, $value);
+
+						$componentid = ComponentHelper::getComponent('com_emundus')->id;
+						$db = JFactory::getDBO();
+						$query = $db->getQuery(true);
+
+						$query->update($db->quoteName('#__extensions'))
+							->set($db->quoteName('params') . ' = ' . $db->quote($eMConfig->toString()))
+							->where($db->quoteName('extension_id') . ' = ' . $db->quote($componentid));
+
+						try {
+							$db->setQuery($query);
+							$updated = $db->execute();
+						} catch (Exception $e) {
+							JLog::add('Error set param '.$param . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+						}
+					} else {
+						JLog::add('Error : unable to detect if param is writable or not : ' . $param , JLog::WARNING, 'com_emundus.error');
+					}
+
+					break;
+				case 'joomla':
+				default:
+					if (array_key_exists($param, $params['joomla'])) {
+						if(!class_exists('EmundusHelperUpdate')) {
+							require_once (JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
+						}
+						$updated = EmundusHelperUpdate::updateConfigurationFile($param, $value);
+
+						if ($updated) {
+							$configuration = JFactory::getConfig();
+							$configuration->set($param, $value);
+						}
+					} else {
+						JLog::add('Error : unable to detect if param is writable or not : ' . $param , JLog::WARNING, 'com_emundus.error');
+					}
+				break;
+			}
+		}
+
+		return $updated;
+	}
+
+	public function getFavicon() {
+		$favicon = 'images/custom/default_favicon.ico';
+
+		$yaml = Yaml::parse(file_get_contents(JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml'));
+
+		if(!empty($yaml)) {
+			$favicon_gantry = $yaml['favicon'];
+
+			if (!empty($favicon_gantry)) {
+				$favicon = str_replace('gantry-media:/', 'images', $favicon_gantry);
+
+				if (!file_exists(JPATH_ROOT . '/' . $favicon)) {
+					$favicon = 'images/custom/default_favicon.ico';
+				}
+			}
+		}
+
+		return $favicon;
 	}
 }

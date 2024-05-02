@@ -29,6 +29,10 @@
 				<field name="menu_name" type="text" default="0" size="5" label="COM_EMUNDUS_USERDROPDOWN_MENU_NAME" description="COM_EMUNDUS_USERDROPDOWN_MENU_NAME_DESC" />
 				<field name="primary_color" type="text" default="ECF0F1" size="5" label="COM_EMUNDUS_USERDROPDOWN_PRIMARY_COLOR" description="COM_EMUNDUS_USERDROPDOWN_PRIMARY_COLOR_DESC" />
 				<field name="secondary_color" type="text" default="F89406" size="5" label="COM_EMUNDUS_USERDROPDOWN_SECONDARY_COLOR" description="COM_EMUNDUS_USERDROPDOWN_SECONDARY_COLOR_DESC" />
+				<field name="display_svg" type="radio" default="1" label="COM_EMUNDUS_USERDROPDOWN_DISPLAY_SVG" description="COM_EMUNDUS_USERDROPDOWN_DISPLAY_SVG_DESC" class="btn-group btn-group-yesno">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
 				<field name="show_logout" type="radio" default="1" label="Show logout button" description="Shows the logout button at the bottom of the dropdown" class="btn-group btn-group-yesno">
 					<option value="0">JNo</option>
 					<option value="1">JYes</option>

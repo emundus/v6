@@ -646,9 +646,8 @@ class EmundusController extends JControllerLegacy {
         Open application form from fnum  for applicant
     */
     function openfile() {
-
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
-        require_once(JPATH_COMPONENT.DS.'models'.DS.'application.php');
+	    require_once(JPATH_ROOT . '/components/com_emundus/models/profile.php');
+        require_once(JPATH_ROOT . '/components/com_emundus/models/application.php');
 
         $app = JFactory::getApplication();
         $jinput = $app->input;
@@ -687,14 +686,14 @@ class EmundusController extends JControllerLegacy {
             }
         }
 
-        # get the fnum          $fnum
+	    # get the fnum          $fnum
         # get the logged user   $aid->id
         # get FNUM INFO
-        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+        require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
         $mFile = new EmundusModelFiles();
         $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
 
-        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+        require_once(JPATH_SITE . '/components/com_emundus/models/logs.php');
         EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $fnum, 1, 'r', 'COM_EMUNDUS_ACCESS_FILE_READ');
 
         $dispatcher = JEventDispatcher::getInstance();
@@ -923,9 +922,7 @@ class EmundusController extends JControllerLegacy {
         }
 
         foreach ($fnums as $fnum) {
-
             foreach ($files as $key => $file) {
-
 				$local_filename = $file['name'];
 
                 $pageCount = 0;
@@ -944,7 +941,7 @@ class EmundusController extends JControllerLegacy {
                 }
 
                 try {
-                    $query_ext = 'SELECT UPPER(allowed_types) as allowed_types, nbmax, min_pages_pdf, max_pages_pdf FROM #__emundus_setup_attachments WHERE id = '.(int)$attachments;
+                    $query_ext = 'SELECT UPPER(allowed_types) as allowed_types, nbmax, min_pages_pdf, max_pages_pdf, max_filesize FROM #__emundus_setup_attachments WHERE id = '.(int)$attachments;
                     $db->setQuery($query_ext);
                     $attachment = $db->loadAssoc();
 
@@ -964,6 +961,23 @@ class EmundusController extends JControllerLegacy {
 
                             continue;
                         }
+
+	                    if (!empty($attachment['max_filesize'])) {
+		                    $bytes = $attachment['max_filesize'] * 1024 * 1024;
+
+							if ($file['size'] > $bytes) {
+								$error = JText::_('COM_EMUNDUS_ATTACHMENTS_ERROR_FILE_TOO_BIG');
+
+								if ($format == "raw") {
+									echo '{"aid":"0","status":false,"message":"'.$error.'" }';
+								} else {
+									JFactory::getApplication()->enqueueMessage($error, 'error');
+									$this->setRedirect($url);
+								}
+
+								return false;
+							}
+	                    }
                     } catch (Exception $e) {
                         $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
                         JLog::add($error, JLog::ERROR, 'com_emundus');
@@ -1397,24 +1411,26 @@ class EmundusController extends JControllerLegacy {
             $this->setRedirect(JRoute::_('index.php'), JText::_('Only administrator can access this function.'), 'error');
             return;
         }
-        $attachment_id = JRequest::getVar('aid', $default=null, $hash= 'POST', $type= 'array', $mask=0);
-        $attachment_selected = JRequest::getVar('as', $default=null, $hash= 'POST', $type= 'array', $mask=0);
-        $attachment_displayed = JRequest::getVar('ad', $default=null, $hash= 'POST', $type= 'array', $mask=0);
-        $attachment_required = JRequest::getVar('ar', $default=null, $hash= 'POST', $type= 'array', $mask=0);
-        $attachment_bank_needed = JRequest::getVar('ab', $default=null, $hash= 'POST', $type= 'array', $mask=0);
-        $profile_id = JRequest::getVar('pid', $default=null, $hash= 'POST', $type= 'none', $mask=0);
-        if ($profile_id != JRequest::getVar('rowid', $default=null, $hash= 'GET', $type= 'none', $mask=0) || !is_numeric($profile_id) || floor($profile_id) != $profile_id || $profile_id <= 0) {
+        $attachment_id = $this->input->post->get('aid', array(), 'array');
+        $attachment_selected = $this->input->post->get('as', array(), 'array');
+        $attachment_displayed = $this->input->post->get('ad', array(), 'array');
+        $attachment_required = $this->input->post->get('ar', array(), 'array');
+        $attachment_bank_needed = $this->input->post->get('ab', array(), 'array');
+        $profile_id = $this->input->post->getInt('pid', 0);
+        if ($profile_id != $this->input->getInt('rowid', 0) || !is_numeric($profile_id) || floor($profile_id) != $profile_id || $profile_id <= 0) {
             $this->setRedirect('index.php', 'Error', 'error');
             return;
         }
-        if (!empty($attachment_selected)) {
-            $attachments = array();
-            $a = new stdClass();
+
+	    $attachments = array();
+	    if (!empty($attachment_selected)) {
+
             foreach ($attachment_id as $id) {
-                $a->selected = @in_array($id, $attachment_selected);
-                $a->displayed = @in_array($id, $attachment_displayed);
-                $a->required = @in_array($id, $attachment_required);
-                $a->bank_needed = @in_array($id, $attachment_bank_needed);
+	            $a = new stdClass();
+                $a->selected = in_array($id, $attachment_selected);
+                $a->displayed = in_array($id, $attachment_displayed);
+                $a->required = in_array($id, $attachment_required);
+                $a->bank_needed = in_array($id, $attachment_bank_needed);
                 $attachments[$id] = $a;
                 unset($a);
             }
@@ -1422,9 +1438,10 @@ class EmundusController extends JControllerLegacy {
         }
 
         $db = JFactory::getDBO();
-// ATTACHMENTS
+
+		// ATTACHMENTS
         $db->setQuery('DELETE FROM #__emundus_setup_attachment_profiles WHERE profile_id = '.$profile_id);
-        $db->execute() or die($db->getErrorMsg());
+        $db->execute();
         if (isset($attachments)) {
             $query = 'INSERT INTO #__emundus_setup_attachment_profiles (`profile_id`, `attachment_id`, `displayed`, `mandatory`, `bank_needed`) VALUES';
             foreach ($attachments as $id => $attachment) {
@@ -1608,8 +1625,8 @@ class EmundusController extends JControllerLegacy {
 
         $current_user = JFactory::getSession()->get('emundusUser');
 
-        $fnum= "";
-        if($current_user->id == $uid){
+        $fnum = '';
+        if($current_user->id == $uid && !empty($current_user->fnum)) {
             $fnum = $current_user->fnum;
         }
 	    $fnums = [];

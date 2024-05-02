@@ -20,6 +20,7 @@
         :type="data.type"
         :user="data.user"
         :ratio="data.ratio"
+        :context="data.context || ''"
     ></ApplicationSingle>
 
     <transition v-else name="slide-right">
@@ -46,6 +47,7 @@ import messages from "./components/Messages/Messages";
 
 import settingsService from "./services/settings.js";
 import ApplicationSingle from "@/components/Files/ApplicationSingle.vue";
+import TranslationTool from "./components/Settings/TranslationTool/TranslationTool.vue";
 
 export default {
 	props: {
@@ -79,7 +81,8 @@ export default {
     messagescoordinator,
     messages,
     Files,
-		list_v2
+		list_v2,
+		TranslationTool
 	},
 
   created() {
@@ -126,13 +129,7 @@ export default {
         this.$store.commit("global/initOffset", response.data.data);
       }
     });
-  },
-
-  mounted() {
-		if (this.data.base) {
-			this.$store.dispatch('attachment/setAttachmentPath', this.data.base + '/images/emundus/files/');
-		}
-	},
+  }
 };
 </script>
 

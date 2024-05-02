@@ -13,7 +13,6 @@
     display: flex;
     flex-direction: column;
     align-items: start;
-    top: 0;
     position: fixed;
     right: 0 !important;
     width: 300px;
@@ -21,11 +20,12 @@
     margin-top: 0;
     height: 100%;
     border: unset;
+    border-radius: 0;
     box-shadow: unset;
     animation: increase-width 0.3s;
     animation-fill-mode: forwards;
     transition: all 0.3s ease-in-out;
-    padding: var(--p-72) var(--p-32) var(--p-32) var(--p-32);
+    padding: var(--p-32) var(--p-32) var(--p-32) var(--p-32);
 }
 #g-navigation:not(.g-flushed) .header-c .open > .dropdown-menu {
     right: 0;
@@ -49,7 +49,6 @@
 
 
 #userDropdownMenu li {
-    text-align: left;
     width: 100%;
     height: auto !important;
     margin: 0 !important;
@@ -75,17 +74,12 @@
 
 
 #userDropdownMenu li.dropdown-header {
-    width: 190px;
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 1;
     overflow: hidden;
     word-break: break-all;
     white-space: break-spaces;
-}
-
-#userDropdownMenu li.dropdown-header {
-    color: var(--neutral-600) !important;
 }
 
 #userDropdownMenu li>a:hover,
@@ -113,11 +107,13 @@ li>a:hover {
 
 .em-user-dropdown-button {
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
     align-items: center;
     z-index: 9999;
     position: relative;
-    width: 30px;
+    width: 45px !important;
+    height: 45px;
+    min-width: 30px;
 }
 
 #g-navigation #header-c .header-right {
@@ -246,6 +242,14 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
     margin: var(--m-16) 0;
 }
 
+.em-profile-container {
+    padding: 8px;
+}
+#userDropdown:hover .em-profile-container{
+    background: transparent;
+    border-radius: var(--em-default-br);
+}
+
 /* CORRECTION  */
 .login .btn, .logout .btn, .registration .btn, .profile-edit .btn, .remind .btn, .reset .btn {
     margin-right: 0 !important;
@@ -257,17 +261,28 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
     text-align: center;
     background-color: var(--red-500);
     color: var(--neutral-0) !important;
-    margin-top: var(--m-8);
     letter-spacing: normal;
     line-height: normal !important;
     font-size: var(--em-applicant-font-size);
+    border: 1px solid var(--red-500) !important;
 }
-.logout-button-user:hover{
-    background: var(--red-700) !important;
+
+.logout-button-user span {
+    color: var(--neutral-0) !important;
 }
-.logout-button-user:focus{
-    background: var(--red-700) !important;
+
+.logout-button-user:hover,
+.logout-button-user:focus {
+    border: 1px solid var(--red-500) !important;
+    background-color: var(--neutral-0) !important;
+    color: var(--red-500) !important;
 }
+
+.logout-button-user:hover span,
+.logout-button-user:focus span {
+    color: var(--red-500) !important;
+}
+
 #header-c #userDropdownMenu a.edit-button-user {
     text-shadow: none;
     text-transform: initial;
@@ -278,6 +293,7 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
     line-height: normal;
     letter-spacing: normal;
     font-size: var(--em-applicant-font-size);
+    margin-top: 16px !important;
 }
 
 #header-c #userDropdownMenu a.edit-button-user:hover,
@@ -286,7 +302,16 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
      background: transparent !important;
  }
 
-@media all and (max-width: 767px) {
+
+#header-c .platform-content #userDropdownLabel .em-profile-container p.em-font-weight-500 {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
+@media all and (min-width: 480px) and (max-width: 767px) {
+
     .header-right {
         text-align: center !important;
         margin-top: var(--m-8);
@@ -325,7 +350,108 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
     }
 }
 
+.dropdown #userDropdownLabel {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.dropdown #userDropdownLabel div  {
+    cursor: pointer;
+    position: relative;
+    width: fit-content;
+}
+
+#g-navigation .g-content .platform-content:nth-child(1){
+    z-index: 2;
+}
+
+#g-navigation .g-content .platform-content:nth-child(2) {
+    z-index: 1;
+}
+
+/* Gestionnaire plateforme et programme */
+.dropdown #background-shapes {
+    mask-image: url(/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg);
+    height: 72px;
+    background: var(--em-profile-color);
+    position: absolute;
+    width: 300px;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: 300px;
+    mask-origin: border-box;
+    right: -10px;
+    top: -6px;
+}
+
+/* Déconnecté */
+#background-shapes {
+    position: absolute;
+    height: 100%;
+    top: 0;
+    right: -1px;
+    pointer-events: none;
+    z-index: -1;
+    mask-image: url('/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg');
+    -webkit-mask-image: url('/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg');
+    background: var(--em-profile-color);
+    mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-position: center;
+    mask-size: contain;
+    -webkit-mask-size: contain;
+}
 
 div#userDropdown {
     float: initial !important;
 }
+
+@media screen and (min-width: 768px) and (max-width: 959px) {
+     .header-c #background-shapes {
+         display: none;
+    }
+
+    #header-c .platform-content #userDropdownLabel .em-profile-container p.em-font-weight-500 {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        max-width: 150px;
+    }
+}
+
+@media screen and (min-width: 960px) and (max-width: 1023px) {
+     #header-c .platform-content #userDropdownLabel .em-profile-container p.em-font-weight-500 {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        max-width: 180px;
+    }
+}
+
+@media (max-width: 768px) {
+    .header-c #background-shapes {
+        display: none;
+    }
+}
+
+@media (max-width: 479px) {
+    #header-c .platform-content #userDropdownLabel .em-profile-container p.em-font-weight-500 {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        max-width: 160px;
+    }
+}
+
+@media (min-width: 480px) and (max-width: 767px) {
+    #header-c .platform-content #userDropdownLabel .em-profile-container p.em-font-weight-500 {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        max-width: 120px;
+    }
+}
+
+
+

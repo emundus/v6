@@ -171,6 +171,7 @@ JText::script('COM_EMUNDUS_EXPORTS_ASSESSMENT_PDF');
 JText::script('JYES');
 JText::script('JNO');
 JText::script('COM_EMUNDUS_PLEASE_SELECT');
+JText::script('COM_EMUNDUS_PLEASE_SELECT_MULTIPLE');
 JText::script('COM_EMUNDUS_EXPORTS_CHANGE_STATUS');
 JText::script('COM_EMUNDUS_EXPORTS_EXPORT_SET_TAG');
 JText::script('COM_EMUNDUS_ATTACHMENTS_YOU_MUST_SELECT_ATTACHMENT');
@@ -532,6 +533,7 @@ JText::script('COM_EMUNDUS_EXPORTS_EXPORT');
 JText::script('COM_EMUNDUS_EXPORTS_EXPORT_TO_ZIP');
 JText::script('COM_EMUNDUS_ACTIONS_SEARCH');
 JText::script('COM_EMUNDUS_TROMBINOSCOPE');
+JText::script('COM_EMUNDUS_ONBOARD_ADD_NEW_DOCUMENT');
 
 JText::script('COM_EMUNDUS_VIEW_FORM_SELECT_PROFILE');
 JText::script('COM_EMUNDUS_VIEW_FORM_OTHER_PROFILES');
@@ -635,6 +637,10 @@ JText::script('COM_EMUNDUS_DELETE_ADVANCED_FILTERS');
 
 JText::script('COM_EMUNDUS_MAIL_GB_BUTTON');
 
+JText::script('COM_EMUNDUS_EMAIL_CURRENT_FILE');
+JText::script('COM_EMUNDUS_EMAIL_ALL_FILES');
+JText::script('COM_EMUNDUS_EMAIL_ON_FILE');
+
 $app = JFactory::getApplication();
 
 // Require specific controller if requested
@@ -663,56 +669,52 @@ $task = $app->input->get('task', '', 'CMD');
 $format = $app->input->get('format', '', 'CMD');
 $token = $app->input->get('token', '', 'ALNUM');
 
-$xmlDoc = new DOMDocument();
-$release_version = '1.0.0';
-if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
-    $release_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
-}
+require_once (JPATH_SITE.'/components/com_emundus/helpers/cache.php');
+$hash = EmundusHelperCache::getCurrentGitHash();
+$document = JFactory::getDocument();
 
 if(!in_array($name,['settings','campaigns','emails','form'])) {
     if($cdn == 1)
     {
-        JHTML::script("//cdnjs.cloudflare.com/ajax/libs/tinymce/4.4.1/tinymce.min.js");
+        $document->addScript("//cdnjs.cloudflare.com/ajax/libs/tinymce/4.4.1/tinymce.min.js");
     } else {
-        JHTML::script('media/com_emundus/js/lib/tinymce.min.js');
+        $document->addScript('media/com_emundus/js/lib/tinymce.min.js');
     }
-    JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
-    JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
-    JHtml::script('media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
+    $document->addScript('media/com_emundus/lib/jquery-1.12.4.min.js');
+    $document->addScript('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
+    $document->addScript('media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
     //TODO : Stop use chosen replace by an other js native library
-    //JHtml::script('media/com_emundus/lib/chosen/chosen.jquery.min.js' );
-    JHtml::script('media/jui/js/chosen.jquery.min.js');
-    JFactory::getDocument()->addScript('media/com_emundus/js/em_files.js?' . $release_version);
-    JFactory::getDocument()->addScript('media/com_emundus/js/mixins/exports.js?' . $release_version);
-    JFactory::getDocument()->addScript('media/com_emundus/js/mixins/utilities.js?' . $release_version);
-    JHTML::script('libraries/emundus/selectize/dist/js/standalone/selectize.js' );
-    JHTML::script('libraries/emundus/sumoselect/jquery.sumoselect.min.js');
+    //$document->addScript('media/com_emundus/lib/chosen/chosen.jquery.min.js' );
+    $document->addScript('media/jui/js/chosen.jquery.min.js');
+    $document->addScript('media/com_emundus/js/em_files.js?' . $hash);
+    $document->addScript('media/com_emundus/js/mixins/exports.js?' . $hash);
+    $document->addScript('media/com_emundus/js/mixins/utilities.js?' . $hash);
+    $document->addScript('libraries/emundus/selectize/dist/js/standalone/selectize.js' );
+    $document->addScript('libraries/emundus/sumoselect/jquery.sumoselect.min.js');
 
-    //JHtml::styleSheet('media/com_emundus/css/reset.css');
-    JHtml::styleSheet('media/jui/css/chosen.css');
-    JHtml::styleSheet('media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
-    JHtml::styleSheet('media/com_emundus/css/emundus_files.css');
-    JHTML::stylesheet('libraries/emundus/selectize/dist/css/normalize.css' );
-    JHTML::stylesheet('libraries/emundus/selectize/dist/css/selectize.default.css' );
-    JHTML::stylesheet('libraries/emundus/sumoselect/sumoselect.css');
+    //$document->addStyleSheet('media/com_emundus/css/reset.css');
+    $document->addStyleSheet('media/jui/css/chosen.css');
+    $document->addStyleSheet('media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
+    $document->addStyleSheet('media/com_emundus/css/emundus_files.css?'.$hash);
+    $document->addStyleSheet('libraries/emundus/selectize/dist/css/normalize.css' );
+    $document->addStyleSheet('libraries/emundus/selectize/dist/css/selectize.default.css' );
+    $document->addStyleSheet('libraries/emundus/sumoselect/sumoselect.css');
 }
 
 // VUE
-require_once (JPATH_COMPONENT.DS.'helpers'.DS.'cache.php');
-$hash = EmundusHelperCache::getCurrentGitHash();
-JFactory::getDocument()->addScript('media/com_emundus_vue/chunk-vendors_emundus.js?'.$hash);
-JHtml::styleSheet('media/com_emundus_vue/app_emundus.css');
+$document->addScript('media/com_emundus_vue/chunk-vendors_emundus.js?'.$hash);
+$document->addStyleSheet('media/com_emundus_vue/app_emundus.css?'.$hash);
 
 // QUILL
 if($cdn == 1)
 {
-    JHTML::script('https://cdn.quilljs.com/1.3.6/quill.min.js');
+    $document->addScript('https://cdn.quilljs.com/1.3.6/quill.min.js');
 } else {
-    JHTML::script('media/com_emundus/js/lib/quill.min.js');
+    $document->addScript('media/com_emundus/js/lib/quill.min.js');
 }
-JHtml::script('components/com_emundus/src/assets/js/quill/image-resize.min.js');
-JHtml::styleSheet('components/com_emundus/src/assets/js/quill/quill-mention/quill.mention.min.css');
-JHtml::script('components/com_emundus/src/assets/js/quill/quill-mention/quill.mention.min.js');
+$document->addScript('components/com_emundus/src/assets/js/quill/image-resize.min.js');
+$document->addStyleSheet('components/com_emundus/src/assets/js/quill/quill-mention/quill.mention.min.css');
+$document->addScript('components/com_emundus/src/assets/js/quill/quill-mention/quill.mention.min.js');
 
 // The task 'getproductpdf' can be executed as public (when not signed in and form any view).
 if ($task == 'getproductpdf') {

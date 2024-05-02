@@ -72,9 +72,21 @@ class EmundusViewFiles extends JViewLegacy
 		$menu = JFactory::getApplication()->getMenu();
 		$current_menu = $menu->getActive();
 		$menu_params = $menu->getParams(@$current_menu->id);
-		$this->use_module_for_filters = boolval($menu_params->get('em_use_module_for_filters', 0));
+        $session = JFactory::getSession();
 
-		parent::__construct($config);
+        if (!empty($menu_params)) {
+            $this->use_module_for_filters = boolval($menu_params->get('em_use_module_for_filters', 0));
+        } else {
+            $this->use_module_for_filters = false;
+        }
+
+        if ($this->use_module_for_filters) {
+            $session->set('last-filters-use-adavanced', true);
+        } else {
+            $session->set('last-filters-use-adavanced', false);
+        }
+
+        parent::__construct($config);
 	}
 
 	/** @noinspection PhpInconsistentReturnPointsInspection */
@@ -239,8 +251,12 @@ class EmundusViewFiles extends JViewLegacy
 				$this->assignRef('code', $m_files->code);
 				$this->assignRef('fnum_assoc', $m_files->fnum_assoc);
 
-				// get applications files
-				$users = $m_files->getUsers();
+				if(!empty($m_files->fnum_assoc) || !empty($m_files->code)) {
+					// get applications files
+					$users = $m_files->getUsers();
+				} else {
+					$users = array();
+				}
 
 				// Get elements from model and proccess them to get an easy to use array containing the element type
 				$elements = $m_files->getElementsVar();

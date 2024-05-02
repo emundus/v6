@@ -153,7 +153,7 @@ form#member-profile.form-validate.form-horizontal.well label {
     font-family: var(--em-applicant-font);
 }
 
-form#member-profile.form-validate.form-horizontal.well span {
+form#member-profile.form-validate.form-horizontal.well span:not(.material-icons) {
     color: var(--neutral-600);
     font-family: var(--em-applicant-font);
     font-size: 12px;

@@ -2,8 +2,8 @@
   <div class="ml-8 em-files">
     <Application v-if="currentFile" :file="currentFile" :type="$props.type" :user="$props.user" :ratio="$props.ratio" @getFiles="getFiles(true)" />
 
-    <div class="mb-4 flex items-center justify-between">
-      <h4>{{ translate('COM_EMUNDUS_FILES_'+type.toUpperCase()) }}</h4>
+    <div class="mb-4 mt-4 flex items-center justify-between">
+      <h1>{{ translate('COM_EMUNDUS_FILES_'+type.toUpperCase()) }}</h1>
     </div>
 
 	  <div v-if="error.displayed" class="alert">
@@ -62,7 +62,13 @@
 					    <select class="mr-3" v-model="filter.selectedOperator">
 							    <option v-for="operator in filter.operators" :key="operator.value" :value="operator.value">{{ operator.label }}</option>
 					    </select>
-					    <input v-if="filter.type == 'field'" :name="filter.id + '-' + filter.key" type="text" :placeholder="filter.label" v-model="filter.selectedValue"/>
+					    <input v-if="filter.type == 'field'" 
+                :name="filter.id + '-' + filter.key" 
+                type="text" 
+                :placeholder="filter.label" 
+                v-model="filter.selectedValue"
+                @keyup.enter="applyFilters" 
+              />
 					    <input v-else-if="filter.type == 'date'" :name="filter.id + '-' + filter.key" type="date" v-model="filter.selectedValue">
 					    <multiselect
 							  v-else-if="filter.type == 'select'"
@@ -81,7 +87,9 @@
 							  :searchable="true"
 							  :allow-empty="true"
 							  width="250px"
-					    ></multiselect>
+					    >
+                <span slot="noResult">{{translate('COM_EMUNDUS_FILES_FILTER_NO_ELEMENTS_FOUND')}}</span>
+              </multiselect>
 					    <span class="material-icons-outlined cursor-pointer em-red-500-color ml-3" @click="removeFilter(filter)">close</span>
 				    </div>
 			    </div>
@@ -118,10 +126,12 @@
         <el-table-column
             :label="translate('COM_EMUNDUS_ONBOARD_FILE')"
             width="270"
-            prop="file">
+            prop="file"
+            sortable
+            :sort-method="(a, b) => sortBy(a, b, 'file')">
           <template slot-scope="scope">
             <div @click="openApplication(scope.row)" class="em-pointer">
-              <p class="em-font-weight-500">{{ scope.row.applicant_name }}</p>
+              <p class="em-font-weight-500">{{ scope.row.applicant_name.charAt(0).toUpperCase() + scope.row.applicant_name.slice(1) }}</p>
               <span class="em-text-neutral-500 em-font-size-14">{{ scope.row.fnum }}</span>
             </div>
           </template>
@@ -149,7 +159,7 @@
             </template>
             <template slot-scope="scope">
               <div class="em-group-assoc-column">
-                <span v-for="group in scope.row.assocs" :class="group.class" class="em-status em-mb-4">{{ group.label }}</span>
+                <span v-for="group in scope.row.assocs" :class="group.class" class="em-status em-mb-4 label">{{ group.label }}</span>
               </div>
             </template>
           </el-table-column>
@@ -162,7 +172,7 @@
             </template>
             <template slot-scope="scope">
               <div class="em-group-assoc-column">
-                <span v-for="tag in scope.row.tags" :class="tag.class" class="em-status em-mb-4">{{ tag.label }}</span>
+                <span v-for="tag in scope.row.tags" :class="tag.class" class="em-status em-mb-4 label">{{ tag.label }}</span>
               </div>
             </template>
           </el-table-column>
@@ -170,13 +180,14 @@
             <el-table-column
               v-else
               min-width="180"
-              prop="column.name"
-            sortable>
+              :prop="column.name"
+              sortable
+              :sort-method="(a, b) => sortBy(a, b, column.name)">
             <template slot="header" slot-scope="scope" >
               <span :title="column.label" class="em-neutral-700-color">{{column.label}}</span>
             </template>
             <template slot-scope="scope">
-              <p v-html="scope.row[column.name]"></p>
+              <p v-html="formatter(scope.row[column.name],column)"></p>
             </template>
           </el-table-column>
         </template>
@@ -306,6 +317,30 @@ export default {
 
   },
   methods: {
+
+    formatter(row, column) {
+      if(typeof row == 'string'){
+        return row.charAt(0).toUpperCase() + row.slice(1);
+      } else {
+        return row;
+      }
+    },
+
+    sortBy(a,b, prop) {
+      if(prop === 'file') {
+        if (a.applicant_name.toUpperCase() < b.applicant_name.toUpperCase()) return -1;
+        if (a.applicant_name.toUpperCase() > b.applicant_name.toUpperCase()) return 1;
+      }
+
+      if(typeof a[prop] === 'string') {
+        if (a[prop].toUpperCase() < b[prop].toUpperCase()) return -1;
+        if (a[prop].toUpperCase() > b[prop].toUpperCase()) return 1;
+      }
+
+      if (a[prop] < b[prop]) return -1;
+      if (a[prop] > b[prop]) return 1;
+    },
+
 	  addKeyupEnterEventlistener(){
 		  window.document.addEventListener('keyup', (e) => {
 			  if (e.key === 'Enter'){

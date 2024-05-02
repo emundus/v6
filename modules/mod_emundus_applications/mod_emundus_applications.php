@@ -37,10 +37,13 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 	$m_application = new EmundusModelApplication();
 
+	require_once (JPATH_SITE.'/components/com_emundus/helpers/cache.php');
+	$hash = EmundusHelperCache::getCurrentGitHash();
+
     $document = JFactory::getDocument();
     $document->addStyleSheet("media/com_emundus/lib/bootstrap-336/css/bootstrap.min.css" );
     $document->addStyleSheet("media/com_emundus/lib/jquery-plugin-circliful-master/css/material-design-iconic-font.min.css" );
-    $document->addStyleSheet("modules/mod_emundus_applications/style/mod_emundus_applications.css" );
+    $document->addStyleSheet("modules/mod_emundus_applications/style/mod_emundus_applications.css?".$hash);
 
     $document->addCustomTag('<!--[if lt IE 9]><script language="javascript" type="text/javascript" src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script><![endif]-->');
     $document->addCustomTag('<!--[if lt IE 9]><script language="javascript" type="text/javascript" src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->');
@@ -85,6 +88,8 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $mod_emundus_applications_show_programme = $params->get('mod_emundus_applications_show_programme',1);
     $mod_emundus_applications_show_end_date = $params->get('mod_emundus_applications_show_end_date',1);
     $show_add_application = $params->get('show_add_application', 1);
+	$mod_em_campaign_display_svg = $params->get('mod_em_campaign_display_svg', 1);
+	$mod_em_campaign_display_hover_offset = $params->get('mod_em_campaign_display_hover_offset', 1);
     $show_show_campaigns = $params->get('show_show_campaigns', 0);
     $campaigns_list_url = $params->get('show_campaigns_url', 'liste-des-campagnes');
     $position_add_application = (int)$params->get('position_add_application', 0);
@@ -171,7 +176,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $attachments = $progress['attachments'];
     $forms = $progress['forms'];
 
-    if ($show_add_application) {
+    if ($show_add_application || in_array('copy', $actions)) {
         if (EmundusHelperAccess::asAccessAction(1, 'c')) {
             $applicant_can_renew = 1;
         } else {

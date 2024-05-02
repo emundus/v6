@@ -26,8 +26,16 @@
     width: 72%;
 }
 
+.mod_emundus_campaign__list_items .pagination {
+    margin: 0;
+}
+
 .mod_emundus_campaign__intro *{
   font-family: var(--em-applicant-font);
+}
+
+.mod_emundus_campaign__intro h1{
+    font-family: var(--em-applicant-font-title);
 }
 
 .mod_emundus_campaign__intro p{
@@ -162,6 +170,7 @@
 
 .mod_emundus_campaign__list_content_resume * {
     color: var(--neutral-600) !important;
+    display: block;
 }
 
 .mod_emundus_campaign__header_filter {
@@ -176,6 +185,7 @@
     padding: var(--p-16);
     position: absolute;
     background: var(--neutral-0);
+    z-index: 10;
 }
 
 .mod_emundus_campaign__header_sort__values a:hover {
@@ -199,6 +209,7 @@
     position: absolute;
     background: var(--neutral-0);
     min-width: 44rem;
+    z-index: 10;
 }
 
 .mod_emundus_campaign__header_filter span:not(.material-icons-outlined){
@@ -294,7 +305,7 @@ a.em-blue-400-color:hover {
 
 .mod_emundus_campaign__list_content_container .mod_emundus_campaign__campaign_title {
     margin-bottom: 8px !important;
-    color: var(--em-default-title-color-1) !important;
+    color: var(--em-default-title-color-1);
     -webkit-line-clamp: 2;
     overflow: hidden;
     -webkit-box-orient: vertical;
@@ -303,6 +314,7 @@ a.em-blue-400-color:hover {
     line-height: 140%;
     min-height: 46px;
     font-family: var(--em-applicant-font-title) !important;
+    font-size: 18px;
 }
 /*
 .mod_emundus_campaign__date *{
@@ -322,9 +334,110 @@ a.em-blue-400-color:hover {
 .mod_emundus_campaign__programme_cat_title {
     font-family: var(--em-applicant-font-title);
     font-style: normal;
+    font-size: 20px;
     line-height: 25px;
     color: var(--em-default-title-color-1);
 }
+
+
+[id*="mod_emundus_campaign__tchoozy_tabs_"] {
+    background: var(--neutral-0) !important;
+    width: 100%;
+    padding: 24px;
+    border-radius: var(--em-applicant-br);
+    position: relative;
+    border-bottom: 1px solid var(--em-profile-color);
+    transition: all 0.5s ease-out !important;
+}
+
+[id*="mod_emundus_campaign__tchoozy_tabs_"].open {
+    background: var(--transparent) !important;
+    border-radius: 0;
+    transition: all 0.5s ease-out;
+}
+
+[id*="mod_emundus_campaign__tchoozy_tabs_"].open #background-shapes-tabs{
+    display: none;
+}
+
+[id*="mod_emundus_campaign__tchoozy_tabs_"] .flex {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    border: none;
+    width: 100%;
+}
+
+[id*="mod_emundus_campaign__tchoozy_tabs_"] .flex > div {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+
+[id*="mod_emundus_campaign__tchoozy_tabs_"] h2{
+    color: var(--em-profile-color);
+    margin-bottom: 12px;
+    white-space: initial;
+    text-align: left;
+}
+
+p[id*="mod_emundus_campaign__tchoozy_tab_desc"] {
+    color: var(--neutral-600);
+    white-space: initial;
+    text-align: left;
+}
+
+[id*="mod_emundus_campaign__tchoozy_tabs_"] .material-icons-outlined {
+    font-size: 24px;
+    color: var(--em-profile-color);
+}
+
+[id*="mod_emundus_campaign__tchoozy_tabs_"] #background-shapes-tabs {
+    position: absolute;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    right: -365px;
+    pointer-events: none;
+    border-bottom-right-radius: 14px;
+    mask-image: url(/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg);
+    -webkit-mask-image: url(/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg);
+    background: var(--em-profile-color);
+    mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-position: center;
+    mask-size: contain;
+    -webkit-mask-size: contain;
+}
+
+@media  all and (max-width: 959px) {
+    [id*="mod_emundus_campaign__tchoozy_tabs_"] #background-shapes-tabs {
+        display: none;
+    }
+}
+
+@media  all and (min-width: 960px) and (max-width: 1023px) {
+    [id*="mod_emundus_campaign__tchoozy_tabs_"] #background-shapes-tabs {
+        right: -213px;
+    }
+}
+
+@media  all and (min-width: 1024px) and (max-width: 1079px) {
+    [id*="mod_emundus_campaign__tchoozy_tabs_"] #background-shapes-tabs {
+        right: -212px;
+    }
+}
+
+@media  all and (min-width: 1080px) and (max-width: 1200px) {
+    [id*="mod_emundus_campaign__tchoozy_tabs_"] #background-shapes-tabs {
+        right: -244px;
+    }
+}
+
 
 .mod_emundus_campaign__tabs{
     margin-top: var(--m-24);
@@ -340,7 +453,6 @@ a.em-blue-400-color:hover {
      color: var(--neutral-900);
     text-decoration: none;
 }
-
 
 .mod_emundus_campaign__tabs a.current-tab {
     border-bottom: solid 1px var(--blue-500);
@@ -428,8 +540,8 @@ a.em-blue-400-color:hover {
     display: grid;
     align-items: flex-start;
     padding: 0;
-    gap: var(--p-32);
-    grid-template-columns: repeat(3,1fr);
+    gap: var(--p-48);
+    grid-template-columns: repeat(3, minmax(354px, 1fr));
 }
 
 .mod_emundus_campaign__pinned_campaign{
@@ -437,7 +549,6 @@ a.em-blue-400-color:hover {
     align-items: flex-start;
     padding: 0;
     gap: var(--p-32);
-    width: 60%;
 }
 
 .mod_emundus_campaign__pinned_campaign .mod_emundus_campaign__list_content {

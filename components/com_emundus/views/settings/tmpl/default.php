@@ -123,6 +123,10 @@ JText::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER');
 JText::script('COM_EMUNDUS_ONBOARD_CANNOT_DELETE_STATUS');
 JText::script('COM_EMUNDUS_ONBOARD_STYLE_TOOL_GENERAL');
 JText::script('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS');
+JText::script('COM_EMUNDUS_ONBOARD_SETTINGS_MENU_GENERAL');
+JText::script('COM_EMUNDUS_ONBOARD_CUSTOM_PALETTE');
+JText::script('COM_EMUNDUS_ONBOARD_ERROR_COLORS_SAME');
+JText::script('COM_EMUNDUS_SETTINGS_CONTRAST_ERROR');
 
 ## TUTORIAL ##
 JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_CAMPAIGN');
@@ -149,6 +153,7 @@ JText::script('COM_EMUNDUS_ONBOARD_UPDATE_BANNER');
 ## END ##
 
 ## eMUNDUS CONFIG ##
+JText::script('COM_EMUNDUS_SWAL_HELP_TITLE');
 JText::script('COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANT_CAN_RENEW');
 JText::script('JNO');
 JText::script('JYES');
@@ -159,6 +164,10 @@ JText::script('COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANTS_DESC');
 JText::script('COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANTS');
 JText::script('COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANT_COPY_APPLICATION_FORM');
 JText::script('COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANT_CAN_SUBMIT_ENCRYPTED');
+JText::script('COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_LIST_LIMIT');
+JText::script('COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_OTHER_USER_EDITING_SAME_FILE');
+JText::script('COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_OTHER_USER_EDITING_SAME_FILE_HELPTEXT');
+JText::script('COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SITENAME');
 ## END ##
 
 ## TRANSLATIONS ##
@@ -261,7 +270,7 @@ $user = JFactory::getUser();
 $coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
 $sysadmin_access = EmundusHelperAccess::isAdministrator($user->id);
 
-require_once (JPATH_COMPONENT.DS.'helpers'.DS.'cache.php');
+require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
 $hash = EmundusHelperCache::getCurrentGitHash();
 ?>
 
@@ -274,4 +283,5 @@ $hash = EmundusHelperCache::getCurrentGitHash();
      manyLanguages="<?= $many_languages ?>"
 ></div>
 
+<script src="media/com_emundus/js/settings.js?<?php echo $hash ?>"></script>
 <script src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>

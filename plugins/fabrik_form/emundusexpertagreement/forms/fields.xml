@@ -8,7 +8,21 @@
 				<option value="0">JNO</option>
 				<option value="1">JYES</option>
 			</field>
+			<field name="keep_accepted_fnums" type="list" default="0" description="Se base sur la valeur de la colonne rejection pour savoir si l'expert accepte ce dossier" label="Conserver les dossiers acceptés" >
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
 			<field name="redirect" type="list" default="1" description="PLG_FABRIK_FORM_EMUNDUSEXPERTAGREEMENT_REDIRECT_DESC" label="PLG_FABRIK_FORM_EMUNDUSEXPERTAGREEMENT_REDIRECT_LABEL" >
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+			<field name="firstname_input" type="field" default="jos_emundus_files_request___firstname"/>
+			<field name="lastname_input" type="field" default="jos_emundus_files_request___lastname"/>
+			<field name="onBeforeLoadVerification" type="list" default="1" label="Vérification onBeforeLoad ?">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+			<field name="send_email_accept" label="Envoyer un email après acceptation d'un dossier ?" type="list" default="1">
 				<option value="0">JNO</option>
 				<option value="1">JYES</option>
 			</field>

@@ -6,7 +6,7 @@ namespace Aws;
  */
 class PhpHash implements HashInterface
 {
-    /** @var resource|\HashContext */
+    /** @var resource */
     private $context;
 
     /** @var string */
@@ -63,7 +63,7 @@ class PhpHash implements HashInterface
     /**
      * Get a hash context or create one if needed
      *
-     * @return resource|\HashContext 
+     * @return resource
      */
     private function getContext()
     {

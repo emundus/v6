@@ -141,6 +141,9 @@
       <p v-else>
         {{ translate('COM_EMUNDUS_ATTACHMENTS_NO_ATTACHMENTS_FOUND') }}
       </p>
+      <section id="add-document-section" class="em-mt-16 em-flex-row" v-if="this.canCreate">
+        <button class="em-primary-button em-w-auto" @click="addAttachment">{{ translate('COM_EMUNDUS_ONBOARD_ADD_NEW_DOCUMENT') }}</button>
+      </section>
     </div>
 
     <modal id="edit-modal" name="edit" :resizable="true" :draggable="true"
@@ -243,12 +246,14 @@ export default {
       users: [],
       displayedUser: {},
       displayedFnum: this.fnum,
+      fnumInfos: null,
       checkedAttachments: [],
       selectedAttachment: {},
       progress: '',
       sort: {last: '', order: '', orderBy: ''},
       canSee: true,
       canExport: false,
+      canCreate: false,
       canDelete: false,
       canDownload: true,
       canUpdate: false,
@@ -301,6 +306,8 @@ export default {
 				});
 			}
 		});
+
+	  this.addEvents();
   },
   methods: {
     // Getters and setters
@@ -308,6 +315,7 @@ export default {
       const response = await fileService.getFnumInfos(this.displayedFnum);
 
       if (response && response.fnumInfos) {
+        this.fnumInfos = response.fnumInfos;
         const foundUser = this.users && this.users.length ? this.users.find((user) => user.user_id == response.fnumInfos.applicant_id) : false;
 
         if (!foundUser) {
@@ -455,6 +463,7 @@ export default {
           this.$store.dispatch('user/setAccessRights', {fnum: this.displayedFnum, rights: response.rights});
         }
       }
+      this.canCreate = this.$store.state.user.rights[this.displayedFnum] ? this.$store.state.user.rights[this.displayedFnum].canCreate : false;
       this.canExport = this.$store.state.user.rights[this.displayedFnum] ? this.$store.state.user.rights[this.displayedFnum].canExport : false;
       this.canDelete = this.$store.state.user.rights[this.displayedFnum] ? this.$store.state.user.rights[this.displayedFnum].canDelete : false;
       this.canUpdate = this.$store.state.user.rights[this.displayedFnum] ? this.$store.state.user.rights[this.displayedFnum].canUpdate : false;
@@ -652,7 +661,31 @@ export default {
     },
 	  toggleOnlyPreview(editDisplayed) {
 			this.onlyPreview = !editDisplayed;
-	  }
+	  },
+	  addEvents() {
+		  window.addEventListener('message', function (e) {
+			  if (e.data === 'addFileToFnum') {
+				  this.refreshAttachments(true);
+			  }
+		  }.bind(this));
+	  },
+    addAttachment() {
+      Swal.fire({
+        html: '<iframe style="width:' + window.innerWidth*0.8 +'px; height:'+window.innerHeight*0.8+'px;" src="/component/fabrik/form/67/?jos_emundus_uploads___user_id[value]=' +  this.fnumInfos.applicant_id + '&jos_emundus_uploads___fnum[value]=' + this.displayedFnum + '&student_id=' + this.fnumInfos.applicant_id+ '&jos_emundus_uploads___campaign_id[value]=' + this.fnumInfos.campaign_id + '&tmpl=component&iframe=1&action_id=4"></iframe>',
+        showCancelButton: true,
+        showCloseButton: true,
+        reverseButtons: true,
+        cancelButtonText: Joomla.JText._('COM_EMUNDUS_ONBOARD_CANCEL'),
+        customClass: {
+          container: 'em-modal-actions add-attachment-modal',
+          popup: 'em-w-auto',
+          title: 'em-swal-title',
+          cancelButton: 'em-swal-cancel-button',
+          confirmButton: 'em-swal-confirm-button btn btn-success',
+          actions: 'em-actions-none'
+        },
+      })
+    }
   },
   computed: {
     fnumPosition() {
@@ -662,7 +695,7 @@ export default {
       return this.displayedAttachments.indexOf(this.selectedAttachment);
     },
     attachmentPath() {
-      return this.$store.state.attachment.attachmentPath + this.displayedUser.user_id + '/' + this.selectedAttachment.filename;
+      return '/index.php?option=com_emundus&task=getfile&u=' + this.$store.state.attachment.attachmentPath + this.displayedUser.user_id + '/' + this.selectedAttachment.filename;
     },
     displayedAttachmentCategories() {
       let displayedCategories = {};
@@ -1071,5 +1104,9 @@ export default {
 		  }
 	  }
   }
+}
+
+#add-document-section {
+  justify-content: center;
 }
 </style>

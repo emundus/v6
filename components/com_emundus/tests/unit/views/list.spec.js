@@ -159,10 +159,10 @@ describe('List of campaigns', () => {
     });
 
     it ('List should have 1 items', () => {
-        expect(wrapper.findAll('.list-item').length).toBe(campaignsData.data.datas.length);
+        expect(wrapper.findAll('.table-row').length).toBe(campaignsData.data.datas.length);
     });
 
     it('Campaigns should have a link to campaign', () => {
-        expect(wrapper.find('.list-item .go-to-campaign-link a').attributes('href')).toBe('/index.php?option=com_emundus&controller=campaign&task=gotocampaign&campaign_id=10');
+        expect(wrapper.find('.table-row .go-to-campaign-link a').attributes('href')).toBe('/index.php?option=com_emundus&controller=campaign&task=gotocampaign&campaign_id=10');
     });
 });

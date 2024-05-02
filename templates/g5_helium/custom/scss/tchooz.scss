@@ -515,6 +515,13 @@ input:focus + .em-slider {
   height: 100%;
 }
 
+.em-flex-column-default {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 .em-flex-col-start{
   display: flex;
   flex-direction: column;
@@ -843,14 +850,31 @@ input:focus + .em-slider {
   width: max-content;
 }
 
+.em-text-italic {
+  font-style: italic;
+}
+
 .em-text-underline{
   text-decoration: underline;
 }
+
+.em-text-underline:hover{
+  text-decoration: none;
+}
+
 .em-color-white{
   color: white;
 }
 .em-green-color{
   color: var(--em-green);
+}
+
+.em-profile-color{
+  color: var(--em-profile-color);
+  &:hover {
+    color: var(--em-profile-color);
+    filter: brightness(0.8);
+  }
 }
 
 .em-form-success-color{
@@ -870,7 +894,7 @@ input:focus + .em-slider {
   color: var(--green-500) !important;
 }
 .em-main-500-color{
-  color: var(--em-coordinator-primary-color) !important;
+  color: var(--em-profile-color) !important;
 }
 .em-yellow-500-color{
   color: var(--orange-500);
@@ -958,7 +982,7 @@ input:focus + .em-slider {
   background: var(--main-300);
 }
 .em-bg-main-500{
-  background: var(--em-coordinator-primary-color);
+  background: var(--em-profile-color);
 }
 .em-bg-main-900{
   background: var(--main-900);
@@ -1200,6 +1224,9 @@ input:focus + .em-slider {
 .em-mb-44{
   margin-bottom: 44px;
 }
+.em-mt-44{
+  margin-top: 44px;
+}
 .em-mb-64{
   margin-bottom: 64px;
 }
@@ -1212,10 +1239,25 @@ input:focus + .em-slider {
   height: 32px;
 }
 
+/* Texte */
+
+.em-lowercase {
+  text-transform: lowercase;
+}
+
+
 
 /* Positions */
+.em-flex-important {
+  display: flex !important;
+}
+
 .em-flex-start {
   justify-content: flex-start;
+}
+
+.em-flex-align-start {
+  align-items: flex-start;
 }
 
 .em-flex-center {
@@ -1314,22 +1356,22 @@ input:focus + .em-slider {
   border-left: solid 2px var(--orange-500);
 }
 .em-border-main-500 {
-  border: 1px solid var(--em-coordinator-primary-color);
+  border: 1px solid var(--em-profile-color);
 
   &.important {
-    border: 1px solid var(--em-coordinator-primary-color) !important;
+    border: 1px solid var(--em-profile-color) !important;
   }
 }
 .em-border-left-main-500{
-  border-left: solid 2px var(--em-coordinator-primary-color);
+  border-left: solid 2px var(--em-profile-color);
 }
 
 .em-border-bottom-main-500 {
-  border-bottom: solid 1px var(--em-coordinator-primary-color);
+  border-bottom: solid 1px var(--em-profile-color);
 }
 
 .em-border-bottom-coordinator {
-  border-bottom: solid 1px var(--em-coordinator-primary-color);
+  border-bottom: solid 1px var(--em-profile-color);
 }
 .em-border-left-red-500{
   border-left: solid 2px var(--red-500);
@@ -1629,7 +1671,6 @@ input:focus + .em-slider {
   background-color: var(--neutral-100);
   border-radius: var(--em-coordinator-br-cards);
   padding: 32px;
-  cursor: pointer;
 }
 
 .em-card-shadow {
@@ -1640,6 +1681,11 @@ input:focus + .em-slider {
   background-color: #fff;
   border-radius: 16px;
   padding: 32px;
+}
+
+.go-to-campaign-link:hover {
+  filter: brightness(0.8);
+  color: var(--em-profile-color);
 }
 
 /** LIST **/
@@ -1679,16 +1725,16 @@ button.em-swal-confirm-button{
   width: auto !important;
   padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal) !important;
   border-radius: var(--em-coordinator-br) !important;
-  border: 1px solid var(--em-coordinator-primary-color) !important;
+  border: 1px solid var(--em-profile-color) !important;
   color: var(--neutral-0) !important;
-  background-color: var(--em-coordinator-primary-color) !important;
+  background-color: var(--em-profile-color) !important;
   font-size: var(--em-coordinator-font-size) !important;
 }
 
 button.em-swal-confirm-button:hover{
-  color: var(--em-coordinator-primary-color) !important;
-  background-color: var(--neutral-0) !important;
-  border: 1px solid var(--em-coordinator-primary-color) !important;
+  color: var(--em-profile-color) !important;
+  background: var(--neutral-0) !important;
+  border: 1px solid var(--em-profile-color) !important;
 }
 
 .swal2-actions.swal2-loading{
@@ -1784,7 +1830,7 @@ button.em-swal-delete-button:hover{
   }
   .em-modal-menu__sidebar{
     width: 15%;
-    background: #F3F3F3;
+    background: var(--neutral-200);
     height: 100%;
     position: fixed;
     left: 0;
@@ -1838,6 +1884,7 @@ button.em-swal-delete-button:hover{
 /** **/
 
 /** PROFILE UTILITIES **/
+
 .em-profile-picture{
   width: 45px;
   height: 45px;
@@ -1848,26 +1895,75 @@ button.em-swal-delete-button:hover{
   border-radius: 50%;
   background-size: cover;
   background-position: center;
-  border: solid 5px white;
+  border: solid 3px var(--neutral-0);
   transition: all 0.3s ease-in-out;
   &:hover{
     filter: brightness(80%);
   }
 }
-.em-profile-picture-big{
-  width: 100px;
-  height: 100px;
-  min-width: 100px;
+
+.em-profile-picture-modal {
+  width: 72px;
+  height: 72px;
+  min-width: 30px;
   display: flex;
   justify-content: center;
   align-items: center;
   border-radius: 50%;
   background-size: cover;
   background-position: center;
-  border: solid 5px white;
+  margin-bottom: var(--m-16);
+  color: var(--em-profile-color);
+}
+
+.em-profile-picture-modal-icon {
+  font-size: 72px !important;
+  margin-bottom: var(--m-16);
+  color: var(--em-profile-color);
+}
+
+.em-profile-picture-big{
+  width: 100px;
+  height: 100px;
+  min-width: 100px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  border: solid 5px var(--neutral-0);
   transition: all 0.3s ease-in-out;
   &:hover:not(.no-hover){
     filter: brightness(80%);
+  }
+}
+
+.em-no-profile-picture-big {
+  color: var(--em-profile-color);
+  border: solid 3px var(--transparent);
+}
+
+.em-no-profile-picture-big:before{
+  background-color: var(--em-profile-color);
+  color: white;
+  opacity: 1;
+  content: attr(data-initials);
+  display: inline-block;
+  font-weight: bold;
+  border-radius: 50%;
+  vertical-align: middle;
+  width: 100px;
+  height: 100px;
+  line-height: 100px;
+  text-align: center;
+  transition: all 0.3s ease-in-out;
+  font-size: 28px;
+}
+
+@supports (background-color: hsl(from white h s 90%)) {
+  .em-no-profile-picture-big:before {
+    background-color: hsl(from var(--em-profile-color) h s 90%);
+    color: var(--em-profile-color);
   }
 }
 
@@ -1908,6 +2004,412 @@ button.em-swal-delete-button:hover{
 /**
   MEDIA QUERIES
 **/
+
+/*******************
+ * Peps tuiles
+ *******************/
+
+//Conteneur tuile et hover
+.hover-and-tile-container {
+  position: relative;
+  height: 100%;
+}
+
+/* Hover decalage tuile */
+#tile-hover-offset-procedure {
+  background: var(--em-profile-color) !important;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  border-radius: 16px;
+  transform: rotate(3deg);
+  opacity: 0.3;
+  transition: transform .3s;
+}
+
+/* Peps */
+.hover-and-tile-container .tile-hover-offset-procedure--pinned-and-closed {
+  background: var(--neutral-500) !important;
+}
+
+.mod_emundus_campaign__pinned_campaign #tile-hover-offset-procedure {
+  transform: rotate(2deg); /* rotation de base des cards longues */
+}
+
+div[id^='current_'] .hover-and-tile-container:hover > #tile-hover-offset-procedure {
+  transform: rotate(5deg); /* rotation cards normales */
+}
+
+.mod_emundus_campaign__pinned_campaign .hover-and-tile-container:hover > #tile-hover-offset-procedure {
+  transform: rotate(3deg); /* rotation cards épinglées (longues) */
+}
+
+/* Tuile */
+div[id^='current_'] .mod_emundus_campaign__list_content,
+.mod_emundus_campaign__pinned_campaign .mod_emundus_campaign__list_content {
+  position: relative;
+  transition: background-image .3s;
+  overflow: hidden;
+}
+
+/* Fond formes */
+div[id^='current_'] .mod_emundus_campaign__list_content #background-shapes {
+  position: absolute;
+  z-index: 2;
+  width: 95%;
+  height: 63%;
+  top: 0;
+  right: 0;
+  pointer-events: none;
+  mask-image: url('/modules/mod_emundus_campaign/assets/fond-clair.svg');
+  -webkit-mask-image: url('/modules/mod_emundus_campaign/assets/fond-clair.svg');
+  background: var(--em-profile-color);
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-position: center;
+  mask-size: 300px;
+  -webkit-mask-size: 300px;
+  mask-origin: border-box;
+  -webkit-mask-origin: border-box;
+  transform: scale(1.2);
+}
+
+.mod_emundus_campaign__pinned_campaign .mod_emundus_campaign__list_content #background-shapes {
+  position: absolute;
+  z-index: 2;
+  width: 79%;
+  height: 52%;
+  top: 0;
+  right: 0;
+  pointer-events: none;
+  mask-image: url('/modules/mod_emundus_campaign/assets/fond-clair.svg');
+  -webkit-mask-image: url('/modules/mod_emundus_campaign/assets/fond-clair.svg');
+  background: var(--em-profile-color);
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-position: center;
+  mask-size: 300px;
+  -webkit-mask-size: 300px;
+  mask-origin: border-box;
+  -webkit-mask-origin: border-box;
+}
+
+.mod_emundus_campaign__list_content #background-shapes.single-campaign-pinned {
+  position: absolute;
+  z-index: 2;
+  width: 64%;
+  height: 86%;
+  top: 0;
+  right: 0;
+  pointer-events: none;
+  mask-image: url('/modules/mod_emundus_campaign/assets/fond-clair.svg');
+  -webkit-mask-image: url('/modules/mod_emundus_campaign/assets/fond-clair.svg');
+  background: var(--em-profile-color);
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-position: center;
+  mask-size: 300px;
+  -webkit-mask-size: 300px;
+  mask-origin: border-box;
+  -webkit-mask-origin: border-box;
+  transform: scale(1.6);
+}
+
+.view-featured .mod_emundus_campaign__list_content--default {
+  position: relative;
+  overflow: hidden;
+
+  #background-shapes {
+    position: absolute;
+    z-index: 2;
+    width: 33%;
+    height: 170%;
+    top: -142px;
+    right: 0;
+    pointer-events: none;
+    mask-image: url('/modules/mod_emundus_campaign/assets/fond-clair.svg');
+    -webkit-mask-image: url('/modules/mod_emundus_campaign/assets/fond-clair.svg');
+    background: var(--em-profile-color);
+    mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-position: center;
+    mask-size: 413px;
+    -webkit-mask-size: 413px;
+    mask-origin: border-box;
+    -webkit-mask-origin: border-box;
+  }
+}
+
+.view-article .mod_emundus_campaign__list_content--default {
+  position: relative;
+  overflow: hidden;
+
+  #background-shapes {
+    position: absolute;
+    z-index: 2;
+    width: 24%;
+    height: 170%;
+    top: 0;
+    right: 0;
+    pointer-events: none;
+    mask-image: url('/modules/mod_emundus_campaign/assets/fond-clair.svg');
+    -webkit-mask-image: url('/modules/mod_emundus_campaign/assets/fond-clair.svg');
+    background: var(--em-profile-color);
+    mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-position: center;
+    mask-size: 300px;
+    -webkit-mask-size: 300px;
+    mask-origin: border-box;
+    -webkit-mask-origin: border-box;
+  }
+}
+
+/* Titres */
+div[id^='current_'] .mod_emundus_campaign__list_content h3 {
+  color: var(--em-profile-color);
+  font-size: var(--em-applicant-h4);
+}
+
+.mod_emundus_campaign__list_content--default h3 {
+  color: var(--em-profile-color);
+}
+
+/* Campagnes clôturées */
+.tile-hover-offset-procedure--closed {
+  background: var(--neutral-500) !important;
+}
+
+.mod_emundus_campaign__list_content--closed .mod_emundus_campaign__campaign_title {
+  color: var(--neutral-600) !important;
+}
+
+/*******************
+ *    Peps liste   *
+ *******************/
+
+#applications_list_view table:first-child thead tr th:first-child {
+  padding-left: 32px;
+}
+
+#applications_list_view table:nth-child(2) {
+  border-collapse: separate;
+  border-spacing: 0 16px;
+}
+
+#applications_list_view table tbody tr {
+  box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
+  border-radius: 8px;
+
+  td {
+    padding: var(--p-16) var(--p-32);
+    position:relative;
+
+    p {
+      color: var(--neutral-600);
+    }
+  }
+
+  td:first-child {
+    border-radius: 8px 0 0 8px;
+  }
+
+  td:last-child {
+    border-radius: 0 8px 8px 0;
+  }
+}
+
+/* Fond formes */
+#applications_list_view table tbody tr td #background-shapes {
+  position: absolute;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  right: 108px;
+  pointer-events: none;
+  border-bottom-right-radius: 14px;
+  transform: scale(3.4);
+  mask-image: url('/modules/mod_emundus_user_dropdown/assets/fond-formes-header-fonce.svg');
+  -webkit-mask-image: url('/modules/mod_emundus_user_dropdown/assets/fond-formes-header-fonce.svg');
+  background: var(--em-profile-color);
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-position: center;
+  mask-size: contain;
+  -webkit-mask-size: contain;
+}
+
+#applications_list_view table tbody tr td {
+  background: var(--neutral-0);
+}
+
+#applications_list_view table tbody tr td div div.em-flex-row {
+  position: relative;
+  z-index: 10;
+}
+
+.mod_emundus_campaign__details_content {
+  position: relative;
+  overflow: hidden;
+}
+
+.mod_emundus_campaign__details_content #background-shapes {
+  position: absolute;
+  z-index: 0;
+  width: 112%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  mask-image: url('/modules/mod_emundus_campaign/assets/fond-clair.svg');
+  -webkit-mask-image: url('/modules/mod_emundus_campaign/assets/fond-clair.svg');
+  background: var(--em-profile-color);
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-position: center;
+  mask-size: 300px;
+  -webkit-mask-size: 300px;
+  mask-origin: border-box;
+  -webkit-mask-origin: border-box;
+  transform: scale(1.1);
+}
+
+.mod_emundus_campaign__details_content .em-applicant-default-font,
+.mod_emundus_campaign__details_content .em-disabled-button {
+  position: relative;
+  z-index: 2;
+}
+
+/****************************
+ * Fin peps tuiles et liste *
+ ****************************/
+
+/* Tablette */
+@media screen and (min-width: 1080px) and (max-width: 1199px) {
+
+  /* Peps */
+  div[id^='current_'] .mod_emundus_campaign__list_content #background-shapes {
+    width: 64%;
+  }
+
+  .mod_emundus_campaign__pinned_campaign .mod_emundus_campaign__list_content #background-shapes {
+    width: 64%;
+    height: 55%;
+  }
+
+  .mod_emundus_campaign__pinned_campaign .mod_emundus_campaign__list_content #background-shapes.single-campaign-pinned {
+    width: 50%;
+    height: 55%;
+  }
+
+  .mod_emundus_campaign__list_content--default {
+    #background-shapes {
+      width: 30%;
+    }
+  }
+
+  .view-article .mod_emundus_campaign__list_content--default {
+    #background-shapes {
+      right: -242px;
+    }
+  }
+}
+
+@media screen and (min-width: 1025px) and (max-width: 1079px) {
+
+  /* Peps */
+  div[id^='current_'] .mod_emundus_campaign__list_content #background-shapes {
+    top: -90px;
+    right: -10px;
+  }
+
+  .mod_emundus_campaign__pinned_campaign .mod_emundus_campaign__list_content #background-shapes {
+    top: -20px;
+    right: -51px;
+  }
+
+  .mod_emundus_campaign__list_content--default {
+    #background-shapes {
+      right: -233px;
+    }
+  }
+
+  .view-article .mod_emundus_campaign__list_content--default {
+    #background-shapes {
+      width: 30%;
+    }
+  }
+}
+
+@media screen and (min-width: 960px) and (max-width: 1024px) {
+
+  /* Peps */
+  .view-featured div[id^='current_'] .mod_emundus_campaign__list_content #background-shapes {
+    top: -47px;
+    right: -11px;
+  }
+
+  div[id^='current_'] .mod_emundus_campaign__list_content #background-shapes {
+    top: -11px;
+    right: -15px;
+  }
+
+  .mod_emundus_campaign__pinned_campaign .mod_emundus_campaign__list_content #background-shapes {
+    top: -14px;
+    right: -110px;
+  }
+
+  .mod_emundus_campaign__list_content--default {
+    #background-shapes {
+      right: -233px;
+    }
+  }
+
+  .view-article .mod_emundus_campaign__list_content--default {
+    #background-shapes {
+      right: -242px;
+    }
+  }
+}
+
+@media screen and (min-width: 768px) and (max-width: 959px) {
+
+  /* Peps */
+  div[id^='current_'] .mod_emundus_campaign__list_content #background-shapes {
+    width: 91%;
+    height: 65%;
+  }
+
+  .mod_emundus_campaign__pinned_campaign .mod_emundus_campaign__list_content #background-shapes {
+    width: 70%;
+    height: 70%;
+  }
+
+  .mod_emundus_campaign__list_content--default {
+    #background-shapes {
+      width: 42%;
+    }
+  }
+
+  .view-article .mod_emundus_campaign__list_content--default {
+    #background-shapes {
+      width: 42%;
+    }
+  }
+
+  .mod_emundus_campaign__details_content #background-shapes {
+    left: 190px;
+  }
+
+}
 
 @media (max-width: 900px) {
   .em-logo{
@@ -1983,7 +2485,8 @@ button.em-swal-delete-button:hover{
   }
 }
 
-@media (max-width: 850px) {
+/* Téléphone */
+@media (max-width: 768px) {
   .em-input-icon {
     left: 85%;
   }
@@ -2025,5 +2528,57 @@ button.em-swal-delete-button:hover{
 
   .em-small-align-items-start{
     align-items: start;
+  }
+
+  /* Peps */
+  div[id^='current_'] .mod_emundus_campaign__list_content #background-shapes {
+    display: block;
+    width: 76%;
+    height: 71%;
+    transform: scale(1);
+  }
+
+  .mod_emundus_campaign__pinned_campaign .mod_emundus_campaign__list_content #background-shapes {
+    width: 76%;
+    height: 71%;
+    display: block;
+    transform: scale(1);
+  }
+
+  .mod_emundus_campaign__list_content--default {
+    #background-shapes {
+      top: -21px;
+      right: -79px;
+    }
+  }
+
+  .view-article .mod_emundus_campaign__list_content--default {
+    #background-shapes {
+      right: -87px;
+    }
+  }
+
+  #applications_list_view table tbody tr td #background-shapes {
+    transform: scale(5.3);
+    right: 124px;
+  }
+
+  #applications_list_view table:first-child thead tr th:first-child {
+    padding-left: 16px;
+  }
+
+  #applications_list_view table tbody tr td {
+    padding: var(--p-16);
+  }
+
+  .mod_emundus_campaign__details_content #background-shapes {
+    display: block !important;
+    width: 124%;
+    height: 122%;
+    transform: scale(1);
+  }
+
+  .mod_emundus_campaign__pinned_campaign {
+    width: 100% !important;
   }
 }
