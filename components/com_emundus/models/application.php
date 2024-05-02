@@ -1564,10 +1564,9 @@ class EmundusModelApplication extends JModelList
                     $groupes = $this->_db->loadObjectList();
 
                     /*-- Liste des groupes -- */
+                    $hidden_group_param_values = [0, '-1', '-2'];
                     foreach ($groupes as $itemg) {
                         $g_params = json_decode($itemg->params);
-
-                        $hidden_group_param_values = [0, '-1', '-2'];
 
 	                    $query = $this->_db->getQuery(true);
 	                    $query->select('fe.id,fe.name,fe.label,fe.plugin,fe.params,fe.default,fe.eval')
@@ -1586,7 +1585,7 @@ class EmundusModelApplication extends JModelList
 	                    }
 
 	                    if (count($elements) > 0) {
-                            if ((($allowed_groups !== true && !in_array($itemg->group_id, $allowed_groups)) || !EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, (int)$g_params->access)) && !in_array($g_params->repeat_group_show_first,$hidden_group_param_values)) {
+                            if ((($allowed_groups !== true && !in_array($itemg->group_id, $allowed_groups)) || !EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, (int)$g_params->access)) && !in_array($g_params->repeat_group_show_first, $hidden_group_param_values)) {
 	                            $forms .= '<fieldset class="em-personalDetail">
 												<h6 class="em-font-weight-400">' . JText::_($itemg->label) . '</h6>
 												<table class="em-restricted-group mt-4 mb-4">
@@ -1872,7 +1871,7 @@ class EmundusModelApplication extends JModelList
 							{
                                 $check_not_empty_group = $this->checkEmptyGroups($elements ,$itemt->db_table_name, $fnum);
 
-                                if($check_not_empty_group && $g_params->repeat_group_show_first != -1) {
+                                if($check_not_empty_group && !in_array($g_params->repeat_group_show_first, $hidden_group_param_values)) {
                                     $forms .= '<table class="em-mt-8 em-mb-16 em-personalDetail-table-inline"><h6 class="em-font-weight-400">' . JText::_($itemg->label) . '</h6>';
 
                                     $modulo = 0;
