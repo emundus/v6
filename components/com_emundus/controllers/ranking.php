@@ -194,6 +194,25 @@ class EmundusControllerRanking extends JControllerLegacy
         $this->sendJSONResponse($response);
     }
 
+    public function getHierarchiesUserCanSee() {
+        $response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'data' => [], 'code' => 403];
+        $user = Factory::getUser();
+
+        if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+            try {
+                $response['data'] = $this->model->getHierarchiesUserCanSee($user->id);
+                $response['status'] = true;
+                $response['msg'] = Text::_('SUCCESS');
+                $response['code'] = 200;
+            } catch(Exception $e) {
+                $response['msg'] = $e->getMessage();
+                $response['code'] = 500;
+            }
+        }
+
+        $this->sendJSONResponse($response);
+    }
+
     private function sendJSONResponse($response) {
         if ($response['code'] === 403) {
             header('HTTP/1.1 403 Forbidden');

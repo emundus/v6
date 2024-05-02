@@ -103,5 +103,16 @@ export default {
                 msg: e.message
             };
         }
+    },
+    async getHierarchiesUserCanSee() {
+        try {
+            const response = await client().get('index.php?option=com_emundus&controller=ranking&task=getHierarchiesUserCanSee');
+            return response.data;
+        } catch (e) {
+            return {
+                status: false,
+                msg: e.message
+            };
+        }
     }
 };

@@ -1,5 +1,9 @@
 <template>
   <div id="rankings-by-package">
+    <div class="w-full flex justify-end">
+      <button v-if="canExport" class="em-primary-button w-fit" @click="openExportView">Export</button>
+    </div>
+
     <nav id="ranking-navigation" class="mt-4 mb-4">
       <ul class="flex flex-row list-none overflow-auto pt-4">
         <li v-for="rankingPackage in packages" :key="rankingPackage.id"
@@ -15,7 +19,6 @@
         </li>
       </ul>
     </nav>
-
     <div v-if="selectedPackage !== null">
       <h3>{{ selectedPackageItem.label }}</h3>
       <classement
@@ -28,16 +31,25 @@
       >
       </classement>
     </div>
+
+    <modal id="export-modal" name="export-modal">
+      <export-ranking
+          :user="user"
+          :packages="packages"
+      >
+      </export-ranking>
+    </modal>
   </div>
 </template>
 
 <script>
 import rankingService from '@/services/ranking';
 import Classement from "@/views/classement.vue";
+import ExportRanking from "@/views/ExportRanking.vue";
 
 export default {
   name: 'rankings',
-  components: {Classement},
+  components: {Classement, ExportRanking},
   props: {
     user: {
       type: Number,
@@ -54,6 +66,10 @@ export default {
     specificTabs: {
       type: String,
       default: ''
+    },
+    canExport: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -74,6 +90,9 @@ export default {
       }).catch(error => {
         console.log(error);
       });
+    },
+    openExportView() {
+      this.$modal.show('export-modal');
     }
   },
   computed: {
@@ -84,7 +103,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 #rankings-by-package {
   .ranking-navigation-item {
     min-width: 200px;
@@ -92,6 +111,13 @@ export default {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  #export-modal .v--modal-box.v--modal {
+    height: 80vh !important;
+    width: 80vw !important;
+    top: 10vh !important;
+    left: 10vw !important;
   }
 }
 </style>
