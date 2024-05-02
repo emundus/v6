@@ -1,13 +1,27 @@
 <template>
   <div id="rankings-by-package">
-    <div v-for="rankingPackage in packages" :key="rankingPackage.id">
-      <h2 class="mt-4">{{ rankingPackage.label }}</h2>
+    <nav id="ranking-navigation" class="mt-4 mb-4">
+      <ul class="flex flex-row list-none">
+        <li v-for="rankingPackage in packages" :key="rankingPackage.id"
+            class="ranking-navigation-item cursor-pointer shadow rounded-t-lg px-2.5 py-3"
+            :class="{'em-bg-main-500 em-text-neutral-300': selectedPackage === rankingPackage.id}"
+            @click="selectedPackage = rankingPackage.id"
+            :title="rankingPackage.label"
+        >
+          <span>{{ rankingPackage.label }}</span>
+        </li>
+      </ul>
+    </nav>
+
+    <div v-if="selectedPackage !== null">
+      <h3>{{ selectedPackageItem.label }}</h3>
       <classement
-        :user="user"
-        :hierarchy_id="hierarchy_id"
-        :fileTabsStr="fileTabsStr"
-        :specificTabs="specificTabs"
-        :packageId="rankingPackage.id"
+          :key="'classement-' + selectedPackage"
+          :user="user"
+          :hierarchy_id="hierarchy_id"
+          :fileTabsStr="fileTabsStr"
+          :specificTabs="specificTabs"
+          :packageId="selectedPackage"
       >
       </classement>
     </div>
@@ -42,6 +56,7 @@ export default {
   data() {
     return {
       packages: [],
+      selectedPackage: null
     }
   },
   created() {
@@ -51,14 +66,28 @@ export default {
     getPackages() {
       rankingService.getPackages().then(response => {
         this.packages = response.data;
+
+        this.selectedPackage = this.packages[0].id;
       }).catch(error => {
         console.log(error);
       });
     }
+  },
+  computed: {
+    selectedPackageItem() {
+      return this.packages.find(item => item.id === this.selectedPackage);
+    },
   }
 }
 </script>
 
 <style scoped>
-
+#rankings-by-package {
+  .ranking-navigation-item {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
 </style>
