@@ -1185,7 +1185,7 @@ $(document).ready(function () {
 							title: Joomla.JText._('COM_EMUNDUS_ATTACHMENTS_DOWNLOAD_READY'),
 							showCancelButton: true,
 							showConfirmButton: true,
-							confirmButtonText: '<a class="text-inherit" href="/tmp/' + result.fileName + '" download>' + Joomla.JText._('COM_EMUNDUS_ATTACHMENTS_DOWNLOAD') + '</a>',
+							confirmButtonText: Joomla.JText._('COM_EMUNDUS_ATTACHMENTS_DOWNLOAD'),
 							cancelButtonText: Joomla.JText._('JCANCEL'),
 							reverseButtons: true,
 							allowOutsideClick: false,
@@ -1193,9 +1193,18 @@ $(document).ready(function () {
 								cancelButton: 'em-swal-cancel-button',
 								confirmButton: 'em-swal-confirm-button btn btn-success',
 								title: 'w-full justify-center',
+							},
+							preConfirm: function () {
+								var link = document.createElement('a');
+								link.href = '/tmp/' + result.fileName;
+								link.download = result.fileName;
+								document.body.appendChild(link);
+								link.click();
+								document.body.removeChild(link);
 							}
 						});
 					})
+
 					.catch(function (error) {
 						removeLoader();
 						console.error('Error:', error);
