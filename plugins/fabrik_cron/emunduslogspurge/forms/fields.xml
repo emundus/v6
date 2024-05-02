@@ -8,7 +8,7 @@
 				   description="PLG_CRON_LOGSPURGE_CHOOSE_NUMBER"
 				   label="PLG_CRON_LOGSPURGE_DATING_FROM"
 				   size="30"
-				   default="0"
+				   default="1"
 				   min="0" />
 
 			<field name="unit_time"
@@ -16,12 +16,12 @@
 				   description="PLG_CRON_LOGSPURGE_CHOOSE_UNIT"
 				   label="PLG_CRON_LOGSPURGE_UNIT"
 				   size="1"
-				   default="heure">
-				<option value="heure">Heure</option>
-				<option value="jour">Jour</option>
-				<option value="semaine">Semaine</option>
-				<option value="mois">Mois</option>
-				<option value="année">Année</option>
+				   default="year">
+				<option value="hour">PLG_CRON_LOGSPURGE_HOUR</option>
+				<option value="day">PLG_CRON_LOGSPURGE_DAY</option>
+				<option value="week">PLG_CRON_LOGSPURGE_WEEK</option>
+				<option value="month">PLG_CRON_LOGSPURGE_MONTH</option>
+				<option value="year">PLG_CRON_LOGSPURGE_YEAR</option>
 			</field>
 
 

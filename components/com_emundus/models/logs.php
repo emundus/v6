@@ -527,4 +527,37 @@ class EmundusModelLogs extends JModelList {
 
         return $logs;
     }
+
+	public function deleteLogsAfterADate($date) {
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->delete($db->quoteName('#__emundus_logs'))
+			->where($db->quoteName('timestamp') . ' < ' . $db->quote($date->format('Y-m-d H:i:s')));
+
+		try {
+			$db->setQuery($query);
+			$db->execute();
+			$deletedLogs = $db->getAffectedRows();
+		} catch (Exception $e) {
+			JLog::add('Could not delete logs from jos_emundus_logs table in model logs at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			$deletedLogs = 0;
+		}
+
+		$query->clear();
+		$query->delete($db->quoteName('#__messages'))
+			->where($db->quoteName('date_time') . ' < ' . $db->quote($date->format('Y-m-d H:i:s')));
+
+		try {
+			$db->setQuery($query);
+			$db->execute();
+			$deletedMessages = $db->getAffectedRows();
+		} catch (Exception $e) {
+			JLog::add('Could not delete logs from jos_messages in model logs at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			$deletedMessages = 0;
+		}
+
+		return $deletedLogs + $deletedMessages;
+
+	}
 }

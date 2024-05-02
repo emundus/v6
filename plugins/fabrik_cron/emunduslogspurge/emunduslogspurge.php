@@ -1,6 +1,6 @@
 <?php
 /**
- * A cron task to purge logs older than a certain time
+ * A cron task to purge applicative logs older than a certain time
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.cron.email
@@ -44,12 +44,42 @@ class PlgFabrik_Cronemunduslogspurge extends PlgFabrik_Cron{
      *
      * @param   array  &$data data
      *
-     * @return  int  number of records updated
+     * @return  int  number of logs deleted
      *
      * @since 6.9.3
      * @throws Exception
      */
-	public function process(&$data, &$listModel) {
-		return true;
+	public function process(&$data, &$listModel)
+	{
+		include_once(JPATH_SITE . '/components/com_emundus/models/logs.php');
+		include_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
+		$m_logs = new EmundusModelLogs();
+
+		$params      = $this->getParams();
+		$amount_time = $params->get('amount_time');
+		$unit_time   = $params->get('unit_time');
+
+		$now = DateTime::createFromFormat('Y-m-d H:i:s', EmundusHelperDate::getNow());
+
+		switch ($unit_time)
+		{
+			case 'hour':
+				$now->modify('-' . $amount_time . ' hours');
+				break;
+			case 'day':
+				$now->modify('-' . $amount_time . ' days');
+				break;
+			case 'week':
+				$now->modify('-' . $amount_time . ' weeks');
+				break;
+			case 'month':
+				$now->modify('-' . $amount_time . ' months');
+				break;
+			case 'year':
+				$now->modify('-' . $amount_time . ' years');
+				break;
+		}
+
+		return $m_logs->deleteLogsAfterADate($now);
 	}
 }
