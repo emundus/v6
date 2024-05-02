@@ -105,26 +105,25 @@ class EmundusModelUsersTest extends TestCase
      * It should return the label of the group(s) the user is in
      * @return void
      */
-    public function testgetUserGroupsLabelById() {
+	public function testgetUserGroupsLabelById() {
 
-        $user_id = $this->h_sample->createSampleUser(2, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
-        $nonApplicantIds = $this->m_users->getNonApplicantId($user_id);
-        $this->m_users->affectToGroups($nonApplicantIds, [1]);
+		$user_id = $this->h_sample->createSampleUser(2, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$nonApplicantIds = $this->m_users->getNonApplicantId($user_id);
+		$this->m_users->affectToGroups($nonApplicantIds, [1]);
 
-        $this->assertEmpty($this->m_users->getUserGroupsLabelById(0), 'Passing an incorrect user id should return null');
-        $groups = $this->m_users->getUserGroupsLabelById($user_id);
+		$this->assertEmpty($this->m_users->getUserGroupsLabelById(0), 'Passing an incorrect user id should return null');
+		$groups = $this->m_users->getUserGroupsLabelById($user_id);
 
-        foreach ($groups as $group)
-        {
-            // Should contain
-            $this->assertObjectHasAttribute('label', $group, 'Group(s) details should contain label');
+		foreach ($groups as $groupLabel)
+		{
+			$this->assertNotEmpty($groupLabel->label, 'Group(s) details should contain label');
 
-            // Should not contain
-            $this->assertObjectNotHasAttribute('description', $group, 'Group(s) details should not contain description !');
-        }
-    }
+			$this->assertEmpty($groupLabel->description, 'Group(s) details should not contain description !');
+		}
+	}
 
-    /**
+
+	/**
      * @covers EmundusModelUsers::getColumnsFromProfileForm
      * Function getColumnsFromProfileForm return an array of columns form details
      * It should return an id, name, plugin, label, group_id and a list of params
