@@ -1092,7 +1092,7 @@ die("<script>
             switch ($plugin)
             {
 	            case 'date':
-		            $date_format = $params['list_date_format'];
+		            $date_format = $params['date_form_format'];
 		            $local       = $params['date_store_as_local'] ? 1 : 0;
 
 		            $formatted_value = EmundusHelperDate::displayDate($raw_value, $date_format, $local);
