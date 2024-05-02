@@ -1210,17 +1210,30 @@ die("<script>
 
 	            case 'dropdown':
 	            case 'radiobutton':
-		            $index = array_search($raw_value, $params['sub_options']['sub_values']);
-
-		            if ($index !== false) {
-			            if($raw_value == '0'){
-				            $formatted_value = '';
-			            } else {
-				            $formatted_value = Text::_($params['sub_options']['sub_labels'][$index]);
-			            }
+		            if (isset($params['multiple']) && $params['multiple'] == 1) {
+						$data = json_decode($raw_value);
+						foreach ($data as $key => $value) {
+							$index = array_search($value, $params['sub_options']['sub_values']);
+							if ($index !== false) {
+								$data[$key] = Text::_($params['sub_options']['sub_labels'][$index]);
+							}
+						}
+			            $formatted_value = $html ? "<ul><li>" . implode("</li><li>", $data) . "</li></ul>" : implode(',', $data);
 		            }
-					elseif (isset($params->multiple) && $params->multiple == 1) {
-			            $formatted_value = $html ? "<ul><li>" . implode("</li><li>", json_decode($raw_value)) . "</li></ul>" : implode(',', json_decode($raw_value));
+					else {
+			            $index = array_search($raw_value, $params['sub_options']['sub_values']);
+
+			            if ($index !== false)
+			            {
+				            if ($raw_value == '0')
+				            {
+					            $formatted_value = '';
+				            }
+				            else
+				            {
+					            $formatted_value = Text::_($params['sub_options']['sub_labels'][$index]);
+				            }
+			            }
 		            }
 					break;
 

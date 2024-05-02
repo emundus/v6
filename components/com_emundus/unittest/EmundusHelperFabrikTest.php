@@ -187,8 +187,13 @@ class EmundusHelperFabrikTest extends TestCase
 					break;
 	            case 'radiobutton':
                 case 'dropdown':
-                    $this->assertEquals($params['sub_options']['sub_labels'][0], EmundusHelperFabrik::formatElementValue($element->name, $params['sub_options']['sub_values'][0], $element->group_id));
-                    $this->assertEquals($params['sub_options']['sub_labels'][1], EmundusHelperFabrik::formatElementValue($element->name, $params['sub_options']['sub_values'][1], $element->group_id));
+					if($params['multiple'] == 1) {
+						$this->assertEquals($params['sub_options']['sub_labels'][0], EmundusHelperFabrik::formatElementValue($element->name, '['.$params['sub_options']['sub_values'][0].']', $element->group_id));
+					} else
+					{
+						$this->assertEquals($params['sub_options']['sub_labels'][0], EmundusHelperFabrik::formatElementValue($element->name, $params['sub_options']['sub_values'][0], $element->group_id));
+						$this->assertEquals($params['sub_options']['sub_labels'][1], EmundusHelperFabrik::formatElementValue($element->name, $params['sub_options']['sub_values'][1], $element->group_id));
+					}
                     break;
                 case 'yesno':
                     $this->assertEquals(JText::_('JYES'), EmundusHelperFabrik::formatElementValue($element->name, 1, $element->group_id));
