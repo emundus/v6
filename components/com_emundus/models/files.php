@@ -4852,12 +4852,6 @@ class EmundusModelFiles extends JModelLegacy
     public function exportZip($fnums, $form_post = 1, $attachment = 1, $assessment = 1, $decision = 1, $admission = 1, $form_ids = null, $attachids = null, $options = null, $acl_override = false, $current_user = null) {
         $eMConfig = JComponentHelper::getParams('com_emundus');
 
-        $view = JRequest::getCmd( 'view' );
-
-        if ((!empty($current_user) && !@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) && $view != 'renew_application' && !$acl_override) {
-            die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
-        }
-
         require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
         require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'export.php');
         require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
