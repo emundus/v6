@@ -61,7 +61,7 @@ class EmundusModelMessagesTest extends TestCase
 
 		$user_from = 95;
 		$user_to = 0;
-		$referenceDate = '2000-01-01 10:00:00';
+		$reference_date = '2000-01-01 10:00:00';
 
 		for ($i = 0; $i < 10; $i++) {
 			$message = 'test' . rand(0, 1000);
@@ -72,7 +72,7 @@ class EmundusModelMessagesTest extends TestCase
 
 			$query->clear()
 				->update($db->quoteName('#__messages'))
-				->set($db->quoteName('date_time') . ' = ' . $db->quote($referenceDate))
+				->set($db->quoteName('date_time') . ' = ' . $db->quote($reference_date))
 				->where($db->quoteName('message') . ' = ' . $db->quote($message))
 				->where($db->quoteName('user_id_to') . ' = ' . $db->quote($user_to))
 				->where($db->quoteName('user_id_from') . ' = ' . $db->quote($user_from))

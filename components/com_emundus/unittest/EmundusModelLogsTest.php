@@ -114,12 +114,12 @@ class EmundusModelLogsTest extends TestCase
 		$this->assertEquals(0, $this->m_logs->deleteLogsAfterADate(''), 'No logs should be deleted if no date is given');
 		$db = JFactory::getDbo();
 
-		$params = '';
 		$user_from = 95;
 		$user_to = $this->user_sample_id;
-		$action = 1;
 		$crud = 'r';
-		$referenceDate = '2000-01-01 10:00:00';
+		$params = '';
+		$action = 1;
+		$reference_date = '2000-01-01 10:00:00';
 
 		for ($i = 0; $i < 10; $i++) {
 			$message = 'test' . rand(0, 1000);
@@ -130,7 +130,7 @@ class EmundusModelLogsTest extends TestCase
 
 			$query->clear()
 				->update($db->quoteName('#__emundus_logs'))
-				->set($db->quoteName('timestamp') . ' = ' . $db->quote($referenceDate))
+				->set($db->quoteName('timestamp') . ' = ' . $db->quote($reference_date))
 				->where($db->quoteName('user_id_from') . ' = ' . $db->quote($user_from))
 				->where($db->quoteName('user_id_to') . ' = ' . $db->quote($user_to))
 				->where($db->quoteName('fnum_to') . ' = ' . $db->quote(1))

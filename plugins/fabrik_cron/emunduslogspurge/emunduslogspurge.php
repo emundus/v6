@@ -85,9 +85,9 @@ class PlgFabrik_Cronemunduslogspurge extends PlgFabrik_Cron{
 		$logs = $m_logs->deleteLogsAfterADate($now, $export);
 		$messages = $m_messages->deleteMessagesAfterADate($now, $export);
 
-		$zipFilename = JPATH_SITE . '/tmp/logs_and_messages_' . date('Y-m-d_H-i-s') . '.zip';
+		$zip_filename = JPATH_SITE . '/tmp/logs_and_messages_' . date('Y-m-d_H-i-s') . '.zip';
 		$zip = new ZipArchive();
-		if ($export && $zip->open($zipFilename, ZipArchive::CREATE) === TRUE) {
+		if ($export && $zip->open($zip_filename, ZipArchive::CREATE) === TRUE) {
 			$zip->addFile($logs['csvFilename'], basename($logs['csvFilename']));
 			$zip->addFile($messages['csvFilename'], basename($messages['csvFilename']));
 			$zip->close();
