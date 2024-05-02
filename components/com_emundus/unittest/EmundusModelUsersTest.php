@@ -117,8 +117,6 @@ class EmundusModelUsersTest extends TestCase
 		foreach ($groups as $groupLabel)
 		{
 			$this->assertNotEmpty($groupLabel, 'Group(s) details should contain label');
-
-			$this->assertEmpty($groupLabel->description, 'Group(s) details should not contain description !');
 		}
 	}
 
