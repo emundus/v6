@@ -5372,7 +5372,7 @@ class EmundusModelApplication extends JModelList
 			}
             if (!empty($values) || $element->plugin == 'yesno') {
 	            foreach ($values as $value) {
-		            $elt[] = EmundusHelperFabrik::formatElementValue($element->name, $value, $element->group_id, $uid, true);
+		            $elt[] = EmundusHelperFabrik::formatElementValue($element->name, $value, $element->group_id, $aid, true);
 	            }
             }
 
