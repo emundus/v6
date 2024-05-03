@@ -153,18 +153,17 @@ class EmundusHelperEvents {
         }
     }
 
-    private function getFormsIdFromTablesId($table_ids): array
+    private function getFormsIdFromTableNames($table_names): array
     {
         $form_ids = [];
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        foreach ($table_ids as $table_id) {
+        foreach ($table_names as $table_name) {
             $query->clear()
                 ->select('form_id')
                 ->from('#__fabrik_lists')
-                ->where('db_table_name = (SELECT db_table_name FROM #__fabrik_lists WHERE id = ' . $table_id . ')');
-
+                ->where('db_table_name = '.$db->quote($table_name));
             $db->setQuery($query);
             $form_ids = array_merge($form_ids, $db->loadColumn());
         }
@@ -198,13 +197,17 @@ class EmundusHelperEvents {
 
             $eMConfig = JComponentHelper::getParams('com_emundus');
             $copy_application_form = $eMConfig->get('copy_application_form', 0);
-	        $copy_application_form_type   = $eMConfig->get('copy_application_form_type', 0);
-	        $copy_exclude_tables_id      = $eMConfig->get('copy_exclude_tables_id', []);
-	        $copy_include_tables_id      = $eMConfig->get('copy_include_tables_id', []);
+            $copy_application_form_type   = $eMConfig->get('copy_application_form_type', 0);
+            $copy_application_form_or_table = $eMConfig->get('copy_application_form_or_table', 'form');
+            $copy_exclude_forms      = $eMConfig->get('copy_exclude_forms', []);
+            $copy_include_forms      = $eMConfig->get('copy_include_forms', []);
+            $copy_include_tables     = $eMConfig->get('copy_include_tables', []);
+            if ($copy_application_form_or_table == 'table' && !empty($copy_include_tables)) {
+                $copy_include_forms = $this->getFormsIdFromTableNames($copy_include_tables);
+                $copy_exclude_forms = [];
+            }
             $can_edit_until_deadline = $eMConfig->get('can_edit_until_deadline', '0');
             $can_edit_after_deadline = $eMConfig->get('can_edit_after_deadline', '0');
-            $copy_include_forms = $this->getFormsIdFromTablesId($copy_include_tables_id);
-            $copy_exclude_forms = $this->getFormsIdFromTablesId($copy_exclude_tables_id);
             $id_applicants = $eMConfig->get('id_applicants', '0');
             $applicants = explode(',',$id_applicants);
 
