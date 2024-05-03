@@ -1424,9 +1424,10 @@ class EmundusModelMessages extends JModelList {
     }
 
 	/**
-	 * @param $date DateTime    Date to delete messages after
+	 * @param $date   DateTime  Date to delete messages after
 	 * @param $export bool      Export messages to CSV format
-	 * @description Deletes messages after a given date. If export is set to true, it will export the messages to a CSV file.
+	 * @description             Deletes messages after a given date.
+	 * If export is set to true, it will export the messages to a CSV file.
 	 * @return array|int
 	 */
 	public function deleteMessagesAfterADate($date, $export = false)

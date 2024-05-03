@@ -529,9 +529,10 @@ class EmundusModelLogs extends JModelList {
     }
 
 	/**
-	 * @param $date DateTime    Date to delete logs after
+	 * @param $date   DateTime  Date to delete logs after
 	 * @param $export bool      Export messages to CSV format
-	 * @description Deletes logs after a given date. If export is set to true, it will export the logs to a CSV file.
+	 * @description             Deletes logs after a given date.
+	 * If export is set to true, it will export the logs to a CSV file.
 	 * @return array|int
 	 */
 	public function deleteLogsAfterADate($date, $export = false)

@@ -25,7 +25,8 @@
 
 			<field name="export_zip"
 				   type="checkbox"
-				   label="PLG_CRON_LOGSPURGE_ZIP"/>
+				   label="PLG_CRON_LOGSPURGE_ZIP"
+				   description="PLG_CRON_LOGSPURGE_CHOOSE_EXPORT"/>
 
 		</fieldset>
 	</fields>
