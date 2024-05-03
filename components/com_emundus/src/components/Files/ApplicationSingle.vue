@@ -32,7 +32,7 @@
         <div class="scrollable">
           <application-tabs
               :user="user"
-              :file="file"
+              :file="selectedFile"
               :access="access"
           ></application-tabs>
         </div>
@@ -161,7 +161,6 @@ export default {
             this.selectedFile = result.data;
             this.access = result.rights;
             this.updateURL(this.selectedFile.fnum)
-            this.getApplicationForm();
             if (this.$props.type === 'evaluation') {
               this.getEvaluationForm();
             }
@@ -183,15 +182,7 @@ export default {
           if (result.status == true) {
             this.access = result.data;
             this.updateURL(this.selectedFile.fnum)
-            if (this.access['1'].r) {
-              this.getApplicationForm();
-            } else {
-              if (this.access['4'].r) {
-                this.selected = 'attachments';
-              } else if (this.access['10'].r) {
-                this.selected = 'comments';
-              }
-            }
+
             if (this.$props.type === 'evaluation') {
               this.getEvaluationForm();
             }
@@ -210,18 +201,6 @@ export default {
           this.loading = false;
         });
       }
-    },
-
-  methods:{
-    getApplicationForm() {
-      const fnum = this.file.fnum ? this.file.fnum : this.file;
-
-      filesService.getApplicationForm(fnum).then((response) => {
-        this.applicationform = response.data;
-        if (this.type !== 'evaluation') {
-          this.loading = false;
-        }
-      });
     },
     getEvaluationForm() {
       if (this.selectedFile.id != null) {

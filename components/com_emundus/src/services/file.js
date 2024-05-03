@@ -12,16 +12,23 @@ export default {
         }
     },
     async getFnumInfos(fnum) {
-        try {
-            const response = await client().get('index.php?option=com_emundus&controller=files&task=getfnuminfos', {
-                params: {
-                    fnum
-                }
-            });
+        if (fnum) {
+            try {
+                const response = await client().get('index.php?option=com_emundus&controller=files&task=getfnuminfos', {
+                    params: {
+                        fnum: fnum
+                    }
+                });
 
-            return response.data;
-        } catch (e) {
-            return false;
+                return response.data;
+            } catch (e) {
+                return false;
+            }
+        } else {
+            return {
+                status: false,
+                message: 'Fnum is required'
+            };
         }
     },
     async isDataAnonymized() {

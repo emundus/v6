@@ -246,7 +246,7 @@ export default {
       fnums: [],
       users: [],
       displayedUser: {},
-      displayedFnum: this.fnum,
+      displayedFnum: null,
       fnumInfos: null,
       checkedAttachments: [],
       selectedAttachment: {},
@@ -271,6 +271,7 @@ export default {
     };
   },
   created() {
+    this.displayedFnum = this.fnum;
 	  this.canSee = !this.$store.state.global.anonyme;
 	  this.$store.dispatch('user/setCurrentUser', this.user);
 

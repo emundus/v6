@@ -16,7 +16,7 @@
 
     <ApplicationSingle
         v-else-if="component === 'application'"
-        :default-file="data.fnum"
+        :file="data.fnum"
         :type="data.type"
         :user="data.user"
         :ratio="data.ratio"

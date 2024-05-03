@@ -56,11 +56,11 @@
 <script>
 import Attachments from "@/views/Attachments";
 import Comments from "@/components/Files/Comments";
-import axios from "axios";
 import EvaluationForm from "@/components/Files/EvaluationForm.vue";
 import DecisionForm from "@/components/Files/DecisionForm.vue";
 import AdmissionForm from "@/components/Files/AdmissionForm.vue";
 import IframeTab from "@/components/Files/IframeTab.vue";
+import filesService from "@/services/files";
 
 export default {
   name: 'ApplicationTabs',
@@ -112,11 +112,8 @@ export default {
   },
   methods: {
     getApplicationForm(){
-      axios({
-        method: "get",
-        url: "index.php?option=com_emundus&view=application&format=raw&layout=form&fnum="+this.file.fnum,
-      }).then(response => {
-        this.applicationform = response.data;
+      filesService.getApplicationForm(this.file.fnum).then(html => {
+        this.applicationform = html;
       });
     },
   },

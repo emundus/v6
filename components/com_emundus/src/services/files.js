@@ -277,11 +277,8 @@ export default {
 
     async getApplicationForm(fnum) {
         try {
-            const response = await client().get('index.php?option=com_emundus&view=application&format=raw&layout=form', {
-                params: {
-                    fnum: fnum
-                }
-            });
+            // we want to get html from response
+            const response = await client().get('index.php?option=com_emundus&view=application&format=raw&layout=form&fnum=' + fnum);
 
             return response.data;
         } catch (e) {
