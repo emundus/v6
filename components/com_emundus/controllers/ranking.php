@@ -224,7 +224,7 @@ class EmundusControllerRanking extends JControllerLegacy
 
             $package_ids = json_decode($package_ids, true);
             if (!empty($package_ids)) {
-                $hierarchy_ids = $jinput->getString('hierarchy_id', '');
+                $hierarchy_ids = $jinput->getString('hierarchyIds', '');
                 $hierarchy_ids = json_decode($hierarchy_ids, true);
                 $columns = $jinput->getString('columns', '');
                 $columns = json_decode($columns, true);

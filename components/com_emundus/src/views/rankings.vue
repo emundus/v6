@@ -1,7 +1,7 @@
 <template>
   <div id="rankings-by-package">
     <div class="w-full flex justify-end">
-      <button v-if="canExport" class="em-primary-button w-fit" @click="openExportView">Export</button>
+      <button v-if="canExport" class="em-primary-button w-fit" @click="openExportView">{{ translate('COM_EMUNDUS_RANKING_EXPORT_RANKINGS_BTN') }}</button>
     </div>
 
     <nav id="ranking-navigation" class="mt-4 mb-4">
@@ -21,7 +21,7 @@
     </nav>
     <div v-if="selectedPackage !== null">
       <h3>{{ selectedPackageItem.label }}</h3>
-      <classement
+      <ranking
           :key="'classement-' + selectedPackage"
           :user="user"
           :hierarchy_id="hierarchy_id"
@@ -29,7 +29,7 @@
           :specificTabs="specificTabs"
           :packageId="selectedPackage"
       >
-      </classement>
+      </ranking>
     </div>
 
     <modal id="export-modal" name="export-modal">
@@ -44,12 +44,12 @@
 
 <script>
 import rankingService from '@/services/ranking';
-import Classement from "@/views/classement.vue";
+import Ranking from "@/views/ranking.vue";
 import ExportRanking from "@/views/ExportRanking.vue";
 
 export default {
   name: 'rankings',
-  components: {Classement, ExportRanking},
+  components: {Ranking, ExportRanking},
   props: {
     user: {
       type: Number,

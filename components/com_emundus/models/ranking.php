@@ -513,7 +513,6 @@ class EmundusModelRanking extends JModelList
                 ->leftJoin($this->db->quoteName('#__emundus_users', 'eu') . ' ON ' . $this->db->quoteName('eu.profile') . ' = ' . $this->db->quoteName('ech.profile_id'))
                 ->where($this->db->quoteName('eu.user_id') . ' = ' . $this->db->quote($user_id));
 
-
             try {
                 $this->db->setQuery($query);
                 $hierarchy = $this->db->loadResult();
@@ -670,16 +669,23 @@ class EmundusModelRanking extends JModelList
      * @param $user_id
      * @return array
      */
-    public function getOtherRankingsRankerCanSee($user_id)
+    public function getOtherRankingsRankerCanSee($user_id, $limit_hierarchy_ids = null, $package = null)
     {
         $rankings = [];
 
         if (!empty($user_id)) {
             $hierarchies = $this->getHierarchiesUserCanSee($user_id);
-            $ids = $this->getAllFilesRankerCanAccessTo($user_id);
+
+            if (isset($limit_hierarchy_ids)) {
+                $hierarchies = array_filter($hierarchies, function ($hierarchy) use ($limit_hierarchy_ids) {
+                    return in_array($hierarchy['id'], $limit_hierarchy_ids);
+                });
+            }
+
+
+            $ids = $this->getAllFilesRankerCanAccessTo($user_id, null, $package);
 
             if (!empty($hierarchies) && !empty($ids)) {
-
                 $query = $this->db->getQuery(true);
 
                 foreach ($hierarchies as $hierarchy) {
@@ -1380,18 +1386,43 @@ class EmundusModelRanking extends JModelList
                         }
                     }
 
+                    $other_rankings_values = [];
+                    if (!empty($hierachy_ids)) {
+                        $other_rankings_values = $this->getOtherRankingsRankerCanSee($user_id, $hierachy_ids, $package_id);
+                    }
+
                     foreach ($files as $file) {
                         $file_data = [
-                            'fnum' => $file['fnum'],
-                            'rank' => $file['rank'],
-                            'package_label' => $package_label
+                            0 => $file['id'],
+                            1 => $file['fnum'],
+                            2 => $file['rank'],
+                            3 => $package_label
                         ];
 
                         if (in_array('applicant', $columns)) {
-                            $file_data['applicant'] = $file['applicant'];
+                            $file_data[] = $file['applicant'];
                         }
                         if (in_array('status', $columns)) {
-                            $file_data['status'] = $file['status'];
+                            $file_data[] = $file['status'];
+                        }
+                        if (in_array('ranker', $columns)) {
+                            $file_data[] = $user_id;
+                        }
+
+                        if (!empty($hierachy_ids)) {
+                            foreach ($other_rankings_values as $other_ranking) {
+                                $other_ranking_index = array_search($file['id'], array_map(function($file) {
+                                    return $file['id'];
+                                }, $other_ranking['files']));
+
+                                if ($other_ranking_index !== false) {
+                                    $file_data[] = $other_ranking['files'][$other_ranking_index]['rank'];
+                                    $file_data[] = $other_ranking['rankers'][$other_ranking['files'][$other_ranking_index]['ranker_id']]['name'];
+                                } else {
+                                    $file_data[] = '';
+                                    $file_data[] = '';
+                                }
+                            }
                         }
 
                         $export_array[] = $file_data;
@@ -1401,7 +1432,7 @@ class EmundusModelRanking extends JModelList
                 if (!empty($export_array)) {
                     $today  = date("MdYHis");
                     $name   = md5($today.rand(0,10));
-                    $name   = $name.'.csv';
+                    $name   = 'classement-' . $name.'.csv';
                     $path = JPATH_SITE . '/tmp/' . $name;
 
                     if (!$csv_file = fopen($path, 'w+')) {
@@ -1409,17 +1440,24 @@ class EmundusModelRanking extends JModelList
                     } else {
                         fprintf($csv_file, chr(0xEF).chr(0xBB).chr(0xBF));
 
-                        $header = ['Numéro de dossier', 'Classement', 'Campagne'];
+                        $header = ['ID', 'Numéro de dossier', 'Classement', 'Campagne'];
                         if (in_array('applicant', $columns)) {
                             $header[] = 'Candidat';
                         }
                         if (in_array('status', $columns)) {
                             $header[] = 'Statut';
                         }
+                        if (in_array('ranker', $columns)) {
+                            $header[] = 'Responsable du classement';
+                        }
+
+                        foreach($hierachy_ids as $hierachy_id) {
+                            $header[] = 'Classement ' . $hierachy_id;
+                            $header[] = 'Responsable du classement ' . $hierachy_id;
+                        }
 
                         fputcsv($csv_file, $header, ';');
 
-                        // add a line by file
                         foreach ($export_array as $line) {
                             fputcsv($csv_file, $line, ';');
                         }
