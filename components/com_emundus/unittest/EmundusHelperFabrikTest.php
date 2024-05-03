@@ -210,67 +210,35 @@ class EmundusHelperFabrikTest extends TestCase
                     // Query to get the first value of the join_key_column
                     $query->select($db->quoteName($params['join_key_column']))
                         ->from($db->quoteName($params['join_db_name']))
-                        ->setLimit(1);
-
+                        ->order($db->quoteName($params['join_key_column']));
                     $db->setQuery($query);
-                    $firstKeyValue = $db->loadResult();
-
+                    $db_values = $db->loadColumn();
+-
                     $query = $db->getQuery(true);
+
+	                if (!empty($params['join_val_column_concat'])) {
+		                $lang = substr(JFactory::getLanguage()->getTag(), 0, 2);
+		                $params['join_val_column_concat'] = str_replace('{thistable}', $params['join_db_name'], $params['join_val_column_concat']);
+		                $params['join_val_column_concat'] = str_replace('{shortlang}', $lang, $params['join_val_column_concat']);
+
+		                $query->select($db->quoteName($params['join_val_column_concat']));
+	                } else {
+		                $query->select($db->quoteName($params['join_val_column']));
+	                }
+
+	                $query->from($db->quoteName($params['join_db_name']))
+	                    ->order($db->quoteName($params['join_key_column']));
+
+	                $db->setQuery($query);
+	                $formatted_value = $db->loadColumn();
 
 	                if ($params['database_join_display_type'] != 'checkbox' && $params['database_join_display_type'] != 'multilist')
 	                {
-		                if (!empty($params['join_val_column_concat'])) {
-			                $lang = substr(JFactory::getLanguage()->getTag(), 0, 2);
-			                $params['join_val_column_concat'] = str_replace('{thistable}', $params['join_db_name'], $params['join_val_column_concat']);
-			                $params['join_val_column_concat'] = str_replace('{shortlang}', $lang, $params['join_val_column_concat']);
-
-			                $query->select($db->quoteName($params['join_val_column_concat']));
-		                } else {
-			                $query->select($db->quoteName($params['join_val_column']));
-		                }
-
-		                $query->from($db->quoteName($params['join_db_name']));
-
-		                $db->setQuery($query);
-		                $formatted_value = $db->loadResult();
-
-		                $this->assertEquals($formatted_value, EmundusHelperFabrik::formatElementValue($element->name, $firstKeyValue, $element->group_id, $user_id));
+		                $this->assertEquals($formatted_value[0], EmundusHelperFabrik::formatElementValue($element->name, $db_values[0], $element->group_id, $user_id));
 	                }
 					else
 					{
-						$select    = $db->quoteName($params['join_val_column']);
-						if (!empty($params['join_val_column_concat']))
-						{
-							$select = 'CONCAT(' . $params['join_val_column_concat'] . ')';
-							$select = preg_replace('#{thistable}#', 'jd', $select);
-							$select = preg_replace('#{shortlang}#', substr(JFactory::getLanguage()->getTag(), 0, 2), $select);
-							if(!empty($applicant_id)){
-								$query  = preg_replace('#{my->id}#', $applicant_id, $query);
-							}
-						}
-
-						$query->clear()
-							->select($db->quoteName('fl.db_table_name'))
-							->from($db->quoteName('#__fabrik_lists', 'fl'))
-							->leftJoin($db->quoteName('#__fabrik_forms', 'ff') . ' ON ' . $db->quoteName('ff.id') . ' = ' . $db->quoteName('fl.form_id'))
-							->leftJoin($db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $db->quoteName('ffg.form_id') . ' = ' . $db->quoteName('ff.id'))
-							->leftJoin($db->quoteName('#__fabrik_elements', 'fe') . ' ON ' . $db->quoteName('fe.group_id') . ' = ' . $db->quoteName('ffg.group_id'))
-							->where($db->quoteName('fe.group_id') . ' = ' . $db->quote($element->group_id));
-
-
-						$db->setQuery($query);
-						$table = $db->loadResult();
-
-						$query->clear()
-							->select($select)
-							->from($db->quoteName($table . '_repeat_' . $element->name, 't'))
-							->leftJoin($db->quoteName($params['join_db_name'], 'jd') . ' ON ' . $db->quoteName('jd.' . $params['join_key_column']) . ' = ' . $db->quoteName('t.' . $element->name))
-							->where($db->quoteName('parent_id') . ' = ' . $db->quote($user_id));
-
-						$db->setQuery($query);
-						$formatted_value = $db->loadResult();
-
-						$this->assertEquals($formatted_value, EmundusHelperFabrik::formatElementValue($element->name, $firstKeyValue, $element->group_id, $user_id));
+						$this->assertEquals(implode(',',[$formatted_value[0],$formatted_value[4]]), EmundusHelperFabrik::formatElementValue($element->name, [$db_values[0],$db_values[4]], $element->group_id, $user_id));
 					}
                     break;
 

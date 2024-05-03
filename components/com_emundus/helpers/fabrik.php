@@ -1046,7 +1046,7 @@ die("<script>
 
 	/**
 	 * @param $elt_name string fabrik element name
-	 * @param $raw_value string raw value of the element
+	 * @param $raw_value string|array raw value of the element
 	 * @param $groupId int group ID of the element
 	 * @param $uid int user ID for replace in databasejoin
 	 * @param $html bool if the value should be formatted with HTML tags
