@@ -39,11 +39,17 @@
           </div>
         </div>
         <div class="add-child-comment">
-          <textarea class="mb-2" @keyup.enter="addComment" v-model="newCommentText"></textarea>
-          <button id="add-comment-btn" class="em-primary-button em-bg-main-500 em-neutral-300-color w-fit mt-2" @click="addComment(comment.id)">
-            <span>{{ translate('COM_EMUNDUS_COMMENTS_ADD_COMMENT') }}</span>
-            <span class="material-icons-outlined ml-1 em-neutral-300-color">send</span>
-          </button>
+          <textarea class="mb-2" @keyup.enter="addComment(comment.id)" v-model="newChildCommentText"></textarea>
+          <div class="w-full flex flex-row justify-end">
+            <button id="add-comment-btn"
+                    class="em-primary-button em-bg-main-500 em-neutral-300-color w-fit mt-2"
+                    :class="{'cursor-not-allowed opacity-50': newChildCommentText.length === 0}"
+                    :disabled="newChildCommentText.length === 0"
+                    @click="addComment(comment.id)">
+              <span>{{ translate('COM_EMUNDUS_COMMENTS_ADD_COMMENT') }}</span>
+              <span class="material-icons-outlined ml-1 em-neutral-300-color">send</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -59,10 +65,17 @@
           <label for="visible-to-applicant" class="m-0">{{ translate('COM_EMUNDUS_COMMENTS_VISIBLE_ALL') }}</label>
         </div>
       </div>
-      <button id="add-comment-btn" class="em-primary-button em-bg-main-500 em-neutral-300-color" @click="addComment(0)">
-        <span>{{ translate('COM_EMUNDUS_COMMENTS_ADD_COMMENT') }}</span>
-        <span class="material-icons-outlined ml-1 em-neutral-300-color">send</span>
-      </button>
+      <div class="flex flex-row justify-end">
+        <button id="add-comment-btn"
+                class="em-primary-button em-bg-main-500 em-neutral-300-color w-fit"
+                :class="{'cursor-not-allowed opacity-50': newCommentText.length === 0}"
+                :disabled="newCommentText.length === 0"
+                @click="addComment(0)"
+        >
+          <span>{{ translate('COM_EMUNDUS_COMMENTS_ADD_COMMENT') }}</span>
+          <span class="material-icons-outlined ml-1 em-neutral-300-color">send</span>
+        </button>
+      </div>
     </div>
     <div class="em-page-loader" v-if="loading"></div>
   </div>
@@ -98,6 +111,7 @@ export default {
   data: () => ({
     comments: [],
     newCommentText: '',
+    newChildCommentText: '',
     target: {
       target_type: 'element',
       target_id: 0,
@@ -124,7 +138,13 @@ export default {
     },
     addComment(parent_id = 0) {
       this.loading = true;
-      commentsService.addComment(this.ccid, this.newCommentText, this.target, this.visible_to_applicant, parent_id).then((response) => {
+
+      let commentContent = this.newCommentText;
+      if (parent_id !== 0) {
+        commentContent = this.newChildCommentText;
+      }
+
+      commentsService.addComment(this.ccid, commentContent, this.target, this.visible_to_applicant, parent_id).then((response) => {
         if (response.status) {
           this.comments.push(response.data);
           this.resetAddComment();
@@ -137,6 +157,7 @@ export default {
     },
     resetAddComment() {
       this.newCommentText = '';
+      this.newChildCommentText = '';
       this.visible_to_applicant = false;
       this.target.target_id = 0;
       this.target.target_type = 'element';
