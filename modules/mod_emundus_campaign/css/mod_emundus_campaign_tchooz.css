@@ -170,6 +170,9 @@
 
 .mod_emundus_campaign__list_content_resume * {
     color: var(--neutral-600) !important;
+    display: inline;
+}
+.mod_emundus_campaign__list_content_resume p {
     display: block;
 }
 
