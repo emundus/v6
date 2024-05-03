@@ -1457,15 +1457,18 @@ class EmundusModelMessages extends JModelList {
 					return $deleted_messages;
 				}
 
-				$csv_filename = JPATH_SITE . '/tmp/messages_' . date('Y-m-d_H-i-s') . '.csv';
-				$csv_file     = fopen($csv_filename, 'w');
-				fputcsv($csv_file, array_keys($messages[0]));
-				foreach ($messages as $message)
+				if (!empty($messages))
 				{
-					fputcsv($csv_file, $message);
-				}
+					$csv_filename = JPATH_SITE . '/tmp/messages_' . date('Y-m-d_H-i-s') . '.csv';
+					$csv_file     = fopen($csv_filename, 'w');
+					fputcsv($csv_file, array_keys($messages[0]));
+					foreach ($messages as $message)
+					{
+						fputcsv($csv_file, $message);
+					}
 
-				fclose($csv_file);
+					fclose($csv_file);
+				}
 			}
 
 			$query->clear()

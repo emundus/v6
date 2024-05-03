@@ -7,7 +7,7 @@
 	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
 	<authorEmail>dev@emundus.fr</authorEmail>
 	<authorUrl>www.emundus.fr</authorUrl>
-	<version>6.9.3</version>
+	<version>1.39.0</version>
 	<description>A plugin used to purge database logs and messages</description>
 	<files>
 		<filename plugin="emunduslogsandmessagespurge">emunduslogsandmessagespurge.php</filename>

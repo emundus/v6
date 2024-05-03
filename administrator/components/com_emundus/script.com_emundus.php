@@ -4250,19 +4250,12 @@ if(in_array($applicant,$exceptions)){
                     EmundusHelperUpdate::insertTranslationsTag('SETUP_GROUPS_AVAILABLE_STATUS', 'Statuses', 'override', null, null, null, 'en-GB');
                 }
 
-				$file_path = JPATH_SITE . "/plugins/system/logrotation/logrotation.xml";
-				$xml_content = simplexml_load_file($file_path);
-
-				if($xml_content)
-				{
-					$element_cachetimeout = $xml_content->xpath("//field[@name='cachetimeout']")[0];
-					$element_cachetimeout['default'] = '1';
-
-					$element_logstokeep = $xml_content->xpath("//field[@name='logstokeep']")[0];
-					$element_logstokeep['default'] = '30';
-
-					$xml_content->asXML($file_path);
-				}
+				$query->clear()
+					->update('#__extensions')
+					->set($db->quoteName('params') . ' = JSON_SET(' . $db->quoteName('params') . ', ' . $db->quote('$.cachetimeout') . ', 1, ' . $db->quote('$.logstokeep') . ', 30)')
+					->where($db->quoteName('name') . ' = ' . $db->quote('plg_system_logrotation'));
+				$db->setQuery($query);
+				$db->execute();
 			}
 		}
 

@@ -20,36 +20,36 @@
 		<fields name="params">
 			<fieldset name="basic">
 				<field
-					name="cachetimeout"
-					type="integer"
-					label="PLG_SYSTEM_LOGROTATION_CACHETIMEOUT_LABEL"
-					description="PLG_SYSTEM_LOGROTATION_CACHETIMEOUT_DESC"
-					first="0"
-					last="120"
-					step="1"
-					default="30"
-					filter="int"
-					validate="number"
+						name="cachetimeout"
+						type="integer"
+						label="PLG_SYSTEM_LOGROTATION_CACHETIMEOUT_LABEL"
+						description="PLG_SYSTEM_LOGROTATION_CACHETIMEOUT_DESC"
+						first="0"
+						last="120"
+						step="1"
+						default="30"
+						filter="int"
+						validate="number"
 				/>
 
 				<field
-					name="logstokeep"
-					type="integer"
-					label="PLG_SYSTEM_LOGROTATION_LOGSTOKEEP_LABEL"
-					description="PLG_SYSTEM_LOGROTATION_LOGSTOKEEP_DESC"
-					first="1"
-					last="10"
-					step="1"
-					default="1"
-					filter="int"
-					validate="number"
+						name="logstokeep"
+						type="integer"
+						label="PLG_SYSTEM_LOGROTATION_LOGSTOKEEP_LABEL"
+						description="PLG_SYSTEM_LOGROTATION_LOGSTOKEEP_DESC"
+						first="1"
+						last="30"
+						step="1"
+						default="1"
+						filter="int"
+						validate="number"
 				/>
 
 				<field
-					name="lastrun"
-					type="hidden"
-					default="0"
-					filter="integer"
+						name="lastrun"
+						type="hidden"
+						default="0"
+						filter="integer"
 				/>
 			</fieldset>
 		</fields>

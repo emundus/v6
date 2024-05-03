@@ -563,15 +563,17 @@ class EmundusModelLogs extends JModelList {
 					return $deleted_logs;
 				}
 
-
-				$csv_filename = JPATH_SITE . '/tmp/logs_' . date('Y-m-d_H-i-s') . '.csv';
-				$csv_file     = fopen($csv_filename, 'w');
-				fputcsv($csv_file, array_keys($logs[0]));
-				foreach ($logs as $log)
+				if (!empty($logs))
 				{
-					fputcsv($csv_file, $log);
+					$csv_filename = JPATH_SITE . '/tmp/logs_' . date('Y-m-d_H-i-s') . '.csv';
+					$csv_file     = fopen($csv_filename, 'w');
+					fputcsv($csv_file, array_keys($logs[0]));
+					foreach ($logs as $log)
+					{
+						fputcsv($csv_file, $log);
+					}
+					fclose($csv_file);
 				}
-				fclose($csv_file);
 			}
 
 			$query->clear()
