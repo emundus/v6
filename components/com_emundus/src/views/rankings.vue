@@ -114,10 +114,11 @@ export default {
   }
 
   #export-modal .v--modal-box.v--modal {
-    height: 80vh !important;
+    max-height: 80vh !important;
     width: 80vw !important;
     top: 10vh !important;
     left: 10vw !important;
+    height: auto !important;
   }
 }
 </style>

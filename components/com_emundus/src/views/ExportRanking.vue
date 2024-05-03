@@ -1,6 +1,6 @@
 <template>
   <div id="export-ranking" class="p-4">
-    <h4>Export ranking - WORK IN PROGRESS</h4>
+    <h4>{{ translate('COM_EMUNDUS_RANKING_EXPORT_TITLE') }}</h4>
 
     <div class="p-2">
       <h5>{{ translate('COM_EMUNDUS_RANKING_EXPORT_PACKAGES') }}</h5>
@@ -9,9 +9,11 @@
           <input type="checkbox" v-model="selectAllPackages" @change="toggleAllPackages" name="selectAll" id="selectAll">
           <label for="selectAll">{{ translate('COM_EMUNDUS_SELECT_ALL') }}</label>
         </div>
-        <div v-for="rankingPackage in userPackages" :key="rankingPackage.id" class="flex flex-row items-center">
-          <input type="checkbox" v-model="selectedPackages" :value="rankingPackage.id" name="selectedPackages" :id="'package-' + rankingPackage.id">
-          <label :for="'package-' + rankingPackage.id">{{ rankingPackage.label }}</label>
+        <div id="select-packages-options" class="grid grid-cols-4">
+          <div v-for="rankingPackage in userPackages" :key="rankingPackage.id" class="flex flex-row items-center">
+            <input type="checkbox" v-model="selectedPackages" :value="rankingPackage.id" name="selectedPackages" :id="'package-' + rankingPackage.id">
+            <label :for="'package-' + rankingPackage.id">{{ rankingPackage.label }}</label>
+          </div>
         </div>
       </div>
 
@@ -27,14 +29,17 @@
       <div class="p-4">
         <div v-for="column in columns" :key="column.id" class="flex flex-row items-center">
           <input type="checkbox" v-model="selectedColumns" :value="column.id" name="selectedColumns" :id="'column-' + column.id">
-          <label :for="'column-' + column.id">{{ column.label }}</label>
+          <label :for="'column-' + column.id">{{ translate(column.label) }}</label>
         </div>
       </div>
     </div>
 
     <div class="w-full flex justify-end">
-      <button class="em-primary-button w-fit" @click="exportRanking">Export</button>
-      <a v-if="downloadLink" :href="downloadLink" download>Download</a>
+      <button class="em-primary-button w-fit" @click="exportRanking">{{ translate('COM_EMUNDUS_RANKING_EXPORT_BUTTON') }}</button>
+      <a v-if="downloadLink" class="em-primary-button w-fit" :href="downloadLink" download>
+        <span class="ml-2">{{ translate('COM_EMUNDUS_RANKING_EXPORT_DOWNLOAD_FILE') }}</span>
+        <span class="material-icons-outlined em-text-neutral-300">file_download</span>
+      </a>
     </div>
   </div>
 </template>
@@ -62,9 +67,9 @@ export default {
       hierarchies: [],
       selectedHierarchies: [],
       columns: [
-        {id: 'name', label: 'Name'},
-        {id: 'status', label: 'Status'},
-        {id: 'ranker', label: 'Ranker'},
+        {id: 'name', label: 'COM_EMUNDUS_RANKING_EXPORT_COLUMN_NAME'},
+        {id: 'status', label: 'COM_EMUNDUS_RANKING_EXPORT_COLUMN_STATUS'},
+        {id: 'ranker', label: 'COM_EMUNDUS_RANKING_EXPORT_COLUMN_RANKER'},
       ],
       selectedColumns: ['fnum', 'name', 'status', 'rank', 'ranker'],
       downloadLink: null
@@ -101,6 +106,7 @@ export default {
       }
     },
     exportRanking() {
+      this.downloadLink = null;
       if (this.selectedPackages.length === 0) {
         alert('Please select at least one package');
         return;
@@ -108,10 +114,6 @@ export default {
 
       rankingService.exportRanking(this.selectedPackages, this.selectedHierarchies, this.selectedColumns).then(response => {
         if (response.data) {
-          // Download the file
-          console.log(response.data);
-
-          // force download response.data.data
           this.downloadLink = response.data.data;
         }
       }).catch(error => {
@@ -125,5 +127,10 @@ export default {
 <style scoped>
 label {
   margin: 0;
+}
+
+#select-packages-options {
+  max-height: 400px;
+  overflow-y: auto;
 }
 </style>
