@@ -2441,6 +2441,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .bg-main-500 {
   background-color: var(--em-profile-color);
 }
+.bg-orange-300 {
+  background-color: var(--orange-300);
+}
 .bg-red-500 {
   background-color: var(--red-500);
 }

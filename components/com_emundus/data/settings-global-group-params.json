@@ -130,6 +130,7 @@
         "name": "manage_server_mail",
         "type": "section",
         "helptext": "cela permet de pouvoir envoyer des mails au candidats",
+        "warning": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_MAIL_WARNING",
         "options": [
           {
             "published": true,

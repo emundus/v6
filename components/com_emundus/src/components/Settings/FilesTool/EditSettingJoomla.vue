@@ -1,5 +1,5 @@
 <template>
-  <div class="em-settings-menu" >
+  <div class="em-settings-menu">
 
     <div class="em-w-80" v-if="!loading">
       <div class="form-group em-flex-center em-w-100 em-mb-16" v-for="(param, indexParam) in displayedParams"
@@ -22,13 +22,13 @@
 
 
         <div v-if="(param.type_field === 'yesno')&&(visibility(param))">
-          <div class="flex-row flex items-center" >
+          <div class="flex-row flex items-center">
             <button v-for="(option, indexOfOptions) in param.options" type="button"
                     :id="'BtYN'+indexParam+'_'+indexOfOptions" :name="'YNbuttton'+param.name"
                     :class="['YesNobutton'+option.value ,{'active': param.value ===1} , {'click':param.value === 0},{'disabled-element':showParamsServerMail !== null && !showParamsServerMail}]"
                     :disabled="showParamsServerMail !== null && !showParamsServerMail"
                     class="focus:ring-neutral-50 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
-                    v-model="param.value" @click="clickYN(param,indexParam, indexOfOptions)" >{{
+                    v-model="param.value" @click="clickYN(param,indexParam, indexOfOptions)">{{
                 translate(option.label)
               }}
             </button>
@@ -48,8 +48,9 @@
 
         <input v-if="(param.type_field ==='text')&&(visibility(param))" :type="param.type" class="form-control"
                :placeholder="param.placeholder" :id="'param_' + param.param" v-model="param.value"
-               :maxlength="param.maxlength" style="margin-bottom: 0" @focusout="handleInput(param)" @pressEnter="handleInput(param)"
-                :class="{'disabled-element':showParamsServerMail !== null && !showParamsServerMail}"
+               :maxlength="param.maxlength" style="margin-bottom: 0" @focusout="handleInput(param)"
+               @pressEnter="handleInput(param)"
+               :class="{'disabled-element':showParamsServerMail !== null && !showParamsServerMail}"
                :readonly="showParamsServerMail !== null && !showParamsServerMail"
         >
 
@@ -100,7 +101,7 @@ export default {
   components: {},
   props: {
     type: String,
-    showValue: {
+    showValueMail: {
       type: Number,
       default: -1,
       required: false
@@ -146,10 +147,23 @@ export default {
     }
   },
   mounted() {
+    this.$parent.$on('changeMailOnline', this.handleSignalParent);
     this.getEmundusParams();
+
   },
 
   methods: {
+    handleSignalParent(value) {
+      if (this.params['mailonline']) {
+        if(value.value !== undefined){
+          this.params['mailonline'].value = value.value;
+          if (this.params['mailonline'].value !== undefined)
+          {
+            this.saveEmundusParam(this.params['mailonline']);
+          }}
+
+      }
+    },
     getEmundusParams() {
       axios.get("index.php?option=com_emundus&controller=settings&task=getemundusparams")
           .then(response => {
@@ -158,22 +172,22 @@ export default {
             Object.values(this.params).forEach((param) => {
 
               param.value = this.config[param.component][param.param];
-              if (param.value === "1") {
+              if ((param.value === "1") || (param.value === true) || (param.value === "true")) {
                 param.value = 1;
               }
-              if (param.value === "0") {
+              if ((param.value === "0") || (param.value === false) || (param.value === "false")) {
                 param.value = 0;
               }
             });
             this.loading = false;
-            this.$emit('stateOfConfig', this.config);
+            this.$emit('stateOfConfig', this.params);
           });
 
     },
     visibility(param) {
-        if (param.section && param.section[0] === 'mail') {
-          return this.config['joomla'].mailonline === '1';
-        }
+      if (param.section && param.section[0] === 'mail') {
+        return this.config['joomla'].mailonline === '1';
+      }
       return true;
     },
 

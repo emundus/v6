@@ -74,8 +74,39 @@
               <hr>
             </div>
 
-            <div v-else-if="(option.type ==='subSection') && (option.published === true)" name="ComponentsubSections"
-                 :id="'ComponentsubSection-'+indexOption" style=" ">
+            <div v-if="(option.type_field === 'toggle')&&(option.published === true)"
+                 class="inline-flex items-center cursor-pointer">
+              <label v-if="option.name === 'mailonline'">
+                <input id="toggleMailGeneral" type="checkbox" class="sr-only peer"  @click="toggleButton(option)">
+                <div
+                    class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+
+              </label>
+              <span v-if="option.name === 'mailonline'">{{
+                  option.label_right
+                }}</span>
+              <label
+                  v-if="(option.name !== 'mailonline')&&(displayEmail !== 0) && (subMenus[activeMenu].name='manage_server_mail')">
+                <input id="toogleCustomServer" :value="option.value" type="checkbox" class="sr-only peer"
+                       v-model="option.value" @click="toggleButton(option)">
+                <div
+                    class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+
+              </label>
+              <span v-if="(option.name !== 'mailonline')&&(displayEmail !== 0) && (subMenus[activeMenu].name='manage_server_mail')">{{ option.label_right }}</span>
+            </div>
+
+            <div v-if="(option.name === 'mailonline')&&(displayEmail === 0) && (subMenus[activeMenu].name='manage_server_mail')"
+                 class="bg-orange-300 rounded flex items-center pb-2">
+              <span class="material-icons-outlined scale-150 ml-2 mt-2">warning</span>
+              <p class="ml-2 mt-2">{{ translate(subMenus[activeMenu][indexSection].warning) }}</p>
+            </div>
+
+
+            <div
+                v-else-if="(option.type ==='subSection') && (option.published === true) && (displayEmail !== 0) && (subMenus[activeMenu].name='manage_server_mail')"
+                name="ComponentsubSections"
+                :id="'ComponentsubSection-'+indexOption" style=" ">
               <div @click="handleSubSection(activeMenu,indexSection,indexOption)" class="pb-3 cursor-pointer">
                 <span :id="'SubSectionTile'+indexOption" class="em-font-size-16">{{ translate(option.label) }}</span>
                 <i class="material-icons-outlined scale-150" :id="'SubSectionArrow'+indexOption" name="SubSectionArrows"
@@ -85,31 +116,24 @@
                 </div>
               </div>
 
-              <div :key="reloadTheSubSection" :id="'SubSection-'+indexOption" name="SubSectionContent" v-show=" showTheSubSection(indexSection,indexOption) "
+              <div :key="reloadTheSubSection  " :id="'SubSection-'+indexOption" name="SubSectionContent"
+                   v-show=" showTheSubSection(indexSection,indexOption) "
                    class="flex flex-col bg-gray-200 rounded subSection">
                 <div v-for="(element,indexElement) in option.elements">
                   <div class="flex flex-col" v-if="element.type_field === 'component'">
                     <component :is="element.component" v-bind="element.props"
                                @NeedNotify="value =>countNotif(value,indexOption)" :key="keySubContent"
-                               :customValue="CustomParam" :showValue="displayEmail" @stateOfConfig="getStateConf"></component>
+                               :customValue="CustomParam" :showValueMail="displayEmail?1:0"
+                               @stateOfConfig="getStateConf"
+                    ></component>
                   </div>
                 </div>
               </div>
             </div>
 
 
-            <div v-if="(option.type_field === 'toggle')&&(option.published === true)"
-                 class="inline-flex items-center cursor-pointer">
-              <label>
-                <input v-if="option.name === 'mailonline'" type="checkbox"  class="sr-only peer" :value="testN1" @click="toggleButton(option)">
-                <input v-else  type="checkbox"  class="sr-only peer" v-model="option.value" @click="toggleButton(option)">
-                <div
-                    class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
-              </label>
-              <span>{{ option.label_right }}</span>
-            </div>
-
-            <div class="flex flex-col" v-if="(option.type_field === 'Button') && (option.published === true)">
+            <div class="flex flex-col"
+                 v-if="(option.type_field === 'Button') && (option.published === true) && (displayEmail !== 0) && (subMenus[activeMenu].name='manage_server_mail')">
               <button type="button" class="bg-green-600 p-2 border border-gray-200 rounded">
                 <i class="material-icons-outlined scale-150 mr-2" :id="'IconButton-'+indexOption" name="IconsButton"
                    style="color: white">{{ option.icon }}</i>
@@ -117,19 +141,22 @@
               </button>
             </div>
 
-            <div class="flex flex-col" v-if="(option.type_field === 'Input') && (option.published === true)">
+            <div class="flex flex-col"
+                 v-if="(option.type_field === 'Input') && (option.published === true) &&(displayEmail !== 0) && (subMenus[activeMenu].name='manage_server_mail')">
               <input :placeholder="option.placeholder"
                      class="w-full p-2 border border-gray-200 rounded hover:bg-gray-300"
                      v-model="option.value">
             </div>
 
-            <div class="flex flex-col" v-if="(option.type_field === 'dropdown') && (option.published === true)">
+            <div class="flex flex-col"
+                 v-if="(option.type_field === 'dropdown') && (option.published === true)  && (displayEmail !== 0) && (subMenus[activeMenu].name='manage_server_mail')">
               <select>
                 <option v-for="choice in option.choices">{{ translate(choice.label) }}</option>
               </select>
             </div>
 
-            <div class="flex flex-col" v-if="(option.type_field === 'sqldropdown') && (option.published === true)">
+            <div class="flex flex-col"
+                 v-if="(option.type_field === 'sqldropdown') && (option.published === true)&& (displayEmail !== 0) && (subMenus[activeMenu].name='manage_server_mail')">
               <div v-if="option.name === 'offset'">
                 <multiselect
                     :filteredOptions=[]
@@ -152,7 +179,8 @@
               </div>
             </div>
 
-            <div class="flex flex-col" v-if="(option.type_field === 'yesno') && (option.published === true)">
+            <div class="flex flex-col"
+                 v-if="(option.type_field === 'yesno') && (option.published === true)&&(displayEmail !== 0) && (subMenus[activeMenu].name='manage_server_mail')">
               <div class="flex-row flex items-center">
                 <button v-for="( button, indexOfbutton) in option.options" type="button"
                         :id="'BtYN'+indexOption+'_'+indexOfbutton" :name="'YNbuttton'+option.name"
@@ -164,20 +192,23 @@
               </div>
             </div>
 
-            <div class="flex flex-col" v-if="(option.type_field === 'checkbox')&& (option.published === true)">
+            <div class="flex flex-col"
+                 v-if="(option.type_field === 'checkbox')&& (option.published === true) && (displayEmail !== 0) && (subMenus[activeMenu].name='manage_server_mail')">
               <div class="flex items-center " v-for="(x,choice) in option.choices">
                 <input type="checkbox" :id="'myCheck'+ choice" :value="x.value">
                 <label class="mt-2.5 ml-1">{{ translate(x.label) }}</label>
               </div>
             </div>
 
-            <div class="flex flex-col" v-if="(option.type_field === 'textarea')&& (option.published === true)">
+            <div class="flex flex-col"
+                 v-if="(option.type_field === 'textarea')&& (option.published === true)&& (displayEmail !== 0) && (subMenus[activeMenu].name='manage_server_mail')">
               <editor-quill :height="'30em'" :text="''" :enable_variables="false" :id="'editor'" :key="0"
                             v-model="form.content"></editor-quill>
             </div>
 
-            <div class="flex flex-col" v-if="(option.type_field === 'component')&& (option.published === true)">
-              <component :is="option.component" :key="ComponantReload" v-bind="option.props" ></component>
+            <div class="flex flex-col"
+                 v-if="(option.type_field === 'component')&& (option.published === true) &&(displayEmail !== 0) && (subMenus[activeMenu].name='manage_server_mail')">
+              <component :is="option.component" :key="ComponantReload" v-bind="option.props"></component>
             </div>
 
           </div>
@@ -294,13 +325,12 @@ export default {
     timeZoneLand: [],
     baseTimeZone: null,
 
-    displayEmail: -1,
+    displayEmail: 1,
     keySubContent: 0,
     CustomParam: -1,
     reloadTheSubSection: 0,
-    configJoomla: {
-    },
-    testN1: 0,
+    configJoomla: {},
+    mailonlineValue: 1,
     form: {
       content: ''
     },
@@ -315,10 +345,12 @@ export default {
   },
   mounted() {
     this.URLMenu();
-
   },
 
   methods: {
+    logActiveMenuSubMenus() {
+      console.log(this.subMenus[this.activeMenu], "test");
+    },
     changeCSS() {
       document.getElementById("header-b").style.display = "none";
       document.getElementById("g-navigation").style.display = "none";
@@ -404,24 +436,22 @@ export default {
     },
 
 
-    handleSubSection(indexMenu, indexSection ,indexoption) {
-  let indexOfArray =indexMenu + '-' + indexSection + '-' + indexoption;
-  if (this.subSectionOpen[indexOfArray] === undefined || this.subSectionOpen[indexOfArray] === "0") {
-    this.subSectionOpen[indexOfArray] = "1";
-  } else if (this.subSectionOpen[indexOfArray] === "1") {
-    this.subSectionOpen[indexOfArray] = "0";
-  }
-  this.reloadTheSubSection++;
-},
-    showTheSubSection( indexSection , indexoption) {
+    handleSubSection(indexMenu, indexSection, indexoption) {
+
+      let indexOfArray = indexMenu + '-' + indexSection + '-' + indexoption;
+      if (this.subSectionOpen[indexOfArray] === undefined || this.subSectionOpen[indexOfArray] === "0") {
+        this.subSectionOpen[indexOfArray] = "1";
+      } else if (this.subSectionOpen[indexOfArray] === "1") {
+        this.subSectionOpen[indexOfArray] = "0";
+      }
+      this.reloadTheSubSection++;
+
+    },
+    showTheSubSection(indexSection, indexoption) {
       let indexOfArray = this.activeMenu + '-' + indexSection + '-' + indexoption;
       return this.subSectionOpen[indexOfArray] === "1";
     },
 
-    getStateConf(value) {
-      this.configJoomla = value;
-      this.testN1 =  this.configJoomla['joomla'].mailonline;
-    },
 
     clickYN(param, index, indexOfOptions) {
       param.value = indexOfOptions;
@@ -441,23 +471,44 @@ export default {
        */
       window.location.href = link;
     },
-    setdisplayEmail(value) {
-      this.displayEmail = value;
-      this.keySubContent++;
+
+
+    getStateConf(value) {
+      this.configJoomla = value;
+      if (this.configJoomla['mailonline']) {
+        this.displayEmail = this.configJoomla['mailonline'].value;
+        document.getElementById("toggleMailGeneral").checked = this.displayEmail;
+        document.getElementById("toggleMailGeneral").value = this.displayEmail;
+      }
     },
     toggleButton(element) {
-      element.value = !element.value;
+      console.log(element, 'element');
       if (element.name === 'custom_config_mail') {
+        element.value = !element.value;
         this.CustomParam = element.value ? 1 : 0;
-        this.keySubContent++;
+
+      } else if (element.name === 'mailonline') {
+        this.displayEmail = !this.displayEmail;
+        element.value = this.displayEmail ? 1 : 0;
+        this.$emit('changeMailOnline', element);
+        this.goTo('/parametres-globaux?Menu=email_settings&section=manage_server_mail', false);
+      } else {
+        element.value = !element.value;
       }
-      if (element.name === 'mailonline') {
-      this.setdisplayEmail(element.value ? 1 : 0);
-      }1
-    }
+    },
+    goTo(url, newTab) {
+      if (newTab) {
+        window.open(url, '_blank');
+      } else {
+        window.location.href = url;
+      }
+    },
   },
-  computed: {},
-  watch: {}
+  watch: {
+    displayEmail: function (value) {
+      this.$emit('changeMailOnline', value);
+    }
+  }
 };
 
 </script>
