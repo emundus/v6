@@ -35,9 +35,9 @@
     </div>
 
     <div class="w-full flex justify-end">
-      <button class="em-primary-button w-fit" @click="exportRanking">{{ translate('COM_EMUNDUS_RANKING_EXPORT_BUTTON') }}</button>
+      <button class="em-primary-button w-fit mr-2" @click="exportRanking">{{ translate('COM_EMUNDUS_RANKING_EXPORT_BUTTON') }}</button>
       <a v-if="downloadLink" class="em-primary-button w-fit" :href="downloadLink" download>
-        <span class="ml-2">{{ translate('COM_EMUNDUS_RANKING_EXPORT_DOWNLOAD_FILE') }}</span>
+        <span>{{ translate('COM_EMUNDUS_RANKING_EXPORT_DOWNLOAD_FILE') }}</span>
         <span class="material-icons-outlined em-text-neutral-300">file_download</span>
       </a>
     </div>
@@ -132,5 +132,11 @@ label {
 #select-packages-options {
   max-height: 400px;
   overflow-y: auto;
+}
+
+.em-primary-button:hover {
+  .material-icons-outlined {
+    color: var(--em-profile-color);
+  }
 }
 </style>
