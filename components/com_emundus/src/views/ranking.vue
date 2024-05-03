@@ -217,14 +217,14 @@
           </div>
         </template>
         <template v-slot:files-to-compare-with>
-          <classement :key="subRankingKey"
+          <ranking :key="subRankingKey"
                       @other-selected-file="onSelectOtherFile"
                       :hierarchy_id="hierarchy_id"
                       :user="user" context="modal"
                       :showOtherHierarchies="false"
                       :package-id="packageId"
           >
-          </classement>
+          </ranking>
         </template>
       </compare-files>
     </transition>
@@ -285,7 +285,7 @@ import Multiselect from "vue-multiselect";
 import Swal from "sweetalert2";
 
 export default {
-  name: 'Classement',
+  name: 'Ranking',
   components: {Multiselect, CompareFiles, draggable},
   props: {
     user: {

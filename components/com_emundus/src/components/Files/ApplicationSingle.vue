@@ -56,7 +56,7 @@
 
 <script>
 import filesService from 'com_emundus/src/services/files';
-import errors from "@/mixins/errors";
+import errors from "@/mixins/errors.js";
 import ApplicationTabs from "./ApplicationTabs.vue";
 
 export default {

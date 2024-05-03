@@ -95,7 +95,7 @@ export default {
       required: true
     },
     user: {
-      type: Object,
+      type: String,
       required: true
     }
   },
