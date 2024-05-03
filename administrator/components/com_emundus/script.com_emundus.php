@@ -4250,6 +4250,14 @@ if(in_array($applicant,$exceptions)){
                     EmundusHelperUpdate::insertTranslationsTag('SETUP_GROUPS_AVAILABLE_STATUS', 'Statuses', 'override', null, null, null, 'en-GB');
                 }
 
+				EmundusHelperUpdate::insertTranslationsTag('COM_USERS_LOGIN_SHOW_PASSWORD','Afficher le mot de passe');
+				EmundusHelperUpdate::insertTranslationsTag('COM_USERS_LOGIN_SHOW_PASSWORD','Display password', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_USERS_LOGIN_EMAIL_PLACEHOLDER','exemple@domaine.com');
+				EmundusHelperUpdate::insertTranslationsTag('COM_USERS_LOGIN_EMAIL_PLACEHOLDER','example@domain.com', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::addColumn('jos_emundus_widgets_repeat_access', 'access_level', 'INT', 11);
+
 
                 if (!class_exists('EmundusAdministratorModelComments')) {
                     require_once(JPATH_ROOT . '/administrator/components/com_emundus/models/comments.php');

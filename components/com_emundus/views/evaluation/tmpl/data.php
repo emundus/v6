@@ -17,6 +17,15 @@ $limits = [0 => JText::_('COM_EMUNDUS_ACTIONS_ALL'), 5 => 5, 10 => 10, 15 => 15,
 
 $eMConfig = JComponentHelper::getParams('com_emundus');
 $fix_header = $eMConfig->get('fix_file_header', 0);
+
+$fnums = [];
+if (is_array($this->datas)) {
+    foreach($this->datas as $line) {
+        if (!empty($line['fnum']) && !empty($line['fnum']->val)) {
+            $fnums[] = $line['fnum']->val;
+        }
+    }
+}
 ?>
 
 <style>
@@ -126,7 +135,26 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
                                             <?php elseif($k == 'status'):?>
                                                 <span class="label label-<?php echo $value->status_class ?>" title="<?php echo $value->val ?>"><?php echo $value->val ?></span>
                                             <?php elseif($k == 'fnum'):?>
-                                                <a href="#<?php echo $value->val ?>|open" id="<?php echo $value->val ?>" class="em_file_open">
+                                                <?php if ($this->open_file_in_modal) : ?>
+                                                    <div id="<?php echo $value->val ?>" class="em-pointer evaluation-open-modal-file"
+                                                         onclick="clickOpenfile('<?php echo $value->val ?>')">
+                                                        <?php if (isset($value->photo) && !$anonymize_data) : ?>
+                                                            <div class="em_list_photo"><?= $value->photo; ?></div>
+                                                        <?php endif; ?>
+                                                        <div class="em_list_text">
+                                                            <?php if ($anonymize_data) : ?>
+                                                                <div class="em_list_fnum"><?= $value->val; ?></div>
+                                                            <?php else : ?>
+                                                                <span class="em_list_text" title="<?= $value->val; ?>">
+                                                                        <strong> <?= $value->user->name; ?></strong>
+                                                                    </span>
+                                                                <div class="em_list_email"><?= $value->user->email; ?></div>
+                                                                <div class="em_list_email"><?= $value->user->id; ?></div>
+                                                            <?php endif; ?>
+                                                        </div>
+                                                    </div>
+                                                <?php else : ?>
+                                                    <a href="#<?php echo $value->val ?>|open" id="<?php echo $value->val ?>" class="em_file_open">
                                                     <?php if (isset($value->photo) && !$anonymize_data) :?>
                                                         <div class="em_list_photo"><?= $value->photo; ?></div>
                                                     <?php endif; ?>
@@ -140,6 +168,7 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
                                                         <?php endif; ?>
                                                     </div>
                                                 </a>
+                                                <?php endif; ?>
                                             <?php elseif ($k == "access") :?>
                                                 <?= $this->accessObj[$line['fnum']->val]?>
                                             <?php elseif ($k == "id_tag") :?>
@@ -185,6 +214,33 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
         <?= $this->datas?>
     <?php endif;?>
 </div>
+
+<?php
+if ($this->open_file_in_modal) {
+    require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
+    $hash = EmundusHelperCache::getCurrentGitHash();
+    ?>
+    <div id="em-files"
+         context="files"
+         user="<?= $this->user->id; ?>"
+         ratio="<?= $this->modal_ratio; ?>"
+         type="evaluation"
+         base="<?= JURI::base(); ?>"
+    >
+    </div>
+
+    <script src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
+    <script>
+        function clickOpenfile(fnum) {
+            const fnums = <?= json_encode($fnums) ?>;
+            var event = new CustomEvent('openSingleApplicationWithFnum', {detail: {fnum: fnum, fnums: fnums}});
+            window.dispatchEvent(event);
+        }
+    </script>
+    <?php
+}
+?>
+
 <script type="text/javascript">
     // todo: maybe try to reload actions here ?
 
