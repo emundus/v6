@@ -344,11 +344,11 @@ class EmundusModelRanking extends JModelList
                 $query->clear()
                     ->select('er.id as rank_id, CONCAT(applicant.firstname, " ", applicant.lastname) AS applicant, cc.id, cc.fnum, er.rank, er.locked, cc.status')
                     ->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
-                    ->leftJoin($this->db->quoteName('#__emundus_users', 'applicant') . ' ON ' . $this->db->quoteName('cc.applicant_id') . ' = ' . $this->db->quoteName('applicant.user_id'))
-                    ->leftJoin($this->db->quoteName('#__emundus_ranking', 'er') . ' ON ' . $this->db->quoteName('cc.id') . ' = ' . $this->db->quoteName('er.ccid') . ' AND er.user_id = ' . $this->db->quote($user_id));
+                    ->leftJoin($this->db->quoteName('#__emundus_users', 'applicant') . ' ON ' . $this->db->quoteName('cc.applicant_id') . ' = ' . $this->db->quoteName('applicant.user_id'));
 
                 // if the user has a hierarchy order by, we need to get the rank of the files in that hierarchy
                 if (!empty($hierarchy_order_by) && $hierarchy_order_by !== 'default' && $hierarchy_order_by != $hierarchy) {
+                    $query->leftJoin($this->db->quoteName('#__emundus_ranking', 'er') . ' ON ' . $this->db->quoteName('cc.id') . ' = ' . $this->db->quoteName('er.ccid'));
                     $sub_query = $this->db->getQuery(true);
                     $sub_query->clear()
                         ->select('DISTINCT cc.id as ccid, IF(er.hierarchy_id = ' . $this->db->quote($hierarchy_order_by) . ', er.rank, -1) as `rank`')
@@ -389,8 +389,8 @@ class EmundusModelRanking extends JModelList
                         $query->order('IFNULL(er.rank, -1) ' . $sort);
                     }
                 } else {
-                    $query->where($this->db->quoteName('cc.id') . ' IN (' . implode(',', $ids) . ')')
-                        ->andWhere('(er.hierarchy_id = ' . $this->db->quote($hierarchy) . ') OR er.id IS NULL');
+                    $query->leftJoin($this->db->quoteName('#__emundus_ranking', 'er') . ' ON ' . $this->db->quoteName('cc.id') . ' = ' . $this->db->quoteName('er.ccid')  . ' AND `er`.`hierarchy_id` = ' . $this->db->quote($hierarchy));
+                    $query->where($this->db->quoteName('cc.id') . ' IN (' . implode(',', $ids) . ')');
 
                     if ($limit !== -1) {
                         $query->setLimit($limit, $offset);
@@ -1393,6 +1393,12 @@ class EmundusModelRanking extends JModelList
             if (!empty($files_by_package)) {
                 $user_packages = $this->getUserPackages($user_id);
 
+                if (!class_exists('EmundusModelFiles')) {
+                    require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
+                }
+                $m_files = new EmundusModelFiles();
+                $states = $m_files->getAllStatus($user_id, 'step');
+
                 foreach ($files_by_package as $package_id => $files) {
                     $package_label = '';
                     foreach ($user_packages as $user_package) {
@@ -1402,46 +1408,49 @@ class EmundusModelRanking extends JModelList
                         }
                     }
 
-                    $other_rankings_values = [];
-                    if (!empty($hierachy_ids)) {
-                        $other_rankings_values = $this->getOtherRankingsRankerCanSee($user_id, $hierachy_ids, $package_id);
-                    }
+                    if (!empty($files)) {
 
-                    foreach ($files as $file) {
-                        $file_data = [
-                            0 => $file['id'],
-                            1 => $file['fnum'],
-                            2 => $file['rank'],
-                            3 => $package_label
-                        ];
-
-                        if (in_array('applicant', $columns)) {
-                            $file_data[] = $file['applicant'];
-                        }
-                        if (in_array('status', $columns)) {
-                            $file_data[] = $file['status'];
-                        }
-                        if (in_array('ranker', $columns)) {
-                            $file_data[] = $user_id;
-                        }
-
+                        $other_rankings_values = [];
                         if (!empty($hierachy_ids)) {
-                            foreach ($other_rankings_values as $other_ranking) {
-                                $other_ranking_index = array_search($file['id'], array_map(function($file) {
-                                    return $file['id'];
-                                }, $other_ranking['files']));
+                            $other_rankings_values = $this->getOtherRankingsRankerCanSee($user_id, $hierachy_ids, $package_id);
+                        }
 
-                                if ($other_ranking_index !== false) {
-                                    $file_data[] = $other_ranking['files'][$other_ranking_index]['rank'];
-                                    $file_data[] = $other_ranking['rankers'][$other_ranking['files'][$other_ranking_index]['ranker_id']]['name'];
-                                } else {
-                                    $file_data[] = '';
-                                    $file_data[] = '';
+                        foreach ($files as $file) {
+                            $file_data = [
+                                0 => $file['id'],
+                                1 => $file['fnum'],
+                                2 => $file['rank'],
+                                3 => $package_label
+                            ];
+
+                            if (in_array('applicant', $columns)) {
+                                $file_data[] = $file['applicant'];
+                            }
+                            if (in_array('status', $columns)) {
+                                $file_data[] = $states[$file['status']]['value'];
+                            }
+                            if (in_array('ranker', $columns)) {
+                                $file_data[] = $user_id;
+                            }
+
+                            if (!empty($hierachy_ids)) {
+                                foreach ($other_rankings_values as $other_ranking) {
+                                    $other_ranking_index = array_search($file['id'], array_map(function($file) {
+                                        return $file['id'];
+                                    }, $other_ranking['files']));
+
+                                    if ($other_ranking_index !== false) {
+                                        $file_data[] = $other_ranking['files'][$other_ranking_index]['rank'];
+                                        $file_data[] = $other_ranking['rankers'][$other_ranking['files'][$other_ranking_index]['ranker_id']]['name'];
+                                    } else {
+                                        $file_data[] = '';
+                                        $file_data[] = '';
+                                    }
                                 }
                             }
-                        }
 
-                        $export_array[] = $file_data;
+                            $export_array[] = $file_data;
+                        }
                     }
                 }
 
@@ -1464,12 +1473,14 @@ class EmundusModelRanking extends JModelList
                             $header[] = 'Statut';
                         }
                         if (in_array('ranker', $columns)) {
-                            $header[] = 'Responsable du classement';
+                            $header[] = 'Responsable';
                         }
 
                         foreach($hierachy_ids as $hierachy_id) {
-                            $header[] = 'Classement ' . $hierachy_id;
-                            $header[] = 'Responsable du classement ' . $hierachy_id;
+                            $hierarchy_label = $this->getHierarchyData($hierachy_id)['label'];
+
+                            $header[] = 'Classement ' . $hierarchy_label;
+                            $header[] = 'Responsable - ' . $hierarchy_label;
                         }
 
                         fputcsv($csv_file, $header, ';');
