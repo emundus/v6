@@ -1069,8 +1069,12 @@ die("<script>
 
             $query->select('fe.id,fe.name,fe.params,fe.plugin, fe.label, fe.group_id')
                 ->from($db->quoteName('#__fabrik_elements', 'fe'))
-                ->where($db->quoteName('name') . ' = ' . $db->quote($elt_name))
-                ->andWhere($db->quoteName('fe.group_id') . ' = ' . $db->quote($groupId));
+                ->where($db->quoteName('name') . ' = ' . $db->quote($elt_name));
+
+			if(!empty($groupId))
+			{
+				$query->andWhere($db->quoteName('fe.group_id') . ' = ' . $db->quote($groupId));
+			}
 
             try {
                 $db->setQuery($query);
