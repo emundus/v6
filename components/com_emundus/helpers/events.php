@@ -1296,7 +1296,7 @@ class EmundusHelperEvents {
                                 }
 
                                 $old_value = $m_application->getValuesByElementAndFnum($fnum, $element->id, $form_data['formid']);
-                                $new_value = EmundusHelperFabrik::formatElementValue($element->name, $new_value, null, $applicant_id);
+                                $new_value = EmundusHelperFabrik::formatElementValue($element->name, $new_value, $element->group_id, $applicant_id);
 
                                 if ($old_value != $new_value) {
                                     $log_params = [
