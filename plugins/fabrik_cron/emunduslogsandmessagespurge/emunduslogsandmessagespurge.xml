@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <extension group="fabrik_cron" method="upgrade" type="plugin" version="30">
-	<name>plg_fabrik_cron_emunduslogspurge</name>
-	<author> test </author>
+	<name>plg_fabrik_cron_emunduslogsandmessagespurge</name>
+	<author>eMundus</author>
 	<creationDate>May 2024</creationDate>
-	<copyright>Copyright (C) 2019 emundus.fr - All rights reserved.</copyright>
+	<copyright>Copyright (C) 2024 emundus.fr - All rights reserved.</copyright>
 	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
 	<authorEmail>dev@emundus.fr</authorEmail>
 	<authorUrl>www.emundus.fr</authorUrl>
 	<version>6.9.3</version>
-	<description>A plugin used to purge database logs</description>
+	<description>A plugin used to purge database logs and messages</description>
 	<files>
-		<filename plugin="emunduslogspurge">emunduslogspurge.php</filename>
+		<filename plugin="emunduslogsandmessagespurge">emunduslogsandmessagespurge.php</filename>
 		<folder>forms</folder>
 		<filename>index.html</filename>
 		<folder>language</folder>

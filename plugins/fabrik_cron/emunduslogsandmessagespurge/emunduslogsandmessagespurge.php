@@ -1,28 +1,29 @@
 <?php
 /**
- * A cron task to purge applicative logs older than a certain time
+ * A cron task to purge database logs and messages older than a certain time
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.cron.email
- * @copyright   Copyright (C) 2015 emundus.fr - All rights reserved.
+ * @copyright   Copyright (C) 2024 emundus.fr - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+use Joomla\CMS\Factory;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
 
 /**
- * A cron task to purge logs older than a certain time
+ * A cron task to purge database logs and messages older than a certain time
  *
  * @package     Joomla.Plugin
- * @subpackage  Fabrik.cron.emunduslogspurge
+ * @subpackage  Fabrik.cron.emunduslogsandmessagespurge
  * @since       3.0
  */
 
-class PlgFabrik_Cronemunduslogspurge extends PlgFabrik_Cron{
+class PlgFabrik_Cronemunduslogsandmessagespurge extends PlgFabrik_Cron{
 
     /**
 	 * Check if the user can use the plugin
@@ -44,7 +45,7 @@ class PlgFabrik_Cronemunduslogspurge extends PlgFabrik_Cron{
      *
      * @param   array  &$data data
      *
-     * @return  int  number of logs deleted
+     * @return  int  Number of rows deleted (logs + messages)
      *
      * @since 6.9.3
      * @throws Exception
@@ -62,7 +63,13 @@ class PlgFabrik_Cronemunduslogspurge extends PlgFabrik_Cron{
 		$unit_time = $params->get('unit_time');
 		$export = $params->get('export_zip');
 
-		$now = DateTime::createFromFormat('Y-m-d H:i:s', EmundusHelperDate::getNow());
+		if (version_compare(JVERSION, '4.0', '>=')) {
+			$config = Factory::getApplication()->getConfig();
+		} else {
+			$config = Factory::getConfig();
+		}
+		$offset = $config->get('offset', 'Europe/Paris');
+		$now = DateTime::createFromFormat('Y-m-d H:i:s', EmundusHelperDate::getNow($offset));
 
 		switch ($unit_time) {
 			case 'hour':
@@ -94,7 +101,7 @@ class PlgFabrik_Cronemunduslogspurge extends PlgFabrik_Cron{
 			unlink($messages['csvFilename']);
 			unlink($logs['csvFilename']);
 		}
-		return $logs['amount'] + $messages['amount'];
+		return $logs['deletedLogs'] + $messages['deletedMessages'];
 	}
 
 }

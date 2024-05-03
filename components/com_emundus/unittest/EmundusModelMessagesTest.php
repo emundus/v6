@@ -54,26 +54,29 @@ class EmundusModelMessagesTest extends TestCase
 	 * @return void
 	 * @throws Exception
 	 */
-	public function testDeleteMessagesAfterADate() {
+	public function testDeleteMessagesAfterADate()
+	{
 
-		$this->assertEquals(0, $this->m_messages->deleteMessagesAfterADate(''), 'No logs should be deleted if no date is given');
+		$messages = $this->m_messages->deleteMessagesAfterADate('');
+		$this->assertEquals(0, $messages['deletedMessages'], 'No messages should be deleted if no date is given');
 		$db = JFactory::getDbo();
 
-		$user_from = 95;
-		$user_to = 0;
+		$user_from      = 95;
+		$user_to        = 0;
 		$reference_date = '2000-01-01 10:00:00';
 
-		for ($i = 0; $i < 10; $i++) {
-			$message = 'test' . rand(0, 1000);
-			$message_log = $this->m_messages->sendMessage($user_to, $message, $user_from);
-			$this->assertTrue($message_log, 'Message should be created if all minimum information are given');
+		for ($i = 0; $i < 10; $i++)
+		{
+			$message_text = 'test' . rand(0, 1000);
+			$message      = $this->m_messages->sendMessage($user_to, $message_text, $user_from);
+			$this->assertTrue($message, 'Message should be created if all minimum information are given');
 
 			$query = $db->getQuery(true);
 
 			$query->clear()
 				->update($db->quoteName('#__messages'))
 				->set($db->quoteName('date_time') . ' = ' . $db->quote($reference_date))
-				->where($db->quoteName('message') . ' = ' . $db->quote($message))
+				->where($db->quoteName('message') . ' = ' . $db->quote($message_text))
 				->where($db->quoteName('user_id_to') . ' = ' . $db->quote($user_to))
 				->where($db->quoteName('user_id_from') . ' = ' . $db->quote($user_from))
 				->order($db->quoteName('date_time') . ' DESC')
@@ -83,6 +86,8 @@ class EmundusModelMessagesTest extends TestCase
 			$db->execute();
 
 		}
-		$this->assertEquals(10, $this->m_messages->deleteMessagesAfterADate(new DateTime('2000-01-01 11:00:00')), 'All logs created in the test should be deleted');
+		$messages = $this->m_messages->deleteMessagesAfterADate(new DateTime('2000-01-01 11:00:00'));
+		$this->assertEquals(10, $messages['deletedMessages'], 'All messages created in the test should be deleted');
+		$this->assertEmpty($messages['csvFilename'], 'No file should be created if no export is requested');
 	}
 }

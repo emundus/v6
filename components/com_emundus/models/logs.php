@@ -528,33 +528,47 @@ class EmundusModelLogs extends JModelList {
         return $logs;
     }
 
-	public function deleteLogsAfterADate($date, $export = false) {
+	/**
+	 * @param $date DateTime    Date to delete logs after
+	 * @param $export bool      Export messages to CSV format
+	 * @description Deletes logs after a given date. If export is set to true, it will export the logs to a CSV file.
+	 * @return array|int
+	 */
+	public function deleteLogsAfterADate($date, $export = false)
+	{
 
 		$deleted_logs = 0;
 		$csv_filename = '';
 
-		if(!(empty($date)))
+		if (!(empty($date)))
 		{
-			$db = JFactory::getDbo();
+			$db    = JFactory::getDbo();
 			$query = $db->getQuery(true);
 
-			$query->select('*')
-				->from($db->quoteName('#__emundus_logs'))
-				->where($db->quoteName('timestamp') . ' < ' . $db->quote($date->format('Y-m-d H:i:s')));
+			if ($export)
+			{
+				$query->select('*')
+					->from($db->quoteName('#__emundus_logs'))
+					->where($db->quoteName('timestamp') . ' < ' . $db->quote($date->format('Y-m-d H:i:s')));
 
-			try {
-				$db->setQuery($query);
-				$logs = $db->loadAssocList();
-			} catch (Exception $e) {
-				JLog::add('Could not fetch logs from jos_emundus_logs table in model logs at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
-				return $deleted_logs;
-			}
+				try
+				{
+					$db->setQuery($query);
+					$logs = $db->loadAssocList();
+				}
+				catch (Exception $e)
+				{
+					JLog::add('Could not fetch logs from jos_emundus_logs table in model logs at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
 
-			if ($export) {
+					return $deleted_logs;
+				}
+
+
 				$csv_filename = JPATH_SITE . '/tmp/logs_' . date('Y-m-d_H-i-s') . '.csv';
-				$csv_file = fopen($csv_filename, 'w');
+				$csv_file     = fopen($csv_filename, 'w');
 				fputcsv($csv_file, array_keys($logs[0]));
-				foreach ($logs as $log) {
+				foreach ($logs as $log)
+				{
 					fputcsv($csv_file, $log);
 				}
 				fclose($csv_file);
@@ -575,7 +589,7 @@ class EmundusModelLogs extends JModelList {
 				JLog::add('Could not delete logs from jos_emundus_logs table in model logs at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
 			}
 		}
+
 		return array('deletedLogs' => $deleted_logs, 'csvFilename' => $csv_filename);
 	}
-
 }

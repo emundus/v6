@@ -109,21 +109,24 @@ class EmundusModelLogsTest extends TestCase
 	 * @return void
 	 * @throws Exception
 	 */
-	public function testDeleteLogsAfterADate() {
+	public function testDeleteLogsAfterADate()
+	{
 
-		$this->assertEquals(0, $this->m_logs->deleteLogsAfterADate(''), 'No logs should be deleted if no date is given');
+		$logs = $this->m_logs->deleteLogsAfterADate('');
+		$this->assertEquals(0, $logs['deletedLogs'], 'No logs should be deleted if no date is given');
 		$db = JFactory::getDbo();
 
-		$user_from = 95;
-		$user_to = $this->user_sample_id;
-		$crud = 'r';
-		$params = '';
-		$action = 1;
+		$user_from      = 95;
+		$user_to        = $this->user_sample_id;
+		$crud           = 'r';
+		$params         = '';
+		$action         = 1;
 		$reference_date = '2000-01-01 10:00:00';
 
-		for ($i = 0; $i < 10; $i++) {
+		for ($i = 0; $i < 10; $i++)
+		{
 			$message = 'test' . rand(0, 1000);
-			$logged = $this->m_logs->log($user_from, $user_to, 1, $action, $crud, $message, $params);
+			$logged  = $this->m_logs->log($user_from, $user_to, 1, $action, $crud, $message, $params);
 			$this->assertTrue($logged, 'Log should be created if all information are given');
 
 			$query = $db->getQuery(true);
@@ -142,8 +145,8 @@ class EmundusModelLogsTest extends TestCase
 			$db->setQuery($query);
 			$db->execute();
 		}
-		$this->assertEquals(10, $this->m_logs->deleteLogsAfterADate(new DateTime('2000-01-01 11:00:00')), 'All logs created in the test should be deleted');
+		$logs = $this->m_logs->deleteLogsAfterADate(new DateTime('2000-01-01 11:00:00'));
+		$this->assertEquals(10, $logs['deletedLogs'], 'All logs created in the test should be deleted');
+		$this->assertEmpty($logs['csvFilename'], 'No file should be created if no export is requested');
 	}
-
-
 }

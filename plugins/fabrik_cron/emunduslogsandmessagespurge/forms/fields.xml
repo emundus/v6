@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <form>
 	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
-		<fieldset name="plg-cron-emunduslogspurge" label="COM_FABRIK_OPTIONS">
+		<fieldset name="plg-cron-emunduslogsandmessagespurge" label="COM_FABRIK_OPTIONS">
 			<field name="amount_time"
 				   type="number"
 				   description="PLG_CRON_LOGSPURGE_CHOOSE_NUMBER"
 				   label="PLG_CRON_LOGSPURGE_DATING_FROM"
 				   size="30"
 				   default="1"
-				   min="0" />
+				   min="0"/>
 
 			<field name="unit_time"
 				   type="list"
@@ -25,7 +25,7 @@
 
 			<field name="export_zip"
 				   type="checkbox"
-				   label="PLG_CRON_LOGSPURGE_ZIP" />
+				   label="PLG_CRON_LOGSPURGE_ZIP"/>
 
 		</fieldset>
 	</fields>

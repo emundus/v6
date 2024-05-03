@@ -1423,34 +1423,46 @@ class EmundusModelMessages extends JModelList {
         }
     }
 
+	/**
+	 * @param $date DateTime    Date to delete messages after
+	 * @param $export bool      Export messages to CSV format
+	 * @description Deletes messages after a given date. If export is set to true, it will export the messages to a CSV file.
+	 * @return array|int
+	 */
 	public function deleteMessagesAfterADate($date, $export = false)
 	{
 		$deleted_messages = 0;
-		$csv_filename = '';
+		$csv_filename     = '';
 
-		if(!(empty($date)))
+		if (!(empty($date)))
 		{
-			$db = JFactory::getDbo();
+			$db    = JFactory::getDbo();
 			$query = $db->getQuery(true);
 
-			$query->select('*')
-				->from($db->quoteName('#__messages'))
-				->where($db->quoteName('date_time') . ' < ' . $db->quote($date->format('Y-m-d H:i:s')));
+			if ($export)
+			{
+				$query->select('*')
+					->from($db->quoteName('#__messages'))
+					->where($db->quoteName('date_time') . ' < ' . $db->quote($date->format('Y-m-d H:i:s')));
 
-			try {
-				$db->setQuery($query);
-				$logs = $db->loadAssocList();
-			} catch (Exception $e) {
-				JLog::add('Could not fetch logs from jos_messages table in model messages at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
-				return $deleted_messages;
-			}
+				try
+				{
+					$db->setQuery($query);
+					$messages = $db->loadAssocList();
+				}
+				catch (Exception $e)
+				{
+					JLog::add('Could not fetch messages from jos_messages table in model messages at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
 
-			if ($export) {
+					return $deleted_messages;
+				}
+
 				$csv_filename = JPATH_SITE . '/tmp/messages_' . date('Y-m-d_H-i-s') . '.csv';
-				$csv_file = fopen($csv_filename, 'w');
-				fputcsv($csv_file, array_keys($logs[0]));
-				foreach ($logs as $log) {
-					fputcsv($csv_file, $log);
+				$csv_file     = fopen($csv_filename, 'w');
+				fputcsv($csv_file, array_keys($messages[0]));
+				foreach ($messages as $message)
+				{
+					fputcsv($csv_file, $message);
 				}
 
 				fclose($csv_file);
@@ -1471,6 +1483,7 @@ class EmundusModelMessages extends JModelList {
 				JLog::add('Could not delete messages from jos_messages table in model messages at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
 			}
 		}
+
 		return array('deletedMessages' => $deleted_messages, 'csvFilename' => $csv_filename);
 	}
 }
