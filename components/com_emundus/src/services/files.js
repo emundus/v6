@@ -273,5 +273,16 @@ export default {
                 msg: e.message
             };
         }
+    },
+
+    async getApplicationForm(fnum) {
+        try {
+            // we want to get html from response
+            const response = await client().get('index.php?option=com_emundus&view=application&format=raw&layout=form&fnum=' + fnum);
+
+            return response.data;
+        } catch (e) {
+            return false;
+        }
     }
 };

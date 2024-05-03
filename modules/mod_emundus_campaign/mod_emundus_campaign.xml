@@ -183,6 +183,12 @@
                         <option value="program">MOD_EM_CAMPAIGN_SHOW_FILTERS_LIST_PROGRAMME</option>
 						<option value="category">MOD_EM_CAMPAIGN_SHOW_FILTERS_LIST_CATEGORY</option>
                     </field>
+
+					<field showon="mod_em_campaign_groupby:category" type="list" name="mod_em_campaign_display_tmpl" label="MOD_EM_CAMPAIGN_DISPLAY_TMPL" default="1">
+						<option value="0">JNO</option>
+						<option value="1">JYES</option>
+					</field>
+
 					<field showon="mod_em_campaign_layout:default_tchooz" type="list" name="mod_em_campaign_groupby_closed" label="MOD_EM_CAMPAIGN_DISPLAY_GROUPBY_CLOSED" default="0">
 						<option value="0">JNO</option>
 						<option value="1">JYES</option>
