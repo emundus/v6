@@ -13,6 +13,7 @@ var errors = {
                 customClass: {
                     title: 'em-swal-title',
                     confirmButton: 'em-swal-confirm-button',
+                    header: 'tw-flex tw-justify-center tw-items-center tw-w-full'
                 },
             };
 
