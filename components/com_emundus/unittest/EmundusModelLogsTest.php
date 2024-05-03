@@ -121,7 +121,8 @@ class EmundusModelLogsTest extends TestCase
 		$crud           = 'r';
 		$params         = '';
 		$action         = 1;
-		$reference_date = '2000-01-01 10:00:00';
+		$reference_date1 = '2000-01-01 10:00:00';
+		$reference_date2 = '2000-01-01 12:00:00';
 
 		for ($i = 0; $i < 10; $i++)
 		{
@@ -133,20 +134,49 @@ class EmundusModelLogsTest extends TestCase
 
 			$query->clear()
 				->update($db->quoteName('#__emundus_logs'))
-				->set($db->quoteName('timestamp') . ' = ' . $db->quote($reference_date))
+				->set($db->quoteName('timestamp') . ' = ' . $db->quote($reference_date1))
 				->where($db->quoteName('user_id_from') . ' = ' . $db->quote($user_from))
 				->where($db->quoteName('user_id_to') . ' = ' . $db->quote($user_to))
 				->where($db->quoteName('fnum_to') . ' = ' . $db->quote(1))
 				->where($db->quoteName('action_id') . ' = ' . $db->quote($action))
 				->where($db->quoteName('verb') . ' = ' . $db->quote($crud))
+				->where($db->quoteName('message') . ' = ' . $db->quote($message))
 				->order($db->quoteName('timestamp') . ' DESC')
 				->limit(1);
 
 			$db->setQuery($query);
 			$db->execute();
 		}
+
+		// Create a single log different from the others (timestamp change)
+		$message = 'test' . rand(0, 1000);
+		$logged  = $this->m_logs->log($user_from, $user_to, 1, $action, $crud, $message, $params);
+		$this->assertTrue($logged, 'Log should be created if all information are given');
+
+		$query = $db->getQuery(true);
+
+		$query->clear()
+			->update($db->quoteName('#__emundus_logs'))
+			->set($db->quoteName('timestamp') . ' = ' . $db->quote($reference_date2))
+			->where($db->quoteName('user_id_from') . ' = ' . $db->quote($user_from))
+			->where($db->quoteName('user_id_to') . ' = ' . $db->quote($user_to))
+			->where($db->quoteName('fnum_to') . ' = ' . $db->quote(1))
+			->where($db->quoteName('action_id') . ' = ' . $db->quote($action))
+			->where($db->quoteName('verb') . ' = ' . $db->quote($crud))
+			->where($db->quoteName('message') . ' = ' . $db->quote($message))
+			->order($db->quoteName('timestamp') . ' DESC')
+			->limit(1);
+
+		$db->setQuery($query);
+		$db->execute();
+
 		$logs = $this->m_logs->deleteLogsAfterADate(new DateTime('2000-01-01 11:00:00'));
-		$this->assertEquals(10, $logs['deletedLogs'], 'All logs created in the test should be deleted');
+		$this->assertEquals(10, $logs['deletedLogs'], 'All logs created before 2000-01-01 11:00:00 should be deleted');
 		$this->assertEmpty($logs['csvFilename'], 'No file should be created if no export is requested');
+
+		$logs = $this->m_logs->deleteLogsAfterADate(new DateTime('2000-01-01 13:00:00'), true);
+		$this->assertEquals(1, $logs['deletedLogs'], 'Log created before 2000-01-01 13:00:00 should be deleted');
+		$this->assertNotEmpty($logs['csvFilename'], 'A file should be created if export is requested');
+		unlink($logs['csvFilename']);
 	}
 }

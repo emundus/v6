@@ -63,7 +63,8 @@ class EmundusModelMessagesTest extends TestCase
 
 		$user_from      = 95;
 		$user_to        = 0;
-		$reference_date = '2000-01-01 10:00:00';
+		$reference_date1 = '2000-01-01 10:00:00';
+		$reference_date2 = '2000-01-01 12:00:00';
 
 		for ($i = 0; $i < 10; $i++)
 		{
@@ -75,19 +76,45 @@ class EmundusModelMessagesTest extends TestCase
 
 			$query->clear()
 				->update($db->quoteName('#__messages'))
-				->set($db->quoteName('date_time') . ' = ' . $db->quote($reference_date))
+				->set($db->quoteName('date_time') . ' = ' . $db->quote($reference_date1))
 				->where($db->quoteName('message') . ' = ' . $db->quote($message_text))
 				->where($db->quoteName('user_id_to') . ' = ' . $db->quote($user_to))
 				->where($db->quoteName('user_id_from') . ' = ' . $db->quote($user_from))
+				->where($db->quoteName('message') . ' = ' . $db->quote($message_text))
 				->order($db->quoteName('date_time') . ' DESC')
 				->limit(1);
 
 			$db->setQuery($query);
 			$db->execute();
-
 		}
+
+		// Create a single message different from the others (timestamp change)
+		$message_text = 'test' . rand(0, 1000);
+		$message      = $this->m_messages->sendMessage($user_to, $message_text, $user_from);
+		$this->assertTrue($message, 'Message should be created if all minimum information are given');
+
+		$query = $db->getQuery(true);
+
+		$query->clear()
+			->update($db->quoteName('#__messages'))
+			->set($db->quoteName('date_time') . ' = ' . $db->quote($reference_date2))
+			->where($db->quoteName('message') . ' = ' . $db->quote($message_text))
+			->where($db->quoteName('user_id_to') . ' = ' . $db->quote($user_to))
+			->where($db->quoteName('user_id_from') . ' = ' . $db->quote($user_from))
+			->where($db->quoteName('message') . ' = ' . $db->quote($message_text))
+			->order($db->quoteName('date_time') . ' DESC')
+			->limit(1);
+
+		$db->setQuery($query);
+		$db->execute();
+
 		$messages = $this->m_messages->deleteMessagesAfterADate(new DateTime('2000-01-01 11:00:00'));
-		$this->assertEquals(10, $messages['deletedMessages'], 'All messages created in the test should be deleted');
+		$this->assertEquals(10, $messages['deletedMessages'], 'All messages created before 2000-01-01 11:00:00 should be deleted');
 		$this->assertEmpty($messages['csvFilename'], 'No file should be created if no export is requested');
+
+		$messages = $this->m_messages->deleteMessagesAfterADate(new DateTime('2000-01-01 13:00:00'), true);
+		$this->assertEquals(1, $messages['deletedMessages'], 'Message created before 2000-01-01 13:00:00 should be deleted');
+		$this->assertNotEmpty($messages['csvFilename'], 'A file should be created if export is requested');
+		unlink($messages['csvFilename']);
 	}
 }
