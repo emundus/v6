@@ -51,14 +51,14 @@ class EmundusModelRankingTest extends TestCase
     }
 
     public function testGetUserHierarchy() {
-        $hierarchy = $this->m_ranking->getUserHierarchy(95);
+        $hierarchy = $this->m_ranking->getUserHierarchy(95, false);
         $this->assertIsNumeric($hierarchy);
     }
 
     public function testUpdateHierarchy() {
-        $coord_hierarchy = $this->m_ranking->getUserHierarchy(95);
+        $coord_hierarchy = $this->m_ranking->getUserHierarchy(95, false);
         $this->assertNotEmpty($coord_hierarchy);
-        $sys_hierarchy = $this->m_ranking->getUserHierarchy(62);
+        $sys_hierarchy = $this->m_ranking->getUserHierarchy(62, false);
         $this->assertNotEmpty($sys_hierarchy);
 
         $updated = $this->m_ranking->updateHierarchy($sys_hierarchy, ['visible_hierarchies' => [$coord_hierarchy]]);
@@ -74,7 +74,7 @@ class EmundusModelRankingTest extends TestCase
     public function testUpdateFileRank()
     {
         $ranker_user = 95;
-        $ranker_hierarchy = $this->m_ranking->getUserHierarchy(95);
+        $ranker_hierarchy = $this->m_ranking->getUserHierarchy(95, false);
 
         $updated = $this->m_ranking->updateFileRanking(0, 95, 1, $ranker_hierarchy);
         $this->assertFalse($updated, "I should not be able to rank a file that does not exist.");
@@ -136,7 +136,7 @@ class EmundusModelRankingTest extends TestCase
         $response = $this->m_ranking->askUsersToLockRankings($current_user_id, $users, []);
         $this->assertFalse($response['asked'], "I should not be able to ask users to lock rankings if user does not exist.");
 
-        $hierarchies = [$this->m_ranking->getUserHierarchy($current_user_id)];
+        $hierarchies = [$this->m_ranking->getUserHierarchy($current_user_id, false)];
         $users = [$current_user_id];
         $response = $this->m_ranking->askUsersToLockRankings(62, $users, $hierarchies);
 

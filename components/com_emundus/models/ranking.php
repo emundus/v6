@@ -500,18 +500,34 @@ class EmundusModelRanking extends JModelList
         return $hierarchy;
     }
 
-    public function getUserHierarchy($user_id)
+    /*
+     * Get the hierarchy of a user
+     * @param $user_id
+     * @param $search_current_profile, if true, it will search the hierarchy of the current profile in order to handle multiprofile users
+     * @return int
+     */
+    public function getUserHierarchy($user_id, $search_current_profile = true)
     {
         $hierarchy = 0;
 
         if (!empty($user_id)) {
             $query = $this->db->getQuery(true);
 
-            $query->clear()
-                ->select('ech.id')
-                ->from($this->db->quoteName('#__emundus_ranking_hierarchy', 'ech'))
-                ->leftJoin($this->db->quoteName('#__emundus_users', 'eu') . ' ON ' . $this->db->quoteName('eu.profile') . ' = ' . $this->db->quoteName('ech.profile_id'))
-                ->where($this->db->quoteName('eu.user_id') . ' = ' . $this->db->quote($user_id));
+            if ($search_current_profile) {
+                $emundus_user = Factory::getSession()->get('emundusUser');
+                $profile_id = $emundus_user->profile;
+
+                $query->clear()
+                    ->select('ech.id')
+                    ->from($this->db->quoteName('#__emundus_ranking_hierarchy', 'ech'))
+                    ->where($this->db->quoteName('ech.profile_id') . ' = ' . $this->db->quote($profile_id));
+            } else {
+                $query->clear()
+                    ->select('ech.id')
+                    ->from($this->db->quoteName('#__emundus_ranking_hierarchy', 'ech'))
+                    ->leftJoin($this->db->quoteName('#__emundus_users', 'eu') . ' ON ' . $this->db->quoteName('eu.profile') . ' = ' . $this->db->quoteName('ech.profile_id'))
+                    ->where($this->db->quoteName('eu.user_id') . ' = ' . $this->db->quote($user_id));
+            }
 
             try {
                 $this->db->setQuery($query);
