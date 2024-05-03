@@ -54,7 +54,7 @@ export default {
   name: "ApplicationSingle",
   components: {ApplicationTabs},
   props: {
-    file: Object|String,
+    defaultFile: Object|String,
     type: String,
     user: {
       type: String,
@@ -67,6 +67,7 @@ export default {
   },
   mixins: [errors],
   data: () => ({
+    file: '',
     applicationform: '',
     selected: 'application',
     tabs: [
@@ -95,6 +96,7 @@ export default {
   }),
 
   created(){
+    this.file = this.defaultFile;
     document.querySelector('body').style.overflow= 'hidden';
     var r = document.querySelector(':root');
     let ratio_array = this.$props.ratio.split('/');
@@ -103,18 +105,18 @@ export default {
     this.loading = true;
     let fnum = '';
 
-    if(typeof this.$props.file == 'string'){
-      fnum = this.$props.file;
+    if(typeof this.file == 'string'){
+      fnum = this.file;
     } else {
-      fnum = this.$props.file.fnum;
+      fnum = this.file.fnum;
     }
 
-    if(typeof this.$props.file == 'string'){
+    if(typeof this.file == 'string'){
       filesService.getFile(fnum,this.$props.type).then((result) => {
-        if(result.status == 1){
-          this.$props.file = result.data;
+        if (result.status == 1){
+          this.file = result.data;
           this.access = result.rights;
-          this.updateURL(this.$props.file.fnum)
+          this.updateURL(this.file.fnum)
           this.getApplicationForm();
           if(this.$props.type === 'evaluation'){
             this.getEvaluationForm();
@@ -134,7 +136,7 @@ export default {
       filesService.checkAccess(fnum).then((result) => {
         if(result.status == true){
           this.access = result.data;
-          this.updateURL(this.$props.file.fnum)
+          this.updateURL(this.file.fnum)
           if(this.access['1'].r) {
             this.getApplicationForm();
           } else {
@@ -174,29 +176,29 @@ export default {
       });
     },
     getEvaluationForm(){
-      if (this.$props.file.id != null) {
-        this.rowid = this.$props.file.id;
+      if (this.file.id != null) {
+        this.rowid = this.file.id;
       }
-      if(typeof this.$props.file.applicant_id != 'undefined'){
-        this.student_id = this.$props.file.applicant_id;
+      if(typeof this.file.applicant_id != 'undefined'){
+        this.student_id = this.file.applicant_id;
       } else {
-        this.student_id = this.$props.file.student_id;
+        this.student_id = this.file.student_id;
       }
       let view = 'form';
 
-      filesService.getEvaluationFormByFnum(this.$props.file.fnum,this.$props.type).then((response) => {
+      filesService.getEvaluationFormByFnum(this.file.fnum,this.$props.type).then((response) => {
         if(response.data !== 0) {
-          if(typeof this.$props.file.id === 'undefined'){
-            filesService.getMyEvaluation(this.$props.file.fnum).then((data) => {
+          if(typeof this.file.id === 'undefined'){
+            filesService.getMyEvaluation(this.file.fnum).then((data) => {
               this.rowid = data.data;
               if(this.rowid == null){
                 this.rowid = "";
               }
 
-              this.url = 'index.php?option=com_fabrik&c=form&view=' + view + '&formid=' + response.data + '&rowid=' + this.rowid + '&jos_emundus_evaluations___student_id[value]=' + this.student_id + '&jos_emundus_evaluations___campaign_id[value]=' + this.$props.file.campaign + '&jos_emundus_evaluations___fnum[value]=' + this.$props.file.fnum + '&student_id=' + this.student_id + '&tmpl=component&iframe=1'
+              this.url = 'index.php?option=com_fabrik&c=form&view=' + view + '&formid=' + response.data + '&rowid=' + this.rowid + '&jos_emundus_evaluations___student_id[value]=' + this.student_id + '&jos_emundus_evaluations___campaign_id[value]=' + this.file.campaign + '&jos_emundus_evaluations___fnum[value]=' + this.file.fnum + '&student_id=' + this.student_id + '&tmpl=component&iframe=1'
             });
           } else {
-            this.url = 'index.php?option=com_fabrik&c=form&view=' + view + '&formid=' + response.data + '&rowid=' + this.rowid + '&jos_emundus_evaluations___student_id[value]=' + this.student_id + '&jos_emundus_evaluations___campaign_id[value]=' + this.$props.file.campaign + '&jos_emundus_evaluations___fnum[value]=' + this.$props.file.fnum + '&student_id=' + this.student_id + '&tmpl=component&iframe=1'
+            this.url = 'index.php?option=com_fabrik&c=form&view=' + view + '&formid=' + response.data + '&rowid=' + this.rowid + '&jos_emundus_evaluations___student_id[value]=' + this.student_id + '&jos_emundus_evaluations___campaign_id[value]=' + this.file.campaign + '&jos_emundus_evaluations___fnum[value]=' + this.file.fnum + '&student_id=' + this.student_id + '&tmpl=component&iframe=1'
           }
         }
       });
