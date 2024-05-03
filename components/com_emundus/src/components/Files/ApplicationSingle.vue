@@ -45,7 +45,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import filesService from 'com_emundus/src/services/files';
 import errors from "@/mixins/errors";
 import ApplicationTabs from "./ApplicationTabs.vue";
@@ -164,13 +163,12 @@ export default {
   },
 
   methods:{
-    getApplicationForm(){
-      axios({
-        method: "get",
-        url: "index.php?option=com_emundus&view=application&format=raw&layout=form&fnum="+this.file.fnum,
-      }).then(response => {
+    getApplicationForm() {
+      const fnum = this.file.fnum ? this.file.fnum : this.file;
+
+      filesService.getApplicationForm(fnum).then((response) => {
         this.applicationform = response.data;
-        if(this.$props.type !== 'evaluation'){
+        if (this.type !== 'evaluation') {
           this.loading = false;
         }
       });

@@ -273,5 +273,19 @@ export default {
                 msg: e.message
             };
         }
+    },
+
+    async getApplicationForm(fnum) {
+        try {
+            const response = await client().get('index.php?option=com_emundus&view=application&format=raw&layout=form', {
+                params: {
+                    fnum: fnum
+                }
+            });
+
+            return response.data;
+        } catch (e) {
+            return false;
+        }
     }
 };
