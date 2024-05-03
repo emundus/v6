@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <extension group="fabrik_cron" method="upgrade" type="plugin" version="30">
-	<name>plg_fabrik_cron_emunduslogsandmessagespurge</name>
+	<name>plg_cron_logspurge</name>
 	<author>eMundus</author>
 	<creationDate>May 2024</creationDate>
 	<copyright>Copyright (C) 2024 emundus.fr - All rights reserved.</copyright>
