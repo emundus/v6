@@ -213,8 +213,8 @@ class EmundusHelperFabrikTest extends TestCase
                         ->order($db->quoteName($params['join_key_column']));
                     $db->setQuery($query);
                     $db_values = $db->loadColumn();
--
-                    $query = $db->getQuery(true);
+
+                    $query->clear();
 
 	                if (!empty($params['join_val_column_concat'])) {
 		                $lang = substr(JFactory::getLanguage()->getTag(), 0, 2);
