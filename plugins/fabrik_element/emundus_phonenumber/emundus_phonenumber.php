@@ -9,6 +9,8 @@
  */
 
 // No direct access
+use Joomla\Utilities\ArrayHelper;
+
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
 
@@ -187,41 +189,52 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
      */
     public function validate($data, $repeatCounter = 0)
     {
-        $isValid = false;
-        $value = $data['country_code'].$data['num_tel'];
-        $is_valid_JS = $data['is_valid'] == 'on';
+        $isValid = true;
 
-        $minimalNumberlength = 5; // without counting '+', self-consider it's the minimal length, CAN BE CHANGED
-        $maximalNumberlength = 15; // without counting '+', maximal phone number length e.164 format, NO CHANGE
+	    $name = $this->getHTMLId($repeatCounter);
+	    $hiddenElements = ArrayHelper::getValue($this->getFormModel()->formData, 'hiddenElements', '[]');
+	    $hiddenElements = json_decode($hiddenElements);
 
-        $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_INVALID'); // error as default value
+	    if(!in_array($name, $hiddenElements))
+	    {
+		    $isValid     = false;
+		    $value       = $data['country_code'] . $data['num_tel'];
+		    $is_valid_JS = $data['is_valid'] == 'on';
 
-        if ($this->validator->hasValidations()) { // phone mandatory so big validation
+		    $minimalNumberlength = 5; // without counting '+', self-consider it's the minimal length, CAN BE CHANGED
+		    $maximalNumberlength = 15; // without counting '+', maximal phone number length e.164 format, NO CHANGE
 
-            if (preg_match('/^\+\d{'.$minimalNumberlength.','.$maximalNumberlength.'}$/', $value) && $is_valid_JS)
-            {
-                $isValid = true;
-            }
-            else
-            {
-                if ($value[0] !== "+")
-                {
-                    $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_BEGIN_WITH_PLUS');
-                }
-                else if (!(preg_match('/\+\d+$/', $value)))
-                {
-                    $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_ONLY_NUMBERS');
-                }
-                else if (strlen($value) < $minimalNumberlength + 1) // counting the '+'
-                {
-                    $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_SIZE_ERROR');
-                }
-            }
-        }
-        else if ($is_valid_JS && preg_match('/^\+\d*$/', $value)) // phone not mandatory but still a little validation
-        {
-            $isValid = true;
-        }
+		    $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_INVALID'); // error as default value
+
+		    if ($this->validator->hasValidations())
+		    { // phone mandatory so big validation
+
+			    if (preg_match('/^\+\d{' . $minimalNumberlength . ',' . $maximalNumberlength . '}$/', $value) && $is_valid_JS)
+			    {
+				    $isValid = true;
+			    }
+			    else
+			    {
+				    if ($value[0] !== "+")
+				    {
+					    $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_BEGIN_WITH_PLUS');
+				    }
+				    else if (!(preg_match('/\+\d+$/', $value)))
+				    {
+					    $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_ONLY_NUMBERS');
+				    }
+				    else if (strlen($value) < $minimalNumberlength + 1) // counting the '+'
+				    {
+					    $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_SIZE_ERROR');
+				    }
+			    }
+		    }
+		    else if ($is_valid_JS && preg_match('/^\+\d*$/', $value)) // phone not mandatory but still a little validation
+		    {
+			    $isValid = true;
+		    }
+	    }
+
         return $isValid;
     }
 
