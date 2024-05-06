@@ -12,6 +12,10 @@
         {
           "value": 5,
           "label": "COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE_LINK"
+        },
+        {
+          "value": 6,
+          "label": "COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE_NUMBER"
         }
       ],
       "helptext": "",
@@ -425,6 +429,21 @@
       "placeholder": "",
       "published": true,
       "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_EXCLUDE",
+      "name": "database_join_exclude",
+      "type": "sqldropdown",
+      "table": "{join_db_name}",
+      "key": "{join_key_column}",
+      "value": "{join_val_column}",
+      "translate": false,
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false,
+      "options": [],
+      "multiple": true
     },
     {
       "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_WHERE",

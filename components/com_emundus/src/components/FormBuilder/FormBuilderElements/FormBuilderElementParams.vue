@@ -9,9 +9,28 @@
           <option v-for="option in param.options" :value="option.value">{{ translate(option.label) }}</option>
         </select>
 
-        <select v-else-if="param.options.length > 0" v-model="element.params[param.name]" class="em-w-100">
+        <select v-else-if="param.options.length > 0 && !param.multiple" v-model="element.params[param.name]" class="em-w-100">
           <option v-for="option in param.options" :value="option.value">{{ translate(option.label) }}</option>
         </select>
+
+        <multiselect
+            v-else-if="param.options.length > 0 && param.multiple"
+            v-model="element.params[param.name]"
+            label="label"
+            :custom-label="labelTranslate"
+            track-by="value"
+            :options="param.options"
+            :multiple="true"
+            :taggable="false"
+            select-label=""
+            selected-label=""
+            deselect-label=""
+            :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_RULE_SELECT_OPTIONS')"
+            :close-on-select="false"
+            :clear-on-select="false"
+            :searchable="true"
+            :allow-empty="true"
+        ></multiselect>
       </div>
 
       <!-- TEXTAREA -->
@@ -79,10 +98,11 @@
 
 /* IMPORT YOUR SERVICES */
 import formBuilderService from '../../../services/formbuilder';
+import Multiselect from "vue-multiselect";
 
 export default {
   name: "FormBuilderElementParams",
-  components: {},
+  components: {Multiselect},
   props: {
     element: {
       type: Object,
@@ -137,9 +157,46 @@ export default {
       }
 
       if (param.type === 'sqldropdown') {
+        let table = param.table;
+        let key = param.key;
+        let value = param.value;
+
+        if(param.table.includes('{')) {
+          let param_name = param.table.match(/\{(.*?)\}/g)[0].replace('{','').replace('}','');
+          table = this.element.params[param_name];
+        }
+        if(param.key.includes('{')) {
+          let param_name = param.key.match(/\{(.*?)\}/g)[0].replace('{','').replace('}','');
+          key = this.element.params[param_name];
+        }
+        if(param.value.includes('{')) {
+          let param_name = param.value.match(/\{(.*?)\}/g)[0].replace('{','').replace('}','');
+          value = this.element.params[param_name];
+        }
+
+        if(table.includes('{') || key.includes('{') || value.includes('{')) {
+          return;
+        }
+
         this.loading = true;
-        formBuilderService.getSqlDropdownOptions(param.table,param.key,param.value,param.translate).then((response) => {
+        formBuilderService.getSqlDropdownOptions(table,key,value,param.translate).then((response) => {
           param.options = response.data;
+
+          if(this.element.params[param.name] != ""){
+            let ids_to_exclude = this.element.params[param.name].split(',');
+            const regex = /\'|"/ig;
+
+            this.element.params[param.name] = [];
+
+            ids_to_exclude.forEach(id => {
+              id = id.replace(regex,'');
+              let option = param.options.find(option => id == option.value);
+
+              if(option) {
+                this.element.params[param.name].push(option);
+              }
+            });
+          }
           this.loading = false;
         });
       }
@@ -153,7 +210,6 @@ export default {
         if (index !== -1) {
           let database = this.databases[index];
           this.element.params['join_key_column'] = database.join_column_id;
-          this.element.params['database_join_where_sql'] = 'order by {thistable}.' + database.join_column_id;
           if (database.translation == 1) {
             this.element.params['join_val_column'] = database.join_column_val + '_fr';
             this.element.params['join_val_column_concat'] = "{thistable}." + database.join_column_val + "_{shortlang}";
@@ -201,6 +257,9 @@ export default {
     removeRepeatableField(param,key) {
       delete this.element.params[param][param+key];
       this.$forceUpdate();
+    },
+    labelTranslate({label}) {
+      return this.translate(label);
     }
   },
   computed: {

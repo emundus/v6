@@ -91,6 +91,7 @@ export default {
             formData.append('profile_id', form.profile_id);
             formData.append('limit', form.limit);
             formData.append('limit_status', form.limit_status);
+            formData.append('alias', form.alias);
 
             return await client().post(`index.php?option=com_emundus&controller=campaign&task=createcampaign`,
                 formData,
@@ -129,6 +130,18 @@ export default {
                     }
                 }
             );
+        } catch (e) {
+            return {
+                status: false,
+                msg: e.message
+            };
+        }
+    },
+
+    async getAllItemsAlias(campaign_id) {
+        try {
+            const response = await client().get('index.php?option=com_emundus&controller=campaign&task=getallitemsalias&campaign_id=' + campaign_id);
+            return response.data;
         } catch (e) {
             return {
                 status: false,

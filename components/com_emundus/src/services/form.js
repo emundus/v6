@@ -295,5 +295,91 @@ export default {
                 error:error
             };
         }
+    },
+
+    async getConditions(formId)
+    {
+        try {
+            const response = await client().get(
+                baseUrl + '&task=getjsconditions&form_id=' + formId + '&format=view'
+            );
+
+            return response.data;
+        } catch (error) {
+            return {
+                status: false,
+                error:error
+            };
+        }
+    },
+
+    async addRule(formId, conditions, actions, group, label)
+    {
+        const formData = new FormData();
+        formData.append('conditions', JSON.stringify(conditions));
+        formData.append('actions', JSON.stringify(actions));
+        formData.append('form_id', formId);
+        formData.append('group', group);
+        formData.append('label', label);
+
+        try {
+            const response = await client().post(baseUrl + '&task=addRule', formData);
+
+            return response;
+        } catch (error) {
+            return {
+                status: false,
+                error:error
+            };
+        }
+    },
+
+    async editRule(ruleId, conditions, actions, group, label)
+    {
+        const formData = new FormData();
+        formData.append('conditions', JSON.stringify(conditions));
+        formData.append('actions', JSON.stringify(actions));
+        formData.append('rule_id', ruleId);
+        formData.append('group', group);
+        formData.append('label', label);
+
+        try {
+            const response = await client().post(baseUrl + '&task=editRule', formData);
+
+            return response;
+        } catch (error) {
+            return {
+                status: false,
+                error:error
+            };
+        }
+    },
+
+    async deleteRule(ruleId)
+    {
+        try {
+            const response = await client().get(baseUrl + '&task=deleteRule&rule_id=' + ruleId);
+
+            return response;
+        } catch (error) {
+            return {
+                status: false,
+                error:error
+            };
+        }
+    },
+
+    async publishRule(ruleId, state)
+    {
+        try {
+            const response = await client().get(baseUrl + '&task=publishRule&rule_id=' + ruleId + '&state=' + state);
+
+            return response;
+        } catch (error) {
+            return {
+                status: false,
+                error:error
+            };
+        }
     }
 };

@@ -1,18 +1,26 @@
 requirejs(['fab/fabrik'], function () {
     var removedFabrikFormSkeleton = false;
     var formDataChanged = false;
+    var js_rules = [];
+    var table_name = '';
+    var form_loaded = false;
+    var elt_to_not_clear = ['panel','calc'];
+
+    var operators = {
+        '=': function(a, b, plugin) { if(!Array.isArray(a)) { return a == b; } else { return a.includes(b); } },
+        '!=': function(a, b, plugin) { if(!Array.isArray(a)) { return a != b; } else { return !a.includes(b); } },
+        // ...
+    };
 
     Fabrik.addEvent('fabrik.form.loaded', function (form) {
-        if (!removedFabrikFormSkeleton) {
-            removeFabrikFormSkeleton();
-        }
+        table_name = form.options.primaryKey.split('___')[0];
 
         manageRepeatGroup(form);
 
-        var form = document.getElementsByClassName('fabrikForm')[0];
+        var formBlock = document.getElementsByClassName('fabrikForm')[0];
 
-        form.addEventListener('input', function () {
-            if(!formDataChanged) {
+        formBlock.addEventListener('input', function () {
+            if (!formDataChanged) {
                 formDataChanged = true;
             }
         });
@@ -28,9 +36,9 @@ requirejs(['fab/fabrik'], function () {
 
         links = [...checklist_items, ...menu_items, ...user_items, ...flow_items, ...logo, ...footer_items, ...back_button_form];
 
-        for(var i = 0, len = links.length; i < len; i++) {
+        for (var i = 0, len = links.length; i < len; i++) {
             links[i].onclick = (e) => {
-                if(formDataChanged) {
+                if (formDataChanged) {
                     e.preventDefault();
 
                     Swal.fire({
@@ -47,28 +55,25 @@ requirejs(['fab/fabrik'], function () {
                             confirmButton: 'btn btn-primary save-btn sauvegarder button save_continue',
                         },
                     }).then((result) => {
-                        if(result.value)
-                        {
-                            if(e.srcElement.classList.contains('goback-btn')) {
+                        if (result.value) {
+                            if (e.srcElement.classList.contains('goback-btn')) {
                                 window.history.back();
                             }
 
-                            let href = window.location.origin+'/index.php';
+                            let href = window.location.origin + '/index.php';
                             // If click event target is a direct link
-                            if(typeof e.target.href !== 'undefined')
-                            {
+                            if (typeof e.target.href !== 'undefined') {
                                 href = e.target.href;
                             }
                             // If click event target is a child of a link
-                            else
-                            {
+                            else {
                                 e = e.target;
                                 let attempt = 0;
                                 do {
                                     e = e.parentNode;
-                                } while(typeof e.href === 'undefined' && attempt++ < 5);
+                                } while (typeof e.href === 'undefined' && attempt++ < 5);
 
-                                if(typeof e.href !== 'undefined') {
+                                if (typeof e.href !== 'undefined') {
                                     href = e.href;
                                 }
                             }
@@ -77,8 +82,8 @@ requirejs(['fab/fabrik'], function () {
                         }
                     });
                 } else {
-                    if(e.srcElement.classList.contains('goback-btn')) {
-                        if(window.history.length > 1) {
+                    if (e.srcElement.classList.contains('goback-btn')) {
+                        if (window.history.length > 1) {
                             window.history.back();
                         } else {
                             window.close();
@@ -89,15 +94,56 @@ requirejs(['fab/fabrik'], function () {
         }
     });
 
-    Fabrik.addEvent('fabrik.form.group.duplicate.end', function(form, event) {
+    Fabrik.addEvent('fabrik.form.group.duplicate.end', function (form, event) {
+        manageRepeatGroup(form);
+
+        setTimeout(() => {
+            let last_index_added = form.addedGroups.length;
+            form.elements.forEach(function (element) {
+                if(element.getRepeatNum() == last_index_added) {
+                    manageRules(form, element, true);
+
+                    var $el = jQuery(element.element);
+                    $el.on(element.getChangeEvent(), function (e) {
+                        manageRules(form, element);
+                    });
+                }
+            });
+        },200);
+    });
+
+    Fabrik.addEvent('fabrik.form.group.delete.end', function (form, event) {
         manageRepeatGroup(form);
     });
 
-    Fabrik.addEvent('fabrik.form.group.delete.end', function(form, event) {
-        manageRepeatGroup(form);
+    Fabrik.addEvent('fabrik.form.elements.added', function (form, event) {
+        if(!form_loaded) {
+            setTimeout(() => {
+                fetch('/index.php?option=com_emundus&controller=form&task=getjsconditions&form_id=' + form.id).then(response => response.json()).then(data => {
+                    if (data.status) {
+                        js_rules = data.data.conditions;
+
+                        form.elements.forEach(function (element) {
+                            manageRules(form, element, false);
+
+                            var $el = jQuery(element.element);
+                            $el.on(element.getChangeEvent(), function (e) {
+                                manageRules(form, element);
+                            });
+                        });
+                    }
+
+                    if (!removedFabrikFormSkeleton) {
+                        removeFabrikFormSkeleton();
+                    }
+
+                    form_loaded = true;
+                });
+            }, 500);
+        }
     });
 
-    window.setInterval(function() {
+    window.setInterval(function () {
         if (!removedFabrikFormSkeleton && Object.entries(Fabrik.blocks).length > 0) {
             removeFabrikFormSkeleton();
         }
@@ -105,16 +151,16 @@ requirejs(['fab/fabrik'], function () {
 
     function removeFabrikFormSkeleton() {
         let header = document.querySelector('.page-header');
-        if(header) {
-            if(header.querySelector('h2')) {
+        if (header) {
+            if (header.querySelector('h2')) {
                 document.querySelector('.page-header h2').style.opacity = 1;
             }
             header.classList.remove('skeleton');
         }
         let intro = document.querySelector('.em-form-intro');
-        if(intro) {
+        if (intro) {
             let content = document.querySelector('.em-form-intro').children;
-            if(content.length > 0) {
+            if (content.length > 0) {
                 for (const child of content) {
                     child.style.opacity = 1;
                 }
@@ -122,11 +168,11 @@ requirejs(['fab/fabrik'], function () {
             intro.classList.remove('skeleton');
         }
         let grouptitle = document.querySelectorAll('.fabrikGroup .legend');
-        for (title of grouptitle){
+        for (title of grouptitle) {
             title.style.opacity = 1;
         }
         grouptitle = document.querySelectorAll('.fabrikGroup h2, .fabrikGroup h3');
-        for (title of grouptitle){
+        for (title of grouptitle) {
             title.style.opacity = 1;
         }
         let groupintros = document.querySelectorAll('.groupintro');
@@ -138,10 +184,10 @@ requirejs(['fab/fabrik'], function () {
 
         let elements = document.querySelectorAll('.fabrikGroup .row-fluid');
         let elements_fields = document.querySelectorAll('.fabrikElementContainer');
-        for (field of elements_fields){
+        for (field of elements_fields) {
             field.style.opacity = 1;
         }
-        for (elt of elements){
+        for (elt of elements) {
             elt.style.marginTop = '0';
             elt.classList.remove('skeleton');
         }
@@ -149,13 +195,12 @@ requirejs(['fab/fabrik'], function () {
         removedFabrikFormSkeleton = true;
     }
 
-    function manageRepeatGroup(form)
-    {
+    function manageRepeatGroup(form) {
         setTimeout(() => {
             // ID of the group that was duplicated (ex. group686)
             let repeat_groups = form.repeatGroupMarkers;
             repeat_groups.forEach(function (repeatGroupsMarked, group) {
-                if(repeatGroupsMarked !== 0) {
+                if (repeatGroupsMarked !== 0) {
                     let minRepeat = form.options.minRepeat[group];
                     let maxRepeat = form.options.maxRepeat[group];
 
@@ -178,14 +223,14 @@ requirejs(['fab/fabrik'], function () {
                             button.hide();
                         })
                     } else {
-                        if(addButtons.length > 1) {
-                        addButtons.forEach(function (button, index) {
-                                if((index + 1) < addButtons.length) {
+                        if (addButtons.length > 1) {
+                            addButtons.forEach(function (button, index) {
+                                if ((index + 1) < addButtons.length) {
                                     button.hide();
                                 } else {
                                     button.style.display = 'flex';
                                 }
-                        })
+                            })
                         } else {
                             addButtons.forEach(function (button, index) {
                                 button.style.display = 'flex';
@@ -194,6 +239,309 @@ requirejs(['fab/fabrik'], function () {
                     }
                 }
             });
-        },100)
+        }, 100)
+    }
+
+    function manageRules(form, element, clear = true) {
+        let elt_name = element.origId ? element.origId.split('___')[1] : element.baseElementId.split('___')[1];
+
+        let elt_rules = [];
+        js_rules.forEach((js_rule) => {
+            js_rule.conditions.forEach((condition) => {
+                if (condition.field == elt_name) {
+                    elt_rules.push(js_rule);
+                }
+            });
+        });
+
+        if (elt_rules.length > 0) {
+            elt_rules.forEach((rule) => {
+                let condition_state = [];
+
+                rule.conditions.forEach((condition) => {
+                    if(condition.group && !condition_state[condition.group]) {
+                        condition_state[condition.group] = {
+                            'type': condition.group_type,
+                            'states': []
+                        };
+                    }
+
+                    form.elements.forEach((elt) => {
+                        let name = elt.origId ? elt.origId.split('___')[1] : elt.baseElementId.split('___')[1];
+
+                        if (name == condition.field && elt.getRepeatNum() == element.getRepeatNum()) {
+                            if(operators[condition.state](elt.get('value'), condition.values, elt.plugin)) {
+                                if(condition.group) {
+                                    condition_state[condition.group].states.push(true);
+                                } else {
+                                    condition_state.push(true);
+                                }
+                            } else {
+                                if(condition.group) {
+                                    condition_state[condition.group].states.push(false);
+                                } else {
+                                    condition_state.push(false);
+                                }
+                            }
+                        }
+                    });
+                });
+
+                if (condition_state.length > 0 && check_condition(condition_state, rule.group)) {
+                    rule.actions.forEach((action) => {
+
+                        let fields = action.fields.split(',');
+
+                        if(action.action == 'define_repeat_group') {
+                            let params = JSON.parse(action.params);
+                            form.options.maxRepeat[action.fields] = params[0].maxRepeat;
+                            form.options.minRepeat[action.fields] = params[0].minRepeat;
+                            var repeat_counter = document.getElementById('fabrik_repeat_group_' + action.fields + '_counter');
+                            var repeat_rows = repeat_counter.value.toInt();
+
+                            if (params[0].maxRepeat > 0 && repeat_rows > params[0].maxRepeat) {
+                                var group = document.getElementById('group' + action.fields);
+                                // Delete groups
+                                for (i = repeat_rows; i > params[0].maxRepeat; i--) {
+                                    var del_btn = jQuery(document.querySelector('#group' + action.fields + ' .deleteGroup')).last()[0];
+                                    subGroup = jQuery(group.getElements('.fabrikSubGroup')).last()[0];
+                                    if (typeOf(del_btn) !== 'null') {
+                                        var del_e = new Event.Mock(del_btn, 'click');
+                                        form.deleteGroup(del_e, group, subGroup);
+                                    }
+                                }
+                            }
+
+                            manageRepeatGroup(form);
+                        } else {
+                            form.elements.forEach((elt) => {
+                                let name = elt.origId ? elt.origId.split('___')[1] : elt.baseElementId.split('___')[1];
+                                let id = elt.baseElementId ? elt.baseElementId : elt.strElement;
+                                if (fields.includes(name) && ((element.options.inRepeatGroup && elt.getRepeatNum() == element.getRepeatNum()) || !element.options.inRepeatGroup)) {
+                                    if (['show', 'hide'].includes(action.action)) {
+                                        form.doElementFX('element_' + elt.strElement, action.action, elt);
+
+                                        if (action.action == 'hide') {
+                                            if (clear && !elt_to_not_clear.includes(elt.plugin)) {
+                                                elt.clear();
+                                            }
+                                        }
+
+                                        let event = new Event(elt.getChangeEvent());
+                                        elt.element.dispatchEvent(event);
+                                    } else if (['show_options', 'hide_options'].includes(action.action)) {
+                                        switch (action.action) {
+                                            case 'show_options':
+                                                addOption(elt, action.params);
+                                                if(clear) {
+                                                    sortSelect(elt.element);
+                                                }
+                                                break;
+                                            case 'hide_options':
+                                                removeOption(elt, action.params);
+                                                break;
+                                        }
+
+                                        if(clear) {
+                                            let event = new Event(elt.getChangeEvent());
+                                            elt.element.dispatchEvent(event);
+                                        }
+                                    } else if (['set_optional', 'set_mandatory']) {
+                                        let required_icon = document.querySelector('label[for="' + id + '"] span.material-icons');
+                                        if (required_icon) {
+                                            if (action.action == 'set_optional') {
+                                                required_icon.style.display = 'none';
+                                            } else {
+                                                required_icon.style.display = 'inline-block';
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    let opposite_action = 'hide';
+
+                    rule.actions.forEach((action) => {
+
+                        if(action.action == 'define_repeat_group') {
+                            form.options.maxRepeat[action.fields] = 0;
+                            form.options.minRepeat[action.fields] = 1;
+                            manageRepeatGroup(form);
+                        } else {
+
+                            switch (action.action) {
+                                case 'show':
+                                    opposite_action = 'hide';
+                                    break;
+                                case 'hide':
+                                    opposite_action = 'show';
+                                    break;
+                                case 'show_options':
+                                    opposite_action = 'hide_options';
+                                    break;
+                                case 'hide_options':
+                                    opposite_action = 'show_options';
+                                    break;
+                                case 'set_optional':
+                                    opposite_action = 'set_mandatory';
+                                    break;
+                                case 'set_mandatory':
+                                    opposite_action = 'set_optional';
+                                    break;
+                            }
+
+                            let fields = action.fields.split(',');
+
+                            form.elements.forEach((elt) => {
+                                let name = elt.origId ? elt.origId.split('___')[1] : elt.baseElementId.split('___')[1];
+                                let id = elt.baseElementId ? elt.baseElementId : elt.strElement;
+                                if (fields.includes(name) && ((element.options.inRepeatGroup && elt.getRepeatNum() == element.getRepeatNum()) || !element.options.inRepeatGroup)) {
+                                    if (['show', 'hide'].includes(opposite_action)) {
+                                        form.doElementFX('element_' + elt.strElement, opposite_action, elt);
+
+                                        if (opposite_action == 'hide') {
+                                            if (clear && !elt_to_not_clear.includes(elt.plugin)) {
+                                                elt.clear();
+                                            }
+                                        }
+
+                                        let event = new Event(elt.getChangeEvent());
+                                        elt.element.dispatchEvent(event);
+                                    } else if (['show_options', 'hide_options'].includes(action.action)) {
+                                        switch (opposite_action) {
+                                            case 'show_options':
+                                                addOption(elt, action.params);
+                                                if(clear) {
+                                                    sortSelect(elt.element);
+                                                }
+                                                break;
+                                            case 'hide_options':
+                                                removeOption(elt, action.params);
+                                                break;
+                                        }
+
+                                        if(clear) {
+                                            let event = new Event(elt.getChangeEvent());
+                                            elt.element.dispatchEvent(event);
+                                        }
+                                    } else if (['set_optional', 'set_mandatory']) {
+                                        let required_icon = document.querySelector('label[for="' + id + '"] span.material-icons');
+                                        if (required_icon) {
+                                            if (opposite_action == 'set_optional') {
+                                                required_icon.style.display = 'none';
+                                            } else {
+                                                required_icon.style.display = 'inline-block';
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+    function check_condition(condition_states, group) {
+        let is_group = false;
+        let grouped_conditions = [];
+
+        for(var i = 0; i < condition_states.length; i++) {
+            if(typeof condition_states[i] === 'object') {
+                is_group = true;
+                break;
+            }
+        }
+
+        if(is_group) {
+            for(var i = 0; i < condition_states.length; i++) {
+                if(condition_states[i] !== undefined && typeof condition_states[i] === 'object') {
+                    if(condition_states[i].type === 'AND') {
+                        if(condition_states[i].states.every(v => v === true)) {
+                            grouped_conditions.push(true);
+                        } else {
+                            grouped_conditions.push(false);
+                        }
+                    } else {
+                        if(condition_states[i].states.some(v => v === true)) {
+                            grouped_conditions.push(true);
+                        } else {
+                            grouped_conditions.push(false);
+                        }
+                    }
+                } else if (condition_states[i] !== undefined && typeof condition_states[i] === 'boolean') {
+                    grouped_conditions.push(condition_states[i]);
+                }
+            }
+        } else {
+            grouped_conditions = condition_states;
+        }
+
+        if(group === 'AND') {
+            return grouped_conditions.every(v => v === true);
+        } else {
+            return grouped_conditions.some(v => v === true);
+        }
+    }
+
+    function addOption(field,params) {
+        var params = JSON.parse(params);
+        var options = field.element.options;
+
+        params.forEach((p) => {
+            // Check if option already exists
+            var exists = false;
+            [...options].map((o) => {
+                if(o.value == p.primary_key){
+                    exists = true;
+                }
+            });
+            if(!exists) {
+                var option = document.createElement("option");
+                option.text = p.value;
+                option.value = p.primary_key;
+                field.element.add(option);
+            }
+        });
+    }
+
+    function removeOption(field,params) {
+        var options = field.element.options;
+        var params = JSON.parse(params);
+        var values = [];
+
+        params.forEach((p) => {
+            values.push(p.primary_key);
+        });
+
+        [...options].map((p) => {
+            if(values.includes(p.value)){
+                options.remove(p.index);
+            }
+        });
+    }
+
+    function sortSelect(selElem) {
+        var tmpAry = new Array();
+        for (var i=0;i<selElem.options.length;i++) {
+            tmpAry[i] = new Array();
+            tmpAry[i][0] = selElem.options[i].text;
+            tmpAry[i][1] = selElem.options[i].value;
+        }
+        tmpAry.sort((a,b) => {
+            // Sort by value
+            return a[1].localeCompare(b[1]);
+        });
+        while (selElem.options.length > 0) {
+            selElem.options[0] = null;
+        }
+        for (var i=0;i<tmpAry.length;i++) {
+            var op = new Option(tmpAry[i][0], tmpAry[i][1]);
+            selElem.options[i] = op;
+        }
+        return;
     }
 });

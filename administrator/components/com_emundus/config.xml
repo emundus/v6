@@ -739,6 +739,10 @@
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
+		<field name="condition_builder" label="COM_EMUNDUS_MODULES_CONDITION_BUILDER" type="radio" default="0" description="COM_EMUNDUS_MODULES_CONDITION_BUILDER_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
 	</fieldset>
 	<fieldset label="COM_EMUNDUS_PROFILE" name="profile_view" description="COM_EMUNDUS_PROFILE">
 		<field name="display_expires_date" type="list" default="0" label="COM_EMUNDUS_PROFILE_EXPIRES_DATE" description="COM_EMUNDUS_PROFILE_EXPIRES_DATE_DESC">

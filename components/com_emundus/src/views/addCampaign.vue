@@ -27,9 +27,31 @@
                 :class="{ 'is-invalid': errors.label }"
                 class="form-control fabrikinput w-full"
                 @focusout="onFormChange()"
+                @keyup="updateAlias()"
             />
             <span v-if="errors.label" class="em-red-500-color mb-2">
               <span class="em-red-500-color">{{ translate('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME') }}</span>
+            </span>
+          </div>
+
+          <div class="mb-4">
+            <label for="alias">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_ALIAS') }} <span class="em-red-500-color">*</span></label>
+            <div class="flex items-center gap-2">
+              <span>{{ baseUrl }}/</span>
+              <input
+                  id="alias"
+                  type="text"
+                  v-model="form.alias"
+                  required
+                  :class="{ 'is-invalid': errors.alias }"
+                  class="form-control fabrikinput w-full"
+                  @focusout="onFormChange()"
+                  @keyup="form.alias !== '' ? aliasUpdated = true : aliasUpdated = false"
+              />
+              <span class="material-icons-outlined cursor-pointer" @click="copyAliasToClipboard();">content_copy</span>
+            </div>
+            <span v-if="errors.alias" class="em-red-500-color mb-2">
+              <span class="em-red-500-color">{{ translate('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_LINK') }}</span>
             </span>
           </div>
 
@@ -247,7 +269,7 @@ import Autocomplete from "../components/autocomplete";
 import Translation from "../components/translation"
 
 /** SERVICES **/
-import campaignService from 'com_emundus/src/services/campaign';
+import campaignService from "../services/campaign";
 import EditorQuill from "../components/editorQuill";
 
 const qs = require("qs");
@@ -290,12 +312,14 @@ export default {
     years: [],
     status: [],
     languages: [],
+    aliases: [],
 
     session: [],
     old_training: "",
     old_program_form: "",
     editorKey: 0,
     editorResumeKey: 0,
+    aliasUpdated: false,
 
     form: {
       label: {},
@@ -311,6 +335,7 @@ export default {
       limit: 50,
       limit_status: [],
       pinned: 0,
+      alias: '',
     },
     programForm: {
       code: "",
@@ -383,6 +408,10 @@ export default {
     this.form.start_date = LuxonDateTime.local(now.getFullYear(),now.getMonth() + 1,now.getDate(),0,0,0).toISO();
     this.getLanguages().then(() => {
       this.getCampaignById();
+    });
+
+    campaignService.getAllItemsAlias(this.campaignId).then((response) => {
+      this.aliases = response.data;
     });
   },
   methods: {
@@ -507,8 +536,10 @@ export default {
 
 	  createCampaign(form_data){
       campaignService.createCampaign(form_data).then((response) => {
-        this.campaignId = response.data.data;
-        this.quitFunnelOrContinue(this.quit);
+        if(response.data.status == 1) {
+          this.campaignId = response.data.data;
+          this.quitFunnelOrContinue(this.quit, response.data.redirect);
+        }
       });
     },
 
@@ -546,6 +577,7 @@ export default {
     },
 
 
+    //TODO: With alias -> Create menu link and associate campaigns details module to it. Check if alias exist before
     submit() {
 	    this.$store.dispatch('campaign/setUnsavedChanges', true);
 
@@ -714,12 +746,17 @@ export default {
 		  });
 	  },
 
-    quitFunnelOrContinue(quit) {
+    quitFunnelOrContinue(quit, redirect = '') {
       if (quit === 0) {
         this.redirectJRoute('index.php?option=com_emundus&view=campaign');
       } else if (quit === 1) {
         document.cookie = 'campaign_'+this.campaignId+'_menu = 1; expires=Session; path=/';
-        this.redirectJRoute('index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=' + this.campaignId + '&index=0')
+
+        if(redirect === '') {
+          redirect = 'index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=' + this.campaignId + '&index=0'
+        }
+
+        this.redirectJRoute(redirect)
       }
     },
 
@@ -756,9 +793,43 @@ export default {
       }
       this.isHiddenProgram = !this.isHiddenProgram;
     },
+
+    updateAlias() {
+      if (!this.aliasUpdated) {
+        let alias = this.form.label[this.actualLanguage].normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        this.form.alias = alias.replace(/[^a-zA-Z0-9_-]+/g, '-').toLowerCase();
+      }
+    },
+
+    copyAliasToClipboard() {
+      navigator.clipboard.writeText(window.location.origin + '/' + this.form.alias);
+      Swal.fire({
+        title: this.translate('COM_EMUNDUS_ONBOARD_ALIAS_COPIED'),
+        type: 'success',
+        showConfirmButton: false,
+        customClass: {
+          title: 'em-swal-title',
+          actions: "em-swal-single-action",
+        },
+        timer: 1500,
+      });
+    },
+  },
+
+  computed: {
+    baseUrl() {
+      return window.location.origin;
+    },
   },
 
   watch: {
+    'form.alias': function (val) {
+      this.form.alias = val.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9_-]+/g, '-').toLowerCase();
+      // Check if alias already exists
+      if (this.aliases.includes(val)) {
+        this.form.alias = val + '-1';
+      }
+    },
     'form.start_date': function (val) {
       this.minDate = LuxonDateTime.fromISO(val).plus({ days: 1 }).toISO();
       if (this.form.end_date == "") {

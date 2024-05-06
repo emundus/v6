@@ -10,6 +10,10 @@
  */
 
 // No direct access
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
+
 defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
@@ -590,7 +594,7 @@ class EmundusModelForm extends JModelList {
     }
 
 
-    public function duplicateForm($data) {
+    public function duplicateForm($data, $duplicate_condition = true) {
 		$duplicated = false;
         if (!is_array($data)) {
             $data = array($data);
@@ -760,7 +764,89 @@ class EmundusModelForm extends JModelList {
 											}
 										}
 
-										$formbuilder->createMenuFromTemplate($label, $intro, $formid, $newprofile, true);
+										$new_form = $formbuilder->createMenuFromTemplate($label, $intro, $formid, $newprofile, true);
+
+										if($duplicate_condition) {
+											$query->clear()
+												->select('*')
+												->from($db->quoteName('#__emundus_setup_form_rules'))
+												->where($db->quoteName('form_id') . ' = ' . $db->quote($formid));
+											$db->setQuery($query);
+											$rules = $db->loadObjectList();
+
+											foreach ($rules as $rule) {
+												$insert = [
+													'date_time' => date('Y-m-d H:i:s'),
+													'type' => $rule->type,
+													'group' => $rule->group,
+													'published' => $rule->published,
+													'form_id' => $new_form['id']
+												];
+												$insert = (object) $insert;
+												$db->insertObject('#__emundus_setup_form_rules', $insert);
+												$new_rule_id = $db->insertid();
+
+												if(!empty($new_rule_id))
+												{
+													$query->clear()
+														->select('*')
+														->from($db->quoteName('#__emundus_setup_form_rules_js_actions'))
+														->where($db->quoteName('parent_id') . ' = ' . $db->quote($rule->id));
+													$db->setQuery($query);
+													$actions = $db->loadObjectList();
+
+													foreach ($actions as $action)
+													{
+														$insert = [
+															'parent_id' => $new_rule_id,
+															'action' => $action->action,
+														];
+														$insert = (object) $insert;
+														$db->insertObject('#__emundus_setup_form_rules_js_actions', $insert);
+														$new_action_id = $db->insertid();
+
+														if(!empty($new_action_id))
+														{
+															$query->clear()
+																->select('*')
+																->from($db->quoteName('#__emundus_setup_form_rules_js_actions_fields'))
+																->where($db->quoteName('parent_id') . ' = ' . $db->quote($action->id));
+															$db->setQuery($query);
+															$fields = $db->loadObjectList();
+
+															foreach ($fields as $field) {
+																$insert = [
+																	'parent_id' => $new_action_id,
+																	'fields' => $field->fields,
+																	'params' => $field->params
+																];
+																$insert = (object) $insert;
+																$db->insertObject('#__emundus_setup_form_rules_js_actions_fields', $insert);
+															}
+														}
+													}
+
+													$query->clear()
+														->select('*')
+														->from($db->quoteName('#__emundus_setup_form_rules_js_conditions'))
+														->where($db->quoteName('parent_id') . ' = ' . $db->quote($rule->id));
+													$db->setQuery($query);
+													$conditions = $db->loadObjectList();
+
+													foreach ($conditions as $condition) {
+														$insert = [
+															'parent_id' => $new_rule_id,
+															'field' => $condition->field,
+															'state' => $condition->state,
+															'values' => $condition->values,
+															'label' => $condition->label
+														];
+														$insert = (object) $insert;
+														$db->insertObject('#__emundus_setup_form_rules_js_conditions', $insert);
+													}
+												}
+											}
+										}
 									}
 
 									// Copy attachments
@@ -2277,4 +2363,434 @@ class EmundusModelForm extends JModelList {
 
         return $data;
     }
+
+	public function getJSConditionsByForm($form_id, $format = 'raw')
+	{
+		$js_conditions = [];
+
+		$db = Factory::getDbo();
+		$query = $db->getQuery(true);
+
+		try
+		{
+			$query->select($db->quoteName(['id','group', 'published', 'label']))
+				->from($db->quoteName('#__emundus_setup_form_rules'))
+				->where($db->quoteName('form_id') . ' = ' . $db->quote($form_id))
+				->where($db->quoteName('type') . ' = ' . $db->quote('js'));
+			if($format == 'raw') {
+				$query->where($db->quoteName('published') . ' = 1');
+			}
+			$db->setQuery($query);
+			$js_conditions = $db->loadObjectList();
+
+			foreach ($js_conditions as $js_condition)
+			{
+				$query->clear()
+					->select($db->quoteName(['esfrjc.id','esfrjc.parent_id','esfrjc.field','esfrjc.state','esfrjc.values','esfrjc.group','esfrjcg.group_type']))
+					->from($db->quoteName('#__emundus_setup_form_rules_js_conditions','esfrjc'))
+					->leftJoin($db->quoteName('#__emundus_setup_form_rules_js_conditions_group','esfrjcg').' ON '.$db->quoteName('esfrjcg.id').' = '.$db->quoteName('esfrjc.group'))
+					->where($db->quoteName('parent_id') . ' = ' . $db->quote($js_condition->id));
+				$db->setQuery($query);
+				$js_condition->conditions = $db->loadObjectList();
+
+				if($format == 'view')
+				{
+					$tmp_conditions = [];
+					foreach ($js_condition->conditions as $condition)
+					{
+						$query->clear()
+							->select('label,plugin,params')
+							->from($db->quoteName('#__fabrik_elements'))
+							->where($db->quoteName('name') . ' = ' . $db->quote($condition->field));
+						$db->setQuery($query);
+						$elt = $db->loadObject();
+						$condition->elt_label = Text::_($elt->label);
+
+						$choices_plugin = ['checkbox','dropdown','radiobutton'];
+						$params = json_decode($elt->params);
+
+						if(in_array($elt->plugin,$choices_plugin)) {
+							// Get values
+							foreach ($params->sub_options->sub_labels as $key => $sub_label) {
+								$params->sub_options->sub_labels[$key] = Text::_($sub_label);
+							}
+
+							$condition->options = $params->sub_options;
+						}
+						elseif ($elt->plugin == 'yesno') {
+							$condition->options = new stdClass();
+							$condition->options->sub_values = [
+								0,
+								1
+							];
+							$condition->options->sub_labels = [
+								Text::_('JNO'),
+								Text::_('JYES')
+							];
+						}
+						elseif ($elt->plugin == 'databasejoin') {
+							$condition->options = new stdClass();
+							$condition->options->sub_values = [];
+							$condition->options->sub_labels = [];
+							$databasejoin_options = $this->getDatabaseJoinOptions($params->join_db_name, $params->join_key_column, $params->join_val_column, $params->join_val_column_concat);
+							foreach ($databasejoin_options as $databasejoin_option) {
+								$condition->options->sub_values[] = $databasejoin_option->primary_key;
+								$condition->options->sub_labels[] = $databasejoin_option->value;
+							}
+						}
+
+						if(!empty($condition->group)) {
+							$tmp_conditions[$condition->group][] = $condition;
+						} else {
+							$tmp_conditions[][] = $condition;
+						}
+					}
+					$js_condition->conditions = $tmp_conditions;
+				}
+
+				$query->clear()
+					->select('esfrr.action,group_concat(esfrr_fields.fields) as fields,group_concat(esfrr_fields.params SEPARATOR "|") as params')
+					->from($db->quoteName('#__emundus_setup_form_rules_js_actions','esfrr'))
+					->leftJoin($db->quoteName('#__emundus_setup_form_rules_js_actions_fields','esfrr_fields').' ON '.$db->quoteName('esfrr_fields.parent_id').' = '.$db->quoteName('esfrr.id'))
+					->where($db->quoteName('esfrr.parent_id') . ' = ' . $db->quote($js_condition->id))
+					->group('esfrr.id');
+				$db->setQuery($query);
+				$js_condition->actions = $db->loadObjectList();
+
+				if($format == 'view')
+				{
+					foreach ($js_condition->actions as $action)
+					{
+						$action->labels = [];
+						$action->fields = explode(',',$action->fields);
+						$action->params = !empty($action->params) ? explode('|',$action->params) : [];
+
+						$query->clear()
+							->select('fe.label')
+							->from($db->quoteName('#__fabrik_elements','fe'))
+							->leftJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffg.group_id').' = '.$db->quoteName('fe.group_id'))
+							->where($db->quoteName('fe.name') . ' IN (' . implode(',',$db->quote($action->fields)) . ')')
+							->where($db->quoteName('ffg.form_id') . ' = ' . $db->quote($form_id));
+						$db->setQuery($query);
+						$labels = $db->loadColumn();
+						foreach ($labels as $label)
+						{
+							$action->labels[] = Text::_($label);
+						}
+					}
+				}
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/form | Error at getConditionsByForm : ' . preg_replace("/[\r\n]/"," ",$e->getMessage()), Log::ERROR, 'com_emundus');
+		}
+
+		return $js_conditions;
+	}
+
+	public function addRule($form_id, $grouped_conditions, $actions, $type = 'js', $group = 'OR', $label = '', $user = null)
+	{
+		$rule_inserted = false;
+
+		if(empty($user)) {
+			$user = Factory::getApplication()->getIdentity();
+		}
+
+		$grouped_conditions = json_decode($grouped_conditions);
+		$actions = json_decode($actions);
+
+		$db = Factory::getDbo();
+
+		try
+		{
+			$insert = [
+				'date_time' => date('Y-m-d H:i:s'),
+				'created_by' => $user->id,
+				'form_id' => $form_id,
+				'type' => $type,
+				'group' => $group,
+				'label' => !empty($label) ? $label : ' ',
+				'published' => 1
+			];
+			$insert = (object) $insert;
+			$db->insertObject('#__emundus_setup_form_rules', $insert);
+
+			$rule_id = $db->insertid();
+
+			if(!empty($rule_id))
+			{
+				foreach ($grouped_conditions as $grouped_condition)
+				{
+					if(count($grouped_condition) > 1) {
+						$group_type = $grouped_condition[0]->group_type;
+						$group_id = $this->createConditionGroup($group_type);
+						foreach ($grouped_condition as $condition)
+						{
+							$condition->group = $group_id;
+							$this->addCondition($rule_id, $condition);
+						}
+					} else {
+						foreach ($grouped_condition as $condition)
+						{
+							$this->addCondition($rule_id, $condition);
+						}
+					}
+				}
+
+				foreach ($actions as $action)
+				{
+					$this->addAction($rule_id, $action);
+				}
+
+				$rule_inserted = true;
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/form | Error at addRule : ' . preg_replace("/[\r\n]/"," ",$e->getMessage()), Log::ERROR, 'com_emundus');
+		}
+
+		return $rule_inserted;
+	}
+
+	public function editRule($rule_id, $grouped_conditions, $actions, $group = 'OR', $label = '', $user = null)
+	{
+		$rule_edited = false;
+
+		if(empty($user)) {
+			$user = Factory::getApplication()->getIdentity();
+		}
+
+		$grouped_conditions = json_decode($grouped_conditions);
+		$actions = json_decode($actions);
+
+		$db = Factory::getDbo();
+		$query = $db->getQuery(true);
+
+		try
+		{
+			if(!empty($rule_id))
+			{
+				$query->select('DISTINCT '.$db->quoteName('group'))
+					->from($db->quoteName('#__emundus_setup_form_rules_js_conditions'))
+					->where($db->quoteName('parent_id') . ' = ' . $db->quote($rule_id))
+					->where($db->quoteName('group') . ' IS NOT NULL');
+				$db->setQuery($query);
+				$condition_groups = $db->loadColumn();
+
+				if(!empty($condition_groups))
+				{
+					$query->clear()
+						->delete($db->quoteName('#__emundus_setup_form_rules_js_conditions_group'))
+						->where($db->quoteName('id') . ' IN (' . implode(',', $db->quote($condition_groups)) . ')');
+					$db->setQuery($query);
+					$db->execute();
+				}
+
+				$query->clear()
+					->delete($db->quoteName('#__emundus_setup_form_rules_js_conditions'))
+					->where($db->quoteName('parent_id') . ' = ' . $db->quote($rule_id));
+				$db->setQuery($query);
+				$db->execute();
+
+				$query->clear()
+					->delete($db->quoteName('#__emundus_setup_form_rules_js_actions'))
+					->where($db->quoteName('parent_id') . ' = ' . $db->quote($rule_id));
+				$db->setQuery($query);
+				$db->execute();
+
+				foreach ($grouped_conditions as $grouped_condition)
+				{
+					if(count($grouped_condition) > 1) {
+						$group_type = $grouped_condition[0]->group_type;
+						$group_id = $this->createConditionGroup($group_type);
+						foreach ($grouped_condition as $condition)
+						{
+							$condition->group = $group_id;
+							$this->addCondition($rule_id, $condition);
+						}
+					} else {
+						foreach ($grouped_condition as $condition)
+						{
+							$this->addCondition($rule_id, $condition);
+						}
+					}
+				}
+
+				foreach ($actions as $action)
+				{
+					$this->addAction($rule_id, $action);
+				}
+
+				$update = [
+					'id' => $rule_id,
+					'group' => $group,
+					'label' => !empty($label) ? $label : '',
+					'updated_by' => $user->id,
+					'updated' => date('Y-m-d H:i:s')
+				];
+				$update = (object) $update;
+				$db->updateObject('#__emundus_setup_form_rules', $update, 'id');
+
+				$rule_edited = true;
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/form | Error at editRule : ' . preg_replace("/[\r\n]/"," ",$e->getMessage()), Log::ERROR, 'com_emundus');
+		}
+
+		return $rule_edited;
+	}
+
+	public function deleteRule($rule_id)
+	{
+		$rule_deleted = false;
+
+		$db = Factory::getDbo();
+		$query = $db->getQuery(true);
+
+		try
+		{
+			if(!empty($rule_id))
+			{
+				$query->delete($db->quoteName('#__emundus_setup_form_rules_js_conditions'))
+					->where($db->quoteName('parent_id') . ' = ' . $db->quote($rule_id));
+				$db->setQuery($query);
+				$db->execute();
+
+				$query->clear()
+					->delete($db->quoteName('#__emundus_setup_form_rules_js_actions'))
+					->where($db->quoteName('parent_id') . ' = ' . $db->quote($rule_id));
+				$db->setQuery($query);
+				$db->execute();
+
+				$query->clear()
+					->delete($db->quoteName('#__emundus_setup_form_rules'))
+					->where($db->quoteName('id') . ' = ' . $db->quote($rule_id));
+				$db->setQuery($query);
+				$db->execute();
+
+				$rule_deleted = true;
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/form | Error at deleteRule : ' . preg_replace("/[\r\n]/"," ",$e->getMessage()), Log::ERROR, 'com_emundus');
+		}
+
+		return $rule_deleted;
+	}
+
+	public function publishRule($rule_id, $state, $user = null)
+	{
+		$rule_published = false;
+
+		if(empty($user)) {
+			$user = Factory::getApplication()->getIdentity();
+		}
+
+		$db = Factory::getDbo();
+
+		try
+		{
+			if(!empty($rule_id))
+			{
+				$update = [
+					'id' => $rule_id,
+					'published' => $state,
+					'updated_by' => $user->id,
+					'updated' => date('Y-m-d H:i:s')
+				];
+				$update = (object) $update;
+				$db->updateObject('#__emundus_setup_form_rules', $update, 'id');
+
+				$rule_published = true;
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/form | Error at publishRule : ' . preg_replace("/[\r\n]/"," ",$e->getMessage()), Log::ERROR, 'com_emundus');
+		}
+
+		return $rule_published;
+	}
+
+	private function addCondition($rule_id, $condition)
+	{
+		$db = Factory::getDbo();
+
+		try
+		{
+			$insert = [
+				'parent_id' => $rule_id,
+				'field'     => $condition->field,
+				'state'     => $condition->state,
+				'values'    => $condition->values,
+				'group'     => !empty($condition->group) ? $condition->group : null
+			];
+			$insert = (object) $insert;
+			$db->insertObject('#__emundus_setup_form_rules_js_conditions', $insert);
+		}
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/form | Error at addCondition : ' . preg_replace("/[\r\n]/"," ",$e->getMessage()), Log::ERROR, 'com_emundus');
+		}
+	}
+
+	private function createConditionGroup($group_type)
+	{
+		$group_id = 0;
+		$db = Factory::getDbo();
+
+		try
+		{
+			$insert = [
+				'group_type' => $group_type,
+			];
+			$insert = (object) $insert;
+			$db->insertObject('#__emundus_setup_form_rules_js_conditions_group', $insert);
+
+			$group_id = $db->insertid();
+		}
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/form | Error at addCondition : ' . preg_replace("/[\r\n]/"," ",$e->getMessage()), Log::ERROR, 'com_emundus');
+		}
+
+		return $group_id;
+	}
+
+	private function addAction($rule_id, $action)
+	{
+		$db = Factory::getDbo();
+
+		try
+		{
+			$insert = [
+				'parent_id' => $rule_id,
+				'action'    => $action->action
+			];
+			$insert = (object) $insert;
+			$db->insertObject('#__emundus_setup_form_rules_js_actions', $insert);
+
+			$action_id = $db->insertid();
+
+			foreach ($action->fields as $field)
+			{
+				$insert = [
+					'parent_id' => $action_id,
+					'fields'    => $field,
+					'params'    => !empty($action->params) ? json_encode($action->params) : null
+				];
+				$insert = (object) $insert;
+				$db->insertObject('#__emundus_setup_form_rules_js_actions_fields', $insert);
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/form | Error at addAction : ' . preg_replace("/[\r\n]/"," ",$e->getMessage()), Log::ERROR, 'com_emundus');
+		}
+	}
 }

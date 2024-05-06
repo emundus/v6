@@ -11,6 +11,9 @@
 
 // No direct access
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+
 defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.controller');
@@ -865,5 +868,146 @@ class EmundusControllerForm extends JControllerLegacy {
         echo json_encode((object)$response);
         exit;
     }
+
+	public function getjsconditions()
+	{
+		$user = Factory::getUser();
+		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'data' => []);
+
+		$jinput = Factory::getApplication()->input;
+		$formId = $jinput->getInt('form_id');
+		$format = $jinput->getString('format', 'raw');
+
+		if (!empty($formId)) {
+			$conditions = $this->m_form->getJSConditionsByForm($formId, $format);
+
+			$response['msg'] = Text::_('SUCCESS');
+			$response['status'] = true;
+			$response['data'] = ['conditions' => $conditions];
+		} else {
+			$response['msg'] = Text::_('MISSING_PARAMS');
+		}
+
+		echo json_encode((object)$response);
+		exit;
+
+	}
+
+	public function addRule()
+	{
+		$user = Factory::getApplication()->getIdentity();
+		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+			$jinput = Factory::getApplication()->input;
+			$form_id = $jinput->getInt('form_id');
+			$conditions = $jinput->getString('conditions');
+			$actions = $jinput->getString('actions');
+			$group = $jinput->getString('group');
+			$label = $jinput->getString('label');
+
+			if (!empty($form_id) && !empty($conditions) && !empty($actions)) {
+				$rule_added = $this->m_form->addRule($form_id,$conditions,$actions,'js',$group,$label);
+
+				if ($rule_added !== false) {
+					$response['msg'] = Text::_('SUCCESS');
+					$response['status'] = true;
+				} else {
+					$response['msg'] = Text::_('FAILED');
+				}
+			} else {
+				$response['msg'] = Text::_('MISSING_PARAMS');
+			}
+		}
+
+		echo json_encode((object)$response);
+		exit;
+	}
+
+	public function editRule()
+	{
+		$user = Factory::getApplication()->getIdentity();
+		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+			$jinput = Factory::getApplication()->input;
+			$rule_id = $jinput->getInt('rule_id');
+			$conditions = $jinput->getString('conditions');
+			$actions = $jinput->getString('actions');
+			$group = $jinput->getString('group');
+			$label = $jinput->getString('label');
+
+			if (!empty($rule_id) && !empty($conditions) && !empty($actions)) {
+				$rule_edited = $this->m_form->editRule($rule_id,$conditions,$actions,$group,$label);
+
+				if ($rule_edited !== false) {
+					$response['msg'] = Text::_('SUCCESS');
+					$response['status'] = true;
+				} else {
+					$response['msg'] = Text::_('FAILED');
+				}
+			} else {
+				$response['msg'] = Text::_('MISSING_PARAMS');
+			}
+		}
+
+		echo json_encode((object)$response);
+		exit;
+	}
+
+	public function deleteRule()
+	{
+		$user = Factory::getApplication()->getIdentity();
+		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+			$jinput = Factory::getApplication()->input;
+			$rule_id = $jinput->getInt('rule_id');
+
+			if (!empty($rule_id)) {
+				$rule_deleted = $this->m_form->deleteRule($rule_id);
+
+				if ($rule_deleted !== false) {
+					$response['msg'] = Text::_('SUCCESS');
+					$response['status'] = true;
+				} else {
+					$response['msg'] = Text::_('FAILED');
+				}
+			} else {
+				$response['msg'] = Text::_('MISSING_PARAMS');
+			}
+		}
+
+		echo json_encode((object)$response);
+		exit;
+	}
+
+	public function publishRule()
+	{
+		$user = Factory::getApplication()->getIdentity();
+		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+			$jinput = Factory::getApplication()->input;
+			$rule_id = $jinput->getInt('rule_id');
+			$state = $jinput->getInt('state');
+
+			if (!empty($rule_id)) {
+				$rule_published = $this->m_form->publishRule($rule_id, $state);
+
+				if ($rule_published !== false) {
+					$response['msg'] = Text::_('SUCCESS');
+					$response['status'] = true;
+				} else {
+					$response['msg'] = Text::_('FAILED');
+				}
+			} else {
+				$response['msg'] = Text::_('MISSING_PARAMS');
+			}
+		}
+
+		echo json_encode((object)$response);
+		exit;
+	}
 }
 

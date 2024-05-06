@@ -1,9 +1,16 @@
 <template>
   <div id="form-builder-document-formats">
-    <p id="form-builder-document-title" class="em-text-align-center em-w-100 em-p-16">
+    <p id="form-builder-document-title" class="text-center w-full p-4">
       {{ translate('COM_EMUNDUS_FORM_BUILDER_FORMATS') }}
     </p>
-	  <input v-if="formats.length > 0" id="search" v-model="search" type="text" class="em-mt-16 em-w-100" placeholder=""/>
+    <input
+        v-if="formats.length > 0"
+        v-model="search"
+        type="text"
+        id="search"
+        class="formbuilder-searchbar mt-2"
+        :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_SEARCH_FORMAT')"
+    />
     <draggable
         v-model="displayedFormats"
         class="draggables-list"
