@@ -529,57 +529,21 @@ class EmundusModelLogs extends JModelList {
     }
 
 	/**
-	 * @param $date   DateTime  Date to delete logs after
-	 * @param $export bool      Export messages to CSV format
-	 * @description             Deletes logs after a given date.
-	 * If export is set to true, it will export the logs to a CSV file.
-	 * @return array|int
+	 * @param $date   DateTime  Date to delete logs before
+	 * @description             Deletes logs before a given date.
+	 * @return int
 	 */
-	public function deleteLogsAfterADate($date, $export = false)
+	public function deleteLogsBeforeADate($date)
 	{
-
 		$deleted_logs = 0;
-		$csv_filename = '';
 
 		if (!(empty($date)))
 		{
 			$db    = JFactory::getDbo();
 			$query = $db->getQuery(true);
 
-			if ($export)
-			{
-				$query->select('*')
-					->from($db->quoteName('#__emundus_logs'))
-					->where($db->quoteName('timestamp') . ' < ' . $db->quote($date->format('Y-m-d H:i:s')));
-
-				try
-				{
-					$db->setQuery($query);
-					$logs = $db->loadAssocList();
-				}
-				catch (Exception $e)
-				{
-					JLog::add('Could not fetch logs from jos_emundus_logs table in model logs at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
-
-					return $deleted_logs;
-				}
-
-				if (!empty($logs))
-				{
-					$csv_filename = JPATH_SITE . '/tmp/logs_' . date('Y-m-d_H-i-s') . '.csv';
-					$csv_file     = fopen($csv_filename, 'w');
-					fputcsv($csv_file, array_keys($logs[0]));
-					foreach ($logs as $log)
-					{
-						fputcsv($csv_file, $log);
-					}
-					fclose($csv_file);
-				}
-			}
-
-			$query->clear()
-				->delete($db->quoteName('#__emundus_logs'))
-				->where($db->quoteName('timestamp') . ' < ' . $db->quote($date->format('Y-m-d H:i:s')));
+			$query->delete($db->quoteName('#__emundus_logs'))
+				  ->where($db->quoteName('timestamp') . ' < ' . $db->quote($date->format('Y-m-d H:i:s')));
 
 			try
 			{
@@ -593,6 +557,50 @@ class EmundusModelLogs extends JModelList {
 			}
 		}
 
-		return array('deletedLogs' => $deleted_logs, 'csvFilename' => $csv_filename);
+		return $deleted_logs;
+	}
+
+	/**
+	 * @param $date   DateTime  Date to export logs before
+	 * @description             Exports logs before a given date.
+	 * @return string
+	 */
+	public function exportLogsBeforeADate($date)
+	{
+		$csv_filename = '';
+
+		if (!(empty($date)))
+		{
+			$db    = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('*')
+				->from($db->quoteName('#__emundus_logs'))
+				->where($db->quoteName('timestamp') . ' < ' . $db->quote($date->format('Y-m-d H:i:s')));
+
+			try
+			{
+				$db->setQuery($query);
+				$logs = $db->loadAssocList();
+			}
+			catch (Exception $e)
+			{
+				JLog::add('Could not fetch logs from jos_emundus_logs table in model logs at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			}
+
+			if (!empty($logs))
+			{
+				$csv_filename = JPATH_SITE . '/tmp/logs_' . date('Y-m-d_H-i-s') . '.csv';
+				$csv_file     = fopen($csv_filename, 'w');
+				fputcsv($csv_file, array_keys($logs[0]));
+				foreach ($logs as $log)
+				{
+					fputcsv($csv_file, $log);
+				}
+				fclose($csv_file);
+			}
+		}
+
+		return $csv_filename;
 	}
 }

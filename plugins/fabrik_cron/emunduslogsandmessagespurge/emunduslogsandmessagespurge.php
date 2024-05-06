@@ -55,23 +55,27 @@ class PlgFabrik_Cronemunduslogsandmessagespurge extends PlgFabrik_Cron{
 		include_once(JPATH_SITE . '/components/com_emundus/models/logs.php');
 		include_once(JPATH_SITE . '/components/com_emundus/models/messages.php');
 		include_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
-		$m_logs = new EmundusModelLogs();
+		$m_logs     = new EmundusModelLogs();
 		$m_messages = new EmundusModelMessages();
 
-		$params = $this->getParams();
+		$params      = $this->getParams();
 		$amount_time = $params->get('amount_time');
-		$unit_time = $params->get('unit_time');
-		$export = $params->get('export_zip');
+		$unit_time   = $params->get('unit_time');
+		$export      = $params->get('export_zip');
 
-		if (version_compare(JVERSION, '4.0', '>=')) {
+		if (version_compare(JVERSION, '4.0', '>='))
+		{
 			$config = Factory::getApplication()->getConfig();
-		} else {
+		}
+		else
+		{
 			$config = Factory::getConfig();
 		}
 		$offset = $config->get('offset', 'Europe/Paris');
-		$now = DateTime::createFromFormat('Y-m-d H:i:s', EmundusHelperDate::getNow($offset));
+		$now    = DateTime::createFromFormat('Y-m-d H:i:s', EmundusHelperDate::getNow($offset));
 
-		switch ($unit_time) {
+		switch ($unit_time)
+		{
 			case 'hour':
 				$now->modify('-' . $amount_time . ' hours');
 				break;
@@ -89,19 +93,26 @@ class PlgFabrik_Cronemunduslogsandmessagespurge extends PlgFabrik_Cron{
 				break;
 		}
 
-		$logs = $m_logs->deleteLogsAfterADate($now, $export);
-		$messages = $m_messages->deleteMessagesAfterADate($now, $export);
-
-		$zip_filename = JPATH_SITE . '/tmp/logs_and_messages_' . date('Y-m-d_H-i-s') . '.zip';
-		$zip = new ZipArchive();
-		if ($export && $zip->open($zip_filename, ZipArchive::CREATE) === TRUE) {
-			$zip->addFile($logs['csvFilename'], basename($logs['csvFilename']));
-			$zip->addFile($messages['csvFilename'], basename($messages['csvFilename']));
-			$zip->close();
-			unlink($messages['csvFilename']);
-			unlink($logs['csvFilename']);
+		if ($export)
+		{
+			$zip_filename = JPATH_SITE . '/tmp/logs_and_messages_' . date('Y-m-d_H-i-s') . '.zip';
+			$zip          = new ZipArchive();
+			if ($zip->open($zip_filename, ZipArchive::CREATE) === true)
+			{
+				$filename_logs     = $m_logs->exportLogsBeforeADate($now);
+				$filename_messages = $m_messages->exportMessagesBeforeADate($now);
+				$zip->addFile($filename_logs, basename($filename_logs));
+				$zip->addFile($filename_messages, basename($filename_messages));
+				$zip->close();
+				unlink($filename_messages);
+				unlink($filename_logs);
+			}
 		}
-		return $logs['deletedLogs'] + $messages['deletedMessages'];
+
+		$logs     = $m_logs->deleteLogsBeforeADate($now);
+		$messages = $m_messages->deleteMessagesBeforeADate($now);
+
+		return $logs + $messages;
 	}
 
 }

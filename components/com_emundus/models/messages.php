@@ -1424,56 +1424,20 @@ class EmundusModelMessages extends JModelList {
     }
 
 	/**
-	 * @param $date   DateTime  Date to delete messages after
-	 * @param $export bool      Export messages to CSV format
-	 * @description             Deletes messages after a given date.
-	 * If export is set to true, it will export the messages to a CSV file.
-	 * @return array|int
+	 * @param $date   DateTime  Date to delete messages before
+	 * @description             Deletes messages before a given date.
+	 * @return int
 	 */
-	public function deleteMessagesAfterADate($date, $export = false)
+	public function deleteMessagesBeforeADate($date)
 	{
 		$deleted_messages = 0;
-		$csv_filename     = '';
 
 		if (!(empty($date)))
 		{
 			$db    = JFactory::getDbo();
 			$query = $db->getQuery(true);
 
-			if ($export)
-			{
-				$query->select('*')
-					->from($db->quoteName('#__messages'))
-					->where($db->quoteName('date_time') . ' < ' . $db->quote($date->format('Y-m-d H:i:s')));
-
-				try
-				{
-					$db->setQuery($query);
-					$messages = $db->loadAssocList();
-				}
-				catch (Exception $e)
-				{
-					JLog::add('Could not fetch messages from jos_messages table in model messages at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
-
-					return $deleted_messages;
-				}
-
-				if (!empty($messages))
-				{
-					$csv_filename = JPATH_SITE . '/tmp/messages_' . date('Y-m-d_H-i-s') . '.csv';
-					$csv_file     = fopen($csv_filename, 'w');
-					fputcsv($csv_file, array_keys($messages[0]));
-					foreach ($messages as $message)
-					{
-						fputcsv($csv_file, $message);
-					}
-
-					fclose($csv_file);
-				}
-			}
-
-			$query->clear()
-				->delete($db->quoteName('#__messages'))
+			$query->delete($db->quoteName('#__messages'))
 				->where($db->quoteName('date_time') . ' < ' . $db->quote($date->format('Y-m-d H:i:s')));
 
 			try
@@ -1488,6 +1452,51 @@ class EmundusModelMessages extends JModelList {
 			}
 		}
 
-		return array('deletedMessages' => $deleted_messages, 'csvFilename' => $csv_filename);
+		return $deleted_messages;
+	}
+
+	/**
+	 * @param $date   DateTime  Date to export messages before
+	 * @description             Exports messages before a given date.
+	 * @return string
+	 */
+	public function exportMessagesBeforeADate($date)
+	{
+		$csv_filename = null;
+
+		if (!(empty($date)))
+		{
+			$db    = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('*')
+				->from($db->quoteName('#__messages'))
+				->where($db->quoteName('date_time') . ' < ' . $db->quote($date->format('Y-m-d H:i:s')));
+
+			try
+			{
+				$db->setQuery($query);
+				$messages = $db->loadAssocList();
+			}
+			catch (Exception $e)
+			{
+				JLog::add('Could not fetch messages from jos_messages table in model messages at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			}
+
+			if (!empty($messages))
+			{
+				$csv_filename = JPATH_SITE . '/tmp/messages_' . date('Y-m-d_H-i-s') . '.csv';
+				$csv_file     = fopen($csv_filename, 'w');
+				fputcsv($csv_file, array_keys($messages[0]));
+				foreach ($messages as $message)
+				{
+					fputcsv($csv_file, $message);
+				}
+
+				fclose($csv_file);
+			}
+		}
+
+		return $csv_filename;
 	}
 }
