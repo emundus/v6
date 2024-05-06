@@ -4257,7 +4257,7 @@ if(in_array($applicant,$exceptions)){
 				EmundusHelperUpdate::insertTranslationsTag('COM_USERS_LOGIN_EMAIL_PLACEHOLDER','example@domain.com', 'override', null, null, null, 'en-GB');
 
 				EmundusHelperUpdate::addColumn('jos_emundus_widgets_repeat_access', 'access_level', 'INT', 11);
-				
+
 				$query->clear()
 					->select('extension_id,params')
 					->from($db->quoteName('#__extensions'))
@@ -4279,11 +4279,74 @@ if(in_array($applicant,$exceptions)){
 					$db->setQuery($query);
 					$db->execute();
 				}
+				EmundusHelperUpdate::installExtension('plg_cron_logspurge','emunduslogsandmessagespurge','{"name":"plg_cron_logspurge","type":"plugin","creationDate":"May 2024","author":"eMundus","copyright":"Copyright (C) 2024 emundus.fr - All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"www.emundus.fr","version":"1.39.0","description":"PLG_CRON_LOGSPURGE_DESC","group":"","filename":"emunduslogsandmessagespurge"}','plugin',1,'fabrik_cron', '{"amount_time":"1","unit_time":"year","export_zip":"1"}');
+				EmundusHelperUpdate::enableEmundusPlugins('emunduslogsandmessagespurge');
 
-				//TODO: Install cron plugin by default with export zip param enabled and 1 year (check installExtension)
+				$query = $db->getQuery(true);
+
+				$query->clear()
+					->select($db->quoteName('label'))
+					->from($db->quoteName('jos_fabrik_cron'))
+					->where($db->quoteName('label') . ' = ' . $db->quote('Logs and messages purge'));
+
+				$db->setQuery($query);
+				$existingLabel = $db->loadResult();
+
+				if ($existingLabel !== null)
+				{
+					echo "Plugin cron already created.";
+				}
+				else
+				{
+					$columns = array(
+						'label',
+						'frequency',
+						'unit',
+						'created',
+						'modified',
+						'checked_out_time',
+						'plugin',
+						'published',
+						'lastrun',
+						'params'
+					);
+
+					$currentHour = date('G');
+					if ($currentHour < 4)
+					{
+						$lastFourHourDate = date('Y-m-d 04:00:00', strtotime('yesterday'));
+					}
+					else
+					{
+						$lastFourHourDate = date('Y-m-d 04:00:00');
+					}
+
+
+					$values = array(
+						$db->quote('Logs and messages purge'),
+						'1',
+						$db->quote('day'),
+						$db->quote(date('0000-00-00 00:00:00')),
+						$db->quote(date('0000-00-00 00:00:00')),
+						$db->quote(date('0000-00-00 00:00:00')),
+						$db->quote('emunduslogsandmessagespurge'),
+						'1',
+						$db->quote(date($lastFourHourDate)),
+						$db->quote('{"connection":"1","table":"","cron_row_limit":"100","log":"0","log_email":"","require_qs":"0","require_qs_secret":"","cron_rungate":"1","cron_reschedule_manual":"0","reminder_mail_id":"79","amount_time":"1","unit_time":"year","export_zip":"1","cron_rungate":"1","cron_reschedule_manual":"0","reminder_mail_id":"79","amount_time":"1","unit_time":"year","export_zip":"1"}')
+					);
+
+					$query->clear()
+						->insert($db->quoteName('jos_fabrik_cron'))
+						->columns($db->quoteName($columns))
+						->values(implode(',', $values));
+
+					$db->setQuery($query);
+					$db->execute();
+
+
+				}
 			}
 		}
-
 		return $succeed;
 	}
 

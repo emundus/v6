@@ -8,7 +8,7 @@
 	<authorEmail>dev@emundus.fr</authorEmail>
 	<authorUrl>www.emundus.fr</authorUrl>
 	<version>1.39.0</version>
-	<description>A plugin used to purge database logs and messages</description>
+	<description>PLG_CRON_LOGSPURGE_DESC</description>
 	<files>
 		<filename plugin="emunduslogsandmessagespurge">emunduslogsandmessagespurge.php</filename>
 		<folder>forms</folder>
