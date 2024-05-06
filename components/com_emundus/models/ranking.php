@@ -323,8 +323,11 @@ class EmundusModelRanking extends JModelList
                     ->select('MAX(' . $this->db->quoteName('rank') . ')')
                     ->from($this->db->quoteName('#__emundus_ranking'))
                     ->where($this->db->quoteName('ccid') . ' IN (' . implode(',', $ids) . ')')
-                    ->andWhere($this->db->quoteName('user_id') . ' = ' . $this->db->quote($user_id))
                     ->andWhere($this->db->quoteName('hierarchy_id') . ' = ' . $this->db->quote($hierarchy));
+
+                if (!empty($package)) {
+                    $query->andWhere($this->db->quoteName('package') . ' = ' . $this->db->quote($package));
+                }
 
                 try {
                     $this->db->setQuery($query);
@@ -335,10 +338,6 @@ class EmundusModelRanking extends JModelList
                 } catch (Exception $e) {
                     JLog::add('getFilesUserCanRank ' . $e->getMessage(), JLog::ERROR, 'com_emundus.ranking.php');
                     throw new Exception('An error occurred while fetching the files.' . $query->__toString());
-                }
-
-                if (!empty($hierarchy_order_by) && $hierarchy_order_by !== 'default' && $hierarchy_order_by != $hierarchy) {
-
                 }
 
                 $query->clear()
@@ -362,6 +361,10 @@ class EmundusModelRanking extends JModelList
                             WHERE `cc`.`id` IN (' . implode(',', $ids) . ')
                             AND `er`.`hierarchy_id` = ' . $this->db->quote($hierarchy_order_by) . ')'
                         );
+
+                    if (!empty($package_id)) {
+                        $sub_query->andWhere($this->db->quoteName('cc.package') . ' = ' . $this->db->quote($package_id));
+                    }
 
                     if ($limit !== -1) {
                         $sub_query->setLimit($limit, $offset);
@@ -392,8 +395,18 @@ class EmundusModelRanking extends JModelList
                     $query->leftJoin($this->db->quoteName('#__emundus_ranking', 'er') . ' ON ' . $this->db->quoteName('cc.id') . ' = ' . $this->db->quoteName('er.ccid')  . ' AND `er`.`hierarchy_id` = ' . $this->db->quote($hierarchy));
                     $query->where($this->db->quoteName('cc.id') . ' IN (' . implode(',', $ids) . ')');
 
+                    if (!empty($package_id)) {
+                        $query->andWhere($this->db->quoteName('cc.package') . ' = ' . $this->db->quote($package_id));
+                    }
+
                     if ($limit !== -1) {
                         $query->setLimit($limit, $offset);
+                    }
+
+                    if ($sort === 'ASC') {
+                        $query->order('IFNULL(IF(`rank` != -1, `rank`, null), ' . $MAX_RANK_VALUE . ') ASC');
+                    } else {
+                        $query->order('IFNULL(`rank`, -1) DESC');
                     }
                 }
 
