@@ -96,6 +96,13 @@
 					<option value="3">PLG_ELEMENT_FIELD_AUTOCOMPLETE_GEOCODE</option>
 			</field>
 
+			<field name="autocomplete_advanced"
+				   type="text"
+				   default=""
+				   description="PLG_ELEMENT_FIELD_AUTOCOMPLETE_ADVANCED_DESC"
+				   label="PLG_ELEMENT_FIELD_AUTOCOMPLETE_ADVANCED_LABEL">
+			</field>
+
 			<field name="speech"
 				type="radio"
 				default="0"

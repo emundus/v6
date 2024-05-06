@@ -81,7 +81,7 @@ class JOAuth2Client
 
 			if ($response->code >= 200 && $response->code < 400)
 			{
-				if (strpos($response->headers['Content-Type'], 'application/json') === 0)
+				if (strpos($response->headers['Content-Type'], 'application/json') === 0 || strpos($response->headers['content-type'], 'application/json') === 0)
 				{
 					$token = array_merge(json_decode($response->body, true), array('created' => time()));
 				}
