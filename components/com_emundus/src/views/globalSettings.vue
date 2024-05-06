@@ -1,54 +1,74 @@
 <template>
+  <!-- The root element of the component -->
   <div class="w-full">
+    <!-- The sidebar of the application -->
     <aside id="logo-sidebar"
            class="corner-bottom-left-background fixed left-0 top-0 w-64 h-screen transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700"
            aria-label="Sidebar">
+      <!-- The container for the sidebar content -->
       <div class="h-full pb-4 overflow-y-auto bg-white dark:bg-gray-800">
+        <!-- The list of menu items in the sidebar -->
         <ul class="space-y-2 font-large list-none">
+          <!-- The back button -->
           <li>
             <span class="flex items-center p-3 rounded-lg group cursor-pointer" @click="backButton">
+              <!-- The back button icon -->
               <span class="material-icons-outlined user-select-none text-green-700">arrow_back</span>
+              <!-- The back button label -->
               <span class="ms-1 text-green-700">{{ translate('BACK') }}</span>
             </span>
           </li>
 
-          <li v-for="(menu, indexMenu) in menus" class="m-3">
+          <!-- The list of menu items, dynamically generated from the `menus` data property -->
+          <li v-for="(menu, indexMenu) in menus" class="m-3" v-if="menu.published === true">
             <span :id="'Menu-'+indexMenu" @click="handleMenu(indexMenu , menu)"
                   class="flex items-start p-2 cursor-pointer rounded-lg group user-select-none"
                   :class="activeMenu === indexMenu ? 'green-Menubutton' : 'hover:bg-gray-100'"
             >
+              <!-- The menu item icon -->
               <i class="material-icons-outlined font-bold" :class="activeMenu === indexMenu ? 'text-green-700' : ''"
                  name="icon-Menu" :id="'icon-'+indexMenu">{{ menu.icon }}</i>
+              <!-- The menu item label -->
               <span class="ms-2 font-bold"
                     :class="activeMenu === indexMenu ? 'text-green-700' : ''">{{ translate(menu.label) }}</span>
             </span>
           </li>
         </ul>
       </div>
+      <!-- The bottom part of the sidebar -->
       <div class="tchoozy-corner-bottom-left-bakground-mask-image h-2/4	w-full absolute bottom-0 bg-main-500"></div>
     </aside>
 
+    <!-- The main content area of the application -->
     <div class="px-6 sm:ml-40" v-if="activeMenu != null">
+      <!-- The title of the active menu -->
       <h1 class="text-2xl pl-1 font-semibold text-green-700 mb-3">
+        <!-- The icon of the active menu -->
         <span class="material-icons-outlined scale-150 text-green-700 me-2">
           {{ this.aMenu.icon }}
         </span>
+        <!-- The label of the active menu -->
         {{ translate(this.aMenu.label) }}
       </h1>
 
+      <!-- The list of sections in the active menu, dynamically generated from the `subMenus` data property -->
       <div id="accordion-collapse" v-for="(section, indexSection) in subMenus[activeMenu]"
            v-if="subMenus[activeMenu][indexSection].type !== 'Tile'"
            class="flex flex-col justify-between w-full p-5 font-medium rtl:text-right text-black border border-gray-200 rounded-[15px] bg-white mb-3 gap-3 shadow"
            data-accordion-target="#accordion-collapse-body-1" aria-expanded="true"
            aria-controls="accordion-collapse-body-1">
 
+        <!-- The header of the section -->
         <div @click="handleSubMenu(indexSection)" class="flex items-center justify-between cursor-pointer">
+          <!-- The title of the section -->
           <div class="flex">
             <h1 id="accordion-collapse-heading-1" class="user-select-none flex flex-row justify-between">
+              <!-- The label of the section -->
               <span :id="'Subtile'+indexSection" class="text-2xl user-select-none">{{
                   translate(subMenus[activeMenu][indexSection].label)
                 }}</span>
             </h1>
+            <!-- The notification icon of the section -->
             <div v-if="subMenus[activeMenu][indexSection].notify === 1 ">
               <div v-if="$data.notifRemain > -1"
                    class="inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-2 -end-2 ">
@@ -56,94 +76,25 @@
               </div>
             </div>
           </div>
+          <!-- The expand icon of the section wich rotate-->
           <span class="material-icons-outlined scale-150 user-select-none" :id="'SubtitleArrow'+indexSection"
                 name="SubtitleArrows"
-                :class="subMenuOpen == indexSection ? 'rotate-180' : ''">expand_more</span>
+                :class="subMenuOpen === indexSection ? 'rotate-180' : ''">expand_more</span>
         </div>
 
+        <!-- The content of the section -->
+        <div name="SubMenuContent" class="flex flex-col" v-show="subMenuOpen === indexSection">
+          <div v-for="(option,indexOption) in subMenus[activeMenu][indexSection].options" :class="[{'flex-wrap w-full sm:w-1/2 md:w-1/2 lg:w-1/2' : option.type === 'mail-config'}]">
 
-        <div name="SubMenuContent" class="flex flex-col" v-show="subMenuOpen == indexSection">
-
-          <div v-for="(option,indexOption) in subMenus[activeMenu][indexSection].options">
-            <div class="flex flex-col" v-if="(option.type_field === 'Title') && (option.published === true)">
+            <!-- the title elements -->
+            <div class="flex flex-col" v-if="(option.type_field === 'Title') && (option.published === true) && (displayEmail)">
               <h2 v-if="option.published === true">{{ translate(option.label) }}</h2>
               <hr>
             </div>
 
-            <div v-if="(option.type_field === 'toggle')&&(option.published === true)"
-                 class="inline-flex items-center cursor-pointer">
-              <label v-if="option.name === 'mailonline'">
-                <input id="toggleMailGeneral" type="checkbox" class="sr-only peer"  @click="toggleButton(option)">
-                <div
-                    class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
-
-              </label>
-              <span v-if="option.name === 'mailonline'">{{
-                  option.label_right
-                }}</span>
-              <label
-                  v-if="(option.name !== 'mailonline')&&(displayEmail !== 0) && (subMenus[activeMenu].name='manage_server_mail')">
-                <input id="toogleCustomServer" :value="option.value" type="checkbox" class="sr-only peer"
-                       v-model="option.value" @click="toggleButton(option)">
-                <div
-                    class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
-
-              </label>
-              <span v-if="(option.name !== 'mailonline')&&(displayEmail !== 0) && (subMenus[activeMenu].name='manage_server_mail')">{{ option.label_right }}</span>
-            </div>
-
-            <div v-if="(option.name === 'mailonline')&&(displayEmail === 0) && (subMenus[activeMenu].name='manage_server_mail')"
-                 class="bg-orange-300 rounded flex items-center pb-2">
-              <span class="material-icons-outlined scale-150 ml-2 mt-2">warning</span>
-              <p class="ml-2 mt-2">{{ translate(subMenus[activeMenu][indexSection].warning) }}</p>
-            </div>
-
-
-            <div
-                v-else-if="(option.type ==='subSection') && (option.published === true) && (displayEmail !== 0) && (subMenus[activeMenu].name='manage_server_mail')"
-                name="ComponentsubSections"
-                :id="'ComponentsubSection-'+indexOption" style=" ">
-              <div @click="handleSubSection(activeMenu,indexSection,indexOption)" class="pb-3 cursor-pointer">
-                <span :id="'SubSectionTile'+indexOption" class="em-font-size-16">{{ translate(option.label) }}</span>
-                <i class="material-icons-outlined scale-150" :id="'SubSectionArrow'+indexOption" name="SubSectionArrows"
-                   style="transform-origin: unset">expand_more</i>
-                <div v-if="$data.notifCheck[indexOption]===true && subMenus[activeMenu][indexSection].notify === 1"
-                     class="inline-flex w-6 h-6 bg-red-500 border-2 border-white rounded-full -top-2 -end-2 ">
-                </div>
-              </div>
-
-              <div :key="reloadTheSubSection  " :id="'SubSection-'+indexOption" name="SubSectionContent"
-                   v-show=" showTheSubSection(indexSection,indexOption) "
-                   class="flex flex-col bg-gray-200 rounded subSection">
-
-                <div v-if="option.helptext !== '' "
-                     class="bg-blue-300 rounded flex  flex-col items-center pb-2">
-                  <span class="material-icons-outlined scale-150 ml-2 mt-2">info</span>
-                  <p class="ml-2 mt-2">{{ translate(option.helptext) }}</p>
-                </div>
-
-
-                <div v-for="(element, indexElement) in option.elements">
-                  <div :class="[{'flex flex-col flex-wrap items-start' : element.type === 'mail-config'},{'flex flex-col':element.type===undefined ||element.type !== 'mail-config' }, {  'bg-green-400/50 rounded' : CustomParam && element.value === 'custom' } , {  'bg-green-400/50 rounded' : !CustomParam && element.value === 'default' }  ]" v-if="element.type_field === 'component'">
-                    <component
-                        :is="element.component"
-                        v-bind="element.props"
-                        @NeedNotify="value => countNotif(value, indexOption)"
-                        :key="keySubContent"
-                        :customValue="CustomParam"
-                        :showValueMail="displayEmail ? 1 : 0"
-                        @stateOfConfig="getStateConf"
-                        class="w-full sm:w-1/2 md:w-1/2 lg:w-1/2"
-                    ></component>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-
-
+            <!-- The button elements -->
             <div class="flex flex-col"
-                 v-if="(option.type_field === 'Button') && (option.published === true) && (displayEmail !== 0) && (subMenus[activeMenu].name='manage_server_mail')">
+                 v-if="(option.type_field === 'Button') && (option.published === true) && (displayEmail !== 0)">
               <button type="button" class="bg-green-600 p-2 border border-gray-200 rounded">
                 <i class="material-icons-outlined scale-150 mr-2" :id="'IconButton-'+indexOption" name="IconsButton"
                    style="color: white">{{ option.icon }}</i>
@@ -151,6 +102,7 @@
               </button>
             </div>
 
+            <!-- The input elements -->
             <div class="flex flex-col"
                  v-if="(option.type_field === 'Input') && (option.published === true) &&(displayEmail !== 0) && (subMenus[activeMenu].name='manage_server_mail')">
               <input :placeholder="option.placeholder"
@@ -158,6 +110,7 @@
                      v-model="option.value">
             </div>
 
+            <!-- The dropdown elements -->
             <div class="flex flex-col"
                  v-if="(option.type_field === 'dropdown') && (option.published === true)  && (displayEmail !== 0) && (subMenus[activeMenu].name='manage_server_mail')">
               <select>
@@ -165,6 +118,7 @@
               </select>
             </div>
 
+            <!-- The sqldropdown elements -->
             <div class="flex flex-col"
                  v-if="(option.type_field === 'sqldropdown') && (option.published === true)&& (displayEmail !== 0) && (subMenus[activeMenu].name='manage_server_mail')">
               <div v-if="option.name === 'offset'">
@@ -189,6 +143,7 @@
               </div>
             </div>
 
+            <!-- The yesno elements -->
             <div class="flex flex-col"
                  v-if="(option.type_field === 'yesno') && (option.published === true)&&(displayEmail !== 0) && (subMenus[activeMenu].name='manage_server_mail')">
               <div class="flex-row flex items-center">
@@ -202,36 +157,118 @@
               </div>
             </div>
 
+            <!-- the checkox elements -->
             <div class="flex flex-col"
                  v-if="(option.type_field === 'checkbox')&& (option.published === true) && (displayEmail !== 0) && (subMenus[activeMenu].name='manage_server_mail')">
-              <div class="flex items-center " v-for="(x,choice) in option.choices">
-                <input type="checkbox" :id="'myCheck'+ choice" :value="x.value">
-                <label class="mt-2.5 ml-1">{{ translate(x.label) }}</label>
+              <div class="flex items-center " v-for="(aChoice,indexChoice) in option.choices">
+                <input type="checkbox" :id="'myCheck'+ indexChoice" :value="aChoice.value">
+                <label class="mt-2.5 ml-1">{{ translate(aChoice.label) }}</label>
               </div>
             </div>
 
+            <!-- The textarea elements -->
             <div class="flex flex-col"
                  v-if="(option.type_field === 'textarea')&& (option.published === true)&& (displayEmail !== 0) && (subMenus[activeMenu].name='manage_server_mail')">
               <editor-quill :height="'30em'" :text="''" :enable_variables="false" :id="'editor'" :key="0"
                             v-model="form.content"></editor-quill>
             </div>
 
+            <!-- The toggle elements -->
+            <div v-if="(option.type_field === 'toggle')&&(option.published === true)" class="inline-flex items-center cursor-pointer">
+              <label v-if="option.name === 'mailonline'">
+                <input id="toggleMailGeneral" type="checkbox" class="sr-only peer"  @click="toggleButton(option)">
+                <div
+                    class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600">
+                </div>
+              </label>
+              <span v-if="option.name === 'mailonline'">{{translate(option.label_right) }}</span>
+
+              <label
+                  v-if="(option.name !== 'mailonline')&&(displayEmail !== 0)">
+                <input id="toogleCustomServer" :value="option.value" type="checkbox" class="sr-only peer"
+                       v-model="option.value" @click="toggleButton(option)">
+                <div
+                    class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600">
+                </div>
+              </label>
+              <span v-if="(option.name !== 'mailonline')&&(displayEmail !== 0)">{{translate(option.label_right) }}</span>
+            </div>
+
+            <!-- The warning message -->
+            <div v-if="(option.name === 'mailonline')&&(displayEmail === 0) && (subMenus[activeMenu].name='manage_server_mail')"
+                 class="bg-orange-300 rounded flex items-center pb-2">
+              <span class="material-icons-outlined scale-150 ml-2 mt-2">warning</span>
+              <p class="ml-2 mt-2">{{ translate(subMenus[activeMenu][indexSection].warning) }}</p>
+            </div>
+
+            <!-- The info message -->
+            <div v-if="(displayEmail === 1)&& (option.type_field === 'info')"
+                 class="bg-blue-300 rounded flex items-center pb-2">
+              <span class="material-icons-outlined scale-150 ml-2 mt-2">info</span>
+              <p class="ml-2 mt-2">{{ translate(option.label) }}</p>
+            </div>
+
+            <!-- SubSection elements -->
+            <div
+                v-if="(option.type ==='subSection') && (option.published === true) "
+                name="ComponentsubSections"
+                :id="'ComponentsubSection-'+indexOption" style=" ">
+              <div @click="handleSubSection(activeMenu,indexSection,indexOption)" class="pb-3 cursor-pointer">
+                <span :id="'SubSectionTile'+indexOption" class="em-font-size-16">{{ translate(option.label) }}</span>
+                <i class="material-icons-outlined scale-150" :id="'SubSectionArrow'+indexOption" name="SubSectionArrows"
+                   style="transform-origin: unset">expand_more</i>
+                <div v-if="$data.notifCheck[indexOption]===true && subMenus[activeMenu][indexSection].notify === 1"
+                     class="inline-flex w-6 h-6 bg-red-500 border-2 border-white rounded-full -top-2 -end-2 ">
+                </div>
+              </div>
+
+              <div :key="reloadTheSubSection  " :id="'SubSection-'+indexOption" name="SubSectionContent"
+                   v-show=" showTheSubSection(indexSection,indexOption) "
+                   class="flex flex-col bg-gray-200 rounded subSection">
+
+                <div v-if="option.helptext !== '' "
+                     class="bg-blue-300 rounded flex  flex-col items-center pb-2">
+                  <span class="material-icons-outlined scale-150 ml-2 mt-2">info</span>
+                  <p class="ml-2 mt-2">{{ translate(option.helptext) }}</p>
+                </div>
+
+
+                <div v-for="(element, indexElement) in option.elements">
+                  <div v-if="element.type_field === 'component'">
+                    <component
+                        :is="element.component"
+                        v-bind="element.props"
+                        @NeedNotify="value => countNotif(value, indexOption)"
+                        :key="keySubContent"
+                    ></component>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- The component elements -->
             <div class="flex flex-col"
                  v-if="(option.type_field === 'component')&& (option.published === true) &&(displayEmail !== 0) && (subMenus[activeMenu].name='manage_server_mail')">
-              <component :is="option.component" :key="ComponantReload" v-bind="option.props"></component>
+              <component :is="option.component" :key="ComponantReload" v-bind="option.props" :customValue="CustomParam"
+                         :showValueMail="displayEmail ? 1 : 0"
+                         @stateOfConfig="getStateConf"
+                          :class="[{  'bg-green-400/50 rounded' : CustomParam && option.value === 'custom' } , {  'bg-green-400/50 rounded' : !CustomParam && option.value === 'default' }]">
+              </component>
             </div>
 
           </div>
         </div>
       </div>
 
+      <!-- The tile elements -->
       <div class="flex flex-row flex-wrap">
-        <div v-for="tile in subMenus[activeMenu]" v-if="tile.type==='Tile'" class="flex flex-col flex-wrap mr-3"
+        <div v-for="tile in subMenus[activeMenu]" v-if="tile.type==='Tile' && tile.published === true" class="flex flex-col flex-wrap mr-3"
              :key="tile.id">
           <div
               :style="{'width': '20em', 'height':'14em' ,'margin-bottom':'2em', 'box-shadow':'rgba(255, 255, 255, 0.1) 0px 1px 1px 0px inset, rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px'}"
               class="flex bg-white justify-center items-center rounded" name="tilebutton">
-            <button type="button" @click="redirect(tile.link)"
+            <button type="button" @click="this.goTo(tile.link, false);"
                     class="rounded flex flex-col justify-center items-center">
               <div class="rounded" :style="{ 'background-color': tile.color, 'width': '16em', 'height':'10em' }">
                 <i class="material-icons-outlined mt-16 "
@@ -350,7 +387,7 @@ export default {
     this.loading = true;
     this.changeCSS();
     this.getParamFromjson();
-    this.getTimeZone();
+    //this.getTimeZone(); -- todo in next version
     this.loading = false;
   },
   mounted() {
@@ -361,11 +398,14 @@ export default {
     logActiveMenuSubMenus() {
       console.log(this.subMenus[this.activeMenu], "test");
     },
+
+    //visual method -------------
     changeCSS() {
       document.getElementById("header-b").style.display = "none";
       document.getElementById("g-navigation").style.display = "none";
     },
 
+    //get methode -------------
     getParamFromjson() {
       return new Promise((resolve) => {
         SettingParam.forEach(i => {
@@ -376,6 +416,7 @@ export default {
       });
 
     },
+
     getTimeZone() {
       return new Promise((resolve) => {
         axios({
@@ -388,8 +429,29 @@ export default {
 
         resolve(true);
       });
+      // todo handling of the select of offset
     },
-    // todo handling of the select of offset
+
+    getStateConf(value) {
+      this.configJoomla = value;
+      if (this.configJoomla['mailonline']) {
+        this.displayEmail = this.configJoomla['mailonline'].value;
+        document.getElementById("toggleMailGeneral").checked = this.displayEmail;
+        document.getElementById("toggleMailGeneral").value = this.displayEmail;
+      }
+    },
+
+    //direction automatic method -------------
+    backButton() {
+      window.history.back();
+    },
+    goTo(url, newTab) {
+      if (newTab) {
+        window.open(url, '_blank');
+      } else {
+        window.location.href = url;
+      }
+    },
     URLMenu() {
       const url = new URL(window.location.href);
       if (url.search) {
@@ -409,19 +471,19 @@ export default {
         this.handleMenu(0, this.menus[0]);
       }
     },
+
+    // search method -------------
     searchMenu(menu) {
       return this.menus.findIndex(value => value.name === menu);
     },
     searchSubMenu(menu, section) {
       return this.subMenus[menu].findIndex(value => value.name === section);
     },
+
+    // handle method -------------
     handleMenu(index, item) {
       this.toggleMenuButton(index, item);
       this.$data.ComponantReload++;
-    },
-    toggleMenuButton(index, item) {
-      this.aMenu = item;
-      this.activeMenu = index;
     },
     handleSubMenu(index) {
       if (this.subMenuOpen == index) {
@@ -430,24 +492,7 @@ export default {
         this.subMenuOpen = index;
       }
     },
-    countNotif(notif, index) {
-      if (notif === true) {
-        this.notifRemain += 1;
-        this.notifCheck[index] = true;
-      } else {
-        if (this.notifCheck[index] === true) {
-          this.notifRemain -= 1;
-          this.notifCheck[index] = false;
-        }
-      }
-      if (this.notifRemain === 0) {
-        this.notifRemain = -1;
-      }
-    },
-
-
     handleSubSection(indexMenu, indexSection, indexoption) {
-
       let indexOfArray = indexMenu + '-' + indexSection + '-' + indexoption;
       if (this.subSectionOpen[indexOfArray] === undefined || this.subSectionOpen[indexOfArray] === "0") {
         this.subSectionOpen[indexOfArray] = "1";
@@ -455,41 +500,12 @@ export default {
         this.subSectionOpen[indexOfArray] = "0";
       }
       this.reloadTheSubSection++;
-
-    },
-    showTheSubSection(indexSection, indexoption) {
-      let indexOfArray = this.activeMenu + '-' + indexSection + '-' + indexoption;
-      return this.subSectionOpen[indexOfArray] === "1";
     },
 
-
-    clickYN(param, index, indexOfOptions) {
-      param.value = indexOfOptions;
-      param.value = param.value ? 1 : 0;
-      this.YNButtons[index] = indexOfOptions;
-    },
-
-    backButton() {
-      window.history.back();
-    },
-
-    redirect(link) {
-      /*
-      [https://google.com] in the json link to the exterior
-      [link] in the json link from the base to the internal
-      emails -> localhost/emails
-       */
-      window.location.href = link;
-    },
-
-
-    getStateConf(value) {
-      this.configJoomla = value;
-      if (this.configJoomla['mailonline']) {
-        this.displayEmail = this.configJoomla['mailonline'].value;
-        document.getElementById("toggleMailGeneral").checked = this.displayEmail;
-        document.getElementById("toggleMailGeneral").value = this.displayEmail;
-      }
+    // toggle method -------------
+    toggleMenuButton(index, item) {
+      this.aMenu = item;
+      this.activeMenu = index;
     },
     toggleButton(element) {
       console.log(element, 'element');
@@ -506,13 +522,43 @@ export default {
         element.value = !element.value;
       }
     },
-    goTo(url, newTab) {
-      if (newTab) {
-        window.open(url, '_blank');
+
+    // show method -------------
+    showTheSubSection(indexSection, indexoption) {
+      let indexOfArray = this.activeMenu + '-' + indexSection + '-' + indexoption;
+      return this.subSectionOpen[indexOfArray] === "1";
+    },
+
+    // count method -------------
+    countNotif(notif, index) {
+      if (notif === true) {
+        this.notifRemain += 1;
+        this.notifCheck[index] = true;
       } else {
-        window.location.href = url;
+        if (this.notifCheck[index] === true) {
+          this.notifRemain -= 1;
+          this.notifCheck[index] = false;
+        }
+      }
+      if (this.notifRemain === 0) {
+        this.notifRemain = -1;
       }
     },
+
+
+    // click method -------------
+    clickYN(param, index, indexOfOptions) {
+      param.value = indexOfOptions;
+      param.value = param.value ? 1 : 0;
+      this.YNButtons[index] = indexOfOptions;
+    },
+
+
+    displayElement(element)
+    {
+      return element.published === true;
+    },
+
   },
   watch: {
     displayEmail: function (value) {
