@@ -95,7 +95,7 @@ echo <<<EOT
 }
 
 .tchooz-single-campaign #campaign * {
-    line-height: 160%;
+    line-height: 24px;
     color: var(--neutral-900);
     font-family: var(--em-applicant-font);
 }
