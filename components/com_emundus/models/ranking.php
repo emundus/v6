@@ -521,19 +521,24 @@ class EmundusModelRanking extends JModelList
                     ->select('ech.id')
                     ->from($this->db->quoteName('#__emundus_ranking_hierarchy', 'ech'))
                     ->where($this->db->quoteName('ech.profile_id') . ' = ' . $this->db->quote($profile_id));
-            } else {
+
+                $this->db->setQuery($query);
+                $hierarchy = $this->db->loadResult();
+            }
+
+            if (empty($hierarchy)) {
                 $query->clear()
                     ->select('ech.id')
                     ->from($this->db->quoteName('#__emundus_ranking_hierarchy', 'ech'))
                     ->leftJoin($this->db->quoteName('#__emundus_users', 'eu') . ' ON ' . $this->db->quoteName('eu.profile') . ' = ' . $this->db->quoteName('ech.profile_id'))
                     ->where($this->db->quoteName('eu.user_id') . ' = ' . $this->db->quote($user_id));
-            }
 
-            try {
-                $this->db->setQuery($query);
-                $hierarchy = $this->db->loadResult();
-            } catch (Exception $e) {
-                JLog::add('getUserHierarchy ' . $e->getMessage(), JLog::ERROR, 'com_emundus.ranking.php');
+                try {
+                    $this->db->setQuery($query);
+                    $hierarchy = $this->db->loadResult();
+                } catch (Exception $e) {
+                    JLog::add('getUserHierarchy ' . $e->getMessage(), JLog::ERROR, 'com_emundus.ranking.php');
+                }
             }
         }
 
