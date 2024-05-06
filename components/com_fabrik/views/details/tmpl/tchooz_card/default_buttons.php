@@ -23,3 +23,4 @@ if ($this->showPDF && !empty($this->pdfLink)) {
 if ($this->showPrint && !empty($this->printLink)) {
     echo $this->printLink;
 }
+?>
