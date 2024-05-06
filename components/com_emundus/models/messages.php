@@ -10,6 +10,9 @@
  */
 
 // No direct access
+use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
+
 defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
@@ -1432,9 +1435,14 @@ class EmundusModelMessages extends JModelList {
 	{
 		$deleted_messages = 0;
 
-		if (!(empty($date)))
+		if (!empty($date))
 		{
-			$db    = JFactory::getDbo();
+			if(version_compare(JVERSION, '4.0', '>=')) {
+				$db = Factory::getContainer()->get('DatabaseDriver');
+			} else {
+				$db = Factory::getDbo();
+			}
+
 			$query = $db->getQuery(true);
 
 			$query->delete($db->quoteName('#__messages'))
@@ -1448,7 +1456,7 @@ class EmundusModelMessages extends JModelList {
 			}
 			catch (Exception $e)
 			{
-				JLog::add('Could not delete messages from jos_messages table in model messages at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+				Log::add('Could not delete messages from jos_messages table in model messages at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 			}
 		}
 
@@ -1466,7 +1474,12 @@ class EmundusModelMessages extends JModelList {
 
 		if (!(empty($date)))
 		{
-			$db    = JFactory::getDbo();
+			if(version_compare(JVERSION, '4.0', '>=')) {
+				$db = Factory::getContainer()->get('DatabaseDriver');
+			} else {
+				$db = Factory::getDbo();
+			}
+
 			$query = $db->getQuery(true);
 
 			$query->select('*')
@@ -1480,12 +1493,12 @@ class EmundusModelMessages extends JModelList {
 			}
 			catch (Exception $e)
 			{
-				JLog::add('Could not fetch messages from jos_messages table in model messages at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+				Log::add('Could not fetch messages from jos_messages table in model messages at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 			}
 
 			if (!empty($messages))
 			{
-				$csv_filename = JPATH_SITE . '/tmp/messages_' . date('Y-m-d_H-i-s') . '.csv';
+				$csv_filename = JPATH_SITE . '/tmp/backup_messages_' . date('Y-m-d_H-i-s') . '.csv';
 				$csv_file     = fopen($csv_filename, 'w');
 				fputcsv($csv_file, array_keys($messages[0]));
 				foreach ($messages as $message)

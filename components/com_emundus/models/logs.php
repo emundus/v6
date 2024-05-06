@@ -9,6 +9,8 @@
  */
 
 // No direct access
+use Joomla\CMS\Log\Log;
+
 defined('_JEXEC') or die('Restricted access');
 
 require_once (JPATH_SITE.'/components/com_emundus/helpers/date.php');
@@ -537,23 +539,22 @@ class EmundusModelLogs extends JModelList {
 	{
 		$deleted_logs = 0;
 
-		if (!(empty($date)))
+		if (!empty($date))
 		{
-			$db    = JFactory::getDbo();
-			$query = $db->getQuery(true);
+			$query = $this->db->getQuery(true);
 
-			$query->delete($db->quoteName('#__emundus_logs'))
-				  ->where($db->quoteName('timestamp') . ' < ' . $db->quote($date->format('Y-m-d H:i:s')));
+			$query->delete($this->db->quoteName('#__emundus_logs'))
+				  ->where($this->db->quoteName('timestamp') . ' < ' . $this->db->quote($date->format('Y-m-d H:i:s')));
 
 			try
 			{
-				$db->setQuery($query);
-				$db->execute();
-				$deleted_logs = $db->getAffectedRows();
+				$this->db->setQuery($query);
+				$this->db->execute();
+				$deleted_logs = $this->db->getAffectedRows();
 			}
 			catch (Exception $e)
 			{
-				JLog::add('Could not delete logs from jos_emundus_logs table in model logs at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+				Log::add('Could not delete logs from jos_emundus_logs table in model logs at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 			}
 		}
 
@@ -569,28 +570,27 @@ class EmundusModelLogs extends JModelList {
 	{
 		$csv_filename = '';
 
-		if (!(empty($date)))
+		if (!empty($date))
 		{
-			$db    = JFactory::getDbo();
-			$query = $db->getQuery(true);
+			$query = $this->db->getQuery(true);
 
 			$query->select('*')
-				->from($db->quoteName('#__emundus_logs'))
-				->where($db->quoteName('timestamp') . ' < ' . $db->quote($date->format('Y-m-d H:i:s')));
+				->from($this->db->quoteName('#__emundus_logs'))
+				->where($this->db->quoteName('timestamp') . ' < ' . $this->db->quote($date->format('Y-m-d H:i:s')));
 
 			try
 			{
-				$db->setQuery($query);
-				$logs = $db->loadAssocList();
+				$this->db->setQuery($query);
+				$logs = $this->db->loadAssocList();
 			}
 			catch (Exception $e)
 			{
-				JLog::add('Could not fetch logs from jos_emundus_logs table in model logs at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+				Log::add('Could not fetch logs from jos_emundus_logs table in model logs at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 			}
 
 			if (!empty($logs))
 			{
-				$csv_filename = JPATH_SITE . '/tmp/logs_' . date('Y-m-d_H-i-s') . '.csv';
+				$csv_filename = JPATH_SITE . '/tmp/backup_logs_' . date('Y-m-d_H-i-s') . '.csv';
 				$csv_file     = fopen($csv_filename, 'w');
 				fputcsv($csv_file, array_keys($logs[0]));
 				foreach ($logs as $log)

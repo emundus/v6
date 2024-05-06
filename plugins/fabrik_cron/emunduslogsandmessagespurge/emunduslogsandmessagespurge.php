@@ -95,7 +95,7 @@ class PlgFabrik_Cronemunduslogsandmessagespurge extends PlgFabrik_Cron{
 
 		if ($export)
 		{
-			$zip_filename = JPATH_SITE . '/tmp/logs_and_messages_' . date('Y-m-d_H-i-s') . '.zip';
+			$zip_filename = JPATH_SITE . '/tmp/backup_logs_and_messages_' . date('Y-m-d_H-i-s') . '.zip';
 			$zip          = new ZipArchive();
 			if ($zip->open($zip_filename, ZipArchive::CREATE) === true)
 			{
@@ -112,7 +112,8 @@ class PlgFabrik_Cronemunduslogsandmessagespurge extends PlgFabrik_Cron{
 		$logs     = $m_logs->deleteLogsBeforeADate($now);
 		$messages = $m_messages->deleteMessagesBeforeADate($now);
 
+		//TODO: Clean tmp files older than xx days/months/years via parameter except files named `backup_XXX.zip`
+
 		return $logs + $messages;
 	}
-
 }

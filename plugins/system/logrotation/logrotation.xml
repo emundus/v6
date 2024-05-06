@@ -38,7 +38,7 @@
 						label="PLG_SYSTEM_LOGROTATION_LOGSTOKEEP_LABEL"
 						description="PLG_SYSTEM_LOGROTATION_LOGSTOKEEP_DESC"
 						first="1"
-						last="30"
+						last="10"
 						step="1"
 						default="1"
 						filter="int"

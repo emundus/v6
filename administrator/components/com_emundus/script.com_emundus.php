@@ -4257,13 +4257,30 @@ if(in_array($applicant,$exceptions)){
 				EmundusHelperUpdate::insertTranslationsTag('COM_USERS_LOGIN_EMAIL_PLACEHOLDER','example@domain.com', 'override', null, null, null, 'en-GB');
 
 				EmundusHelperUpdate::addColumn('jos_emundus_widgets_repeat_access', 'access_level', 'INT', 11);
-
+				
 				$query->clear()
-					->update('#__extensions')
-					->set($db->quoteName('params') . ' = JSON_SET(' . $db->quoteName('params') . ', ' . $db->quote('$.cachetimeout') . ', 1, ' . $db->quote('$.logstokeep') . ', 30)')
-					->where($db->quoteName('name') . ' = ' . $db->quote('plg_system_logrotation'));
+					->select('extension_id,params')
+					->from($db->quoteName('#__extensions'))
+					->where($db->quoteName('name') . ' LIKE ' . $db->quote('plg_system_logrotation'));
 				$db->setQuery($query);
-				$db->execute();
+				$logrotation = $db->loadObject();
+
+				if(!empty($logrotation->extension_id))
+				{
+					$params = json_decode($logrotation->params, true);
+
+					$params['cachetimeout'] = 7;
+					$params['logstokeep'] = 4;
+
+					$query->clear()
+						->update($db->quoteName('#__extensions'))
+						->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+						->where($db->quoteName('extension_id') . ' = ' . $logrotation->extension_id);
+					$db->setQuery($query);
+					$db->execute();
+				}
+
+				//TODO: Install cron plugin by default with export zip param enabled and 1 year (check installExtension)
 			}
 		}
 
