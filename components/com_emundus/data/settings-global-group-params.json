@@ -98,7 +98,7 @@
         "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_ANALATICS",
         "name": "analytics",
         "type": "section",
-        "helptext": "cela permet de collectez des données à partir de cette application afin de créer des rapports qui fournissent des insights sur votre activité.",
+        "helptext": "COM_EMUNDUS_GLOBAL_PARMAS_ANALATICS_HELPTEXT",
         "options": [
           {
             "published": false,
@@ -129,7 +129,7 @@
         "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_MANAG_SERVER_MAIL",
         "name": "manage_server_mail",
         "type": "section",
-        "helptext": "cela permet de pouvoir envoyer des mails au candidats par exemple pour les informer de l'avancement de leur dossier.",
+        "helptext": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_EMAIL_HELPTEXT",
         "warning": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_MAIL_WARNING",
         "options": [
           {
@@ -138,21 +138,21 @@
             "label": "activer l'envoie de mail",
             "settings": "joomla",
             "param": "mailonline",
-            "label_right": "activer la fonction d'envoie de mail",
+            "label_right": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_MAIL_TOGGLE_MAILONLINE",
             "type_field": "toggle",
             "value": 1
           },
           {
             "published": true,
             "name": "custom_config_mail",
-            "label_right": "configuration personnaliser",
+            "label_right": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_MAIL_TOGGLE_CUSTOM_CONFIG",
             "type_field": "toggle",
             "value": 1
           },
           {
             "published": true,
             "name": "config_server_mail",
-            "label": "Configuration des information de connexion",
+            "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_MAIL_SUBSECTION_EMAIL_ADRESS",
             "type": "subSection",
             "helptext": "",
             "placeholder": "",
@@ -180,9 +180,9 @@
           {
             "published": true,
             "name": "config_server_mail",
-            "label": "Configuration du serveur de mail (SMTP)",
+            "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_MAIL_SUBSECTION_SERVER_EMAIL_CONF",
             "type": "subSection",
-            "helptext": "conseil pour la configuration du serveur de mail",
+            "helptext": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_MAIL_SUBSECTION_SERVER_EMAIL_CONF_ADVICE",
             "placeholder": "",
             "elements": [
               {
