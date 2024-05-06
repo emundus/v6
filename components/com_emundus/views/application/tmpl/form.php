@@ -69,7 +69,7 @@ if (count($languages) > 1) {
             </div>
         <?php endif; ?>
         <div id="application-form-container" class="relative flex flex-row">
-            <div id="application-form-container-content">
+            <div id="application-form-container-content" class="w-full">
                 <?php if (!EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id) && $this->header == 1) : ?>
                     <div class="em-flex-row em-mt-16">
                         <div class="em-flex-row em-small-flex-column em-small-align-items-start">
@@ -140,10 +140,10 @@ if (count($languages) > 1) {
                 <aside id="aside-comment-section" class="fixed right-0 em-white-bg shadow ease-out closed">
                     <!-- Comments -->
                     <div class="flex flex-row relative">
-                        <span class="open-comment material-icons-outlined cursor-pointer absolute top-4 em-bg-main-500 rounded-l-lg em-text-neutral-300" onclick="openCommentAside()">
+                        <span class="open-comment material-icons-outlined cursor-pointer absolute top-14 em-bg-main-500 rounded-l-lg em-text-neutral-300" onclick="openCommentAside()">
                             comment
                         </span>
-                        <span class="close-comment material-icons-outlined cursor-pointer absolute top-4 em-bg-main-500 rounded-l-lg em-text-neutral-300" onclick="openCommentAside()">
+                        <span class="close-comment material-icons-outlined cursor-pointer absolute top-14 em-bg-main-500 rounded-l-lg em-text-neutral-300" onclick="openCommentAside()">
                             close
                         </span>
                         <div id="em-component-vue"
@@ -194,12 +194,23 @@ if (count($languages) > 1) {
             aside.classList.toggle('closed');
         }
     }
+
+    function openModalAddComment()
+    {
+
+    }
+
+    document.addEventListener('click', function (e) {
+        if (e.target.classList.contains('comment-icon')) {
+            openModalAddComment(e.target);
+        }
+    });
 </script>
 
 <style>
     #aside-comment-section {
-        top: 162px;
-        height: calc(100vh - 162px);
+        top: 114px;
+        height: calc(100vh - 114px);
         transition: all .3s;
 
         .close-comment, .open-comment {
@@ -211,7 +222,6 @@ if (count($languages) > 1) {
         .open-comment {
             display: none;
         }
-
         .close-comment {
             display: block;
         }
@@ -222,7 +232,6 @@ if (count($languages) > 1) {
             .open-comment {
                 display: block;
             }
-
             .close-comment {
                 display: none;
             }
