@@ -159,7 +159,7 @@
             "type": "mail-config",
             "value": "custom",
             "type_field": "component",
-            "component": "EditSettingJoomla",
+            "component": "EditEmailJoomla",
             "props": {
               "type": "mail-BASE-custom"
             }
@@ -169,7 +169,7 @@
             "type": "mail-config",
             "value": "default",
             "type_field": "component",
-            "component": "EditSettingJoomla",
+            "component": "EditEmailJoomla",
             "props": {
               "type": "mail-BASE-default"
             }
@@ -184,7 +184,7 @@
             "type": "mail-config",
             "value": "custom",
             "type_field": "component",
-            "component": "EditSettingJoomla",
+            "component": "EditEmailJoomla",
             "props": {
               "type": "mail-SERVER-custom"
             }
@@ -194,7 +194,7 @@
             "type": "mail-config",
             "value": "default",
             "type_field": "component",
-            "component": "EditSettingJoomla",
+            "component": "EditEmailJoomla",
             "props": {
               "type": "mail-SERVER-default"
             }
@@ -210,6 +210,7 @@
             "name": "Test_mail_BT",
             "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_MAIL_TEST_BT",
             "type_field": "Button",
+            "action": "sweetAlert",
             "icon": "send"
           }
         ]

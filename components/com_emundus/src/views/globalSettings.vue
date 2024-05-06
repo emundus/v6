@@ -95,7 +95,7 @@
             <!-- The button elements -->
             <div class="flex flex-col"
                  v-if="(option.type_field === 'Button') && (option.published === true) && (displayEmail !== 0)">
-              <button type="button" class="bg-green-600 p-2 border border-gray-200 rounded">
+              <button type="button" class="bg-green-600 p-2 border border-gray-200 rounded" @click="handleClickButton(option)">
                 <i class="material-icons-outlined scale-150 mr-2" :id="'IconButton-'+indexOption" name="IconsButton"
                    style="color: white">{{ option.icon }}</i>
                 <span style="color: white">{{ translate(option.label) }}</span>
@@ -300,6 +300,8 @@ import AttachmentStorage from '../components/Settings/AttachmentStorage/Attachme
 
 import SettingParam from '../../data/settings-global-group-params.json';
 import EditSettingJoomla from "@/components/Settings/FilesTool/EditSettingJoomla.vue";
+import EditEmailJoomla from "@/components/Settings/FilesTool/EditEmailJoomla.vue";
+
 import Global from "@/components/Settings/Style/General.vue";
 import EditTheme from "@/components/Settings/Style/EditTheme.vue";
 import EditFooter from "@/components/Settings/Content/EditFooter.vue";
@@ -311,12 +313,14 @@ import axios from "axios"
 import GlobalLang from "@/components/Settings/TranslationTool/Global.vue";
 
 import Multiselect from 'vue-multiselect';
+import Swal from "sweetalert2";
 
 
 export default {
   name: "globalSettings",
   components: {
     EditSettingJoomla,
+    EditEmailJoomla,
     EditorQuill,
     EditArticle,
     Orphelins,
@@ -551,6 +555,16 @@ export default {
       param.value = indexOfOptions;
       param.value = param.value ? 1 : 0;
       this.YNButtons[index] = indexOfOptions;
+    },
+
+    handleClickButton(element){
+      if(element.action === "sweetAlert"){
+        Swal.fire({
+          title: "test principale",
+          text: "text ",
+        });
+      }
+
     },
 
 
