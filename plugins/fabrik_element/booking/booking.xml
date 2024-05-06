@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension group="fabrik_element" method="upgrade" type="plugin" version="3">
+	<name>plg_fabrik_element_booking</name>
+	<author>eMundus</author>
+	<creationDate>May 2024</creationDate>
+	<copyright>Copyright (C) 2005-2024 Media A-Team, Inc. - All rights reserved.</copyright>
+	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+	<authorEmail>dev@emundus.io</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>3.10</version>
+	<help url="PLG_ELEMENT_BOOKING_HELP_SERVER"/>
+	<description>PLG_ELEMENT_BOOKING_DESCRIPTION</description>
+	<files>
+		<filename plugin="booking">booking.php</filename>
+		<filename>booking.js</filename>
+		<filename>booking-min.js</filename>
+		<filename>index.html</filename>
+		<folder>forms</folder>
+		<folder>language</folder>
+		<folder>layouts</folder>
+	</files>
+
+</extension>
