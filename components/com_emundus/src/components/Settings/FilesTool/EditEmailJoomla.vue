@@ -153,7 +153,6 @@ export default {
   mounted() {
     this.$parent.$on('changeMailOnline', this.handleSignalParent);
     this.getEmundusParams();
-    console.log(this.params , 'params');
   },
 
   methods: {
