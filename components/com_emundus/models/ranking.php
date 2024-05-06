@@ -925,6 +925,9 @@ class EmundusModelRanking extends JModelList
                 if ($old_rank == $new_rank) {
                     $updated = true;
                 } else {
+                    // different people can rank same files, so we dont get them by user but by their accessibility, hierarchy and package
+                    $ids_user_can_rank = $this->getAllFilesRankerCanAccessTo($user_id, $hierarchy_id, $package_id);
+
                     // if the new rank is -1, we need to decrease all ranks above the old rank by 1, unless they are locked
                     if ($new_rank != -1) {
                         // does the rank i want to reach already taken by another file and locked ?
@@ -934,7 +937,7 @@ class EmundusModelRanking extends JModelList
                             ->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'cc') . ' ON ' . $this->db->quoteName('cc.id') . ' = ' . $this->db->quoteName('er.ccid'))
                             ->where($this->db->quoteName('er.rank') . ' = ' . $this->db->quote($new_rank))
                             ->andWhere($this->db->quoteName('er.hierarchy_id') . ' = ' . $this->db->quote($hierarchy_id))
-                            ->andWhere($this->db->quoteName('er.user_id') . ' = ' . $this->db->quote($user_id));
+                            ->andWhere($this->db->quoteName('er.ccid') . ' IN (' . implode(',', $ids_user_can_rank) . ')');
 
                         if (!empty($package_id)) {
                             $query->andWhere($this->db->quoteName('package') . ' = ' . $this->db->quote($package_id));
@@ -948,9 +951,9 @@ class EmundusModelRanking extends JModelList
                         }
 
                         if (!empty($ranking) && !empty($ranking['id'])) {
-                            $max_rank = $this->getMaxRankAvailable($hierarchy_id, $user_id, $ranking['id']);
+                            $max_rank = $this->getMaxRankAvailable($hierarchy_id, $user_id, $ranking['id'], $package_id);
                         } else {
-                            $max_rank = $this->getMaxRankAvailable($hierarchy_id, $user_id);
+                            $max_rank = $this->getMaxRankAvailable($hierarchy_id, $user_id, null, $package_id);
                         }
 
                         if ($new_rank > $max_rank) {
@@ -966,7 +969,7 @@ class EmundusModelRanking extends JModelList
                             ->select($this->db->quoteName('er.rank') . ', ' . $this->db->quoteName('er.id') . ', ' . $this->db->quoteName('er.locked') . ', ' . $this->db->quoteName('cc.status'))
                             ->from($this->db->quoteName('#__emundus_ranking', 'er'))
                             ->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'cc') . ' ON ' . $this->db->quoteName('cc.id') . ' = ' . $this->db->quoteName('er.ccid'))
-                            ->where($this->db->quoteName('er.user_id') . ' = ' . $this->db->quote($user_id))
+                            ->where($this->db->quoteName('er.ccid') . ' IN (' . implode(',', $ids_user_can_rank) . ')')
                             ->andWhere($this->db->quoteName('er.hierarchy_id') . ' = ' . $this->db->quote($hierarchy_id))
                             ->andWhere($this->db->quoteName('er.rank') . ' > ' . $this->db->quote($ranking['rank']))
                             ->order($this->db->quoteName('er.rank') . ' ASC');
@@ -1036,7 +1039,7 @@ class EmundusModelRanking extends JModelList
                             ->select($this->db->quoteName('er.rank') . ', ' . $this->db->quoteName('er.id') . ', ' . $this->db->quoteName('er.locked') . ', ' . $this->db->quoteName('cc.status'))
                             ->from($this->db->quoteName('#__emundus_ranking', 'er'))
                             ->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'cc') . ' ON ' . $this->db->quoteName('cc.id') . ' = ' . $this->db->quoteName('er.ccid'))
-                            ->where($this->db->quoteName('er.user_id') . ' = ' . $this->db->quote($user_id))
+                            ->where($this->db->quoteName('er.ccid') . ' IN (' . implode(',', $ids_user_can_rank) . ')')
                             ->andWhere($this->db->quoteName('er.hierarchy_id') . ' = ' . $this->db->quote($hierarchy_id))
                             ->andWhere($this->db->quoteName('er.rank') . ' >= ' . $this->db->quote($new_rank))
                             ->andWhere($this->db->quoteName('er.rank') . ' < ' . $this->db->quote($old_rank))
@@ -1070,7 +1073,7 @@ class EmundusModelRanking extends JModelList
                             ->select($this->db->quoteName('er.rank') . ', ' . $this->db->quoteName('er.id') . ', ' . $this->db->quoteName('er.locked') . ', ' . $this->db->quoteName('cc.status'))
                             ->from($this->db->quoteName('#__emundus_ranking', 'er'))
                             ->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'cc') . ' ON ' . $this->db->quoteName('cc.id') . ' = ' . $this->db->quoteName('er.ccid'))
-                            ->where($this->db->quoteName('er.user_id') . ' = ' . $this->db->quote($user_id))
+                            ->where($this->db->quoteName('er.ccid') . ' IN (' . implode(',', $ids_user_can_rank) . ')')
                             ->andWhere($this->db->quoteName('er.hierarchy_id') . ' = ' . $this->db->quote($hierarchy_id))
                             ->andWhere($this->db->quoteName('er.rank') . ' > ' . $this->db->quote($old_rank))
                             ->andWhere($this->db->quoteName('er.rank') . ' <= ' . $this->db->quote($new_rank))
@@ -1104,6 +1107,7 @@ class EmundusModelRanking extends JModelList
                         $query->clear()
                             ->update($this->db->quoteName('#__emundus_ranking'))
                             ->set($this->db->quoteName('rank') . ' = ' . $this->db->quote($new_rank_for_row))
+                            ->set($this->db->quoteName('user_id') . ' = ' . $this->db->quote($user_id))
                             ->where($this->db->quoteName('id') . ' = ' . $this->db->quote($rank_row_id));
 
                         try {
@@ -1120,7 +1124,6 @@ class EmundusModelRanking extends JModelList
                     ->select('id')
                     ->from($this->db->quoteName('#__emundus_ranking'))
                     ->where($this->db->quoteName('ccid') . ' = ' . $this->db->quote($id))
-                    ->andWhere($this->db->quoteName('user_id') . ' = ' . $this->db->quote($user_id))
                     ->andWhere($this->db->quoteName('hierarchy_id') . ' = ' . $this->db->quote($hierarchy_id));
 
                 $this->db->setQuery($query);
@@ -1164,22 +1167,30 @@ class EmundusModelRanking extends JModelList
      * If current max rank is x, then return x+1 (unless max is -1, return 1)
      * @param $hierarchy_id
      * @param $user_id
+     * @param null $rank_row_id if we want to exclude a rank row from the calculation
+     * @param null $package_id if we want to filter by package
      * @return int
      */
-    public function getMaxRankAvailable($hierarchy_id, $user_id, $rank_row_id = null)
+    public function getMaxRankAvailable($hierarchy_id, $user_id, $rank_row_id = null, $package_id = null)
     {
         $max_value_reachable = 1;
 
         if (!empty($hierarchy_id) && !empty($user_id)) {
+            $rankable_ids = $this->getAllFilesRankerCanAccessTo($user_id, $hierarchy_id, $package_id);
+
             $query = $this->db->getQuery(true);
             $query->clear()
                 ->select('MAX(' . $this->db->quoteName('rank') . ') as max')
                 ->from($this->db->quoteName('#__emundus_ranking'))
                 ->where($this->db->quoteName('hierarchy_id') . ' = ' . $this->db->quote($hierarchy_id))
-                ->andWhere($this->db->quoteName('user_id') . ' = ' . $this->db->quote($user_id));
+                ->andWhere($this->db->quoteName('ccid') . ' IN (' . implode(',', $rankable_ids) . ')');
 
             if (!empty($rank_row_id)) {
                 $query->andWhere($this->db->quoteName('id') . ' != ' . $rank_row_id);
+            }
+
+            if (!empty($package_id)) {
+                $query->andWhere($this->db->quoteName('package') . ' = ' . $this->db->quote($package_id));
             }
 
             $this->db->setQuery($query);
