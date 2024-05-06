@@ -2144,6 +2144,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .-top-px {
   top: -1px;
 }
+.right-0 {
+  right: 0px;
+}
 .start-2 {
   inset-inline-start: var(--em-spacing-2);
 }
@@ -3384,6 +3387,10 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .rounded-lg {
   border-radius: 0.5rem;
+}
+.rounded-l-lg {
+  border-top-left-radius: 0.5rem;
+  border-bottom-left-radius: 0.5rem;
 }
 .border {
   border-width: 1px;

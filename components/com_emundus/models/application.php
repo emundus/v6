@@ -1526,8 +1526,8 @@ class EmundusModelApplication extends JModelList
 
                 $allowed_groups = EmundusHelperAccess::getUserFabrikGroups($this->_user->id);
                 $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_user->id);
-
                 $allowEmbed = $this->allowEmbed(JURI::base() . 'index.php?lang=en');
+                $can_comment = EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $fnum);
 
                 foreach ($tableuser as $key => $itemt) {
 
@@ -2148,12 +2148,22 @@ class EmundusModelApplication extends JModelList
                                                 $elt = $element->content;
                                             }
 
-                                            // modulo for strips css //
                                             if ($modulo % 2) {
-                                                $forms .= '<tr class="table-strip-1">' . (!empty(JText::_($element->label)) ? '<td style="padding-right:50px;"><b>' . JText::_($element->label) . '</b></td>' : '') . '<td> ' . ((!in_array($element->plugin,['field','textarea'])) ? JText::_($elt) : $elt) . '</td></tr>';
+                                                $class = "table-strip-1";
                                             } else {
-                                                $forms .= '<tr class="table-strip-2">' . (!empty(JText::_($element->label)) ? '<td style="padding-right:50px;"><b>' . JText::_($element->label) . '</b></td>' : '') . '<td> ' . ((!in_array($element->plugin,['field','textarea'])) ? JText::_($elt) : $elt) . '</td></tr>';
+                                                $class = "table-strip-2";
                                             }
+
+                                            $tds = !empty(JText::_($element->label)) ? '<td style="padding-right:50px;"><b>' . JText::_($element->label) . '</b></td>' : '';
+                                            $tds .= '<td class="flex flex-row justify-between w-full" style="width:100%;"><span>' . ((!in_array($element->plugin,['field','textarea'])) ? JText::_($elt) : $elt) . '</span>';
+
+                                            if ($can_comment) {
+                                                $tds .= '<span class="comment-icon material-icons-outlined cursor-pointer" data-target-type="element" data-target-id="' . $element->id . '">comment</span>';
+                                            }
+
+                                            $tds .= '</td>';
+                                            $forms .= '<tr class="' . $class . '">' . $tds . '</tr>';
+
                                             $modulo++;
                                             unset($params);
                                         }

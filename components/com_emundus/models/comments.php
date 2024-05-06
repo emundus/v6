@@ -82,9 +82,6 @@ class EmundusModelComments extends JModelLegacy
                     $new_comment_id = $this->db->insertid();
                 }
             } catch (Exception $e) {
-                var_dump($query->__toString());
-                var_dump($e->getMessage());exit;
-
                 JLog::add('Failed to add comment ' . $e->getMessage(), JLog::ERROR, 'com_emundus.comments');
             }
         }
