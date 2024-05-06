@@ -2434,6 +2434,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
   --tw-bg-opacity: 1;
   background-color: rgb(107 114 128 / var(--tw-bg-opacity));
 }
+.bg-green-400\/50 {
+  background-color: rgb(74 222 128 / 0.5);
+}
 .bg-green-600 {
   --tw-bg-opacity: 1;
   background-color: rgb(22 163 74 / var(--tw-bg-opacity));
@@ -3719,14 +3722,25 @@ small {
   .sm\:ml-40 {
     margin-left: 10rem;
   }
+  .sm\:w-1\/2 {
+    width: 50%;
+  }
   .sm\:translate-x-0 {
     --tw-translate-x: 0px;
     transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
   }
 }
+@media (min-width: 768px) {
+  .md\:w-1\/2 {
+    width: 50%;
+  }
+}
 @media (min-width: 1024px) {
   .lg\:mb-3 {
     margin-bottom: var(--em-spacing-3);
+  }
+  .lg\:w-1\/2 {
+    width: 50%;
   }
   .lg\:text-base {
     font-size: 1rem;

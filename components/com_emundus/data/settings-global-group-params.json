@@ -59,7 +59,7 @@
       },
       {
         "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_IMG_SITE",
-        "name": "site images",
+        "name": "site_images",
         "type": "section",
         "helptext": "",
         "options": [
@@ -73,7 +73,7 @@
       },
       {
         "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_THEME_SITE",
-        "name": "site theme",
+        "name": "site_theme",
         "type": "section",
         "helptext": "",
         "options": [
@@ -98,7 +98,7 @@
         "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_ANALATICS",
         "name": "analytics",
         "type": "section",
-        "helptext": "",
+        "helptext": "cela permet de collectez des données à partir de cette application afin de créer des rapports qui fournissent des insights sur votre activité.",
         "options": [
           {
             "published": false,
@@ -129,7 +129,7 @@
         "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_MANAG_SERVER_MAIL",
         "name": "manage_server_mail",
         "type": "section",
-        "helptext": "cela permet de pouvoir envoyer des mails au candidats",
+        "helptext": "cela permet de pouvoir envoyer des mails au candidats par exemple pour les informer de l'avancement de leur dossier.",
         "warning": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_MAIL_WARNING",
         "options": [
           {
@@ -158,10 +158,21 @@
             "placeholder": "",
             "elements": [
               {
+                "type": "mail-config",
+                "value": "custom",
                 "type_field": "component",
                 "component": "EditSettingJoomla",
                 "props": {
-                  "type": "mail-BASE"
+                  "type": "mail-BASE-custom"
+                }
+              },
+              {
+                "type": "mail-config",
+                "value": "default",
+                "type_field": "component",
+                "component": "EditSettingJoomla",
+                "props": {
+                  "type": "mail-BASE-default"
                 }
               }
             ]
@@ -171,16 +182,27 @@
             "name": "config_server_mail",
             "label": "Configuration du serveur de mail (SMTP)",
             "type": "subSection",
-            "helptext": "",
+            "helptext": "conseil pour la configuration du serveur de mail",
             "placeholder": "",
             "elements": [
               {
+                "type": "mail-config",
+                "value": "custom",
                 "type_field": "component",
                 "component": "EditSettingJoomla",
                 "props": {
-                  "type": "mail-SERVERCUSTOM"
+                  "type": "mail-SERVER-custom"
                 }
-              }
+              },
+                {
+                  "type": "mail-config",
+                  "value": "default",
+                  "type_field": "component",
+                  "component": "EditSettingJoomla",
+                  "props": {
+                    "type": "mail-SERVER-default"
+                  }
+                }
             ]
           },
           {

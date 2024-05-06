@@ -63,11 +63,7 @@
 
 
         <div name="SubMenuContent" class="flex flex-col" v-show="subMenuOpen == indexSection">
-          <div v-if="subMenus[activeMenu][indexSection].helptext !== '' "
-               class="bg-blue-300 rounded flex items-center pb-2">
-            <span class="material-icons-outlined scale-150 ml-2 mt-2">info</span>
-            <p class="ml-2 mt-2">{{ translate(subMenus[activeMenu][indexSection].helptext) }}</p>
-          </div>
+
           <div v-for="(option,indexOption) in subMenus[activeMenu][indexSection].options">
             <div class="flex flex-col" v-if="(option.type_field === 'Title') && (option.published === true)">
               <h2 v-if="option.published === true">{{ translate(option.label) }}</h2>
@@ -119,15 +115,29 @@
               <div :key="reloadTheSubSection  " :id="'SubSection-'+indexOption" name="SubSectionContent"
                    v-show=" showTheSubSection(indexSection,indexOption) "
                    class="flex flex-col bg-gray-200 rounded subSection">
-                <div v-for="(element,indexElement) in option.elements">
-                  <div class="flex flex-col" v-if="element.type_field === 'component'">
-                    <component :is="element.component" v-bind="element.props"
-                               @NeedNotify="value =>countNotif(value,indexOption)" :key="keySubContent"
-                               :customValue="CustomParam" :showValueMail="displayEmail?1:0"
-                               @stateOfConfig="getStateConf"
+
+                <div v-if="option.helptext !== '' "
+                     class="bg-blue-300 rounded flex  flex-col items-center pb-2">
+                  <span class="material-icons-outlined scale-150 ml-2 mt-2">info</span>
+                  <p class="ml-2 mt-2">{{ translate(option.helptext) }}</p>
+                </div>
+
+
+                <div v-for="(element, indexElement) in option.elements">
+                  <div :class="[{'flex flex-col flex-wrap items-start' : element.type === 'mail-config'},{'flex flex-col':element.type===undefined ||element.type !== 'mail-config' }, {  'bg-green-400/50 rounded' : CustomParam && element.value === 'custom' } , {  'bg-green-400/50 rounded' : !CustomParam && element.value === 'default' }  ]" v-if="element.type_field === 'component'">
+                    <component
+                        :is="element.component"
+                        v-bind="element.props"
+                        @NeedNotify="value => countNotif(value, indexOption)"
+                        :key="keySubContent"
+                        :customValue="CustomParam"
+                        :showValueMail="displayEmail ? 1 : 0"
+                        @stateOfConfig="getStateConf"
+                        class="w-full sm:w-1/2 md:w-1/2 lg:w-1/2"
                     ></component>
                   </div>
                 </div>
+
               </div>
             </div>
 

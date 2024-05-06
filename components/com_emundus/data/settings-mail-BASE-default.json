@@ -1,0 +1,42 @@
+{
+  "mailfrom-default": {
+    "editable": false,
+    "displayed": true,
+    "component": "joomla",
+    "label": "Email d'envoie du site",
+    "param": "mailfrom-default",
+    "type_field": "text",
+    "type": "email",
+    "section": ["mail"]
+  },
+  "fromname-default": {
+    "editable": false,
+    "displayed": true,
+    "component": "joomla",
+    "label": "nom de l'expéditeur",
+    "param": "fromname-default",
+    "type_field": "text",
+    "placeholder": "adam",
+    "section": ["mail"]
+  },
+  "replyto-default": {
+    "editable": false,
+    "displayed": true,
+    "component": "joomla",
+    "label": "Email de récéption du site",
+    "param": "replyto-default",
+    "type_field": "text",
+    "type": "email",
+    "section": ["mail"]
+  },
+  "replytoname-default": {
+    "editable": false,
+    "displayed": true,
+    "component": "joomla",
+    "label": "nom du récépteur",
+    "param": "replytoname-default",
+    "type_field": "text",
+    "placeholder": "eve",
+    "section": ["mail"]
+  }
+}

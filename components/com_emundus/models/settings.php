@@ -1469,8 +1469,8 @@ class EmundusModelsettings extends JModelList {
 
 		$settings_applicants = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings-applicants.json');
 		$settings_general = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings-general.json');
-        $settings_mail_base = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings-mail-BASE.json');
-        $settings_mail_server_custom = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings-mail-SERVERCUSTOM.json');
+        $settings_mail_base = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings-mail-BASE-custom.json');
+        $settings_mail_server_custom = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings-mail-SERVER-custom.json');
 
 		$settings_applicants = json_decode($settings_applicants, true);
 		$settings_general = json_decode($settings_general, true);

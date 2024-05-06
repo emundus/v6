@@ -25,8 +25,9 @@
           <div class="flex-row flex items-center">
             <button v-for="(option, indexOfOptions) in param.options" type="button"
                     :id="'BtYN'+indexParam+'_'+indexOfOptions" :name="'YNbuttton'+param.name"
-                    :class="['YesNobutton'+option.value ,{'active': param.value ===1} , {'click':param.value === 0},{'disabled-element':showParamsServerMail !== null && !showParamsServerMail}]"
-                    :disabled="showParamsServerMail !== null && !showParamsServerMail"
+                    :class="['YesNobutton'+option.value ,{'active': param.value ===1} , {'click':param.value === 0},
+                    {'disabled-element':editableParamsServerMail !== null && !editableParamsServerMail || ( param.editable===false)}]"
+                    :disabled="editableParamsServerMail !== null && !editableParamsServerMail || (param.editable===false)"
                     class="focus:ring-neutral-50 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
                     v-model="param.value" @click="clickYN(param,indexParam, indexOfOptions)">{{
                 translate(option.label)
@@ -38,8 +39,8 @@
         <select v-if="(param.type_field === 'select')&&(visibility(param)) " class="dropdown-toggle w-select"
                 :id="'param_' + param.param" v-model="param.value" style="margin-bottom: 0"
                 @focusout="saveEmundusParam(param)"
-                :class="{'disabled-element':showParamsServerMail !== null && !showParamsServerMail}"
-                :disabled="showParamsServerMail !== null && !showParamsServerMail">
+                :class="{'disabled-element':editableParamsServerMail !== null && !editableParamsServerMail || (param.editable===false)}"
+                :disabled="editableParamsServerMail !== null && !editableParamsServerMail || (param.editable===false)">
           <option v-for="option in param.options" :key="option.value" :value="option.value">{{
               translate(option.label)
             }}
@@ -50,11 +51,11 @@
                :placeholder="param.placeholder" :id="'param_' + param.param" v-model="param.value"
                :maxlength="param.maxlength" style="margin-bottom: 0" @focusout="handleInput(param)"
                @pressEnter="handleInput(param)"
-               :class="{'disabled-element':showParamsServerMail !== null && !showParamsServerMail}"
-               :readonly="showParamsServerMail !== null && !showParamsServerMail"
+               :class="{'disabled-element':editableParamsServerMail !== null && !editableParamsServerMail || (param.editable===false)}"
+               :readonly="editableParamsServerMail !== null && !editableParamsServerMail || ( param.editable===false)"
         >
 
-        <div v-if="param.type==='email'" :id="'emailCheck-'+param.param"
+        <div v-if="param.type==='email' && (param.editable!==undefined && param.editable===true)" :id="'emailCheck-'+param.param"
              :style="{ color: emailValidationColor[param.param] }">
           {{
             emailValidationMessage[param.param]
@@ -63,8 +64,8 @@
 
         <textarea v-if="param.type_field === 'textarea'" :id="'param_' + param.param" v-model="param.value"
                   :maxlength="param.maxlength" style="margin-bottom: 0" @change="saveEmundusParam(param)"
-                  :class="{'disabled-element':showParamsServerMail !== null && !showParamsServerMail}"
-                  :readonly="showParamsServerMail !== null && !showParamsServerMail">
+                  :class="{'disabled-element':editableParamsServerMail !== null && !editableParamsServerMail || ( param.editable===false)}"
+                  :readonly="editableParamsServerMail !== null && !editableParamsServerMail || ( param.editable===false)">
         </textarea>
 
         <div v-if="(param.type_field ==='authentification')&&(visibility(param)&&AuthSMTP)">
@@ -75,8 +76,8 @@
           <input :type="param.type" class="form-control"
                  :placeholder="param.placeholder" :id="'param_' + param.param" v-model="param.value"
                  :maxlength="param.maxlength" style="margin-bottom: 0" @focusout="saveEmundusParam(param)"
-                 :class="{'disabled-element':showParamsServerMail !== null && !showParamsServerMail}"
-                 :readonly="showParamsServerMail !== null && !showParamsServerMail">
+                 :class="{'disabled-element':editableParamsServerMail !== null && !editableParamsServerMail || (param.editable===false)}"
+                 :readonly="editableParamsServerMail !== null && !editableParamsServerMail || (param.editable===false)">
         </div>
 
 
@@ -127,7 +128,7 @@ export default {
       emailValidationColor: [],
       YNButtons: Array(30).fill(false),
       AuthSMTP: false,
-      showParamsServerMail: null,
+      editableParamsServerMail: null,
     };
   },
 
@@ -141,26 +142,29 @@ export default {
         }
       }, 1000);
       let secondWord = this.$props.type.split('-')[1];
-      if (secondWord === 'SERVERCUSTOM') {
-        this.showParamsServerMail = this.$props.customValue;
+      if (secondWord === 'SERVER') {
+        let thirdWord = this.$props.type.split('-')[2];
+        if (thirdWord === 'custom') {
+          this.editableParamsServerMail = this.$props.customValue;
+        }
       }
     }
   },
   mounted() {
     this.$parent.$on('changeMailOnline', this.handleSignalParent);
     this.getEmundusParams();
-
+    console.log(this.params , 'params');
   },
 
   methods: {
     handleSignalParent(value) {
       if (this.params['mailonline']) {
-        if(value.value !== undefined){
+        if (value.value !== undefined) {
           this.params['mailonline'].value = value.value;
-          if (this.params['mailonline'].value !== undefined)
-          {
+          if (this.params['mailonline'].value !== undefined) {
             this.saveEmundusParam(this.params['mailonline']);
-          }}
+          }
+        }
 
       }
     },
@@ -283,7 +287,7 @@ export default {
 
   watch: {
     '$props.customValue': function (newVal) {
-      this.showParamsServerMail = newVal;
+      this.editableParamsServerMail = newVal;
     }
   },
 
