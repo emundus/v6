@@ -4,12 +4,13 @@
     <div class="em-w-80" v-if="!loading">
       <div class="form-group em-flex-center em-w-100 em-mb-16" v-for="(param, indexParam) in displayedParams"
            :key="param.param">
-        <label :for="'param_' + param.param" class="flex items-center font-medium">
+        <label :for="'param_' + param.param" class="flex items-center font-medium"
+               v-if="visibility(param) && param.type_field !== 'authentification'">
           {{ translate(param.label) }}
           <span v-if="param.helptext" class="material-icons-outlined ml-2" @click="displayHelp(param.helptext)">help_outline</span>
         </label>
 
-        <div v-if="(param.type_field === 'toggle')">
+        <div v-if="(param.type_field === 'toggle')&&(visibility(param))">
           <label class="inline-flex items-center cursor-pointer">
             <input type="checkbox" class="sr-only peer" :v-model="param.value" v-model="param.value"
                    @click="toggle(param)">
@@ -20,11 +21,13 @@
         </div>
 
 
-        <div v-if="(param.type_field === 'yesno')">
+        <div v-if="(param.type_field === 'yesno')&&(visibility(param))">
           <div class="flex-row flex items-center">
             <button v-for="(option, indexOfOptions) in param.options" type="button"
                     :id="'BtYN'+indexParam+'_'+indexOfOptions" :name="'YNbuttton'+param.name"
-                    :class="['YesNobutton'+option.value ,{'active': param.value ===1} , {'click':param.value === 0}]"
+                    :class="['YesNobutton'+option.value ,{'active': param.value ===1} , {'click':param.value === 0},
+                    {'disabled-element':editableParamsServerMail !== null && !editableParamsServerMail || ( param.editable===false)}]"
+                    :disabled="editableParamsServerMail !== null && !editableParamsServerMail || (param.editable===false)"
                     class="focus:ring-neutral-50 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
                     v-model="param.value" @click="clickYN(param,indexParam, indexOfOptions)">{{
                 translate(option.label)
@@ -33,27 +36,49 @@
           </div>
         </div>
 
-        <select v-if="(param.type_field === 'select') " class="dropdown-toggle w-select"
+        <select v-if="(param.type_field === 'select')&&(visibility(param)) " class="dropdown-toggle w-select"
                 :id="'param_' + param.param" v-model="param.value" style="margin-bottom: 0"
-                @focusout="saveEmundusParam(param)">
+                @focusout="saveEmundusParam(param)"
+                :class="{'disabled-element':editableParamsServerMail !== null && !editableParamsServerMail || (param.editable===false)}"
+                :disabled="editableParamsServerMail !== null && !editableParamsServerMail || (param.editable===false)">
           <option v-for="option in param.options" :key="option.value" :value="option.value">{{
               translate(option.label)
             }}
           </option>
         </select>
 
-        <input v-if="(param.type_field ==='text')" :type="param.type" class="form-control"
+        <input v-if="(param.type_field ==='text')&&(visibility(param))" :type="param.type" class="form-control"
                :placeholder="param.placeholder" :id="'param_' + param.param" v-model="param.value"
                :maxlength="param.maxlength" style="margin-bottom: 0" @focusout="handleInput(param)"
                @pressEnter="handleInput(param)"
-
+               :class="{'disabled-element':editableParamsServerMail !== null && !editableParamsServerMail || (param.editable===false)}"
+               :readonly="editableParamsServerMail !== null && !editableParamsServerMail || ( param.editable===false)"
         >
 
-
+        <div v-if="param.type==='email' && (param.editable!==undefined && param.editable===true)" :id="'emailCheck-'+param.param"
+             :style="{ color: emailValidationColor[param.param] }">
+          {{
+            emailValidationMessage[param.param]
+          }}
+        </div>
 
         <textarea v-if="param.type_field === 'textarea'" :id="'param_' + param.param" v-model="param.value"
-                  :maxlength="param.maxlength" style="margin-bottom: 0" @change="saveEmundusParam(param)">
+                  :maxlength="param.maxlength" style="margin-bottom: 0" @change="saveEmundusParam(param)"
+                  :class="{'disabled-element':editableParamsServerMail !== null && !editableParamsServerMail || ( param.editable===false)}"
+                  :readonly="editableParamsServerMail !== null && !editableParamsServerMail || ( param.editable===false)">
         </textarea>
+
+        <div v-if="(param.type_field ==='authentification')&&(visibility(param)&&AuthSMTP)">
+          <label :for="'param_' + param.param" class="flex items-center font-medium">
+            {{ translate(param.label) }}
+            <span v-if="param.helptext" class="material-icons-outlined ml-2" @click="displayHelp(param.helptext)">help_outline</span>
+          </label>
+          <input :type="param.type" class="form-control"
+                 :placeholder="param.placeholder" :id="'param_' + param.param" v-model="param.value"
+                 :maxlength="param.maxlength" style="margin-bottom: 0" @focusout="saveEmundusParam(param)"
+                 :class="{'disabled-element':editableParamsServerMail !== null && !editableParamsServerMail || (param.editable===false)}"
+                 :readonly="editableParamsServerMail !== null && !editableParamsServerMail || (param.editable===false)">
+        </div>
 
 
       </div>
@@ -73,10 +98,20 @@ import Swal from "sweetalert2";
 const qs = require("qs");
 
 export default {
-  name: "EditSettingJoomla",
+  name: "EditEmailJoomla",
   components: {},
   props: {
     type: String,
+    showValueMail: {
+      type: Number,
+      default: -1,
+      required: false
+    },
+    customValue: {
+      type: Number,
+      default: -1,
+      required: false
+    }
   },
 
   mixins: [mixin],
@@ -86,19 +121,53 @@ export default {
       loading: true,
       params: {},
       config: {},
-      YNButtons: Array(30).fill(false),
 
+      CustomConfigServerMail: {},
+
+      emailValidationMessage: [],
+      emailValidationColor: [],
+      YNButtons: Array(30).fill(false),
+      AuthSMTP: false,
+      editableParamsServerMail: null,
     };
   },
 
   created() {
     this.params = require('../../../../data/settings-' + this.$props.type + '.json');
+    let firstWord = this.$props.type.split('-')[0];
+    if (firstWord === 'mail') {
+      setTimeout(() => {
+        if (this.params['smtpauth']) {
+          this.AuthSMTP = this.params['smtpauth'].value
+        }
+      }, 1000);
+      let secondWord = this.$props.type.split('-')[1];
+      if (secondWord === 'SERVER') {
+        let thirdWord = this.$props.type.split('-')[2];
+        if (thirdWord === 'custom') {
+          this.editableParamsServerMail = this.$props.customValue;
+        }
+      }
+    }
   },
   mounted() {
+    this.$parent.$on('changeMailOnline', this.handleSignalParent);
     this.getEmundusParams();
+    console.log(this.params , 'params');
   },
 
   methods: {
+    handleSignalParent(value) {
+      if (this.params['mailonline']) {
+        if (value.value !== undefined) {
+          this.params['mailonline'].value = value.value;
+          if (this.params['mailonline'].value !== undefined) {
+            this.saveEmundusParam(this.params['mailonline']);
+          }
+        }
+
+      }
+    },
     getEmundusParams() {
       axios.get("index.php?option=com_emundus&controller=settings&task=getemundusparams")
           .then(response => {
@@ -115,9 +184,17 @@ export default {
               }
             });
             this.loading = false;
+            this.$emit('stateOfConfig', this.params);
           });
 
     },
+    visibility(param) {
+      if (param.section && param.section[0] === 'mail') {
+        return this.config['joomla'].mailonline === '1';
+      }
+      return true;
+    },
+
     saveEmundusParam(param) {
       this.$emit('updateSaving', true);
 
@@ -158,7 +235,29 @@ export default {
       this.saveEmundusParam(param);
     },
     handleInput(param) {
+      if (param.type === 'email') {
+        this.validate(param);
+      } else {
         this.saveEmundusParam(param);
+      }
+    },
+    validateEmail(email) {
+      let res = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
+      return res.test(email);
+    },
+    validate(paramEmail) {
+      let paramEmailId = paramEmail.param;
+      let email = this.params[paramEmailId].value;
+      this.emailValidationMessage[paramEmail.param] = "";
+      if (this.validateEmail(email)) {
+        this.$set(this.emailValidationMessage, paramEmail.param, email + " is valid");
+        this.$set(this.emailValidationColor, paramEmail.param, "green");
+        this.saveEmundusParam(paramEmail);
+      } else {
+        this.$set(this.emailValidationMessage, paramEmail.param, email + " is not valid");
+        this.$set(this.emailValidationColor, paramEmail.param, "red");
+      }
+      return false;
     },
     clickYN(param, index, indexOfOptions) {
       param.value = indexOfOptions;
@@ -179,11 +278,17 @@ export default {
     }
   },
   computed: {
-
+    displayedParams() {
+      return Object.values(this.params).filter((param) => {
+        return param.displayed;
+      });
+    },
   },
 
   watch: {
-
+    '$props.customValue': function (newVal) {
+      this.editableParamsServerMail = newVal;
+    }
   },
 
 };
