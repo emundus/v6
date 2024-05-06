@@ -347,7 +347,12 @@ class EmundusModelRanking extends JModelList
 
                 // if the user has a hierarchy order by, we need to get the rank of the files in that hierarchy
                 if (!empty($hierarchy_order_by) && $hierarchy_order_by !== 'default' && $hierarchy_order_by != $hierarchy) {
-                    $query->leftJoin($this->db->quoteName('#__emundus_ranking', 'er') . ' ON ' . $this->db->quoteName('cc.id') . ' = ' . $this->db->quoteName('er.ccid'));
+                    $leftJoin = $this->db->quoteName('#__emundus_ranking', 'er') . ' ON ' . $this->db->quoteName('cc.id') . ' = ' . $this->db->quoteName('er.ccid') . ' AND er.hierarchy_id  = ' . $hierarchy;
+                    if (!empty($package_id)) {
+                        $leftJoin .= ' AND ' . $this->db->quoteName('er.package') . ' = ' . $this->db->quote($package_id);
+                    }
+                    $query->leftJoin($leftJoin);
+
                     $sub_query = $this->db->getQuery(true);
                     $sub_query->clear()
                         ->select('DISTINCT cc.id as ccid, IF(er.hierarchy_id = ' . $this->db->quote($hierarchy_order_by) . ', er.rank, -1) as `rank`')
@@ -363,7 +368,7 @@ class EmundusModelRanking extends JModelList
                         );
 
                     if (!empty($package_id)) {
-                        $sub_query->andWhere($this->db->quoteName('cc.package') . ' = ' . $this->db->quote($package_id));
+                        $sub_query->andWhere($this->db->quoteName('er.package') . ' = ' . $this->db->quote($package_id));
                     }
 
                     if ($limit !== -1) {
@@ -383,8 +388,7 @@ class EmundusModelRanking extends JModelList
                         $ids = array_keys($ranks);
                     }
 
-                    $query->where($this->db->quoteName('cc.id') . ' IN (' . implode(',', $ids) . ')')
-                        ->andWhere('(er.hierarchy_id = ' . $this->db->quote($hierarchy) . ') OR er.id IS NULL');
+                    $query->where($this->db->quoteName('cc.id') . ' IN (' . implode(',', $ids) . ')');
 
                     if ($sort == 'ASC') {
                         $query->order('IFNULL(IF(er.rank > 0, er.rank, null), ' . $MAX_RANK_VALUE . ')' . $sort);
