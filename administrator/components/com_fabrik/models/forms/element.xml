@@ -21,6 +21,13 @@
 			required="true"
 			size="35" />
 
+		<field name="alias"
+			   type="text"
+			   description="COM_FABRIK_FIELD_ELEMENT_ALIAS_DESC"
+			   label="COM_FABRIK_FIELD_ELEMENT_ALIAS_LABEL"
+			   required="false"
+			   size="35" />
+
 		<field name="plugin"
 			type="pluginlist"
 			plugin="fabrik_element"
