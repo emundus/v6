@@ -21,7 +21,7 @@
     "section": ["mail","server"]
   },
   "smtpsecure-default": {
-    "editable": false,
+    "editable": true,
     "displayed": true,
     "component": "joomla",
     "label": "securité",
@@ -44,7 +44,7 @@
     "section": ["mail","server"]
   },
   "smtpauth-default": {
-    "displayed": false,
+    "displayed": true,
     "component": "joomla",
     "label": "SMTP Authentification",
     "param": "smtpauth-default",
@@ -63,7 +63,7 @@
     "value": 0
   },
   "smtpuser-default": {
-    "displayed": false,
+    "displayed": true,
     "component": "joomla",
     "label": "SMTP User",
     "param": "smtpuser-default",
