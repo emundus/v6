@@ -17,7 +17,7 @@ h1 {
 	font-weight: 500;
 	color: #0B0C0F;
 	margin: 0;
-	line-height: 24px;
+	line-height: 28.8px;
 }
 
 h2 {
@@ -81,6 +81,7 @@ p {
 	line-height: 1.25rem;
 	font-size: 16px;
 	color: #0B0C0F;
+	font-weight: 400;
 }
 
 pre {
@@ -132,12 +133,21 @@ a:hover {
 }
 
 ul, ol {
-	padding-left: 48px;
+	padding-left: 24px;
 	margin: 0;
+}
+
+ul ul, ol ol {
+	padding-left: 24px;
 }
 
 li {
 	line-height: normal;
+}
+
+hr {
+	margin: 16px 0;
+	border-bottom: 1px solid #e0e0e5;
 }
 
 div.caption       { padding: 0 10px 0 10px; }

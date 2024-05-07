@@ -460,10 +460,23 @@ a.em-blue-400-color:hover {
     line-height: 160%;
 }
 
-.tchooz-single-campaign #campaign * {
-    line-height: 24px;
+.tchooz-single-campaign #campaign p {
+    line-height: normal;
     color: var(--neutral-900);
     font-family: var(--em-applicant-font);
+}
+
+.tchooz-single-campaign #campaign * {
+    color: var(--neutral-900);
+    font-family: var(--em-applicant-font);
+}
+
+.tchooz-single-campaign #campaign table td  {
+    border: 1px solid #dce2e9;
+}
+
+.tchooz-single-campaign #campaign table thead > tr > * {
+    background: #ccc;
 }
 
 .mod_emundus_campaign__grid {
