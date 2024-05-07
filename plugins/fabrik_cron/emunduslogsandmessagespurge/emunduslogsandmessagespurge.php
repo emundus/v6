@@ -129,9 +129,9 @@ class PlgFabrik_Cronemunduslogsandmessagespurge extends PlgFabrik_Cron{
 					else if (is_dir($document))
 					{
 						$files = glob($document . '/*');
-						foreach ($files as $f)
+						foreach ($files as $file)
 						{
-							unlink($f);
+							unlink($file);
 						}
 						rmdir($document);
 						$tmp_documents += 1;

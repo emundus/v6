@@ -4290,9 +4290,9 @@ if(in_array($applicant,$exceptions)){
 					->where($db->quoteName('label') . ' = ' . $db->quote('Logs and messages purge'));
 
 				$db->setQuery($query);
-				$existingLabel = $db->loadResult();
+				$existing_label = $db->loadResult();
 
-				if ($existingLabel !== null)
+				if ($existing_label !== null)
 				{
 					echo "Plugin cron already created.";
 				}
@@ -4311,14 +4311,14 @@ if(in_array($applicant,$exceptions)){
 						'params'
 					);
 
-					$currentHour = date('G');
-					if ($currentHour < 4)
+					$current_hour = date('G');
+					if ($current_hour < 4)
 					{
-						$lastFourHourDate = date('Y-m-d 04:00:00', strtotime('yesterday'));
+						$last_four_hour = date('Y-m-d 04:00:00', strtotime('yesterday'));
 					}
 					else
 					{
-						$lastFourHourDate = date('Y-m-d 04:00:00');
+						$last_four_hour = date('Y-m-d 04:00:00');
 					}
 
 
@@ -4331,8 +4331,8 @@ if(in_array($applicant,$exceptions)){
 						$db->quote(date('0000-00-00 00:00:00')),
 						$db->quote('emunduslogsandmessagespurge'),
 						'1',
-						$db->quote(date($lastFourHourDate)),
-						$db->quote('{"connection":"1","table":"","cron_row_limit":"100","log":"0","log_email":"","require_qs":"0","require_qs_secret":"","cron_rungate":"1","cron_reschedule_manual":"0","reminder_mail_id":"79","amount_time":"1","unit_time":"year","export_zip":"1","cron_rungate":"1","cron_reschedule_manual":"0","reminder_mail_id":"79","amount_time":"1","unit_time":"year","export_zip":"1"}')
+						$db->quote(date($last_four_hour)),
+						$db->quote('{"connection":"1","table":"","cron_row_limit":"100","log":"0","log_email":"","require_qs":"0","require_qs_secret":"","cron_rungate":"1","cron_reschedule_manual":"0","reminder_mail_id":"79","amount_time":"1","unit_time":"year","export_zip":"1"}')
 					);
 
 					$query->clear()
@@ -4342,8 +4342,6 @@ if(in_array($applicant,$exceptions)){
 
 					$db->setQuery($query);
 					$db->execute();
-
-
 				}
 			}
 		}
