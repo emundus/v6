@@ -119,15 +119,11 @@ blockquote p {
 
 a {
 	text-decoration: underline;
-	color: #00c;
-}
-
-a:link, a:visited {
 	color: #1B57B1;
 }
 
 a:hover {
-	color: #00c;
+	color: #1B57B1;
 	text-decoration: none;
 	font-weight: normal;
 }
