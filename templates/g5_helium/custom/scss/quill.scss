@@ -323,15 +323,9 @@ $selectors: "div[itemprop="articleBody"], div[itemprop="blogPost"], .ql-editor, 
 
   a, p > a {
     text-decoration: underline;
-    color: #00c;
-  }
-
-  a:link, a:visited {
-    color: #1B57B1;
   }
 
   a:hover {
-    color: #00c;
     text-decoration: none;
     font-weight: normal;
   }

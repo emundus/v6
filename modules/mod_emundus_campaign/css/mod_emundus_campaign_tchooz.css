@@ -43,10 +43,6 @@
     color: var(--em-default-text-color-1);
 }
 
-.mod_emundus_campaign__intro a{
-    color: var(--neutral-800);
-}
-
 .mod_emundus_campaign__intro a:hover {
     color: var(--neutral-800);
     text-decoration: underline;
@@ -466,7 +462,7 @@ a.em-blue-400-color:hover {
     font-family: var(--em-applicant-font);
 }
 
-.tchooz-single-campaign #campaign * {
+.tchooz-single-campaign #campaign *:not(a) {
     color: var(--neutral-900);
     font-family: var(--em-applicant-font);
 }
