@@ -219,6 +219,7 @@ if (count($languages) > 1) {
         top: 114px;
         height: calc(100vh - 114px);
         transition: all .3s;
+        width: 425px;
 
         .close-comment, .open-comment {
             left: -52px;

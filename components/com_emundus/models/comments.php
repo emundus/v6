@@ -35,8 +35,8 @@ class EmundusModelComments extends JModelLegacy
         }
 
         if (!empty($file_id) && !empty($comment)) {
-            $target_type = !empty($target) && isset($target['target_type']) ? $target['target_type'] : '';
-            $target_id = !empty($target) && isset($target['target_id']) ? $target['target_id'] : '';
+            $target_type = !empty($target) && isset($target['type']) ? $target['type'] : '';
+            $target_id = !empty($target) && isset($target['id']) ? $target['id'] : '';
 
             $query = $this->db->getQuery(true);
 
@@ -187,5 +187,51 @@ class EmundusModelComments extends JModelLegacy
         }
 
         return $comments;
+    }
+
+    /**
+     * @param $fnum
+     * @return array
+     */
+    public function getTargetableElements($ccid)
+    {
+        $elements = [];
+
+        if (!empty($ccid)) {
+            $query = $this->db->getQuery(true);
+            $query->select('campaign_id')
+                ->from($this->db->quoteName('#__emundus_campaign_candidature'))
+                ->where('id = ' . $this->db->quote($ccid));
+
+            $this->db->setQuery($query);
+            $campaign_id = $this->db->loadResult();
+
+            if (!empty($campaign_id)) {
+                require_once(JPATH_ROOT . '/components/com_emundus/models/campaign.php');
+                $m_campaign = new EmundusModelCampaign();
+                $profile_ids = $m_campaign->getProfilesFromCampaignId([$campaign_id]);
+
+                if (!empty($profile_ids)) {
+                    require_once(JPATH_ROOT . '/components/com_emundus/models/form.php');
+                    $m_form = new EmundusModelForm();
+                    require_once(JPATH_ROOT . '/components/com_emundus/helpers/fabrik.php');
+                    $h_fabrik = new EmundusHelperFabrik();
+
+                    foreach($profile_ids as $profile_id) {
+                        $forms = $m_form->getFormsByProfileId($profile_id);
+
+                        if (!empty($forms)) {
+                            $form_ids = array_column($forms, 'id');
+
+                            if (!empty($form_ids)) {
+                                $elements = array_merge($elements, $h_fabrik->getElementsFromFabrikForms($form_ids));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return $elements;
     }
 }

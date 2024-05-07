@@ -21,6 +21,7 @@
         </div>
       </div>
       <p>{{ comment.comment_body }}</p>
+      <p v-if="comment.target_id > 0" class="text-sm em-gray-color mt-3">{{ getCommentTargetLabel(comment) }}</p>
 
       <div class="comment-children" :class="{'opened': openedCommentId === comment.id, 'hidden': openedCommentId !== comment.id}">
         <hr>
@@ -151,9 +152,11 @@ export default {
     visible_to_applicant: false,
     openedCommentId: 0,
     loading: false,
+    targetableElements: [],
   }),
   created() {
     this.getComments();
+    this.getTargetableELements();
     this.addListeners();
   },
   beforeDestroy() {
@@ -185,6 +188,24 @@ export default {
         this.loading = false;
       });
     },
+    getTargetableELements() {
+      commentsService.getTargetableElements(this.ccid).then((response) => {
+        if (response.status) {
+          this.targetableElements = response.data;
+        }
+      }).catch((error) => {
+        this.handleError(error);
+      });
+    },
+    getCommentTargetLabel(comment) {
+      let label = '';
+
+      const target = this.targetableElements.find((element) => element.id === comment.target_id);
+      if (target) {
+        label = `${target.element_form_label} > ${target.element_group_label} > ${target.label}`;
+      }
+      return label;
+    },
     addComment(parent_id = 0) {
       this.loading = true;
 
@@ -208,8 +229,9 @@ export default {
       this.newCommentText = '';
       this.newChildCommentText = '';
       this.visible_to_applicant = false;
-      this.target.target_id = 0;
-      this.target.target_type = 'element';
+      this.target.id = 0;
+      this.target.type = 'element';
+      this.hideModal();
     },
     replyToComment(commentId) {
       if (commentId > 0) {

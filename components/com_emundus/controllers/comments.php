@@ -114,4 +114,23 @@ class EmundusControllerComments extends JControllerLegacy
 
         $this->sendJsonResponse($response);
     }
+
+    public function gettargetableelements()
+    {
+        $response = ['status' => false, 'code' => 403, 'message' => Text::_('ACCESS_DENIED')];
+        $ccid = $this->app->input->getInt('ccid', 0);
+
+        if (!empty($ccid)) {
+            $fnum = EmundusHelperFiles::getFnumFromId($ccid);
+
+            if (EmundusHelperAccess::asAccessAction(10, 'r', $this->user->id, $fnum)) {
+                $response['code'] = 200;
+                $model = $this->getModel('comments');
+                $response['data'] = $model->getTargetableElements($ccid);
+                $response['status'] = true;
+            }
+        }
+
+        $this->sendJsonResponse($response);
+    }
 }
