@@ -60,7 +60,7 @@
         "label": "Yes"
       }
     ],
-    "value": 0
+    "value": 1
   },
   "smtpuser-default": {
     "displayed": true,

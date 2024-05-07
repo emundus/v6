@@ -433,6 +433,7 @@ class EmundusHelperUpdate
 			$model = new ConfigModelApplication();
 
 			$oldData = $model->getData();
+            var_dump($oldData);
 
 			$data         = array();
 			$data[$param] = $value;

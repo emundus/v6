@@ -5,23 +5,31 @@
       <div class="form-group em-flex-center em-w-100 em-mb-16" v-for="(param, indexParam) in displayedParams"
            :key="param.param">
         <label :for="'param_' + param.param" class="flex items-center font-medium"
-               v-if="visibility(param) && param.type_field !== 'authentification'">
+               v-if=" param.type_field !== 'authentification'">
           {{ translate(param.label) }}
           <span v-if="param.helptext" class="material-icons-outlined ml-2" @click="displayHelp(param.helptext)">help_outline</span>
         </label>
 
-        <div v-if="(param.type_field === 'toggle')&&(visibility(param))">
-          <label class="inline-flex items-center cursor-pointer">
-            <input type="checkbox" class="sr-only peer" :v-model="param.value" v-model="param.value"
-                   @click="toggle(param)">
-            <div
-                class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
-            <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300"></span>
-          </label>
+        <div v-if="(param.type_field === 'toggle')">
+          <div class="mb-4 flex items-center">
+            <div class="em-toggle">
+              <input type="checkbox"
+                     true-value="1"
+                     false-value="0"
+                     class="em-toggle-check"
+                     :id="'published'"
+                     v-model="param.value ? 1 : 0"
+                     @click="toggle(param)"
+              />
+              <strong class="b em-toggle-switch"></strong>
+              <strong class="b em-toggle-track"></strong>
+            </div>
+            <span for="published" class="ml-2">{{translate(param.label_right) }}</span>
+          </div>
         </div>
 
 
-        <div v-if="(param.type_field === 'yesno')&&(visibility(param))">
+        <div v-if="(param.type_field === 'yesno')">
           <div class="flex-row flex items-center">
             <button v-for="(option, indexOfOptions) in param.options" type="button"
                     :id="'BtYN'+indexParam+'_'+indexOfOptions" :name="'YNbuttton'+param.name"
@@ -36,7 +44,7 @@
           </div>
         </div>
 
-        <select v-if="(param.type_field === 'select')&&(visibility(param)) " class="dropdown-toggle w-select"
+        <select v-if="(param.type_field === 'select') " class="dropdown-toggle w-select"
                 :id="'param_' + param.param" v-model="param.value" style="margin-bottom: 0"
                 @focusout="saveEmundusParam(param)"
                 :class="{'disabled-element':editableParamsServerMail !== null && !editableParamsServerMail || (param.editable===false)}"
@@ -47,7 +55,7 @@
           </option>
         </select>
 
-        <input v-if="(param.type_field ==='text')&&(visibility(param))" :type="param.type" class="form-control"
+        <input v-if="(param.type_field ==='text')" :type="param.type" class="form-control"
                :placeholder="param.placeholder" :id="'param_' + param.param" v-model="param.value"
                :maxlength="param.maxlength" style="margin-bottom: 0" @focusout="handleInput(param)"
                @pressEnter="handleInput(param)"
@@ -55,7 +63,7 @@
                :readonly="editableParamsServerMail !== null && !editableParamsServerMail || ( param.editable===false)"
         >
 
-        <div v-if="param.type==='email' && (param.editable!==undefined && param.editable===true)" :id="'emailCheck-'+param.param"
+        <div v-if="param.type==='email'" :id="'emailCheck-'+param.param"
              :style="{ color: emailValidationColor[param.param] }">
           {{
             emailValidationMessage[param.param]
@@ -68,7 +76,7 @@
                   :readonly="editableParamsServerMail !== null && !editableParamsServerMail || ( param.editable===false)">
         </textarea>
 
-        <div v-if="(param.type_field ==='authentification')&&(visibility(param)&&AuthSMTP)">
+        <div v-if="(param.type_field ==='authentification')&&(AuthSMTP)">
           <label :for="'param_' + param.param" class="flex items-center font-medium">
             {{ translate(param.label) }}
             <span v-if="param.helptext" class="material-icons-outlined ml-2" @click="displayHelp(param.helptext)">help_outline</span>
@@ -151,22 +159,10 @@ export default {
     }
   },
   mounted() {
-    this.$parent.$on('changeMailOnline', this.handleSignalParent);
     this.getEmundusParams();
   },
 
   methods: {
-    handleSignalParent(value) {
-      if (this.params['mailonline']) {
-        if (value.value !== undefined) {
-          this.params['mailonline'].value = value.value;
-          if (this.params['mailonline'].value !== undefined) {
-            this.saveEmundusParam(this.params['mailonline']);
-          }
-        }
-
-      }
-    },
     getEmundusParams() {
       axios.get("index.php?option=com_emundus&controller=settings&task=getemundusparams")
           .then(response => {
@@ -187,13 +183,6 @@ export default {
           });
 
     },
-    visibility(param) {
-      if (param.section && param.section[0] === 'mail') {
-        return this.config['joomla'].mailonline === '1';
-      }
-      return true;
-    },
-
     saveEmundusParam(param) {
       this.$emit('updateSaving', true);
 
@@ -211,6 +200,7 @@ export default {
       }).then(() => {
         this.$emit('updateSaving', false);
         this.$emit('updateLastSaving', this.formattedDate('', 'LT'));
+        this.$emit('stateOfConfig', this.params);
       });
     },
 
@@ -234,6 +224,7 @@ export default {
       this.saveEmundusParam(param);
     },
     handleInput(param) {
+      console.log(param, "param");
       if (param.type === 'email') {
         this.validate(param);
       } else {

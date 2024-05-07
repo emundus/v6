@@ -4293,6 +4293,41 @@ if(in_array($applicant,$exceptions)){
 				];
 				EmundusHelperUpdate::createTable('jos_emundus_setup_form_rules_js_conditions_group', $columns, [], 'Action rules for formbuilder');
 			}
+
+			if (version_compare($cache_version, '1.44.0', '<=') || $firstrun) {
+				//todo config value mail
+				EmundusHelperUpdate::updateConfigurationFile('default_mailfrom', '');
+				EmundusHelperUpdate::updateConfigurationFile('default_fromname', '');
+				EmundusHelperUpdate::updateConfigurationFile('default_replyto', '');
+				EmundusHelperUpdate::updateConfigurationFile('default_replytoname', '');
+
+				EmundusHelperUpdate::updateConfigurationFile('default_smtphost', '');
+				EmundusHelperUpdate::updateConfigurationFile('default_smtpport', '');
+				EmundusHelperUpdate::updateConfigurationFile('default_smtpsecure', '');
+				EmundusHelperUpdate::updateConfigurationFile('default_smtpauth', '');
+				EmundusHelperUpdate::updateConfigurationFile('default_smtpuser', '');
+				EmundusHelperUpdate::updateConfigurationFile('default_smtppass', '');
+
+				$model = new ConfigModelApplication();
+				$oldData = $model->getData();
+
+
+				EmundusHelperUpdate::updateConfigurationFile('custom_mailfrom', $oldData['mailfrom']);
+				EmundusHelperUpdate::updateConfigurationFile('custom_fromname', $oldData['fromname']);
+				EmundusHelperUpdate::updateConfigurationFile('custom_replyto', $oldData['replyto']);
+				EmundusHelperUpdate::updateConfigurationFile('custom_replytoname', $oldData['replytoname']);
+
+				EmundusHelperUpdate::updateConfigurationFile('custom_smtphost', $oldData['smtphost']);
+				EmundusHelperUpdate::updateConfigurationFile('custom_smtpport', $oldData['smtpport']);
+				EmundusHelperUpdate::updateConfigurationFile('custom_smtpsecure', $oldData['smtpsecure']);
+				EmundusHelperUpdate::updateConfigurationFile('custom_smtpauth', $oldData['smtpauth']);
+				EmundusHelperUpdate::updateConfigurationFile('custom_smtpuser', $oldData['smtpuser']);
+				EmundusHelperUpdate::updateConfigurationFile('custom_smtppass', $oldData['smtppass']);
+
+				EmundusHelperUpdate::updateConfigurationFile('value_config_mail_joomla', '1');
+
+
+			}
 		}
 
 		return $succeed;
