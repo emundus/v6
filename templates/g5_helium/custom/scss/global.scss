@@ -605,8 +605,10 @@ footer#g-footer > .g-container {
 
   a {
     color: $link-regular;
+    text-decoration: underline;
     &:hover {
       color: $link-hover;
+      text-decoration: none;
     }
   }
 }
