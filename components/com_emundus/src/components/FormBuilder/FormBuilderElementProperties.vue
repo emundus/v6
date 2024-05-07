@@ -65,6 +65,11 @@
           </div>
         </div>
 
+        <div class="em-p-16">
+          <label for="element-alias">{{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_ALIAS') }}</label>
+          <input id="element-alias" name="element-alias" class="" type="text" v-model="element.params.alias"/>
+        </div>
+
       </div>
       <div v-if="tabs[1].active" class="em-p-16">
         <FormBuilderElementParams :element="element" :params="params" :key="element.id" :databases="databases" />
@@ -150,6 +155,14 @@ export default {
     saveProperties() {
       this.loading = true;
       formBuilderService.updateTranslation({value: this.element.id, key: 'element'}, this.element.label_tag, this.element.label);
+
+      if (this.element.params.alias === "") {
+        if (this.element.label && this.element.label["shortDefaultLang"]) {
+          this.element.params.alias = this.element.label["shortDefaultLang"].toLowerCase().replace(/\s+/g, '_');
+        } else {
+          this.element.params.alias = '';
+        }
+      }
 
 	    if (['radiobutton', 'checkbox', 'dropdown'].includes(this.element.plugin)) {
 		    formBuilderService.getJTEXTA(this.element.params.sub_options.sub_labels).then(response => {

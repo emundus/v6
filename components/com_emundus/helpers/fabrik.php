@@ -414,6 +414,7 @@ die("<script>
             'custom_calc_split' => '',
             'custom_calc_php' => '',
             'validations' => array(),
+	        'alias' => '',
         );
 
         if($notempty && !in_array($plugin, $plugin_no_required)){
