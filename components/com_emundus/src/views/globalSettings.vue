@@ -175,23 +175,21 @@
 
             <!-- The toggle elements -->
             <div v-if="(option.type_field === 'toggle')&&(option.published === true)" class="inline-flex items-center cursor-pointer">
-              <label v-if="option.name === 'mailonline'">
-                <input id="toggleMailGeneral" type="checkbox" class="sr-only peer"  @click="toggleButton(option)">
-                <div
-                    class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600">
+              <div class="mb-4 flex items-center">
+                <div class="em-toggle">
+                  <input type="checkbox"
+                         true-value="1"
+                         false-value="0"
+                         class="em-toggle-check"
+                         :id="'published'+indexOption"
+                         v-model="option.value"
+                         @click="toggleButton(option)"
+                  />
+                  <strong class="b em-toggle-switch"></strong>
+                  <strong class="b em-toggle-track"></strong>
                 </div>
-              </label>
-              <span v-if="option.name === 'mailonline'">{{translate(option.label_right) }}</span>
-
-              <label
-                  v-if="(option.name !== 'mailonline')&&(displayEmail !== 0)">
-                <input id="toogleCustomServer" :value="option.value" type="checkbox" class="sr-only peer"
-                       v-model="option.value" @click="toggleButton(option)">
-                <div
-                    class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600">
-                </div>
-              </label>
-              <span v-if="(option.name !== 'mailonline')&&(displayEmail !== 0)">{{translate(option.label_right) }}</span>
+                <span for="published" class="ml-2">{{translate(option.label_right) }}</span>
+              </div>
             </div>
 
             <!-- The warning message -->
@@ -247,13 +245,27 @@
               </div>
             </div>
 
-            <!-- The component elements -->
+            <!-- side by side elements -->
+            <div v-if="option.type === 'sideBYside' && (displayEmail)" class="grid-container">
+              <div v-for="(choice, indexChoice) in option.choices" :key="indexChoice">
+                <input type="radio" :id="'choice' + indexChoice" :value="choice.value" v-model="DefaultParamMail">
+                <label :for="'choice' + indexChoice">{{ translate(choice.label) }}</label>
+              </div>
+              <div v-for="(element, indexElement) in option.elements" class="flex flex-col"
+                   :key="indexElement">
+                <div v-if="element.type_field === 'component'" :class="[{  'bg-green-400/50 rounded' : !DefaultParamMail && element.value === 'custom' } , {  'bg-green-400/50 rounded' : DefaultParamMail && element.value === 'default' }]">
+                  <component
+                      :is="element.component"
+                      v-bind="element.props"
+                  ></component>
+                </div>
+              </div>
+            </div>
+
+            <!-- The component elements in is simplest form -->
             <div class="flex flex-col"
-                 v-if="(option.type_field === 'component')&& (option.published === true) &&(displayEmail !== 0) && (subMenus[activeMenu].name='manage_server_mail')">
-              <component :is="option.component" :key="ComponantReload" v-bind="option.props" :customValue="CustomParam"
-                         :showValueMail="displayEmail ? 1 : 0"
-                         @stateOfConfig="getStateConf"
-                          :class="[{  'bg-green-400/50 rounded' : CustomParam && option.value === 'custom' } , {  'bg-green-400/50 rounded' : !CustomParam && option.value === 'default' }]">
+                 v-if="(option.type_field === 'component')&& (option.published === true)">
+              <component :is="option.component" :key="ComponantReload" v-bind="option.props">
               </component>
             </div>
 
@@ -378,10 +390,11 @@ export default {
 
     displayEmail: 1,
     keySubContent: 0,
-    CustomParam: -1,
+    DefaultParamMail: 0,
     reloadTheSubSection: 0,
     configJoomla: {},
     mailonlineValue: 1,
+
     form: {
       content: ''
     },
@@ -434,15 +447,6 @@ export default {
         resolve(true);
       });
       // todo handling of the select of offset
-    },
-
-    getStateConf(value) {
-      this.configJoomla = value;
-      if (this.configJoomla['mailonline']) {
-        this.displayEmail = this.configJoomla['mailonline'].value;
-        document.getElementById("toggleMailGeneral").checked = this.displayEmail;
-        document.getElementById("toggleMailGeneral").value = this.displayEmail;
-      }
     },
 
     //direction automatic method -------------
@@ -512,7 +516,7 @@ export default {
       this.activeMenu = index;
     },
     toggleButton(element) {
-      console.log(element, 'element');
+      /*
       if (element.name === 'custom_config_mail') {
         element.value = !element.value;
         this.CustomParam = element.value ? 1 : 0;
@@ -523,8 +527,10 @@ export default {
         this.$emit('changeMailOnline', element);
         this.goTo('/parametres-globaux?Menu=email_settings&section=manage_server_mail', false);
       } else {
-        element.value = !element.value;
       }
+       */
+        element.value = !element.value;
+
     },
 
     // show method -------------
@@ -575,9 +581,7 @@ export default {
 
   },
   watch: {
-    displayEmail: function (value) {
-      this.$emit('changeMailOnline', value);
-    }
+
   }
 };
 
@@ -628,5 +632,10 @@ export default {
   padding-left: 1em;
   padding-right: 1em;
   margin-bottom: 1em;
+}
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
 }
 </style>

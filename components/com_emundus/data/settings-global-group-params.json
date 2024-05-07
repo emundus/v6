@@ -134,71 +134,74 @@
         "options": [
           {
             "published": true,
-            "name": "mailonline",
-            "label": "activer l'envoie de mail",
-            "settings": "joomla",
-            "param": "mailonline",
-            "label_right": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_MAIL_TOGGLE_MAILONLINE",
-            "type_field": "toggle",
-            "value": 1
+            "type": "mail-config",
+            "value": "default",
+            "type_field": "component",
+            "component": "EditEmailJoomla",
+            "props": {
+              "type": "mail-BASE"
+            }
           },
           {
             "published": true,
-            "name": "custom_config_mail",
+            "name": "value_config_mail_joomla",
             "label_right": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_MAIL_TOGGLE_CUSTOM_CONFIG",
-            "type_field": "toggle",
-            "value": 1
+            "type": "sideBYside",
+            "value": 1,
+            "choices": [
+              {
+                "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_MAIL_TOGGLE_DEFAULT_CONFIG",
+                "value": 0
+              },
+              {
+                "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_MAIL_TOGGLE_CUSTOM_CONFIG",
+                "value": 1
+              }
+            ],
+            "elements": [
+              {
+              "published": true,
+              "type": "mail-config",
+              "value": "custom",
+              "type_field": "component",
+              "component": "EditEmailJoomla",
+              "props": {
+                "type": "mail-ADDRESS-custom"
+              }
+            },
+              {
+                "published": true,
+                "type": "mail-config",
+                "value": "default",
+                "type_field": "component",
+                "component": "EditEmailJoomla",
+                "props": {
+                  "type": "mail-ADDRESS-default"
+                }
+              },
+              {
+                "published": true,
+                "type": "mail-config",
+                "value": "custom",
+                "type_field": "component",
+                "component": "EditEmailJoomla",
+                "props": {
+                  "type": "mail-SERVER-custom"
+                }
+              },
+              {
+                "published": true,
+                "type": "mail-config",
+                "value": "default",
+                "type_field": "component",
+                "component": "EditEmailJoomla",
+                "props": {
+                  "type": "mail-SERVER-default"
+                }
+              }
+            ]
           },
-          {
-            "published": true,
-            "type_field": "Title",
-            "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_MAIL_SUBSECTION_EMAIL_ADRESS"
-          },
-          {
-            "published": true,
-            "type": "mail-config",
-            "value": "custom",
-            "type_field": "component",
-            "component": "EditEmailJoomla",
-            "props": {
-              "type": "mail-BASE-custom"
-            }
-          },
-          {
-            "published": true,
-            "type": "mail-config",
-            "value": "default",
-            "type_field": "component",
-            "component": "EditEmailJoomla",
-            "props": {
-              "type": "mail-BASE-default"
-            }
-          },
-          {
-            "published": true,
-            "type_field": "Title",
-            "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_MAIL_SUBSECTION_SERVER_EMAIL_CONF"
-          },
-          {
-            "published": true,
-            "type": "mail-config",
-            "value": "custom",
-            "type_field": "component",
-            "component": "EditEmailJoomla",
-            "props": {
-              "type": "mail-SERVER-custom"
-            }
-          },
-          {
-            "published": true,
-            "type": "mail-config",
-            "value": "default",
-            "type_field": "component",
-            "component": "EditEmailJoomla",
-            "props": {
-              "type": "mail-SERVER-default"
-            }
-          },
+
           {
             "published": true,
             "name": "Config_mail_advice",

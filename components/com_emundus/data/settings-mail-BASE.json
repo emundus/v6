@@ -1,0 +1,11 @@
+{
+  "mailonline": {
+    "displayed": true,
+    "component": "joomla",
+    "param": "mailonline",
+    "type_field": "toggle",
+    "section": ["mail"],
+    "value": "1",
+    "label_right": "Mail Online"
+  }
+}
