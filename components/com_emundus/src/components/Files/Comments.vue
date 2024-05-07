@@ -21,7 +21,7 @@
         </div>
       </div>
       <p>{{ comment.comment_body }}</p>
-      <p v-if="comment.target_id > 0" class="text-sm em-gray-color mt-3">{{ getCommentTargetLabel(comment) }}</p>
+      <p v-if="comment.target_id > 0" class="text-sm em-gray-color mt-3">{{ getCommentTargetLabel(comment.target_id) }}</p>
 
       <div class="comment-children" :class="{'opened': openedCommentId === comment.id, 'hidden': openedCommentId !== comment.id}">
         <hr>
@@ -83,7 +83,7 @@
     <modal name="add-comment-modal" id="add-comment-modal">
       <div class="w-full h-full p-4 flex flex-col justify-between">
         <div>
-          <h2>{{ translate('COM_EMUNDUS_COMMENTS_ADD_COMMENT_ON') }} {{ target.type }} - {{ target.id }}</h2>
+          <h2 class="mb-3">{{ translate('COM_EMUNDUS_COMMENTS_ADD_COMMENT_ON') }} {{ targetLabel }}</h2>
           <textarea v-model="newCommentText"></textarea>
           <div class="flex flex-row items-center">
             <div class="flex flex-row items-center">
@@ -197,10 +197,10 @@ export default {
         this.handleError(error);
       });
     },
-    getCommentTargetLabel(comment) {
+    getCommentTargetLabel(target_id) {
       let label = '';
 
-      const target = this.targetableElements.find((element) => element.id === comment.target_id);
+      const target = this.targetableElements.find((element) => element.id === target_id);
       if (target) {
         label = `${target.element_form_label} > ${target.element_group_label} > ${target.label}`;
       }
@@ -269,6 +269,9 @@ export default {
         }
         return acc;
       }, {});
+    },
+    targetLabel() {
+      return this.target.id > 0 ? this.getCommentTargetLabel(this.target.id) : '';
     }
   }
 }
