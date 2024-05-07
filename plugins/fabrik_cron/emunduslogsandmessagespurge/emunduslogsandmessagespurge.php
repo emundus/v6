@@ -111,9 +111,34 @@ class PlgFabrik_Cronemunduslogsandmessagespurge extends PlgFabrik_Cron{
 
 		$logs     = $m_logs->deleteLogsBeforeADate($now);
 		$messages = $m_messages->deleteMessagesBeforeADate($now);
+		$tmp_documents = 0;
 
-		//TODO: Clean tmp files older than xx days/months/years via parameter except files named `backup_XXX.zip`
-
-		return $logs + $messages;
+		// Clean tmp documents older than $now
+		foreach (glob(JPATH_SITE . '/tmp/*') as $document)
+		{
+			if (!preg_match('/^backup_logs_and_messages_[a-zA-Z0-9_-]+\.zip$/', basename($document)) && basename($document) !== '.gitignore' && basename($document) !== 'index.html')
+			{
+				$creation_date_time = new DateTime('@' . filectime($document));
+				if ($creation_date_time < $now)
+				{
+					if (is_file($document))
+					{
+						unlink($document);
+						$tmp_documents += 1;
+					}
+					else if (is_dir($document))
+					{
+						$files = glob($document . '/*');
+						foreach ($files as $f)
+						{
+							unlink($f);
+						}
+						rmdir($document);
+						$tmp_documents += 1;
+					}
+				}
+			}
+		}
+		return $logs + $messages + $tmp_documents;
 	}
 }
