@@ -5,6 +5,7 @@ use Joomla\CMS\Factory;
 
 defined('_JEXEC') or die('Restricted access');
 require_once JPATH_CONFIGURATION . '/configuration.php';
+//require_once JPATH_ADMINISTRATOR . '/components/com_config/model/application.php';
 
 define('DS', DIRECTORY_SEPARATOR);
 
@@ -4160,40 +4161,59 @@ if(in_array($applicant,$exceptions)){
 				$db->execute();
 			}
 
-            if (version_compare($cache_version, '1.44.0', '<=') || $firstrun) {
+            if (version_compare($cache_version, '1.74.0', '<='))
+            {
                 //todo config value mail
-                EmundusHelperUpdate::updateConfigurationFile('default_mailfrom', '');
-                EmundusHelperUpdate::updateConfigurationFile('default_fromname', '');
-                EmundusHelperUpdate::updateConfigurationFile('default_replyto', '');
-                EmundusHelperUpdate::updateConfigurationFile('default_replytoname', '');
-
-                EmundusHelperUpdate::updateConfigurationFile('default_smtphost', '');
-                EmundusHelperUpdate::updateConfigurationFile('default_smtpport', '');
-                EmundusHelperUpdate::updateConfigurationFile('default_smtpsecure', '');
-                EmundusHelperUpdate::updateConfigurationFile('default_smtpauth', '');
-                EmundusHelperUpdate::updateConfigurationFile('default_smtpuser', '');
-                EmundusHelperUpdate::updateConfigurationFile('default_smtppass', '');
-
-                $model = new ConfigModelApplication();
-                $oldData = $model->getData();
 
 
-                EmundusHelperUpdate::updateConfigurationFile('custom_mailfrom', $oldData['mailfrom']);
-                EmundusHelperUpdate::updateConfigurationFile('custom_fromname', $oldData['fromname']);
-                EmundusHelperUpdate::updateConfigurationFile('custom_replyto', $oldData['replyto']);
-                EmundusHelperUpdate::updateConfigurationFile('custom_replytoname', $oldData['replytoname']);
 
-                EmundusHelperUpdate::updateConfigurationFile('custom_smtphost', $oldData['smtphost']);
-                EmundusHelperUpdate::updateConfigurationFile('custom_smtpport', $oldData['smtpport']);
-                EmundusHelperUpdate::updateConfigurationFile('custom_smtpsecure', $oldData['smtpsecure']);
-                EmundusHelperUpdate::updateConfigurationFile('custom_smtpauth', $oldData['smtpauth']);
-                EmundusHelperUpdate::updateConfigurationFile('custom_smtpuser', $oldData['smtpuser']);
-                EmundusHelperUpdate::updateConfigurationFile('custom_smtppass', $oldData['smtppass']);
+                $new_value['default_mailfrom'] = '';
+                $new_value['default_fromname'] = '';
+                $new_value['default_replyto'] = '';
+                $new_value['default_replytoname'] = '';
+                $new_value['default_smtphost'] = '';
+                $new_value['default_smtpport'] = '';
+                $new_value['default_smtpsecure'] = '';
+                $new_value['default_smtpauth'] = '';
+                $new_value['default_smtpuser'] = '';
+                $new_value['default_smtppass'] = '';
 
-                EmundusHelperUpdate::updateConfigurationFile('value_config_mail_joomla', '1');
-
+                $new_value['value_config_mail_joomla'] = '1';
+                EmundusHelperUpdate::AddValueToConfigurationFile($new_value);
 
             }
+
+            if (version_compare($cache_version, '1.74.0', '<='))
+            {
+                $new_value['custom_mailfrom']   ;
+                $new_value['custom_fromname']   ;
+                $new_value['custom_replyto']    ;
+                $new_value['custom_replytoname'];
+                $new_value['custom_smtphost']   ;
+                $new_value['custom_smtpport']   ;
+                $new_value['custom_smtpsecure'] ;
+                $new_value['custom_smtpauth']   ;
+                $new_value['custom_smtpuser']   ;
+                $new_value['custom_smtppass']   ;
+
+
+
+                $old_value['mailfrom']     ;
+                $old_value['fromname']     ;
+                $old_value['replyto']      ;
+                $old_value['replytoname']  ;
+                $old_value['smtphost']     ;
+                $old_value['smtpport']     ;
+                $old_value['smtpsecure']   ;
+                $old_value['smtpauth']     ;
+                $old_value['smtpuser']     ;
+                $old_value['smtppass']     ;
+
+
+                EmundusHelperUpdate::convertOldValueToConfigurationFile($new_value, $old_value);
+            }
+
+
 
 
 
