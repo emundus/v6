@@ -78,6 +78,38 @@
       </div>
     </div>
     <div class="em-page-loader" v-if="loading"></div>
+
+    <modal name="add-comment-modal" id="add-comment-modal">
+      <div class="w-full h-full p-4 flex flex-col justify-between">
+        <div>
+          <h2>{{ translate('COM_EMUNDUS_COMMENTS_ADD_COMMENT_ON') }} {{ target.type }} - {{ target.id }}</h2>
+          <textarea v-model="newCommentText"></textarea>
+          <div class="flex flex-row items-center">
+            <div class="flex flex-row items-center">
+              <input type="radio" name="visible_to_applicant" v-model="visible_to_applicant" :value="false" id="visible-to-coords">
+              <label for="visible-to-coords" class="m-0">{{ translate('COM_EMUNDUS_COMMENTS_VISIBLE_PARTNERS') }}</label>
+            </div>
+            <div class="flex flex-row items-center ml-2">
+              <input type="radio" name="visible_to_applicant" v-model="visible_to_applicant" :value="true" id="visible-to-applicant">
+              <label for="visible-to-applicant" class="m-0">{{ translate('COM_EMUNDUS_COMMENTS_VISIBLE_ALL') }}</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-row justify-between">
+          <button @click="hideModal()"> {{ translate('COM_EMUNDUS_COMMENTS_CANCEL') }}</button>
+          <button id="add-comment-btn"
+                  class="em-primary-button em-bg-main-500 em-neutral-300-color w-fit"
+                  :class="{'cursor-not-allowed opacity-50': newCommentText.length === 0}"
+                  :disabled="newCommentText.length === 0"
+                  @click="addComment(0)"
+          >
+            <span>{{ translate('COM_EMUNDUS_COMMENTS_ADD_COMMENT') }}</span>
+            <span class="material-icons-outlined ml-1 em-neutral-300-color">send</span>
+          </button>
+        </div>
+      </div>
+    </modal>
   </div>
 </template>
 
@@ -113,8 +145,8 @@ export default {
     newCommentText: '',
     newChildCommentText: '',
     target: {
-      target_type: 'element',
-      target_id: 0,
+      type: 'element',
+      id: 0,
     },
     visible_to_applicant: false,
     openedCommentId: 0,
@@ -122,8 +154,25 @@ export default {
   }),
   created() {
     this.getComments();
+    this.addListeners();
+  },
+  beforeDestroy() {
+    document.removeEventListener('openModalAddComment');
   },
   methods: {
+    addListeners() {
+      document.addEventListener('openModalAddComment', (event) => {
+        this.target.id = event.detail.targetId;
+        this.target.type = event.detail.targetType;
+        this.showModal();
+      });
+    },
+    showModal(name = 'add-comment-modal') {
+      this.$modal.show(name);
+    },
+    hideModal(name = 'add-comment-modal') {
+      this.$modal.hide(name);
+    },
     getComments() {
       this.loading = true;
       commentsService.getComments(this.ccid).then((response) => {

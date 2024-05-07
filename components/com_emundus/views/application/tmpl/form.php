@@ -195,9 +195,16 @@ if (count($languages) > 1) {
         }
     }
 
-    function openModalAddComment()
+    function openModalAddComment(element)
     {
+        const event = new CustomEvent('openModalAddComment', {
+            detail: {
+                targetType: element.dataset.targetType,
+                targetId: element.dataset.targetId,
+            }
+        });
 
+        document.dispatchEvent(event);
     }
 
     document.addEventListener('click', function (e) {
