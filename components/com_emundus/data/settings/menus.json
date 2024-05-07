@@ -1,0 +1,58 @@
+[
+  {
+    "label": "COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_GENERAL",
+    "name": "general_settings",
+    "icon": "display_settings",
+    "type": "JSON",
+    "source": "general.json",
+    "published": true
+  },
+  {
+    "label": "COM_EMUNDUS_GLOBAL_PARMAS_MENUS_EMAIL",
+    "name": "email_settings",
+    "icon": "email",
+    "type": "component",
+    "component": "EditEmailJoomla",
+    "published": true
+  },
+  {
+    "label": "COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_CONTENT",
+    "name": "content_settings",
+    "icon": "notes",
+    "type": "JSON",
+    "source": "content.json",
+    "published": true
+  },
+  {
+    "label": "COM_EMUNDUS_GLOBAL_PARMAS_MENUS_MANAGE_FILES",
+    "name": "files_management",
+    "icon": "source",
+    "type": "JSON",
+    "source": "files.json",
+    "published": true
+  },
+  {
+    "label": "COM_EMUNDUS_GLOBAL_PARMAS_MENUS_SUPPL_MOD",
+    "name": "addon_modules",
+    "icon": "dashboard_customize",
+    "type": "component",
+    "component": "Addons",
+    "published": true
+  },
+  {
+    "label": "COM_EMUNDUS_GLOBAL_PARMAS_MENUS_INTEG",
+    "name": "integration",
+    "icon": "lan",
+    "type": "component",
+    "component": "Integration",
+    "published": false
+  },
+  {
+    "label": "COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS",
+    "name": "translate",
+    "icon": "translate",
+    "type": "JSON",
+    "source": "translate.json",
+    "published": true
+  }
+]

@@ -4475,6 +4475,9 @@ if(in_array($applicant,$exceptions)){
 			EmundusHelperUpdate::insertIntoFile(JPATH_ROOT . '/.htaccess', "php_value session.cookie_samesite Lax" . PHP_EOL);
 		}
 
+		// Check if each campaign has a unique alias
+		EmundusHelperUpdate::generateCampaignsAlias();
+
 		return true;
 	}
 

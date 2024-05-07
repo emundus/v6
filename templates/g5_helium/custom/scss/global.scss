@@ -22,7 +22,7 @@
 }
 
 .com_emundus_vue input, .com_emundus_vue select {
-  height: 48px;
+  height: var(--em-coordinator-form-height);
 }
 
 details summary:focus{

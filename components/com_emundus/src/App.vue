@@ -186,9 +186,24 @@ export default {
 .view-campaigns.layout-add #g-container-main,
 .view-emails.layout-add #g-container-main,
 .view-emails.no-layout #g-container-main,
-.view-form #g-container-main,
-.view-settings #g-container-main {
+.view-form #g-container-main {
   padding-left: 76px;
+}
+
+.com_emundus.view-settings #g-page-surround #g-container-main {
+  padding: 0 !important;
+}
+
+.com_emundus.view-settings #g-page-surround #g-container-main .g-container {
+  padding: 0 !important;
+}
+
+.com_emundus.view-settings #g-footer {
+  display: none;
+}
+
+.com_emundus.view-settings .com_emundus_vue {
+  margin-bottom: 0;
 }
 
 </style>

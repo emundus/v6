@@ -1,0 +1,21 @@
+[
+  {
+    "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_PARAM_SITE",
+    "name": "site_settings",
+    "component": "SiteSettings",
+    "props": {
+      "json_source": "site-settings.json",
+      "displayLanguage": true
+    }
+  },
+  {
+    "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_IMG_SITE",
+    "name": "site_images",
+    "component": "General"
+  },
+  {
+    "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_THEME_SITE",
+    "name": "site_theme",
+    "component": "EditTheme"
+  }
+]

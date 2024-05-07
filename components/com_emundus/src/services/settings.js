@@ -61,5 +61,34 @@ export default {
         } catch (e) {
             return false;
         }
-    }
+    },
+
+    async getTimezoneList() {
+        try {
+            return await client().get('index.php?option=com_emundus&controller=settings&task=gettimezonelist');
+        } catch (e) {
+            return false;
+        }
+    },
+
+    async saveParams(params) {
+        const formData = new FormData();
+        Object.keys(params).forEach(key => {
+            formData.append('params[]', JSON.stringify(params[key]));
+        });
+
+        try {
+            const response = await client().post(
+                'index.php?option=com_emundus&controller=settings&task=updateemundusparams',
+                formData
+            );
+
+            return response.data;
+        } catch (e) {
+            return {
+                status: false,
+                msg: e.message
+            };
+        }
+    },
 };

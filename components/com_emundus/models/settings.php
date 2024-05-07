@@ -15,6 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Log\Log;
 use Symfony\Component\Yaml\Yaml;
 
 class EmundusModelsettings extends JModelList {
@@ -1467,8 +1468,8 @@ class EmundusModelsettings extends JModelList {
 	{
 		$params = ['emundus' => [], 'joomla' => []];
 
-		$settings_applicants = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings-applicants.json');
-		$settings_general = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings-general.json');
+		$settings_general = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings/site-settings.json');
+		$settings_applicants = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings/file-settings.json');
         $settings_mail_base = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings-mail-ADDRESS-custom.json');
         $settings_mail_server_custom = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings-mail-SERVER-custom.json');
 
@@ -1525,6 +1526,7 @@ class EmundusModelsettings extends JModelList {
 
 		if (!empty($param)) {
 			$params = $this->getEmundusParams();
+
 			switch($component) {
 				case 'emundus':
 					if (array_key_exists($param, $params['emundus'])) {
@@ -1543,10 +1545,10 @@ class EmundusModelsettings extends JModelList {
 							$db->setQuery($query);
 							$updated = $db->execute();
 						} catch (Exception $e) {
-							JLog::add('Error set param '.$param . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+							Log::add('Error set param '.$param . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 						}
 					} else {
-						JLog::add('Error : unable to detect if param is writable or not : ' . $param , JLog::WARNING, 'com_emundus.error');
+						Log::add('Error : unable to detect if param is writable or not : ' . $param , Log::WARNING, 'com_emundus.error');
 					}
 
 					break;

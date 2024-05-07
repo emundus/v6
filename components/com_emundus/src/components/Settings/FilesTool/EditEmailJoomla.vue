@@ -141,6 +141,7 @@ export default {
   },
 
   created() {
+    // TODO: No need props
     this.params = require('../../../../data/settings-' + this.$props.type + '.json');
     let firstWord = this.$props.type.split('-')[0];
     if (firstWord === 'mail') {

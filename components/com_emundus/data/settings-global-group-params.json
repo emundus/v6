@@ -14,7 +14,7 @@
         "options": [
           {
             "published": true,
-            "type_field": "component",
+            "type": "component",
             "component": "EditSettingJoomla",
             "props": {
               "type": "general"
@@ -22,38 +22,9 @@
           },
           {
             "published": true,
-            "type_field": "component",
+            "type": "component",
             "component": "GlobalLang",
             "props": {}
-          },
-          {
-            "name": "offset",
-            "label": "COM_EMUNDUS_GLOBAL_PARMAS_SITE_TIMEZONE",
-            "type_field": "sqldropdown",
-            "helptext": "",
-            "placeholder": "",
-            "published": false
-          },
-          {
-            "label": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_FORMAT",
-            "type_field": "dropdown",
-            "helptext": "",
-            "placeholder": "",
-            "published": false,
-            "choices": [
-              {
-                "label": "COM_EMUNDUS_GLOBAL_PARMAS_SITE_DATE_FORMAT_D/M/Y",
-                "value": "dd/MM/yyyy"
-              },
-              {
-                "label": "COM_EMUNDUS_GLOBAL_PARMAS_SITE_DATE_FORMAT_M/D/Y",
-                "value": "MM/dd/yyyy"
-              },
-              {
-                "label": "COM_EMUNDUS_GLOBAL_PARMAS_SITE_DATE_FORMAT_Y/M/D",
-                "value": "yyyy/MM/dd"
-              }
-            ]
           }
         ]
       },
@@ -65,7 +36,7 @@
         "options": [
           {
             "published": true,
-            "type_field": "component",
+            "type": "component",
             "component": "Global",
             "props": {}
           }
@@ -79,7 +50,7 @@
         "options": [
           {
             "published": true,
-            "type_field": "component",
+            "type": "component",
             "component": "EditTheme",
             "props": []
           },
@@ -103,14 +74,14 @@
           {
             "published": false,
             "label": "google analytics ID",
-            "type_field": "Input",
+            "type": "Input",
             "helptext": "",
             "placeholder": ""
           },
           {
             "published": false,
             "label": "Matomo analytics ID",
-            "type_field": "Input",
+            "type": "Input",
             "helptext": "",
             "placeholder": ""
           }
@@ -206,13 +177,13 @@
             "published": true,
             "name": "Config_mail_advice",
             "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_MAIL_SUBSECTION_SERVER_EMAIL_CONF_ADVICE",
-            "type_field": "info"
+            "type": "info"
           },
           {
             "published": true,
             "name": "Test_mail_BT",
             "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_MAIL_TEST_BT",
-            "type_field": "Button",
+            "type": "Button",
             "action": "sweetAlert",
             "icon": "send"
           }
@@ -235,12 +206,12 @@
         "options": [
           {
             "published": true,
-            "type_field": "Title",
+            "type": "Title",
             "label": "Texte de la page"
           },
           {
             "published": true,
-            "type_field": "component",
+            "type": "component",
             "component": "EditArticle",
             "props": {
               "name": "text_campaign",
@@ -255,7 +226,7 @@
             "published": false,
             "name": "champagne_view",
             "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CAMP_SHOW",
-            "type_field": "checkbox",
+            "type": "checkbox",
             "helptext": "",
             "placeholder": "",
             "choices": [
@@ -277,7 +248,7 @@
             "published": false,
             "name": "champagne_group_by",
             "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CAMP_GROUP_BY",
-            "type_field": "dropdown",
+            "type": "dropdown",
             "helptext": "",
             "placeholder": "",
             "choices": [
@@ -295,7 +266,7 @@
             "published": false,
             "name": "champagne_organize_by",
             "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CAMP_ORGANIZE_BY",
-            "type_field": "dropdown",
+            "type": "dropdown",
             "helptext": "",
             "placeholder": "",
             "choices": [
@@ -319,7 +290,7 @@
         "options": [
           {
             "published": true,
-            "type_field": "component",
+            "type": "component",
             "component": "EditFooter",
             "props": []
           }
@@ -341,7 +312,7 @@
             "placeholder": "",
             "elements": [
               {
-                "type_field": "component",
+                "type": "component",
                 "component": "EditArticle",
                 "props": {
                   "name": "text_legal_notice",
@@ -363,7 +334,7 @@
             "placeholder": "",
             "elements": [
               {
-                "type_field": "component",
+                "type": "component",
                 "component": "EditArticle",
                 "props": {
                   "name": "text_privacy_policy",
@@ -385,7 +356,7 @@
             "placeholder": "",
             "elements": [
               {
-                "type_field": "component",
+                "type": "component",
                 "component": "EditArticle",
                 "props": {
                   "name": "text_rights_management",
@@ -407,7 +378,7 @@
             "placeholder": "",
             "elements": [
               {
-                "type_field": "component",
+                "type": "component",
                 "component": "EditArticle",
                 "props": {
                   "name": "text_cookies_management",
@@ -430,7 +401,7 @@
         "options": [
           {
             "published": true,
-            "type_field": "component",
+            "type": "component",
             "component": "EditArticle",
             "props": {
               "name": "text_accessibility",
@@ -446,10 +417,10 @@
     ]
   },
   {
-    "label": "COM_EMUNDUS_GLOBAL_PARMAS_MENUS_MANAGE_FILES",
-    "name": "files management",
-    "icon": "source",
-    "published": true,
+  "label": "COM_EMUNDUS_GLOBAL_PARMAS_MENUS_MANAGE_FILES",
+  "name": "files management",
+  "icon": "source",
+  "published": true,
     "sections": [
       {
         "label": "COM_EMUNDUS_STATUS",
@@ -459,7 +430,7 @@
         "options": [
           {
             "published": true,
-            "type_field": "component",
+            "type": "component",
             "component": "EditStatus",
             "props": {
               "key": 1
@@ -475,7 +446,7 @@
         "options": [
           {
             "published": true,
-            "type_field": "component",
+            "type": "component",
             "component": "EditTags",
             "props": {
               "key": 2
@@ -491,109 +462,11 @@
         "options": [
           {
             "published": true,
-            "type_field": "Title",
-            "label": "Partie candidats"
-          },
-          {
-            "published": true,
-            "name": "intro_text_for_candidate",
-            "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CONTENT_CANDIDATE_INTRO",
-            "type_field": "textarea",
-            "helptext": "",
-            "placeholder": ""
-          },
-          {
-            "published": true,
-            "type_field": "component",
+            "type": "component",
             "component": "EditSettingJoomla",
             "props": {
               "type": "applicants"
             }
-          },
-          {
-            "published": false,
-            "name": "history_folder_for_candidate",
-            "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CONTENT_CANDIDATE_SHOW_HISTORY",
-            "type_field": "yesno",
-            "helptext": "",
-            "options": [
-              {
-                "label": "JNO",
-                "value": 0
-              },
-              {
-                "label": "JYES",
-                "value": 1
-              }
-            ],
-            "value": 1
-          },
-          {
-            "published": true,
-            "type_field": "Title",
-            "label": "Partie gestionnaire"
-          },
-          {
-            "published": false,
-            "name": "number_of_files_in_list",
-            "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CONTENT_NUM_FILES_IN_LIST",
-            "type_field": "dropdown",
-            "helptext": "",
-            "placeholder": "",
-            "choices": [
-              {
-                "label": "10",
-                "value": "10"
-              },
-              {
-                "label": "25",
-                "value": "25"
-              },
-              {
-                "label": "50",
-                "value": "50"
-              },
-              {
-                "label": "ALL",
-                "value": "all"
-              }
-            ]
-          },
-          {
-            "published": false,
-            "name": "view_deleted_files",
-            "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CONTENT_SHOW_DELETED_FILES",
-            "type_field": "yesno",
-            "helptext": "",
-            "options": [
-              {
-                "label": "JNO",
-                "value": 0
-              },
-              {
-                "label": "JYES",
-                "value": 1
-              }
-            ],
-            "value": 1
-          },
-          {
-            "published": false,
-            "name": "copy_folder",
-            "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_CONTENT_ALLOW_COPY_OF_FILES",
-            "type_field": "yesno",
-            "helptext": "",
-            "options": [
-              {
-                "label": "JNO",
-                "value": 0
-              },
-              {
-                "label": "JYES",
-                "value": 1
-              }
-            ],
-            "value": 1
           }
         ]
       }
@@ -710,7 +583,7 @@
         "options": [
           {
             "published": true,
-            "type_field": "component",
+            "type": "component",
             "component": "Translations",
             "props": {}
           }
@@ -724,7 +597,7 @@
         "options": [
           {
             "published": true,
-            "type_field": "component",
+            "type": "component",
             "component": "Orphelins",
             "props": {}
           }

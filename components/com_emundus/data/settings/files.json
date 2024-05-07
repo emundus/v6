@@ -1,0 +1,20 @@
+[
+  {
+    "label": "COM_EMUNDUS_STATUS",
+    "name": "edit_status",
+    "component": "EditStatus"
+  },
+  {
+    "label": "COM_EMUNDUS_TAGS",
+    "name": "edit_tags",
+    "component": "EditTags"
+  },
+  {
+    "label": "COM_EMUNDUS_ONBOARD_SETTINGS_FILES_TOOL",
+    "name": "file_settings",
+    "component": "SiteSettings",
+    "props": {
+      "json_source": "file-settings.json"
+    }
+  }
+]

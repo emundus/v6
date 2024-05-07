@@ -1,12 +1,11 @@
 <template>
   <div>
-    <h1>{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_GLOBAL') }}</h1>
-    <div class="em-mb-24 em-flex-row em-flex-space-between">
-      <div>
-        <p class="em-body-16-semibold em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_DEFAULT') }}</p>
-        <p class="em-font-size-14">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_DEFAULT_DESC') }}</p>
+    <div class="mt-3 mb-6">
+      <div class="mb-2">
+        <p class="font-medium mb-1">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_DEFAULT') }}</p>
+        <p class="text-sm">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_DEFAULT_DESC') }}</p>
       </div>
-      <div class="em-w-33">
+      <div class="w-1/3">
         <multiselect
             v-model="defaultLang"
             label="title_native"
@@ -26,12 +25,12 @@
       </div>
     </div>
 
-    <div class="em-mb-24 em-flex-row em-flex-space-between">
-      <div>
-        <p class="em-body-16-semibold em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SECONDARY') }}</p>
-        <p class="em-font-size-14">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SECONDARY_DESC') }}</p>
+    <div class="mb-6">
+      <div class="mb-2">
+        <p class="font-medium mb-1">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SECONDARY') }}</p>
+        <p class="text-sm">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SECONDARY_DESC') }}</p>
       </div>
-      <div class="em-w-33">
+      <div class="w-1/3">
         <multiselect
             v-model="secondaryLanguages"
             label="title_native"
@@ -48,7 +47,7 @@
             @remove="unpublishLanguage"
             @select="publishLanguage"
         ></multiselect>
-        <a class="em-pointer em-mt-16 em-font-size-12 em-hover-blue-500 em-profile-color em-text-underline" @click="purposeLanguage">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_OTHER_LANGUAGE') }}</a>
+        <a class="cursor-pointer mt-3 text-xs hover:blue-500 em-profile-color underline" @click="purposeLanguage">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_OTHER_LANGUAGE') }}</a>
       </div>
     </div>
 

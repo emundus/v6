@@ -1,0 +1,12 @@
+[
+  {
+    "label": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_TRANSLATIONS",
+    "name": "translations",
+    "component": "Translations"
+  },
+  {
+    "label": "COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_ORPHELINS",
+    "name": "orphelins",
+    "component": "Orphelins"
+  }
+]

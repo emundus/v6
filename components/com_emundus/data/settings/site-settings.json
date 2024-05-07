@@ -1,0 +1,84 @@
+[
+  {
+    "displayed": true,
+    "component": "joomla",
+    "label": "COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SITENAME",
+    "param": "sitename",
+    "type": "text",
+    "maxlength": 50,
+    "placeholder": ""
+  },
+  {
+    "displayed": true,
+    "component": "joomla",
+    "label": "COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SITEDESCRIPTION",
+    "param": "MetaDesc",
+    "type": "textarea",
+    "maxlength": 255,
+    "placeholder": ""
+  },
+  {
+    "displayed": true,
+    "param": "offset",
+    "component": "joomla",
+    "label": "COM_EMUNDUS_GLOBAL_PARMAS_SITE_TIMEZONE",
+    "type": "timezone",
+    "helptext": "",
+    "placeholder": ""
+  },
+  {
+    "displayed": true,
+    "component": "joomla",
+    "label": "COM_EMUNDUS_ATTACHMENTS_KEYWORDS",
+    "param": "MetaKeys",
+    "type": "keywords",
+    "placeholder": "",
+    "options": []
+  },
+  {
+    "displayed": true,
+    "component": "joomla",
+    "label": "COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_LIST_LIMIT",
+    "param": "list_limit",
+    "type": "select",
+    "options": [
+      {
+        "label": "5",
+        "value": 5
+      },
+      {
+        "label": "10",
+        "value": 10
+      },
+      {
+        "label": "15",
+        "value": 15
+      },
+      {
+        "label": "20",
+        "value": 20
+      },
+      {
+        "label": "25",
+        "value": 25
+      },
+      {
+        "label": "30",
+        "value": 30
+      },
+      {
+        "label": "50",
+        "value": 50
+      },
+      {
+        "label": "100",
+        "value": 100
+      },
+      {
+        "label": "200",
+        "value": 200
+      }
+    ],
+    "value": 20
+  }
+]
