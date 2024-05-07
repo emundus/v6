@@ -4207,7 +4207,7 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
 /* VIEW DETAILS */
 
 .view-details {
-  .span12 h1 {
+  .span12 .page-header  h1 {
     margin: 12px 0;
     font-family: var(--em-coordinator-font-title);
     color: var(--neutral-900);
