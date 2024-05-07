@@ -433,9 +433,8 @@ class EmundusHelperUpdate
 			$model = new ConfigModelApplication();
 
 			$oldData = $model->getData();
-            var_dump($oldData);
 
-			$data         = array();
+			$data = array();
 			$data[$param] = $value;
 
 			$data = array_replace($oldData, $data);
@@ -445,6 +444,54 @@ class EmundusHelperUpdate
 
 		return $updated;
 	}
+
+    public static function AddValueToConfigurationFile($param)
+{
+    $updated = false;
+
+    // 'mailfrom','smtpuser', 'smpthost', 'smtppass', 'smtpport', 'smtpsecure'
+        require_once(JPATH_SITE . '/components/com_config/model/cms.php');
+        require_once(JPATH_SITE . '/components/com_config/model/form.php');
+        require_once(JPATH_ROOT . '/administrator/components/com_config/model/application.php');
+
+        $model = new ConfigModelApplication();
+
+        $oldData = $model->getData();
+
+
+
+        $data = array_merge($oldData, $param);
+        $updated = $model->save($data);
+
+
+    return $updated;
+}
+
+    public static function convertOldValueToConfigurationFile($newparams ,$oldparams)
+    {
+        $updated = false;
+
+        // 'mailfrom','smtpuser', 'smpthost', 'smtppass', 'smtpport', 'smtpsecure'
+        require_once(JPATH_SITE . '/components/com_config/model/cms.php');
+        require_once(JPATH_SITE . '/components/com_config/model/form.php');
+        require_once(JPATH_ROOT . '/administrator/components/com_config/model/application.php');
+
+        $model = new ConfigModelApplication();
+
+        $oldData = $model->getData();
+
+        foreach ($newparams as $index => $newparam) {
+            $oldparam = $oldparams[$index];
+            $param[$newparam] = $oldData[$oldparam];
+        }
+
+
+        $data = array_merge($oldData, $param);
+        $updated = $model->save($data);
+
+
+        return $updated;
+    }
 
 	public static function getYamlVariable($key1,$file,$key2 = null) {
 		$yaml = \Symfony\Component\Yaml\Yaml::parse(file_get_contents($file));

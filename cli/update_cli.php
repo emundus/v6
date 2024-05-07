@@ -40,7 +40,7 @@ class UpdateCli extends JApplicationCli
         $this->db = JFactory::getDbo();
 
         $short_options = "vhlcu::a";
-        $long_options = ["verbose", "help", "list", "core", "update::", "all", "dry-run"];
+        $long_options = ["verbose", "help", "list", "core", "ate::", "all", "dry-run"];
         $options = getopt($short_options, $long_options);
         $args = (array)$GLOBALS['argv'];
 
