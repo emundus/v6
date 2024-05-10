@@ -1,0 +1,32 @@
+[
+  {
+    "displayed": true,
+    "component": "joomla",
+    "label": "COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_SENDER",
+    "param": "mailfrom-default",
+    "type": "email"
+  },
+  {
+    "displayed": true,
+    "component": "joomla",
+    "label": "COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_SENDER_NAME",
+    "param": "fromname-default",
+    "type": "text",
+    "placeholder": "adam"
+  },
+  {
+    "displayed": true,
+    "component": "joomla",
+    "label": "COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_REPLYTO",
+    "param": "replyto-default",
+    "type": "email"
+  },
+  {
+    "displayed": true,
+    "component": "joomla",
+    "label": "COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_REPLY_TO_NAME",
+    "param": "replytoname-default",
+    "type": "text",
+    "placeholder": "eve"
+  }
+]

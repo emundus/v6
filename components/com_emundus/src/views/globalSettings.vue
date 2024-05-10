@@ -13,7 +13,7 @@
       <div>
         <Content :ref="'content_'+activeMenuItem.name" :key="'json_'+activeMenuItem.name" v-if="activeMenuItem.type === 'JSON'" :json_source="'settings/'+activeMenuItem.source" @needSaving="handleNeedSaving" />
 
-        <component :ref="'content_'+activeMenuItem.name" v-else :is="activeMenuItem.component" :key="'component_'+activeMenuItem.name" v-bind="activeMenuItem.props" />
+        <component :ref="'content_'+activeMenuItem.name" v-else :is="activeMenuItem.component" :key="'component_'+activeMenuItem.name" v-bind="activeMenuItem.props" @needSaving="handleNeedSaving" />
       </div>
     </div>
 
@@ -23,21 +23,7 @@
 </template>
 
 <script>
-import EditStatus from '../components/Settings/Files/EditStatus';
-import EditTags from '../components/Settings/Files/EditTags';
-import TranslationTool from '../components/Settings/Translation/TranslationTool';
-import AttachmentStorage from '../components/Settings/AttachmentStorage/AttachmentStorage';
-
-import EditEmailJoomla from "@/components/Settings/Files/EditEmailJoomla.vue";
-
-import Global from "@/components/Settings/Style/General.vue";
-import EditTheme from "@/components/Settings/Style/EditTheme.vue";
-import EditFooter from "@/components/Settings/Content/EditFooter.vue";
-import Translations from "@/components/Settings/Translation/Translations.vue";
-import Orphelins from "@/components/Settings/Translation/Orphelins.vue";
-import EditArticle from "@/components/Settings/Content/EditArticle.vue";
-import EditorQuill from "@/components/editorQuill.vue";
-import GlobalLang from "@/components/Settings/Translation/Global.vue";
+import EditEmailJoomla from "@/components/Settings/EditEmailJoomla.vue";
 
 import Multiselect from 'vue-multiselect';
 import SidebarMenu from "@/components/Menus/SidebarMenu.vue";
@@ -52,19 +38,7 @@ export default {
     Content,
     SidebarMenu,
     EditEmailJoomla,
-    EditorQuill,
-    EditArticle,
-    Orphelins,
-    Translations,
-    EditFooter,
-    Global,
-    EditTheme,
-    AttachmentStorage,
-    TranslationTool,
-    EditStatus,
-    EditTags,
     Multiselect,
-    GlobalLang,
     Addons
   },
   props: {

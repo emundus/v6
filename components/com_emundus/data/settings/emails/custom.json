@@ -1,0 +1,72 @@
+[
+  {
+    "displayed": true,
+    "component": "joomla",
+    "label": "COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION_SMTP_HOST",
+    "param": "smtphost",
+    "type": "text",
+    "placeholder": "smtp.example.com"
+  },
+  {
+    "displayed": true,
+    "component": "joomla",
+    "label": "COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION_SMTP_PORT",
+    "param": "smtpport",
+    "type": "number",
+    "placeholder": "25 ,465, 587"
+  },
+  {
+    "displayed": true,
+    "component": "joomla",
+    "label": "COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION_SMTP_SECURITY",
+    "param": "smtpsecure",
+    "type": "select",
+    "options": [
+      {
+        "value": "0",
+        "label": "COM_EMUNDUS_FILTERS_CHECK_NONE"
+      },
+      {
+        "value": "1",
+        "label": "SSL"
+      },
+      {
+        "value": "2",
+        "label": "TLS"
+      }
+    ]
+  },
+  {
+    "displayed": true,
+    "component": "joomla",
+    "label": "COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION_SMTP_ENABLE",
+    "param": "smtpauth",
+    "type": "yesno",
+    "options": [
+      {
+        "value": 0,
+        "label": "JNO"
+      },
+      {
+        "value": 1,
+        "label": "JYES"
+      }
+    ],
+    "value": 0
+  },
+  {
+    "displayed": true,
+    "component": "joomla",
+    "label": "COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION_SMTP_USERNAME",
+    "param": "smtpuser",
+    "type": "text",
+    "placeholder": ""
+  },
+  {
+    "displayed": true,
+    "component": "joomla",
+    "label": "COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION_SMTP_PASSWORD",
+    "param": "smtppass",
+    "type": "password"
+  }
+]

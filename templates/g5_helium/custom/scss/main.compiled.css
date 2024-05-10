@@ -2230,6 +2230,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .col-span-3 {
   grid-column: span 3 / span 3;
 }
+.col-span-full {
+  grid-column: 1 / -1;
+}
 .col-start-1 {
   grid-column-start: 1;
 }
@@ -2921,6 +2924,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .\!mb-0 {
   margin-bottom: 0px !important;
+}
+.\!ml-0 {
+  margin-left: 0px !important;
 }
 .-mb-0 {
   margin-bottom: -0px;
@@ -38085,9 +38091,6 @@ small {
 .focus\:ring-black:focus {
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(0 0 0 / var(--tw-ring-opacity));
-}
-.focus\:ring-neutral-50:focus {
-  --tw-ring-color: var(--neutral-50);
 }
 .focus\:ring-neutral-800:focus {
   --tw-ring-color: var(--neutral-800);
