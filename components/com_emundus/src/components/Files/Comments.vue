@@ -211,8 +211,17 @@ export default {
 
       const target = this.targetableElements.find((element) => element.id === target_id);
       if (target) {
-        label = `${target.element_form_label} > ${target.element_group_label} > ${target.label}`;
+        if (target.element_form_label.length > 0) {
+          label += `${target.element_form_label} > `;
+        }
+
+        if (target.element_group_label.length > 0) {
+          label += `${target.element_group_label} > `;
+        }
+
+        label += target.label;
       }
+
       return label;
     },
     addComment(parent_id = 0) {
