@@ -1,5 +1,5 @@
 <template>
-	<div class="com_emundus_vue em-flex-col-center">
+	<div class="com_emundus_vue em-flex-col-center w-full">
 		<Attachments
 			v-if="component === 'attachments'"
 			:fnum="data.fnum"
@@ -27,6 +27,8 @@
         v-else-if="component === 'comments'"
         :ccid="datas.ccid.value"
         :user="datas.user.value"
+        :is-applicant="datas.is_applicant && datas.is_applicant.value == 1"
+        :current-form="datas.current_form && datas.current_form.value"
     >
 
     </Comments>

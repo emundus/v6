@@ -80,7 +80,7 @@ endif;
 		<?php
 		echo $this->plugintop;
 		?>
-        
+
         <?php
         $buttons_tmpl = $this->loadTemplate('buttons');
         $related_datas_tmpl = $this->loadTemplate('relateddata');
@@ -192,6 +192,7 @@ if (EmundusHelperAccess::asAccessAction(10, 'r', $user->id, $fnum)) {
     JText::script('COM_EMUNDUS_COMMENTS_ANSWER');
     JText::script('COM_EMUNDUS_COMMENTS_ADD_COMMENT_ON');
     JText::script('COM_EMUNDUS_COMMENTS_CANCEL');
+    JText::script('COM_EMUNDUS_COMMENTS');
 
     $ccid = EmundusHelperFiles::getIdFromFnum($fnum);
     $coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
@@ -215,20 +216,21 @@ if (EmundusHelperAccess::asAccessAction(10, 'r', $user->id, $fnum)) {
     }
 
     ?>
-    <aside id="aside-comment-section" class="fixed right-0 em-white-bg shadow ease-out closed">
+    <aside id="aside-comment-section" class="fixed right-0 em-white-bg shadow-[0_4px_3px_0px_rgba(0,0,0,0.1)] ease-out closed">
         <!-- Comments -->
         <div class="flex flex-row relative">
-                        <span class="open-comment material-icons-outlined cursor-pointer absolute top-14 em-bg-main-500 rounded-l-lg em-text-neutral-300" onclick="openCommentAside()">
-                            comment
-                        </span>
+            <span class="open-comment material-icons-outlined cursor-pointer absolute top-14 em-bg-main-500 rounded-l-lg em-text-neutral-300" onclick="openCommentAside()">
+                comment
+            </span>
             <span class="close-comment material-icons-outlined cursor-pointer absolute top-14 em-bg-main-500 rounded-l-lg em-text-neutral-300" onclick="openCommentAside()">
-                            close
-                        </span>
+                close
+            </span>
             <div id="em-component-vue"
                  component="comments"
                  user="<?= $user->id ?>"
                  ccid="<?= $ccid ?>"
                  is_applicant="1"
+                 current_form="<?= $form->id ?>"
                  currentLanguage="<?= $current_lang->getTag() ?>"
                  shortLang="<?= $short_lang ?>"
                  coordinatorAccess="<?= $coordinator_access ?>"

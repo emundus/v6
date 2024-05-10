@@ -50,6 +50,8 @@ if (count($languages) > 1) {
      component="comments"
      user="<?= $this->_user->id ?>"
      ccid="<?= $this->ccid ?>"
+     is_applicant="<?= 0 ?>"
+     current_form="<?= 0 ?>"
      currentLanguage="<?= $current_lang->getTag() ?>"
      shortLang="<?= $short_lang ?>"
      coordinatorAccess="<?= $coordinator_access ?>"

@@ -1,5 +1,6 @@
 <template>
-  <div id="comments" class="p-4">
+  <div id="comments" class="p-4 w-full">
+    <h2 class="mb-2">{{ translate('COM_EMUNDUS_COMMENTS') }}</h2>
     <div id="file-comment" v-for="comment in parentComments" :key="comment.id"
       class="shadow rounded-lg py-2 px-4 my-4 em-white-bg"
     >
@@ -40,7 +41,7 @@
           </div>
         </div>
         <div class="add-child-comment">
-          <textarea class="mb-2" @keyup.enter="addComment(comment.id)" v-model="newChildCommentText"></textarea>
+          <textarea class="mb-2 p-2" @keyup.enter="addComment(comment.id)" v-model="newChildCommentText"></textarea>
           <div class="w-full flex flex-row justify-end">
             <button id="add-comment-btn"
                     class="em-primary-button em-bg-main-500 em-neutral-300-color w-fit mt-2"
@@ -55,18 +56,18 @@
       </div>
     </div>
     <div id="add-comment-container">
-      <textarea @keyup.enter="addComment" v-model="newCommentText"></textarea>
-      <div class="flex flex-row items-center">
+      <textarea @keyup.enter="addComment" v-model="newCommentText" class="p-2"></textarea>
+      <div v-if="!isApplicant" class="flex flex-row items-center">
         <div class="flex flex-row items-center">
           <input type="radio" name="visible_to_applicant" v-model="visible_to_applicant" :value="false" id="visible-to-coords">
           <label for="visible-to-coords" class="m-0">{{ translate('COM_EMUNDUS_COMMENTS_VISIBLE_PARTNERS') }}</label>
         </div>
-        <div class="flex flex-row items-center ml-2">
+        <div class="flex flex-row items-center">
           <input type="radio" name="visible_to_applicant" v-model="visible_to_applicant" :value="true" id="visible-to-applicant">
           <label for="visible-to-applicant" class="m-0">{{ translate('COM_EMUNDUS_COMMENTS_VISIBLE_ALL') }}</label>
         </div>
       </div>
-      <div class="flex flex-row justify-end">
+      <div class="flex flex-row justify-end mt-2">
         <button id="add-comment-btn"
                 class="em-primary-button em-bg-main-500 em-neutral-300-color w-fit"
                 :class="{'cursor-not-allowed opacity-50': newCommentText.length === 0}"
@@ -84,8 +85,8 @@
       <div class="w-full h-full p-4 flex flex-col justify-between">
         <div>
           <h2 class="mb-3">{{ translate('COM_EMUNDUS_COMMENTS_ADD_COMMENT_ON') }} {{ targetLabel }}</h2>
-          <textarea v-model="newCommentText"></textarea>
-          <div class="flex flex-row items-center">
+          <textarea v-model="newCommentText" class="p-2"></textarea>
+          <div v-if="!isApplicant" class="flex flex-row items-center" >
             <div class="flex flex-row items-center">
               <input type="radio" name="visible_to_applicant" v-model="visible_to_applicant" :value="false" id="visible-to-coords">
               <label for="visible-to-coords" class="m-0">{{ translate('COM_EMUNDUS_COMMENTS_VISIBLE_PARTNERS') }}</label>
@@ -138,6 +139,14 @@ export default {
         u: true,
         d: true
       })
+    },
+    isApplicant: {
+      type: Boolean,
+      default: false
+    },
+    currentForm: {
+      type: Number,
+      default: 0
     }
   },
   mixins: [mixins, errors],
@@ -209,6 +218,10 @@ export default {
     addComment(parent_id = 0) {
       this.loading = true;
 
+      if (this.isApplicant) {
+        this.visible_to_applicant = true;
+      }
+
       let commentContent = this.newCommentText;
       if (parent_id !== 0) {
         commentContent = this.newChildCommentText;
@@ -252,11 +265,22 @@ export default {
     }
   },
   computed: {
+    displayedComments() {
+      let displayedComments = this.comments;
+      if (this.currentForm > 0) {
+        // check if the comment is related to the current form, thanks to targetableElements (element_form_id)
+        displayedComments = displayedComments.filter((comment) => {
+          return comment.target_id == 0 || this.targetableElements.find((element) => element.id === comment.target_id && element.element_form_id === this.currentForm);
+        });
+      }
+
+      return this.isApplicant ? displayedComments.filter((comment) => comment.visible_to_applicant == 1) : displayedComments;
+    },
     parentComments() {
-      return this.comments.filter((comment) => parseInt(comment.parent_id) === 0);
+      return this.displayedComments.filter((comment) => parseInt(comment.parent_id) === 0);
     },
     childrenComments() {
-      return this.comments.reduce((acc, comment) => {
+      return this.displayedComments.reduce((acc, comment) => {
         if (parseInt(comment.parent_id) !== 0) {
           if (!acc[comment.parent_id]) {
             acc[comment.parent_id] = [];
