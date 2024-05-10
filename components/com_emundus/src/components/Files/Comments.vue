@@ -2,17 +2,25 @@
   <div id="comments" class="p-4 w-full">
     <h2 class="mb-2">{{ translate('COM_EMUNDUS_COMMENTS') }}</h2>
     <div id="file-comment" v-for="comment in parentComments" :key="comment.id"
-      class="shadow rounded-lg py-2 px-4 my-4 em-white-bg"
+         class="shadow rounded-lg py-2 px-4 my-4 em-white-bg"
+         :class="{
+            'focus em-border-main-500': comment.id == openedCommentId,
+            'border border-transparent': comment.id != openedCommentId
+         }"
     >
       <div class="file-comment-header flex flex-row items-center justify-between mb-3">
-        <div class="file-comment-header-left flex flex-row cursor-pointer items-center" @click="replyToComment(comment.id)">
+        <div class="file-comment-header-left flex flex-row cursor-pointer items-center"
+             @click="replyToComment(comment.id)">
           <div class="flex flex-col mr-3">
             <span class="em-text-neutral-500 text-xs">{{ comment.date }}</span>
             <span>{{ comment.username }}</span>
           </div>
           <div>
             <span v-if="childrenComments[comment.id].length > 0" class="label label-green-2">
-              {{ childrenComments[comment.id].length }} {{ childrenComments[comment.id].length > 1 ? translate('COM_EMUNDUS_COMMENTS_ANSWERS') : translate('COM_EMUNDUS_COMMENTS_ANSWER') }}
+              {{ childrenComments[comment.id].length }}
+              {{
+                childrenComments[comment.id].length > 1 ? translate('COM_EMUNDUS_COMMENTS_ANSWERS') : translate('COM_EMUNDUS_COMMENTS_ANSWER')
+              }}
             </span>
           </div>
         </div>
@@ -22,9 +30,12 @@
         </div>
       </div>
       <p>{{ comment.comment_body }}</p>
-      <p v-if="comment.target_id > 0" class="text-sm em-gray-color mt-3">{{ getCommentTargetLabel(comment.target_id) }}</p>
+      <p v-if="comment.target_id > 0" class="text-sm em-gray-color mt-3">
+        {{ getCommentTargetLabel(comment.target_id) }}
+      </p>
 
-      <div class="comment-children" :class="{'opened': openedCommentId === comment.id, 'hidden': openedCommentId !== comment.id}">
+      <div class="comment-children"
+           :class="{'opened': openedCommentId === comment.id, 'hidden': openedCommentId !== comment.id}">
         <hr>
         <div v-for="child in childrenComments[comment.id]" :key="child.id" dir="ltr">
           <div class="child-comment flex flex-col border-s-4 my-2 px-3">
@@ -59,11 +70,13 @@
       <textarea @keyup.enter="addComment" v-model="newCommentText" class="p-2"></textarea>
       <div v-if="!isApplicant" class="flex flex-row items-center">
         <div class="flex flex-row items-center">
-          <input type="radio" name="visible_to_applicant" v-model="visible_to_applicant" :value="false" id="visible-to-coords">
+          <input type="radio" name="visible_to_applicant" v-model="visible_to_applicant" :value="false"
+                 id="visible-to-coords">
           <label for="visible-to-coords" class="m-0">{{ translate('COM_EMUNDUS_COMMENTS_VISIBLE_PARTNERS') }}</label>
         </div>
         <div class="flex flex-row items-center">
-          <input type="radio" name="visible_to_applicant" v-model="visible_to_applicant" :value="true" id="visible-to-applicant">
+          <input type="radio" name="visible_to_applicant" v-model="visible_to_applicant" :value="true"
+                 id="visible-to-applicant">
           <label for="visible-to-applicant" class="m-0">{{ translate('COM_EMUNDUS_COMMENTS_VISIBLE_ALL') }}</label>
         </div>
       </div>
@@ -86,13 +99,17 @@
         <div>
           <h2 class="mb-3">{{ translate('COM_EMUNDUS_COMMENTS_ADD_COMMENT_ON') }} {{ targetLabel }}</h2>
           <textarea v-model="newCommentText" class="p-2"></textarea>
-          <div v-if="!isApplicant" class="flex flex-row items-center" >
+          <div v-if="!isApplicant" class="flex flex-row items-center">
             <div class="flex flex-row items-center">
-              <input type="radio" name="visible_to_applicant" v-model="visible_to_applicant" :value="false" id="visible-to-coords">
-              <label for="visible-to-coords" class="m-0">{{ translate('COM_EMUNDUS_COMMENTS_VISIBLE_PARTNERS') }}</label>
+              <input type="radio" name="visible_to_applicant" v-model="visible_to_applicant" :value="false"
+                     id="visible-to-coords">
+              <label for="visible-to-coords" class="m-0">{{
+                  translate('COM_EMUNDUS_COMMENTS_VISIBLE_PARTNERS')
+                }}</label>
             </div>
             <div class="flex flex-row items-center ml-2">
-              <input type="radio" name="visible_to_applicant" v-model="visible_to_applicant" :value="true" id="visible-to-applicant">
+              <input type="radio" name="visible_to_applicant" v-model="visible_to_applicant" :value="true"
+                     id="visible-to-applicant">
               <label for="visible-to-applicant" class="m-0">{{ translate('COM_EMUNDUS_COMMENTS_VISIBLE_ALL') }}</label>
             </div>
           </div>
@@ -162,14 +179,17 @@ export default {
     openedCommentId: 0,
     loading: false,
     targetableElements: [],
+    focus: null,
   }),
   created() {
-    this.getComments();
-    this.getTargetableELements();
+    this.getTargetableELements().then(() => {
+      this.getComments();
+    });
     this.addListeners();
   },
   beforeDestroy() {
     document.removeEventListener('openModalAddComment');
+    document.removeEventListener('focusOnCommentElement');
   },
   methods: {
     addListeners() {
@@ -178,6 +198,28 @@ export default {
         this.target.type = event.detail.targetType;
         this.showModal();
       });
+
+      document.addEventListener('focusOnCommentElement', (event) => {
+        if (event.detail.targetId !== null && event.detail.targetId > 0) {
+          const foundComment = this.parentComments.find((comment) => {
+            return comment.target_id == event.detail.targetId
+          });
+
+          if (foundComment) {
+            this.openedCommentId = foundComment.id;
+          }
+        } else {
+          this.openedCommentId = 0;
+        }
+      });
+    },
+    dispatchCommentsLoaded() {
+      const event = new CustomEvent('commentsLoaded', {
+        detail: {
+          comments: this.parentComments
+        }
+      });
+      document.dispatchEvent(event);
     },
     showModal(name = 'add-comment-modal') {
       this.$modal.show(name);
@@ -195,10 +237,11 @@ export default {
         this.handleError(error);
       }).finally(() => {
         this.loading = false;
+        this.dispatchCommentsLoaded();
       });
     },
-    getTargetableELements() {
-      commentsService.getTargetableElements(this.ccid).then((response) => {
+    async getTargetableELements() {
+      return await commentsService.getTargetableElements(this.ccid).then((response) => {
         if (response.status) {
           this.targetableElements = response.data;
         }

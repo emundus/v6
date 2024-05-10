@@ -81,8 +81,12 @@ form .fabrikGroupColumns.fabrikGroup .row-fluid {
     display: none;
 }
 
-.comment-icon:not(.active) {
+.comment-icon {
     transition: all .3s;
+    opacity: 1 !important;
+}
+
+.comment-icon:not(.has-comments) {
     opacity: 0 !important;
 }
 
