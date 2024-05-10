@@ -4660,6 +4660,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .cursor-ew-resize {
   cursor: ew-resize;
 }
+.cursor-help {
+  cursor: help;
+}
 .cursor-nesw-resize {
   cursor: nesw-resize;
 }
@@ -13465,6 +13468,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .bg-green-700 {
   background-color: var(--green-700);
 }
+.bg-main-50 {
+  background-color: var(--main-50);
+}
 .bg-main-500 {
   background-color: var(--em-profile-color);
 }
@@ -13485,6 +13491,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .bg-red-400 {
   background-color: var(--red-400);
+}
+.bg-red-50 {
+  background-color: var(--red-50);
 }
 .bg-red-500 {
   background-color: var(--red-500);

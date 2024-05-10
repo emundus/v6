@@ -91,4 +91,23 @@ export default {
             };
         }
     },
+
+    async saveColors(preset) {
+        const formData = new FormData();
+        formData.append('preset', JSON.stringify(preset));
+
+        try {
+            const response = await client().post(
+                'index.php?option=com_emundus&controller=settings&task=updatecolor',
+                formData
+            );
+
+            return response.data;
+        } catch (e) {
+            return {
+                status: false,
+                msg: e.message
+            };
+        }
+    },
 };

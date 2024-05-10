@@ -709,13 +709,13 @@ class EmundusControllersettings extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
 		{
-			$result = 0;
 			$tab    = array('status' => '0', 'msg' => JText::_("ACCESS_DENIED"));
 		}
 		else
 		{
 			$jinput = JFactory::getApplication()->input;
 			$preset = $jinput->post->getRaw('preset');
+			$preset = json_decode($preset, true);
 
 			$yaml = \Symfony\Component\Yaml\Yaml::parse(file_get_contents('templates/g5_helium/custom/config/default/styles.yaml'));
 
