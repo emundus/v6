@@ -73,7 +73,10 @@ export default {
   },
   created() {
     this.sections = require('../../../data/' + this.$props.json_source);
-    this.activeSection = 0;
+    const sessionSection = sessionStorage.getItem('tchooz_settings_selected_section/'+ document.location.hostname);
+    if(sessionSection) {
+      this.activeSection = parseInt(sessionSection);
+    }
   },
   mounted() {
   },
@@ -135,12 +138,14 @@ export default {
     handleActiveSection(index) {
       if(index === this.activeSection){
         this.activeSection = null
+      } else {
+        this.activeSection = index
       }
-      this.activeSection = index
     }
   },
   watch: {
     activeSection: function (val) {
+      sessionStorage.setItem('tchooz_settings_selected_section/'+ document.location.hostname, this.activeSection);
       this.$emit('sectionSelected', this.sections[val])
     }
   },

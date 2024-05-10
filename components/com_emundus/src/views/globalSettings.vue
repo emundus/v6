@@ -91,11 +91,7 @@ export default {
     activeMenuItem: null,
   }),
 
-  created() {
-    this.loading = true;
-    this.changeCSS();
-    this.loading = false;
-  },
+  created() {},
   mounted() {
     //this.URLMenu();
   },
@@ -103,11 +99,6 @@ export default {
   methods: {
     handleNeedSaving(needSaving) {
       this.$store.commit("settings/setNeedSaving",needSaving);
-    },
-
-    changeCSS() {
-      document.getElementById("header-b").style.display = "none";
-      document.getElementById("g-navigation").style.display = "none";
     },
 
     URLMenu() {
@@ -178,10 +169,19 @@ export default {
       });
     },
   },
-  watch: {}
+  watch: {
+    activeMenuItem: function (val,oldVal) {
+      if(oldVal !== null) {
+        sessionStorage.setItem('tchooz_settings_selected_section/' + document.location.hostname, null);
+      }
+    }
+  }
 };
 
 </script>
 
-<style scoped>
+<style>
+#header-b,#g-navigation {
+  display: none;
+}
 </style>

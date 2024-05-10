@@ -67,6 +67,11 @@ export default {
   created() {
     this.menus = require('../../../data/' + this.$props.json_source);
     this.activeMenu = 0;
+
+    const sessionMenu = sessionStorage.getItem('tchooz_selected_menu/'+this.$props.json_source.replace('.json','')+ '/' + document.location.hostname);
+    if (sessionMenu) {
+      this.activeMenu = parseInt(sessionMenu);
+    }
   },
   mounted() {
   },
@@ -77,6 +82,7 @@ export default {
   },
   watch: {
     activeMenu: function (val) {
+      sessionStorage.setItem('tchooz_selected_menu/'+this.$props.json_source.replace('.json','')+ '/' + document.location.hostname, val);
       this.$emit('menuSelected', this.menus[val])
     }
   },
