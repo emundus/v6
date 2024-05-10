@@ -3021,6 +3021,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .justify-around {
   justify-content: space-around;
 }
+.justify-items-start {
+  justify-items: start;
+}
 .gap-0 {
   gap: 0px;
 }

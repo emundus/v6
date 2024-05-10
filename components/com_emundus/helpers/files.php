@@ -5098,5 +5098,27 @@ class EmundusHelperFiles
 
         return $fnum;
     }
+
+    public static function getIdFromFnum($fnum) {
+        $id = '';
+
+        if (!empty($fnum)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('id')
+                ->from('#__emundus_campaign_candidature')
+                ->where('fnum = ' . $db->quote($fnum));
+
+            try {
+                $db->setQuery($query);
+                $id = $db->loadResult();
+            } catch (Exception $e) {
+                $id = '';
+            }
+        }
+
+        return $id;
+    }
 }
 

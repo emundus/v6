@@ -46,3 +46,37 @@ form .fabrikGroupColumns.fabrikGroup .row-fluid {
         justify-content: flex-end;
     }
 }
+
+#aside-comment-section {
+    top: 72px;
+    height: calc(100vh - 72px);
+    transition: all .3s;
+    width: 425px;
+    z-index: 9999;
+}
+
+#aside-comment-section .close-comment, #aside-comment-section .open-comment {
+    left: -52px;
+    padding: 8px;
+    font-size: 36px;
+}
+
+#aside-comment-section .close-comment {
+    display: block;
+}
+
+#aside-comment-section .open-comment {
+    display: none;
+}
+
+#aside-comment-section.closed {
+    right: -425px;
+}
+
+#aside-comment-section.closed .open-comment {
+    display: block;
+}
+
+#aside-comment-section.closed .close-comment {
+    display: none;
+}

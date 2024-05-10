@@ -102,7 +102,8 @@ endif;
         <?php endif; ?>
 
 		<?php
-		foreach ($this->groups as $group) :
+        $this->index_element_id = 0;
+        foreach ($this->groups as $group) :
 			$this->group = $group;
 			?>
 
@@ -134,7 +135,7 @@ endif;
 				 *  * default_repeatgroup_table.php - repeat group rendered in a table.
 				 */
 				$this->elements = $group->elements;
-				echo $this->loadTemplate($group->tmpl);
+                echo $this->loadTemplate($group->tmpl);
 
 				if (!empty($group->outro)) : ?>
                     <div class="groupoutro"><?php echo $group->outro ?></div>
@@ -165,6 +166,112 @@ endif;
 	endif; ?>
 </div>
 
+
+
+
+<?php
+
+$user = JFactory::getUser();
+$fnum = JFactory::getSession()->get('emundusUser')->fnum;
+if (EmundusHelperAccess::asAccessAction(10, 'r', $user->id, $fnum)) {
+
+    JText::script('COM_EMUNDUS_COMMENTS_ADD_COMMENT');
+    JText::script('COM_EMUNDUS_COMMENTS_ERROR_PLEASE_COMPLETE');
+    JText::script('COM_EMUNDUS_COMMENTS_ENTER_COMMENT');
+    JText::script('COM_EMUNDUS_COMMENTS_SENT');
+    JText::script('COM_EMUNDUS_FILES_ADD_COMMENT');
+    JText::script('COM_EMUNDUS_FILES_CANNOT_ACCESS_COMMENTS');
+    JText::script('COM_EMUNDUS_FILES_CANNOT_ACCESS_COMMENTS_DESC');
+    JText::script('COM_EMUNDUS_FILES_COMMENT_TITLE');
+    JText::script('COM_EMUNDUS_FILES_COMMENT_BODY');
+    JText::script('COM_EMUNDUS_FILES_VALIDATE_COMMENT');
+    JText::script('COM_EMUNDUS_FILES_COMMENT_DELETE');
+    JText::script('COM_EMUNDUS_COMMENTS_VISIBLE_PARTNERS');
+    JText::script('COM_EMUNDUS_COMMENTS_VISIBLE_ALL');
+    JText::script('COM_EMUNDUS_COMMENTS_ANSWERS');
+    JText::script('COM_EMUNDUS_COMMENTS_ANSWER');
+    JText::script('COM_EMUNDUS_COMMENTS_ADD_COMMENT_ON');
+    JText::script('COM_EMUNDUS_COMMENTS_CANCEL');
+
+    $ccid = EmundusHelperFiles::getIdFromFnum($fnum);
+    $coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
+    $sysadmin_access = EmundusHelperAccess::isAdministrator($user->id);
+    $current_lang = JFactory::getLanguage();
+    $short_lang = substr($current_lang->getTag(), 0 , 2);
+    $languages = JLanguageHelper::getLanguages();
+    if (count($languages) > 1) {
+        $many_languages = '1';
+        require_once JPATH_SITE . '/components/com_emundus/models/translations.php';
+        $m_translations = new EmundusModelTranslations();
+        $default_lang = $m_translations->getDefaultLanguage()->lang_code;
+    } else {
+        $many_languages = '0';
+        $default_lang = $current_lang;
+    }
+
+    $xmlDoc = new DOMDocument();
+    if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
+        $release_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
+    }
+
+    ?>
+    <aside id="aside-comment-section" class="fixed right-0 em-white-bg shadow ease-out closed">
+        <!-- Comments -->
+        <div class="flex flex-row relative">
+                        <span class="open-comment material-icons-outlined cursor-pointer absolute top-14 em-bg-main-500 rounded-l-lg em-text-neutral-300" onclick="openCommentAside()">
+                            comment
+                        </span>
+            <span class="close-comment material-icons-outlined cursor-pointer absolute top-14 em-bg-main-500 rounded-l-lg em-text-neutral-300" onclick="openCommentAside()">
+                            close
+                        </span>
+            <div id="em-component-vue"
+                 component="comments"
+                 user="<?= $user->id ?>"
+                 ccid="<?= $ccid ?>"
+                 is_applicant="1"
+                 currentLanguage="<?= $current_lang->getTag() ?>"
+                 shortLang="<?= $short_lang ?>"
+                 coordinatorAccess="<?= $coordinator_access ?>"
+                 sysadminAccess="<?= $sysadmin_access ?>"
+                 manyLanguages="<?= $many_languages ?>"
+            >
+            </div>
+        </div>
+    </aside>
+    <script src="/media/com_emundus_vue/app_emundus.js?<?php echo $release_version ?>"></script>
+    <script src="/media/com_emundus_vue/chunk-vendors_emundus.js?<?php echo $release_version ?>"></script>
+
+    <script>
+        function openCommentAside() {
+            const aside = document.getElementById('aside-comment-section');
+            if (aside.classList.contains('closed')) {
+                aside.classList.remove('closed');
+            } else {
+                aside.classList.add('closed');
+            }
+        }
+
+        function openModalAddComment(element)
+        {
+            const event = new CustomEvent('openModalAddComment', {
+                detail: {
+                    targetType: element.dataset.targetType,
+                    targetId: element.dataset.targetId,
+                }
+            });
+
+            document.dispatchEvent(event);
+        }
+
+        document.addEventListener('click', function (e) {
+            if (e.target.classList.contains('comment-icon')) {
+                openModalAddComment(e.target);
+            }
+        });
+    </script>
+    <?php
+}
+?>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         // Set sidebar sticky depends on height of header
