@@ -132,11 +132,16 @@ export default {
       });
     },
 
-    saveColors() {
+    async saveColors() {
       let preset = {id: 7, primary: this.primary, secondary: this.secondary};
       settingsService.saveColors(preset).then((response) => {
         console.log(response);
       });
+    },
+
+    async saveMethod() {
+      await this.saveColors();
+      return true;
     },
 
     checkSimilarity(hex1, hex2, container) {
@@ -216,6 +221,7 @@ export default {
   watch: {
     primary: function(val,oldVal) {
       if(oldVal !== null) {
+        this.$emit('needSaving', true)
         this.changes = true;
         this.rgaaState = this.checkSimilarity(val, this.secondary);
         this.contrastRatio = this.checkContrast('#FFFFFF', val);
@@ -223,6 +229,7 @@ export default {
     },
     secondary: function(val,oldVal) {
       if(oldVal !== null) {
+        this.$emit('needSaving', true)
         this.changes = true;
         this.rgaaState = this.checkSimilarity(val, this.primary);
         this.contrastRatio = this.checkContrast('#FFFFFF', val);

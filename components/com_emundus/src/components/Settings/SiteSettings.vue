@@ -26,10 +26,10 @@
 </template>
 
 <script>
-import Parameter from "@/components/Settings/FilesTool/Parameter.vue";
+import Parameter from "@/components/Settings/Files/Parameter.vue";
 import axios from "axios";
 import Swal from "sweetalert2";
-import Global from "@/components/Settings/TranslationTool/Global.vue";
+import Global from "@/components/Settings/Translation/Global.vue";
 import settingsService from "../../services/settings";
 
 
@@ -123,7 +123,7 @@ export default {
       });
     },
 
-    saveSiteSettings() {
+    async saveSiteSettings() {
       let params = [];
       this.parametersUpdated.forEach((param) => {
         params.push({
@@ -137,10 +137,10 @@ export default {
           .then(() => {
             this.parametersUpdated = [];
             Swal.fire({
-              title: this.translate("COM_EMUNDUS_SWAL_SUCCESS_TITLE"),
+              title: this.translate("COM_EMUNDUS_ONBOARD_SUCCESS"),
               text: this.translate("COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SAVE_SUCCESS"),
               showCancelButton: false,
-              confirmButtonText: this.translate("COM_EMUNDUS_SWAL_OK_BUTTON"),
+              confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
               reverseButtons: true,
               customClass: {
                 title: 'em-swal-title',
@@ -164,6 +164,11 @@ export default {
             });
           });
     },
+
+    async saveMethod() {
+      await this.saveSiteSettings();
+      return true;
+    }
   },
   computed: {
     displayedParams() {

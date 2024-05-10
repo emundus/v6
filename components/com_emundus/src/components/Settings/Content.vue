@@ -21,7 +21,7 @@
 
       <!-- The content of the section -->
       <div name="SubMenuContent" class="flex flex-col" v-if="activeSection === indexSection">
-        <component :is="section.component" :key="activeSection" v-bind="section.props" @needSaving="handleNeedSaving">
+        <component :ref="'component_'+section.name" :is="section.component" :key="activeSection" v-bind="section.props" @needSaving="handleNeedSaving">
         </component>
       </div>
     </div>
@@ -32,11 +32,14 @@
 <script>
 import SiteSettings from "@/components/Settings/SiteSettings.vue";
 import EditTheme from "@/components/Settings/Style/EditTheme.vue";
-import EditStatus from "@/components/Settings/FilesTool/EditStatus.vue";
-import EditTags from "@/components/Settings/FilesTool/EditTags.vue";
+import EditStatus from "@/components/Settings/Files/EditStatus.vue";
+import EditTags from "@/components/Settings/Files/EditTags.vue";
 import General from "@/components/Settings/Style/General.vue";
-import Orphelins from "@/components/Settings/TranslationTool/Orphelins.vue";
-import Translations from "@/components/Settings/TranslationTool/Translations.vue";
+import Orphelins from "@/components/Settings/Translation/Orphelins.vue";
+import Translations from "@/components/Settings/Translation/Translations.vue";
+import EditArticle from "@/components/Settings/Content/EditArticle.vue";
+import EditFooter from "@/components/Settings/Content/EditFooter.vue";
+import Swal from "sweetalert2";
 
 export default {
   name: "Content",
@@ -48,6 +51,8 @@ export default {
     General,
     Orphelins,
     Translations,
+    EditArticle,
+    EditFooter
   },
   props: {
     json_source: {
@@ -73,16 +78,49 @@ export default {
   mounted() {
   },
   methods: {
-    saveSection(section) {
-      console.log(section)
+    saveSection(section, index) {
+      if(typeof this.$refs['component_'+section.name][0].saveMethod !== 'function') {
+        console.error('The component '+section.name+' does not have a saveMethod function')
+        return
+      }
+
+      this.$refs['component_'+section.name][0].saveMethod().then((response) => {
+        if(response === true) {
+          this.needSaving = false
+          this.activeSection = index;
+        }
+      });
     },
     handleNeedSaving(needSaving) {
       this.needSaving = needSaving;
       this.$emit('needSaving', needSaving)
     },
     handleSection(index) {
+      if(this.needSaving) {
+        Swal.fire({
+          title: this.translate('COM_EMUNDUS_ONBOARD_WARNING'),
+          text: this.translate('COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_UNSAVED'),
+          showCancelButton: true,
+          confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SAVE'),
+          cancelButtonText: this.translate('COM_EMUNDUS_ONBOARD_CANCEL'),
+          reverseButtons: true,
+          customClass: {
+            title: 'em-swal-title',
+            cancelButton: 'em-swal-cancel-button',
+            confirmButton: 'em-swal-confirm-button',
+          }
+        }).then((result) => {
+          if (result.value) {
+            this.saveSection(this.sections[this.activeSection], index);
+          } else{
+            this.activeSection = index
+          }
+        });
+      } else {
+        this.activeSection = index
+      }
       //TODO: If need saving is true, show a modal to confirm the saving
-      this.activeSection = index
+
     }
   },
   watch: {

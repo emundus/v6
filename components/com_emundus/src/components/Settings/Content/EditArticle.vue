@@ -40,9 +40,13 @@
 
       <div class="form-group controls">
         <editor-quill :height="'30em'" :text="form.content" :enable_variables="false" :id="'editor_'+this.name"
-                      :key="dynamicComponent" v-model="form.content" @Edit-Out="saveContent"></editor-quill>
+                      :key="dynamicComponent" v-model="form.content" @Edit-Out="updated = true"></editor-quill>
       </div>
     </div>
+
+    <button class="btn btn-primary float-right mt-3" v-if="updated" @click="saveContent">
+      {{ translate("COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SAVE") }}
+    </button>
 
     <div class="em-page-loader" v-if="loading"></div>
   </div>
@@ -103,6 +107,7 @@ export default {
       lang: null,
       loading: false,
       dynamicComponent: 0,
+      updated: false,
 
       form: {
         published: this.$props.published,
@@ -177,6 +182,7 @@ export default {
       ).then(() => {
         this.$emit('updateSaving', false);
         this.$emit('updateLastSaving', this.formattedDate('', 'LT'));
+        this.updated = false;
       });
     },
 

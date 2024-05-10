@@ -46,7 +46,7 @@ import messages from "./components/Messages/Messages";
 
 import settingsService from "./services/settings.js";
 import ApplicationSingle from "@/components/Files/ApplicationSingle.vue";
-import TranslationTool from "./components/Settings/TranslationTool/TranslationTool.vue";
+import TranslationTool from "./components/Settings/Translation/TranslationTool.vue";
 
 export default {
 	props: {

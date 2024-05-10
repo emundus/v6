@@ -23,27 +23,23 @@
 </template>
 
 <script>
-import EditStatus from '../components/Settings/FilesTool/EditStatus';
-import EditTags from '../components/Settings/FilesTool/EditTags';
-import TranslationTool from '../components/Settings/TranslationTool/TranslationTool';
-import ContentTool from '../components/Settings/Content/ContentTool';
+import EditStatus from '../components/Settings/Files/EditStatus';
+import EditTags from '../components/Settings/Files/EditTags';
+import TranslationTool from '../components/Settings/Translation/TranslationTool';
 import AttachmentStorage from '../components/Settings/AttachmentStorage/AttachmentStorage';
 
-import SettingParam from '../../data/settings-global-group-params.json';
-import EditEmailJoomla from "@/components/Settings/FilesTool/EditEmailJoomla.vue";
+import EditEmailJoomla from "@/components/Settings/Files/EditEmailJoomla.vue";
 
 import Global from "@/components/Settings/Style/General.vue";
 import EditTheme from "@/components/Settings/Style/EditTheme.vue";
 import EditFooter from "@/components/Settings/Content/EditFooter.vue";
-import Translations from "@/components/Settings/TranslationTool/Translations.vue";
-import Orphelins from "@/components/Settings/TranslationTool/Orphelins.vue";
+import Translations from "@/components/Settings/Translation/Translations.vue";
+import Orphelins from "@/components/Settings/Translation/Orphelins.vue";
 import EditArticle from "@/components/Settings/Content/EditArticle.vue";
 import EditorQuill from "@/components/editorQuill.vue";
-import axios from "axios"
-import GlobalLang from "@/components/Settings/TranslationTool/Global.vue";
+import GlobalLang from "@/components/Settings/Translation/Global.vue";
 
 import Multiselect from 'vue-multiselect';
-import Swal from "sweetalert2";
 import SidebarMenu from "@/components/Menus/SidebarMenu.vue";
 import Content from "@/components/Settings/Content.vue";
 import Addons from "@/components/Settings/Addons.vue";
@@ -63,7 +59,6 @@ export default {
     Global,
     EditTheme,
     AttachmentStorage,
-    ContentTool,
     TranslationTool,
     EditStatus,
     EditTags,
