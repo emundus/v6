@@ -68,7 +68,7 @@ foreach ($this->elements as $element) :
 
     ?>
     <div class="flex flex-row justify-items-start items-start">
-        <div>
+        <div <?= $style ?>>
             <span class="material-icons-outlined cursor-pointer comment-icon" data-target-type="element" data-target-id="<?= $element->element_fabrik_id ?>">comment</span>
         </div>
         <?= $layout->render((object) $displayData); ?>
