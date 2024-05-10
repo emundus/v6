@@ -80,3 +80,12 @@ form .fabrikGroupColumns.fabrikGroup .row-fluid {
 #aside-comment-section.closed .close-comment {
     display: none;
 }
+
+.comment-icon:not(.active) {
+    transition: all .3s;
+    opacity: 0 !important;
+}
+
+.fabrik-element-emundus-container:hover .comment-icon {
+    opacity: 1 !important;
+}

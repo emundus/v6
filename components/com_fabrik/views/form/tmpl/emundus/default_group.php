@@ -67,7 +67,7 @@ foreach ($this->elements as $element) :
 	}
 
     ?>
-    <div class="flex flex-row justify-items-start items-start">
+    <div class="fabrik-element-emundus-container flex flex-row justify-items-start items-start">
         <div <?= $style ?>>
             <span class="material-icons-outlined cursor-pointer comment-icon" data-target-type="element" data-target-id="<?= $element->element_fabrik_id ?>">comment</span>
         </div>
