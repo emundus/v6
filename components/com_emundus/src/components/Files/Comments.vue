@@ -16,7 +16,7 @@
             <span>{{ comment.username }}</span>
           </div>
           <div>
-            <span v-if="childrenComments[comment.id].length > 0" class="label label-green-2">
+            <span v-if="childrenComments[comment.id].length > 0" class="label em-bg-main-500">
               {{ childrenComments[comment.id].length }}
               {{
                 childrenComments[comment.id].length > 1 ? translate('COM_EMUNDUS_COMMENTS_ANSWERS') : translate('COM_EMUNDUS_COMMENTS_ANSWER')
