@@ -402,7 +402,48 @@ function checkPasswordSymbols(element) {
 function getElementShowedValue(element) {
 
     if (element) {
-        return element.get('value');
+        const container = element.getContainer();
+
+        switch (element.plugin) {
+            case 'fabrikyesno':
+            case 'fabrikradiobutton':
+            case 'fabrikcheckbox':
+            case 'databasejoin':
+            case 'fabrikdropdown':
+                const values = Array.isArray(element.get('value')) ? element.get('value'): [element.get('value')];
+                let inputChecked = [];
+                values.forEach((value) => {
+                    inputChecked.push(container.querySelector('[value=\"'+value+'\"]'));
+                });
+
+                let checked = [];
+                inputChecked.forEach((input) => {
+                   if (input.localName === 'option') {
+                       checked.push(input.innerText);
+                   } else {
+                       checked.push(input.nextSibling.textContent);
+                   }
+                });
+                return checked.join(', ');
+
+            case 'panel':
+                const div_info = container.querySelector('.fabrikElementReadOnly').cloneNode(true);
+                div_info.classList.remove('fabrikHide');
+                return div_info;
+
+            case 'emundus_fileupload':
+            case 'emundus_fileupload_new':
+                const div_attachment = container.querySelector('.em-fileAttachment').cloneNode(true);
+                for (const child of div_attachment.querySelectorAll('*')) {
+                    if (child.classList.contains('em-deleteFile')) {
+                        child.remove();
+                    }
+                }
+                return div_attachment;
+
+            default:
+                return element.get('value');
+        }
     }
 }
 
