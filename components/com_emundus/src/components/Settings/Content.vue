@@ -78,31 +78,41 @@ export default {
   mounted() {
   },
   methods: {
-    saveSection(section, index) {
-      if(typeof this.$refs['component_'+section.name][0].saveMethod !== 'function') {
+    async saveMethod() {
+      await this.saveSection(this.sections[this.activeSection]);
+      return true;
+    },
+    async saveSection(section, index = null) {
+      let vue_component = this.$refs['component_'+section.name];
+      if(Array.isArray(vue_component)) {
+        vue_component = vue_component[0];
+      }
+
+      if(typeof vue_component.saveMethod !== 'function') {
         console.error('The component '+section.name+' does not have a saveMethod function')
         return
       }
 
-      this.$refs['component_'+section.name][0].saveMethod().then((response) => {
+      vue_component.saveMethod().then((response) => {
         if(response === true) {
-          this.needSaving = false
-          this.activeSection = index;
+          if(index !== null) {
+            this.handleActiveSection(index);
+          }
         }
       });
     },
+
     handleNeedSaving(needSaving) {
-      this.needSaving = needSaving;
-      this.$emit('needSaving', needSaving)
+      this.$store.commit("settings/setNeedSaving",needSaving);
     },
     handleSection(index) {
-      if(this.needSaving) {
+      if(this.$store.state.settings.needSaving) {
         Swal.fire({
           title: this.translate('COM_EMUNDUS_ONBOARD_WARNING'),
           text: this.translate('COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_UNSAVED'),
           showCancelButton: true,
           confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SAVE'),
-          cancelButtonText: this.translate('COM_EMUNDUS_ONBOARD_CANCEL'),
+          cancelButtonText: this.translate('COM_EMUNDUS_ONBOARD_CANCEL_UPDATES'),
           reverseButtons: true,
           customClass: {
             title: 'em-swal-title',
@@ -110,17 +120,23 @@ export default {
             confirmButton: 'em-swal-confirm-button',
           }
         }).then((result) => {
+          this.handleNeedSaving(false);
+
           if (result.value) {
             this.saveSection(this.sections[this.activeSection], index);
           } else{
-            this.activeSection = index
+            this.handleActiveSection(index);
           }
         });
       } else {
-        this.activeSection = index
+        this.handleActiveSection(index);
       }
-      //TODO: If need saving is true, show a modal to confirm the saving
-
+    },
+    handleActiveSection(index) {
+      if(index === this.activeSection){
+        this.activeSection = null
+      }
+      this.activeSection = index
     }
   },
   watch: {

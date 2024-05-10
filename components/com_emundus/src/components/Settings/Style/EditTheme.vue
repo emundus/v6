@@ -50,6 +50,7 @@
 import settingsService from "@/services/settings";
 import axios from "axios";
 import qs from "qs";
+import Swal from "sweetalert2";
 
 export default {
   name: "global",
@@ -135,7 +136,18 @@ export default {
     async saveColors() {
       let preset = {id: 7, primary: this.primary, secondary: this.secondary};
       settingsService.saveColors(preset).then((response) => {
-        console.log(response);
+        if(response.status === true) {
+          Swal.fire({
+            title: this.translate("COM_EMUNDUS_ONBOARD_SUCCESS"),
+            text: this.translate("COM_EMUNDUS_ONBOARD_SETTINGS_THEME_SAVE_SUCCESS"),
+            showCancelButton: false,
+            showConfirmButton: false,
+            customClass: {
+              title: 'em-swal-title'
+            },
+            timer: 2000
+          });
+        }
       });
     },
 

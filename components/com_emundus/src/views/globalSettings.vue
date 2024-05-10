@@ -11,9 +11,9 @@
       </h1>
 
       <div>
-        <Content :key="'json_'+activeMenuItem.name" v-if="activeMenuItem.type === 'JSON'" :json_source="'settings/'+activeMenuItem.source" @needSaving="handleNeedSaving" />
+        <Content :ref="'content_'+activeMenuItem.name" :key="'json_'+activeMenuItem.name" v-if="activeMenuItem.type === 'JSON'" :json_source="'settings/'+activeMenuItem.source" @needSaving="handleNeedSaving" />
 
-        <component v-else :is="activeMenuItem.component" :key="'component_'+activeMenuItem.name" v-bind="activeMenuItem.props" />
+        <component :ref="'content_'+activeMenuItem.name" v-else :is="activeMenuItem.component" :key="'component_'+activeMenuItem.name" v-bind="activeMenuItem.props" />
       </div>
     </div>
 
@@ -43,6 +43,7 @@ import Multiselect from 'vue-multiselect';
 import SidebarMenu from "@/components/Menus/SidebarMenu.vue";
 import Content from "@/components/Settings/Content.vue";
 import Addons from "@/components/Settings/Addons.vue";
+import Swal from "sweetalert2";
 
 
 export default {
@@ -101,7 +102,7 @@ export default {
 
   methods: {
     handleNeedSaving(needSaving) {
-      this.needSaving = needSaving;
+      this.$store.commit("settings/setNeedSaving",needSaving);
     },
 
     changeCSS() {
@@ -122,7 +123,7 @@ export default {
         if (indexSubSection !== -1) {
           setTimeout(() => {
             this.handleSubMenu(indexSubSection);
-          }, 100);//wait thant this.handleMenu(indexMenu  , this.menus[indexMenu]) is finished
+          }, 100);
         }
       } else {
         this.handleMenu(0, this.menus[0]);
@@ -130,8 +131,51 @@ export default {
     },
 
     handleMenu(item) {
-      //TODO: If need saving is true, show a modal to confirm the saving
-      this.activeMenuItem = item;
+      if(this.$store.state.settings.needSaving) {
+        Swal.fire({
+          title: this.translate('COM_EMUNDUS_ONBOARD_WARNING'),
+          text: this.translate('COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_UNSAVED'),
+          showCancelButton: true,
+          confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SAVE'),
+          cancelButtonText: this.translate('COM_EMUNDUS_ONBOARD_CANCEL_UPDATES'),
+          reverseButtons: true,
+          customClass: {
+            title: 'em-swal-title',
+            cancelButton: 'em-swal-cancel-button',
+            confirmButton: 'em-swal-confirm-button',
+          }
+        }).then((result) => {
+          this.handleNeedSaving(false);
+
+          if (result.value) {
+            this.saveSection(this.activeMenuItem, item);
+          } else {
+            this.activeMenuItem = item;
+          }
+        });
+      } else {
+        this.activeMenuItem = item;
+      }
+    },
+
+    saveSection(menu, item = null) {
+      let vue_component = this.$refs['content_'+menu.name];
+      if(Array.isArray(vue_component)) {
+        vue_component = vue_component[0];
+      }
+
+      if(typeof vue_component.saveMethod !== 'function') {
+        console.error('The component '+menu.name+' does not have a saveMethod function')
+        return
+      }
+
+      vue_component.saveMethod().then((response) => {
+        if(response === true) {
+          if(item !== null) {
+            this.activeMenuItem = item;
+          }
+        }
+      });
     },
   },
   watch: {}

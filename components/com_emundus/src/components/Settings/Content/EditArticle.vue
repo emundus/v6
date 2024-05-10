@@ -1,52 +1,53 @@
 <template>
   <div class="em-settings-menu">
-    <div class="em-w-80">
-
-      <div class="em-grid-3 em-mb-16">
-        <multiselect
-            v-model="lang"
-            label="title_native"
-            track-by="lang_code"
-            :options="availableLanguages"
-            :multiple="false"
-            :taggable="false"
-            select-label=""
-            selected-label=""
-            deselect-label=""
-            :placeholder="translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SELECT_LANGUAGE')"
-            :close-on-select="true"
-            :clear-on-select="false"
-            :searchable="false"
-            :allow-empty="false"
-        ></multiselect>
-      </div>
-
-      <div class="mb-4 flex items-center" v-if="category === 'rgpd'">
-        <div class="em-toggle">
-          <input type="checkbox"
-                 true-value="1"
-                 false-value="0"
-                 class="em-toggle-check"
-                 id="published"
-                 name="published"
-                 v-model="form.published"
-                 @change="publishArticle()"
-          />
-          <strong class="b em-toggle-switch"></strong>
-          <strong class="b em-toggle-track"></strong>
+    <div class="w-full">
+      <div class="w-5/6">
+        <div class="em-grid-3 em-mb-16">
+          <multiselect
+              v-model="lang"
+              label="title_native"
+              track-by="lang_code"
+              :options="availableLanguages"
+              :multiple="false"
+              :taggable="false"
+              select-label=""
+              selected-label=""
+              deselect-label=""
+              :placeholder="translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SELECT_LANGUAGE')"
+              :close-on-select="true"
+              :clear-on-select="false"
+              :searchable="false"
+              :allow-empty="false"
+          ></multiselect>
         </div>
-        <span for="published" class="ml-2">{{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_CONTENT_PUBLISH') }}</span>
+
+        <div class="mb-4 flex items-center" v-if="category === 'rgpd'">
+          <div class="em-toggle">
+            <input type="checkbox"
+                   true-value="1"
+                   false-value="0"
+                   class="em-toggle-check"
+                   id="published"
+                   name="published"
+                   v-model="form.published"
+                   @change="publishArticle()"
+            />
+            <strong class="b em-toggle-switch"></strong>
+            <strong class="b em-toggle-track"></strong>
+          </div>
+          <span for="published" class="ml-2">{{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_CONTENT_PUBLISH') }}</span>
+        </div>
+
+        <div class="form-group controls">
+          <editor-quill :height="'30em'" :text="form.content" :enable_variables="false" :id="'editor_'+this.name"
+                        :key="dynamicComponent" v-model="form.content" @input="updated = true"></editor-quill>
+        </div>
       </div>
 
-      <div class="form-group controls">
-        <editor-quill :height="'30em'" :text="form.content" :enable_variables="false" :id="'editor_'+this.name"
-                      :key="dynamicComponent" v-model="form.content" @Edit-Out="updated = true"></editor-quill>
-      </div>
+      <button class="btn btn-primary float-right mt-3" v-if="updated" @click="saveContent">
+        {{ translate("COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SAVE") }}
+      </button>
     </div>
-
-    <button class="btn btn-primary float-right mt-3" v-if="updated" @click="saveContent">
-      {{ translate("COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SAVE") }}
-    </button>
 
     <div class="em-page-loader" v-if="loading"></div>
   </div>
@@ -144,11 +145,10 @@ export default {
       await client().get("index.php?option=com_emundus&controller=settings&task=getarticle", {
         params: params
       }).then(response => {
-        if (response.data.data.note === 'need to modify')
-        {
+        if (response.data.data.note === 'need to modify') {
           this.form.need_notify = true
           this.$emit('NeedNotify', true);
-        }else {
+        } else {
           this.form.need_notify = false
           this.$emit('NeedNotify', false);
         }
@@ -217,6 +217,11 @@ export default {
         this.$emit('updatePublished', this.form.published);
       });
     },
+
+    async saveMethod() {
+      await this.saveContent();
+      return true;
+    }
   },
 
   watch: {
@@ -228,6 +233,9 @@ export default {
         this.dynamicComponent++;
       }
     },
+    updated: function (val) {
+      this.$emit('needSaving', val);
+    }
   }
 };
 </script>

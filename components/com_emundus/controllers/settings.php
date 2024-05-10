@@ -709,7 +709,7 @@ class EmundusControllersettings extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
 		{
-			$tab    = array('status' => '0', 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => false, 'msg' => JText::_("ACCESS_DENIED"));
 		}
 		else
 		{
@@ -742,7 +742,7 @@ class EmundusControllersettings extends JControllerLegacy
 				rmdir($dir);
 			}
 
-			$tab = array('status' => '1', 'msg' => JText::_("SUCCESS"));
+			$tab = array('status' => true, 'msg' => JText::_("SUCCESS"));
 		}
 		echo json_encode((object) $tab);
 		exit;

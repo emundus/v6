@@ -73,7 +73,7 @@ export default {
 
             Object.values(this.parameters).forEach((parameter) => {
 
-              if (parameter.type == 'keywords') {
+              if (parameter.type === 'keywords') {
                 let keywords = this.config[parameter.component][parameter.param].split(',');
                 parameter.value = keywords.map((keyword) => {
                   return {
@@ -140,18 +140,16 @@ export default {
               title: this.translate("COM_EMUNDUS_ONBOARD_SUCCESS"),
               text: this.translate("COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SAVE_SUCCESS"),
               showCancelButton: false,
-              confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
-              reverseButtons: true,
+              showConfirmButton: false,
               customClass: {
-                title: 'em-swal-title',
-                confirmButton: 'em-swal-confirm-button',
-                actions: "em-swal-single-action",
+                title: 'em-swal-title'
               },
+              timer: 2000,
             });
           })
           .catch(() => {
             Swal.fire({
-              title: this.translate("COM_EMUNDUS_SWAL_ERROR_TITLE"),
+              title: this.translate("COM_EMUNDUS_ERROR"),
               text: this.translate("COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SAVE_ERROR"),
               showCancelButton: false,
               confirmButtonText: this.translate("COM_EMUNDUS_SWAL_OK_BUTTON"),

@@ -165,7 +165,6 @@ export default {
   },
   methods: {
     saveText () {
-      console.log('focusout');
       this.$emit('Edit-Out');
     },
     async imageHandler() {
