@@ -156,15 +156,7 @@ export default {
       this.loading = true;
       formBuilderService.updateTranslation({value: this.element.id, key: 'element'}, this.element.label_tag, this.element.label);
 
-      if (this.element.params.alias === "") {
-        if (this.element.label && this.element.label["shortDefaultLang"]) {
-          this.element.params.alias = this.element.label["shortDefaultLang"].toLowerCase().replace(/\s+/g, '_');
-        } else {
-          this.element.params.alias = '';
-        }
-      }
-
-	    if (['radiobutton', 'checkbox', 'dropdown'].includes(this.element.plugin)) {
+      if (['radiobutton', 'checkbox', 'dropdown'].includes(this.element.plugin)) {
 		    formBuilderService.getJTEXTA(this.element.params.sub_options.sub_labels).then(response => {
 					if (response) {
 						this.element.params.sub_options.sub_labels.forEach((label, index) => {

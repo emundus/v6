@@ -2001,7 +2001,15 @@ class EmundusModelFormbuilder extends JModelList {
                 }
             }
 
-            // Update the element
+			if($element['params']['alias'] === "" && isset($element['label']['fr'])){
+				$element['params']['alias'] =  $element['label']['fr'];
+			}
+	        $element['params']['alias'] = strtolower(str_replace(' ', '_', $element['params']['alias']));
+	        $element['params']['alias'] = htmlentities($element['params']['alias'], ENT_COMPAT, "UTF-8");
+	        $element['params']['alias'] = preg_replace('/&([a-zA-Z])(uml|acute|grave|circ|tilde|cedil);/', '$1', $element['params']['alias']);
+	        $element['params']['alias'] = html_entity_decode($element['params']['alias']);
+
+	        // Update the element
             $fields = array(
                 $db->quoteName('plugin') . ' = ' . $db->quote($element['plugin']),
                 $db->quoteName('default') . ' = ' . $db->quote($element['default']),
