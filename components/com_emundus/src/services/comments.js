@@ -47,6 +47,33 @@ export default {
             };
         }
     },
+    async updateComment(comment_id, comment) {
+        if (comment_id > 0 && comment.length > 0) {
+            try {
+                const formData = new FormData();
+                formData.append('comment_id', comment_id);
+                formData.append('comment', comment);
+
+                const response = await client().post('index.php?option=com_emundus&controller=comments&task=updatecomment', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+
+                return response.data;
+            } catch (e) {
+                return {
+                    status: false,
+                    msg: e.message
+                };
+            }
+        } else {
+            return {
+                status: false,
+                msg: 'Invalid data'
+            };
+        }
+    },
     async deleteComment(comment_id) {
         if (comment_id > 0) {
             try {

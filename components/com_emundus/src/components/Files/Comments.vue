@@ -12,7 +12,7 @@
         <div class="file-comment-header-left flex flex-row cursor-pointer items-center"
              @click="replyToComment(comment.id)">
           <div class="flex flex-col mr-3">
-            <span class="em-text-neutral-500 text-xs">{{ comment.date }}</span>
+            <span class="em-text-neutral-500 text-xs">{{ comment.updated ? comment.updated : comment.date }}</span>
             <span>{{ comment.username }}</span>
           </div>
           <div>
@@ -27,9 +27,31 @@
         <div class="file-comment-header-right">
           <span class="material-icons-outlined cursor-pointer" @click="replyToComment(comment.id)">reply</span>
           <span class="material-icons-outlined cursor-pointer" @click="deleteComment(comment.id)">delete</span>
+          <span v-if="comment.user_id == user" class="material-icons-outlined cursor-pointer" @click="makeCommentEditable(comment.id)">edit</span>
         </div>
       </div>
-      <p>{{ comment.comment_body }}</p>
+
+      <div v-if="editable === comment.id">
+        <textarea :id="'editable-comment-' + comment.id" v-model="comment.comment_body" @keyup.enter="updateComment(comment.id)">
+        </textarea>
+        <div class="flex flex-row justify-end mt-2">
+          <button id="add-comment-btn"
+                  class="em-primary-button em-bg-main-500 em-neutral-300-color w-fit"
+                  @click="updateComment(comment.id)"
+          >
+            <span>{{ translate('COM_EMUNDUS_COMMENTS_UPDATE_COMMENT') }}</span>
+            <span class="material-icons-outlined ml-1 em-neutral-300-color">send</span>
+          </button>
+          <button id="abort-update"
+                  class="em-primary-button em-bg-main-500 em-neutral-300-color w-fit ml-2"
+                  @click="abortUpdateComment"
+          >
+            <span>{{ translate('COM_EMUNDUS_COMMENTS_CANCEL') }}</span>
+          </button>
+        </div>
+      </div>
+      <p v-else>{{ comment.comment_body }}</p>
+
       <p v-if="comment.target_id > 0" class="text-sm em-gray-color mt-3">
         {{ getCommentTargetLabel(comment.target_id) }}
       </p>
@@ -41,7 +63,7 @@
           <div class="child-comment flex flex-col border-s-4 my-2 px-3">
             <div class="file-comment-header flex flex-row justify-between">
               <div class="file-comment-header-left flex flex-col">
-                <span class="em-text-neutral-500 text-xs">{{ child.date }}</span>
+                <span class="em-text-neutral-500 text-xs">{{ child.updated ? child.updated : child.date }}</span>
                 <span>{{ child.username }}</span>
               </div>
               <div class="file-comment-header-left">
@@ -180,6 +202,8 @@ export default {
     loading: false,
     targetableElements: [],
     focus: null,
+    editable: null,
+    tmpComment: null,
   }),
   created() {
     this.getTargetableELements().then(() => {
@@ -314,7 +338,42 @@ export default {
           this.handleError(error);
         });
       }
-    }
+    },
+    makeCommentEditable(commentId) {
+      if (commentId > 0) {
+        const comment = this.comments.find((comment) => comment.id === commentId);
+        if (comment && comment.user_id === this.user) {
+          this.editable = commentId;
+          this.tmpComment = comment.comment_body;
+
+          this.$nextTick(() => {
+            const textarea = document.getElementById(`editable-comment-${commentId}`);
+            if (textarea) {
+              textarea.focus();
+            }
+          });
+        }
+      }
+    },
+    abortUpdateComment() {
+      this.comments.find((comment) => comment.id === this.editable).comment_body = this.tmpComment;
+      this.editable = null;
+      this.tmpComment = null;
+    },
+    updateComment(commentId) {
+      this.loading = true;
+
+      const commentContent = this.comments.find((comment) => comment.id === commentId).comment_body;
+      commentsService.updateComment(commentId, commentContent).then((response) => {
+        // nothing to do
+      }).catch((error) => {
+        this.handleError(error);
+      }).finally(() => {
+        this.loading = false;
+        this.editable = null;
+        this.tmpComment = null;
+      });
+    },
   },
   computed: {
     displayedComments() {

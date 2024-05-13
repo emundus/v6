@@ -91,6 +91,30 @@ class EmundusControllerComments extends JControllerLegacy
         $this->sendJsonResponse($response);
     }
 
+    public function updateComment() {
+        $response = ['status' => false, 'code' => 403, 'message' => Text::_('ACCESS_DENIED')];
+        $comment_id = $this->app->input->getInt('comment_id', 0);
+
+        if (!empty($comment_id)) {
+            $model = $this->getModel('comments');
+            $comment = $model->getComment($comment_id);
+            if (!empty($comment)) {
+                $fnum = EmundusHelperFiles::getFnumFromId($comment['ccid']);
+
+                if (EmundusHelperAccess::asAccessAction(10, 'u', $this->user->id, $fnum) && $comment['user_id'] == $this->user->id) {
+                    $response['code'] = 500;
+                    $new_comment = $this->app->input->getString('comment', '');
+
+                    $response['status'] = $model->updateComment($comment_id, $new_comment, $this->user->id);
+                    $response['code'] = $response['status'] ? 200 : 500;
+                    $response['message'] = $response['status'] ? Text::_('COM_EMUNDUS_UPDATE_COMMENT_SUCCESS') : Text::_('COM_EMUNDUS_UPDATE_COMMENT_FAILED');
+                }
+            }
+        }
+
+        $this->sendJsonResponse($response);
+    }
+
     public function deletecomment()
     {
         $response = ['status' => false, 'code' => 403, 'message' => Text::_('ACCESS_DENIED')];

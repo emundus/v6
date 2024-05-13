@@ -80,6 +80,8 @@ class EmundusModelComments extends JModelLegacy
 
                 if ($inserted) {
                     $new_comment_id = $this->db->insertid();
+
+                    // TODO: log added comments
                 }
             } catch (Exception $e) {
                 JLog::add('Failed to add comment ' . $e->getMessage(), JLog::ERROR, 'com_emundus.comments');
@@ -114,7 +116,29 @@ class EmundusModelComments extends JModelLegacy
     }
 
     public function updateComment($comment_id, $comment, $user) {
+        $updated = false;
 
+        if (!empty($comment_id) && !empty($comment) && !empty($user)) {
+            $query = $this->db->getQuery(true);
+            $query->update($this->db->quoteName('#__emundus_comments'))
+                ->set($this->db->quoteName('comment_body') . ' = ' . $this->db->quote($comment))
+                ->set($this->db->quoteName('updated') . ' = NOW()')
+                ->set($this->db->quoteName('updated_by') . ' = ' . $this->db->quote($user))
+                ->where('id = ' . $this->db->quote($comment_id));
+
+            try {
+                $this->db->setQuery($query);
+                $updated = $this->db->execute();
+            } catch (Exception $e) {
+                JLog::add('Failed to update comment ' . $e->getMessage(), JLog::ERROR, 'com_emundus.comments');
+            }
+
+            if ($updated) {
+                // TODO: log updated comments
+            }
+        }
+
+        return $updated;
     }
 
     /**
@@ -155,7 +179,7 @@ class EmundusModelComments extends JModelLegacy
             $query->select('ec.*')
                 ->from($this->db->quoteName('#__emundus_comments', 'ec'))
                 ->where('ec.ccid = ' . $this->db->quote($file_id));
-            $query->order('ec.updated, ec.date DESC');
+            $query->order('ec.updated DESC, ec.date DESC');
 
             try {
                 $this->db->setQuery($query);
