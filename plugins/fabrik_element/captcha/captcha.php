@@ -288,6 +288,7 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 			$displayData       = new stdClass;
 			$displayData->id   = $id;
 			$displayData->name = $name;
+			$displayData->code = $code;
 
 			$formId    = $this->getFormModel()->getId();
 			$rowId     = $this->app->input->get('rowid', '0');
