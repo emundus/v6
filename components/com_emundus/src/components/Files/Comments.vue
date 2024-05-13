@@ -32,20 +32,13 @@
       </div>
 
       <div v-if="editable === comment.id">
-        <textarea :id="'editable-comment-' + comment.id" v-model="comment.comment_body" @keyup.enter="updateComment(comment.id)">
-        </textarea>
+        <textarea :id="'editable-comment-' + comment.id" v-model="comment.comment_body" @keyup.enter="updateComment(comment.id)"></textarea>
         <div class="flex flex-row justify-end mt-2">
-          <button id="add-comment-btn"
-                  class="em-primary-button em-bg-main-500 em-neutral-300-color w-fit"
-                  @click="updateComment(comment.id)"
-          >
+          <button id="add-comment-btn" class="em-primary-button w-fit" @click="updateComment(comment.id)">
             <span>{{ translate('COM_EMUNDUS_COMMENTS_UPDATE_COMMENT') }}</span>
             <span class="material-icons-outlined ml-1 em-neutral-300-color">send</span>
           </button>
-          <button id="abort-update"
-                  class="em-primary-button em-bg-main-500 em-neutral-300-color w-fit ml-2"
-                  @click="abortUpdateComment"
-          >
+          <button id="abort-update" class="em-secondary-button w-fit ml-2" @click="abortUpdateComment">
             <span>{{ translate('COM_EMUNDUS_COMMENTS_CANCEL') }}</span>
           </button>
         </div>
@@ -60,7 +53,7 @@
            :class="{'opened': openedCommentId === comment.id, 'hidden': openedCommentId !== comment.id}">
         <hr>
         <div v-for="child in childrenComments[comment.id]" :key="child.id" dir="ltr">
-          <div class="child-comment flex flex-col border-s-4 my-2 px-3">
+          <div class="child-comment flex flex-col border-s-4 my-3 px-3">
             <div class="file-comment-header flex flex-row justify-between">
               <div class="file-comment-header-left flex flex-col">
                 <span class="em-text-neutral-500 text-xs">{{ child.updated ? child.updated : child.date }}</span>
@@ -68,9 +61,23 @@
               </div>
               <div class="file-comment-header-left">
                 <span class="material-icons-outlined cursor-pointer" @click="deleteComment(child.id)">delete</span>
+                <span v-if="child.user_id == user" class="material-icons-outlined cursor-pointer" @click="makeCommentEditable(child.id)">edit</span>
               </div>
             </div>
-            <p>{{ child.comment_body }}</p>
+
+            <div v-if="editable === child.id">
+              <textarea :id="'editable-comment-' + child.id" v-model="child.comment_body" @keyup.enter="updateComment(child.id)"></textarea>
+              <div class="flex flex-row justify-end mt-2">
+                <button id="add-comment-btn" class="em-primary-button w-fit" @click="updateComment(child.id)">
+                  <span>{{ translate('COM_EMUNDUS_COMMENTS_UPDATE_COMMENT') }}</span>
+                  <span class="material-icons-outlined ml-1 em-neutral-300-color">send</span>
+                </button>
+                <button id="abort-update" class="em-secondary-button w-fit ml-2" @click="abortUpdateComment">
+                  <span>{{ translate('COM_EMUNDUS_COMMENTS_CANCEL') }}</span>
+                </button>
+              </div>
+            </div>
+            <p v-else>{{ child.comment_body }}</p>
           </div>
         </div>
         <div class="add-child-comment">
@@ -388,7 +395,13 @@ export default {
       return this.isApplicant ? displayedComments.filter((comment) => comment.visible_to_applicant == 1) : displayedComments;
     },
     parentComments() {
-      return this.displayedComments.filter((comment) => parseInt(comment.parent_id) === 0);
+      let parentComments =  this.displayedComments.filter((comment) => parseInt(comment.parent_id) === 0);
+
+      parentComments.sort((a, b) => {
+        return new Date(b.date_time) - new Date(a.date_time);
+      });
+
+      return parentComments;
     },
     childrenComments() {
       return this.displayedComments.reduce((acc, comment) => {

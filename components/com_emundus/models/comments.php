@@ -179,7 +179,6 @@ class EmundusModelComments extends JModelLegacy
             $query->select('ec.*')
                 ->from($this->db->quoteName('#__emundus_comments', 'ec'))
                 ->where('ec.ccid = ' . $this->db->quote($file_id));
-            $query->order('ec.updated DESC, ec.date DESC');
 
             try {
                 $this->db->setQuery($query);
@@ -207,6 +206,7 @@ class EmundusModelComments extends JModelLegacy
 
                 foreach ($comments as $key => $comment) {
                     $comments[$key]['username'] = $users[$comment['user_id']]['name'];
+                    $comments[$key]['date_time'] = strtotime($comment['date']);
                     $comments[$key]['date'] = EmundusHelperDate::displayDate($comment['date']);
                     $comments[$key]['updated'] = EmundusHelperDate::displayDate($comment['updated']);
                 }
