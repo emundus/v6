@@ -194,6 +194,7 @@ if (EmundusHelperAccess::asAccessAction(10, 'r', $user->id, $fnum)) {
     JText::script('COM_EMUNDUS_COMMENTS_CANCEL');
     JText::script('COM_EMUNDUS_COMMENTS');
 
+    require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
     $ccid = EmundusHelperFiles::getIdFromFnum($fnum);
     $coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
     $sysadmin_access = EmundusHelperAccess::isAdministrator($user->id);

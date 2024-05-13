@@ -1530,8 +1530,12 @@ class EmundusModelApplication extends JModelList
                 $can_comment = EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $fnum);
 
                 if ($can_comment) {
+                    if (!class_exists('EmundusHelperFiles')) {
+                        require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
+                    }
+
                     $ccid = EmundusHelperFiles::getIdFromFnum($fnum);
-                    require_once JPATH_SITE . '/components/com_emundus/models/comments.php';
+                    require_once(JPATH_ROOT . '/components/com_emundus/models/comments.php');
                     $m_comments = new EmundusModelComments();
                     $file_comments = $m_comments->getComments($ccid, $this->_user->id);
                 }
