@@ -90,6 +90,7 @@ class PlgFabrik_Cronemunduslogsandmessagespurge extends PlgFabrik_Cron{
 		$now = $this->getDate($amount_time_tmp, $unit_time_tmp);
 
 		// Clean tmp documents older than $now
+		//TODO: Log deleted files
 		foreach (glob(JPATH_SITE . '/tmp/*') as $tmp_file)
 		{
 			if (!preg_match('/^backup_logs_and_messages_[a-zA-Z0-9_-]+\.zip$/', basename($tmp_file)) && basename($tmp_file) !== '.gitignore' && basename($tmp_file) !== 'index.html')
