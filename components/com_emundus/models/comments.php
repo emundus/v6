@@ -143,6 +143,35 @@ class EmundusModelComments extends JModelLegacy
 
     /**
      * @param $comment_id
+     * @param $opened
+     * @param $user
+     * @return false|mixed
+     */
+    public function updateCommentOpenedState($comment_id, $opened, $user)
+    {
+        $updated = false;
+
+        if (!empty($comment_id)) {
+            $query = $this->db->getQuery(true);
+            $query->update($this->db->quoteName('#__emundus_comments'))
+                ->set($this->db->quoteName('opened') . ' = ' . $this->db->quote($opened))
+                ->set($this->db->quoteName('updated') . ' = NOW()')
+                ->set($this->db->quoteName('updated_by') . ' = ' . $this->db->quote($user))
+                ->where('id = ' . $this->db->quote($comment_id));
+
+            try {
+                $this->db->setQuery($query);
+                $updated = $this->db->execute();
+            } catch (Exception $e) {
+                JLog::add('Failed to update comment opened state ' . $e->getMessage(), JLog::ERROR, 'com_emundus.comments');
+            }
+        }
+
+        return $updated;
+    }
+
+    /**
+     * @param $comment_id
      * @return array
      */
     public function getComment($comment_id): array

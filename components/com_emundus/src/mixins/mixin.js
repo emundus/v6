@@ -140,7 +140,42 @@ var mixin = {
 				text: text,
 				duration: 3000
 			});
-		}
+		},
+		/**
+		 * Highlight the search term in the elements by wrapping it in a span with a background color
+		 * @param searchTerm
+		 * @param elementsToSearchIn
+		 */
+		highlight(searchTerm, elementsToSearchIn = []) {
+			if (elementsToSearchIn.length > 0) {
+				let elements = [];
+				elementsToSearchIn.forEach((elementClass) => {
+					elements = elements.concat(Array.from(document.querySelectorAll(elementClass)));
+				});
+
+				elements.forEach((element) => {
+					const text = element.innerText;
+					let regex = new RegExp(`(${searchTerm})`, "gi");
+					// Check if the element's text contains the search term
+					if (searchTerm && text.match(regex)) {
+						// Split the text into parts (matched and unmatched)
+						const parts = text.split(regex);
+						// Create a new HTML structure with the matched term highlighted
+						const highlightedText = parts
+							.map((part) =>
+								part.match(regex)
+									? `<span style="background-color: var(--em-yellow-1);">${part}</span>`
+									: part
+							)
+							.join("");
+						// Replace the original text with the highlighted version
+						element.innerHTML = highlightedText;
+					} else {
+						element.innerHTML = text;
+					}
+				});
+			}
+		},
 	}
 };
 
