@@ -152,7 +152,8 @@ export default {
               }
             });
             this.loading = false;
-            this.$emit('stateOfConfig', this.params);
+
+            this.enableEmail = this.config['joomla']['mailonline'];
           });
 
     },

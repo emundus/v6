@@ -467,7 +467,7 @@ class EmundusHelperUpdate
     return $updated;
 }
 
-    public static function convertOldValueToConfigurationFile($newparams ,$oldparams)
+    public static function convertOldValueToConfigurationFile($newparams ,$oldparams , $correspondances)
     {
         $updated = false;
 
@@ -480,12 +480,20 @@ class EmundusHelperUpdate
 
         $oldData = $model->getData();
 
-        foreach ($newparams as $index => $newparam) {
-            $oldparam = $oldparams[$index];
-            $param[$newparam] = $oldData[$oldparam];
-        }
+            $keysoldparams = array_keys($oldparams);
+            $keynewparams = array_keys($newparams);
 
+            foreach ($keysoldparams as $oldparam)
+            {
+            foreach ($keynewparams as $newparam)
+            {
+                if($newparam == $correspondances[$oldparam])
+                {
+                    $param[$newparam] = $oldData[$oldparam];
+                }
+            }
 
+            }
         $data = array_merge($oldData, $param);
         $updated = $model->save($data);
 
@@ -3871,8 +3879,9 @@ class EmundusHelperUpdate
 				->where($db->quoteName('id') . ' = ' . $db->quote($campaign->id));
 			$db->setQuery($query);
 			$db->execute();
-		}
+
 
 		return true;
 	}
+		}
 }

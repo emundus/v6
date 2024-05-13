@@ -11,8 +11,8 @@
     "label": "COM_EMUNDUS_GLOBAL_PARMAS_MENUS_EMAIL",
     "name": "email_settings",
     "icon": "email",
-    "type": "component",
-    "component": "EditEmailJoomla",
+    "type": "json",
+    "source": "email.json",
     "published": true
   },
   {
