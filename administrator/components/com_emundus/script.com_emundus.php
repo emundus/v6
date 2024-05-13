@@ -4317,7 +4317,7 @@ if(in_array($applicant,$exceptions)){
 					$db->setQuery($query);
 					$db->execute();
 				}
-				EmundusHelperUpdate::installExtension('plg_cron_logspurge','emunduslogsandmessagespurge','{"name":"plg_cron_logspurge","type":"plugin","creationDate":"May 2024","author":"eMundus","copyright":"Copyright (C) 2024 emundus.fr - All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"www.emundus.fr","version":"1.39.0","description":"PLG_CRON_LOGSPURGE_DESC","group":"","filename":"emunduslogsandmessagespurge"}','plugin',1,'fabrik_cron', '{"amount_time":"1","unit_time":"year","export_zip":"1"}');
+				EmundusHelperUpdate::installExtension('plg_cron_logspurge','emunduslogsandmessagespurge','{"name":"plg_cron_logspurge","type":"plugin","creationDate":"May 2024","author":"eMundus","copyright":"Copyright (C) 2024 emundus.fr - All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"www.emundus.fr","version":"1.39.0","description":"PLG_CRON_LOGSPURGE_DESC","group":"","filename":"emunduslogsandmessagespurge"}','plugin',1,'fabrik_cron', '{"amount_time":"1","unit_time":"year","export_zip":"1", "amount_time_tmp":"1","unit_time_tmp":"week"}');
 
 				$query->clear()
 					->select($db->quoteName('id'))
@@ -4353,7 +4353,7 @@ if(in_array($applicant,$exceptions)){
 						'plugin' => 'emunduslogsandmessagespurge',
 						'published' => 1,
 						'lastrun' => date($last_four_hour),
-						'params' => '{"connection":"1","table":"","cron_row_limit":"100","log":"0","log_email":"","require_qs":"0","require_qs_secret":"","cron_rungate":"1","cron_reschedule_manual":"0","reminder_mail_id":"79","amount_time":"1","unit_time":"year","export_zip":"1"}'
+						'params' => '{"connection":"1","table":"","cron_row_limit":"100","log":"0","log_email":"","require_qs":"0","require_qs_secret":"","cron_rungate":"1","cron_reschedule_manual":"0","reminder_mail_id":"79","amount_time":"1","unit_time":"year","export_zip":"1", "amount_time_tmp":"1","unit_time_tmp":"week"}'
 					];
 					$inserted = (object) $inserted;
 					$db->insertObject('jos_fabrik_cron', $inserted);

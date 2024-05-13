@@ -61,6 +61,8 @@ class PlgFabrik_Cronemunduslogsandmessagespurge extends PlgFabrik_Cron{
 		$params      = $this->getParams();
 		$amount_time = $params->get('amount_time');
 		$unit_time   = $params->get('unit_time');
+		$amount_time_tmp = $params->get('amount_time_tmp');
+		$unit_time_tmp   = $params->get('unit_time_tmp');
 		$export      = $params->get('export_zip');
 
 		$now = $this->getDate($amount_time, $unit_time);
@@ -84,6 +86,8 @@ class PlgFabrik_Cronemunduslogsandmessagespurge extends PlgFabrik_Cron{
 		$logs     = $m_logs->deleteLogsBeforeADate($now);
 		$messages = $m_messages->deleteMessagesBeforeADate($now);
 		$tmp_documents = 0;
+
+		$now = $this->getDate($amount_time_tmp, $unit_time_tmp);
 
 		// Clean tmp documents older than $now
 		foreach (glob(JPATH_SITE . '/tmp/*') as $document)
