@@ -74,6 +74,28 @@ export default {
             };
         }
     },
+    async updateCommentOpenedState(comment_id, opened = 1){
+        if (comment_id > 0) {
+            try {
+                const formData = new FormData();
+                formData.append('comment_id', comment_id);
+                formData.append('opened', opened);
+
+                const response = await client().post('index.php?option=com_emundus&controller=comments&task=updatecommentopenedstate', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+
+                return response.data;
+            } catch (e) {
+                return {
+                    status: false,
+                    msg: e.message
+                };
+            }
+        }
+    },
     async deleteComment(comment_id) {
         if (comment_id > 0) {
             try {

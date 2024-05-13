@@ -1,11 +1,21 @@
 <template>
   <div id="comments" class="p-4 w-full">
     <h2 class="mb-2">{{ translate('COM_EMUNDUS_COMMENTS') }}</h2>
+    <div v-if="comments.length > 0" id="filter-comments" class="flex flex-row">
+      <input type="text" class="em-input mr-2" :placeholder="translate('COM_EMUNDUS_COMMENTS_SEARCH')" v-model="search" @keyup="onSearchChange">
+      <select v-model="filterOpenedState">
+        <option value="all">{{ translate('COM_EMUNDUS_COMMENTS_ALL_THREAD') }}</option>
+        <option value="1">{{ translate('COM_EMUNDUS_COMMENTS_OPENED_THREAD') }}</option>
+        <option value="0">{{ translate('COM_EMUNDUS_COMMENTS_CLOSED_THREAD') }}</option>
+      </select>
+    </div>
     <div id="file-comment" v-for="comment in parentComments" :key="comment.id"
-         class="shadow rounded-lg py-2 px-4 my-4 em-white-bg"
+         class="shadow-sm rounded-lg py-2 px-4 my-4 border"
          :class="{
+            'border-transparent': comment.id != openedCommentId,
             'focus em-border-main-500': comment.id == openedCommentId,
-            'border border-transparent': comment.id != openedCommentId
+            'em-lightgray-bg em-border-left-600': comment.opened == 0,
+            'em-white-bg': comment.opened == 1,
          }"
     >
       <div class="file-comment-header flex flex-row items-center justify-between mb-3">
@@ -32,7 +42,7 @@
       </div>
 
       <div v-if="editable === comment.id">
-        <textarea :id="'editable-comment-' + comment.id" v-model="comment.comment_body" @keyup.enter="updateComment(comment.id)"></textarea>
+        <textarea :id="'editable-comment-' + comment.id" class="comment-body" v-model="comment.comment_body" @keyup.enter="updateComment(comment.id)"></textarea>
         <div class="flex flex-row justify-end mt-2">
           <button id="add-comment-btn" class="em-primary-button w-fit" @click="updateComment(comment.id)">
             <span>{{ translate('COM_EMUNDUS_COMMENTS_UPDATE_COMMENT') }}</span>
@@ -43,7 +53,8 @@
           </button>
         </div>
       </div>
-      <p v-else>{{ comment.comment_body }}</p>
+      <p class="comment-body" v-else>{{ comment.comment_body }}</p>
+      <i v-if="comment.updated_by > 0" class="text-xs em-gray-color mt-3">{{ translate('COM_EMUNDUS_COMMENTS_EDITED') }}</i>
 
       <p v-if="comment.target_id > 0" class="text-sm em-gray-color mt-3">
         {{ getCommentTargetLabel(comment.target_id) }}
@@ -66,7 +77,7 @@
             </div>
 
             <div v-if="editable === child.id">
-              <textarea :id="'editable-comment-' + child.id" v-model="child.comment_body" @keyup.enter="updateComment(child.id)"></textarea>
+              <textarea :id="'editable-comment-' + child.id" class="comment-body" v-model="child.comment_body" @keyup.enter="updateComment(child.id)"></textarea>
               <div class="flex flex-row justify-end mt-2">
                 <button id="add-comment-btn" class="em-primary-button w-fit" @click="updateComment(child.id)">
                   <span>{{ translate('COM_EMUNDUS_COMMENTS_UPDATE_COMMENT') }}</span>
@@ -77,7 +88,8 @@
                 </button>
               </div>
             </div>
-            <p v-else>{{ child.comment_body }}</p>
+            <p class="comment-body" v-else>{{ child.comment_body }}</p>
+            <i v-if="child.updated_by > 0" class="text-xs em-gray-color mt-3">{{ translate('COM_EMUNDUS_COMMENTS_EDITED') }}</i>
           </div>
         </div>
         <div class="add-child-comment">
@@ -93,6 +105,16 @@
               <span class="material-icons-outlined ml-1 em-neutral-300-color">send</span>
             </button>
           </div>
+        </div>
+        <div class="flex flex-row justify-center items-center mt-2">
+          <button class="em-primary-button w-fit" v-if="comment.opened == 1" @click="updateCommentOpenedState(comment.id, 0)">
+            <span class="material-icons-outlined em-text-neutral-300">lock</span>
+            <span>{{ translate('COM_EMUNDUS_COMMENTS_CLOSE_COMMENT_THREAD') }}</span>
+          </button>
+          <button class="em-primary-button w-fit" v-else @click="updateCommentOpenedState(comment.id, 1)">
+            <span class="material-icons-outlined em-text-neutral-300">lock_open</span>
+            <span>{{ translate('COM_EMUNDUS_COMMENTS_REOPEN_COMMENT_THREAD') }}</span>
+          </button>
         </div>
       </div>
     </div>
@@ -214,6 +236,8 @@ export default {
     focus: null,
     editable: null,
     tmpComment: null,
+    search: '',
+    filterOpenedState: 'all'
   }),
   created() {
     this.getTargetableELements().then(() => {
@@ -384,21 +408,47 @@ export default {
         this.tmpComment = null;
       });
     },
+    updateCommentOpenedState(commentId, state) {
+      this.loading = true;
+
+      this.comments.find((comment) => comment.id == commentId).opened = state;
+      commentsService.updateCommentOpenedState(commentId, state).then((response) => {
+        if (!response.status) {
+          // todo: display error message
+        }
+      }).catch((error) => {
+        this.handleError(error);
+      }).finally(() => {
+        this.loading = false;
+      });
+    },
+    onSearchChange() {
+      this.highlight(this.search, ['.comment-body']);
+    }
   },
   computed: {
     displayedComments() {
       let displayedComments = this.comments;
       if (this.currentForm > 0) {
-        // check if the comment is related to the current form, thanks to targetableElements (element_form_id)
         displayedComments = displayedComments.filter((comment) => {
           return comment.target_id == 0 || this.targetableElements.find((element) => element.id === comment.target_id && element.element_form_id === this.currentForm);
         });
       }
 
+      displayedComments = this.filterOpenedState !== 'all' ? displayedComments.filter((comment) => comment.opened == this.filterOpenedState) : displayedComments;
+
       return this.isApplicant ? displayedComments.filter((comment) => comment.visible_to_applicant == 1) : displayedComments;
     },
     parentComments() {
       let parentComments =  this.displayedComments.filter((comment) => parseInt(comment.parent_id) === 0);
+
+      if (this.search.length > 0) {
+        parentComments = parentComments.filter((comment) => {
+          return comment.comment_body.toLowerCase().includes(this.search.toLowerCase()) || this.childrenComments[comment.id].some((child) => {
+            return child.comment_body.toLowerCase().includes(this.search.toLowerCase());
+          });
+        });
+      }
 
       parentComments.sort((a, b) => {
         return new Date(b.date_time) - new Date(a.date_time);

@@ -231,10 +231,11 @@ if (count($languages) > 1) {
 
 <style>
     #aside-comment-section {
-        top: 114px;
-        height: calc(100vh - 114px);
+        top: 112px;
+        height: calc(100vh - 112px);
         transition: all .3s;
         width: 425px;
+        border-left: 4px solid var(--em-profile-color);
 
         .close-comment, .open-comment {
             left: -52px;
