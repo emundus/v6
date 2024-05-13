@@ -88,7 +88,7 @@ class EmundusHelperFabrikTest extends TestCase
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
-		$query->select('fe.id, fe.params as params, fe.parent_id as parent_id')
+		$query->select('fe.id, fe.params as params')
 			->from($db->quoteName('#__fabrik_elements', 'fe'))
 			->leftJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffg.group_id').' = '.$db->quoteName('fe.group_id'))
 			->leftJoin($db->quoteName('#__fabrik_lists','fl').' ON '.$db->quoteName('fl.form_id').' = '.$db->quoteName('ffg.form_id'))
