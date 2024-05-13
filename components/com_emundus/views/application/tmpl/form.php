@@ -190,11 +190,20 @@ if (count($languages) > 1) {
         }
     });
 
-    function openCommentAside() {
+    function openCommentAside(focusonelement = null, forceOpen = false) {
         const aside = document.getElementById('aside-comment-section');
-        if (aside) {
-            aside.classList.toggle('closed');
+        if (aside.classList.contains('closed') || forceOpen) {
+            aside.classList.remove('closed');
+        } else {
+            aside.classList.add('closed');
         }
+
+        const event = new CustomEvent('focusOnCommentElement', {
+            detail: {
+                targetId: focusonelement
+            }
+        });
+        document.dispatchEvent(event);
     }
 
     function openModalAddComment(element)
@@ -211,7 +220,11 @@ if (count($languages) > 1) {
 
     document.addEventListener('click', function (e) {
         if (e.target.classList.contains('comment-icon')) {
-            openModalAddComment(e.target);
+            if (e.target.classList.contains('has-comments')) {
+                openCommentAside(e.target.dataset.targetId, true);
+            } else {
+                openModalAddComment(e.target);
+            }
         }
     });
 </script>
@@ -246,5 +259,18 @@ if (count($languages) > 1) {
                 display: none;
             }
         }
+    }
+
+    .comment-icon {
+        transition: all .3s;
+        opacity: 1 !important;
+    }
+
+    .comment-icon:not(.has-comments) {
+        opacity: 0 !important;
+    }
+
+    table tr:hover .comment-icon {
+        opacity: 1 !important;
     }
 </style>

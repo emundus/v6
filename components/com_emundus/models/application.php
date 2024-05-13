@@ -1529,6 +1529,13 @@ class EmundusModelApplication extends JModelList
                 $allowEmbed = $this->allowEmbed(JURI::base() . 'index.php?lang=en');
                 $can_comment = EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $fnum);
 
+                if ($can_comment) {
+                    $ccid = EmundusHelperFiles::getIdFromFnum($fnum);
+                    require_once JPATH_SITE . '/components/com_emundus/models/comments.php';
+                    $m_comments = new EmundusModelComments();
+                    $file_comments = $m_comments->getComments($ccid, $this->_user->id);
+                }
+
                 foreach ($tableuser as $key => $itemt) {
 
                     $forms .= '<br><hr><div class="TitlePersonalInfo em-personalInfo em-mb-12">';
@@ -2158,7 +2165,13 @@ class EmundusModelApplication extends JModelList
                                             $tds .= '<td class="flex flex-row justify-between w-full" style="width:100%;"><span>' . ((!in_array($element->plugin,['field','textarea'])) ? JText::_($elt) : $elt) . '</span>';
 
                                             if ($can_comment) {
-                                                $tds .= '<span class="comment-icon material-icons-outlined cursor-pointer" data-target-type="element" data-target-id="' . $element->id . '">comment</span>';
+                                                $comment_classes = 'comment-icon material-icons-outlined cursor-pointer p-1';
+                                                foreach ($file_comments as $comment) {
+                                                    if ($comment['target_id'] == $element->id && $comment['target_type'] == 'element') {
+                                                        $comment_classes .= ' has-comments em-bg-main-500 em-text-neutral-300 rounded-full';
+                                                    }
+                                                }
+                                                $tds .= '<span class="' . $comment_classes . '" data-target-type="element" data-target-id="' . $element->id . '">comment</span>';
                                             }
 
                                             $tds .= '</td>';
