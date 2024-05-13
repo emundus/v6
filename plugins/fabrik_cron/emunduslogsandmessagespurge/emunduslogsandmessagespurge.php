@@ -63,35 +63,7 @@ class PlgFabrik_Cronemunduslogsandmessagespurge extends PlgFabrik_Cron{
 		$unit_time   = $params->get('unit_time');
 		$export      = $params->get('export_zip');
 
-		if (version_compare(JVERSION, '4.0', '>='))
-		{
-			$config = Factory::getApplication()->getConfig();
-		}
-		else
-		{
-			$config = Factory::getConfig();
-		}
-		$offset = $config->get('offset', 'Europe/Paris');
-		$now    = DateTime::createFromFormat('Y-m-d H:i:s', EmundusHelperDate::getNow($offset));
-
-		switch ($unit_time)
-		{
-			case 'hour':
-				$now->modify('-' . $amount_time . ' hours');
-				break;
-			case 'day':
-				$now->modify('-' . $amount_time . ' days');
-				break;
-			case 'week':
-				$now->modify('-' . $amount_time . ' weeks');
-				break;
-			case 'month':
-				$now->modify('-' . $amount_time . ' months');
-				break;
-			case 'year':
-				$now->modify('-' . $amount_time . ' years');
-				break;
-		}
+		$now = $this->getDate($amount_time, $unit_time);
 
 		if ($export)
 		{
@@ -139,6 +111,42 @@ class PlgFabrik_Cronemunduslogsandmessagespurge extends PlgFabrik_Cron{
 				}
 			}
 		}
+
 		return $logs + $messages + $tmp_documents;
+	}
+
+	private function getDate($amount_time, $unit_time)
+	{
+		if (version_compare(JVERSION, '4.0', '>='))
+		{
+			$config = Factory::getApplication()->getConfig();
+		}
+		else
+		{
+			$config = Factory::getConfig();
+		}
+		$offset = $config->get('offset', 'Europe/Paris');
+		$now    = DateTime::createFromFormat('Y-m-d H:i:s', EmundusHelperDate::getNow($offset));
+
+		switch ($unit_time)
+		{
+			case 'hour':
+				$now->modify('-' . $amount_time . ' hours');
+				break;
+			case 'day':
+				$now->modify('-' . $amount_time . ' days');
+				break;
+			case 'week':
+				$now->modify('-' . $amount_time . ' weeks');
+				break;
+			case 'month':
+				$now->modify('-' . $amount_time . ' months');
+				break;
+			case 'year':
+				$now->modify('-' . $amount_time . ' years');
+				break;
+		}
+
+		return $now;
 	}
 }
