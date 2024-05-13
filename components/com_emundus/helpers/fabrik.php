@@ -17,8 +17,10 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
 
 require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
+require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
 use libphonenumber\PhoneNumberUtil;
 use libphonenumber\PhoneNumberFormat;
+
 
 /**
  * Content Component Query Helper
@@ -1026,5 +1028,89 @@ die("<script>
         }
 
         return $formattedValue;
+    }
+
+    /**
+     * @param $form_ids
+     * @return array
+     */
+    static function getElementsFromFabrikForms($form_ids)
+    {
+        $elements = [];
+        $form_ids = array_unique($form_ids);
+
+        if (!empty($form_ids))
+        {
+            $helper_cache = new EmundusHelperCache();
+            
+            if ($helper_cache->isEnabled())
+            {
+                foreach ($form_ids as $key => $form_id)
+                {
+                    $cache_key      = 'elements_from_form_' . $form_id;
+                    $cache_elements = $helper_cache->get($cache_key);
+
+                    if (!empty($cache_elements))
+                    {
+                        $elements = array_merge($elements, $cache_elements);
+                        unset($form_ids[$key]);
+                    }
+                }
+            }
+
+            if (!empty($form_ids))
+            {
+                $db    = JFactory::getDbo();
+                $query = $db->getQuery(true);
+
+                $query->clear()
+                    ->select('jfe.id, jfe.plugin, jfe.label, jfe.params, jffg.form_id as element_form_id, jff.label as element_form_label, jfg.label as element_group_label, jfg.id as element_group_id')
+                    ->from('jos_fabrik_elements as jfe')
+                    ->join('inner', 'jos_fabrik_groups as jfg ON jfe.group_id = jfg.id')
+                    ->join('inner', 'jos_fabrik_formgroup as jffg ON jfg.id = jffg.group_id')
+                    ->join('inner', 'jos_fabrik_forms as jff ON jffg.form_id = jff.id')
+                    ->where('jffg.form_id IN (' . implode(',', $form_ids) . ')')
+                    ->andWhere('jfe.published = 1')
+                    ->andWhere('jfe.hidden = 0');
+
+                try
+                {
+                    $db->setQuery($query);
+                    $query_elements = $db->loadAssocList();
+                    $elements       = array_merge($elements, $query_elements);
+
+                    foreach ($elements as $key => $element)
+                    {
+                        $elements[$key]['label']              = JText::_($element['label']);
+                        $elements[$key]['element_form_label'] = JText::_($element['element_form_label']);
+                        $elements[$key]['element_group_label'] = JText::_($element['element_group_label']);
+                    }
+
+                    if ($helper_cache->isEnabled())
+                    {
+                        $elements_by_form = [];
+                        foreach ($elements as $element)
+                        {
+                            if (!isset($elements_by_form[$element['element_form_id']]))
+                            {
+                                $elements_by_form[$element['element_form_id']] = [];
+                            }
+                            $elements_by_form[$element['element_form_id']][] = $element;
+                        }
+
+                        foreach ($elements_by_form as $form_id => $element_by_form)
+                        {
+                            $helper_cache->set('elements_from_form_' . $form_id, $element_by_form);
+                        }
+                    }
+                }
+                catch (Exception $e)
+                {
+                    JLog::add('Failed to get elements associated to profiles that current user can access : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
+                }
+            }
+        }
+
+        return $elements;
     }
 }

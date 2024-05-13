@@ -2959,4 +2959,51 @@ class EmundusModelCampaign extends JModelList {
 
         return $incoherences;
     }
+
+    function getProfilesFromCampaignId($campaign_ids) {
+        $profile_ids = [];
+
+        if (!empty($campaign_ids)) {
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('DISTINCT profile_id')
+                ->from('#__emundus_setup_campaigns')
+                ->where('id IN (' . implode(',', $db->quote($campaign_ids)) . ')');
+
+            $db->setQuery($query);
+            $profiles = $db->loadColumn();
+            foreach ($profiles as $profile)
+            {
+                if (!in_array($profile, $profile_ids))
+                {
+                    $profile_ids[] = $profile;
+                }
+            }
+
+            // profiles from workflows
+            $workflows  = $this->getWorkflows();
+
+            if (!empty($workflows)) {
+                $programme_codes = [];
+                foreach ($campaign_ids as $cid) {
+                    $programme = $this->getProgrammeByCampaignID($cid);
+
+                    if (!in_array($programme['code'], $programme_codes)) {
+                        $programme_codes[] = $programme->code;
+                    }
+                }
+
+                foreach ($workflows as $workflow)
+                {
+                    if (!in_array($workflow->profile, $profile_ids) && (!empty(array_intersect($workflow->campaigns, $campaign_ids)) || !empty(array_intersect($workflow->programs, $programme_codes))))
+                    {
+                        $profile_ids[] = $workflow->profile;
+                    }
+                }
+            }
+        }
+
+        return $profile_ids;
+    }
 }

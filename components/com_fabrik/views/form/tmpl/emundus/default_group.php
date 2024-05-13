@@ -16,12 +16,16 @@ $rowStarted      = false;
 $layout          = FabrikHelperHTML::getLayout('form.fabrik-control-group');
 $gridStartLayout = FabrikHelperHTML::getLayout('grid.fabrik-grid-start');
 $gridEndLayout   = FabrikHelperHTML::getLayout('grid.fabrik-grid-end');
+$model     = $this->getModel();
+$element_ids = $model->getElementIds();
 
 foreach ($this->elements as $element) :
+    $element->element_fabrik_id = $element_ids[$this->index_element_id];
+    $this->index_element_id++;
 	$this->element = $element;
 	$this->class = 'fabrikErrorMessage';
 
-	// Don't display hidden element's as otherwise they wreck multi-column layouts
+    // Don't display hidden element's as otherwise they wreck multi-column layouts
 	if (trim($element->error) !== '') :
 		$element->error = $element->error;
 		$element->containerClass .= ' error';
@@ -62,9 +66,14 @@ foreach ($this->elements as $element) :
 		$displayData['row'] = $this->loadTemplate('group_labels_above');
 	}
 
-	echo $layout->render((object) $displayData);
-
-	?><?php
+    ?>
+    <div class="fabrik-element-emundus-container flex flex-row justify-items-start items-start">
+        <div <?= $style ?>>
+            <span class="material-icons-outlined cursor-pointer comment-icon" data-target-type="element" data-target-id="<?= $element->element_fabrik_id ?>">comment</span>
+        </div>
+        <?= $layout->render((object) $displayData); ?>
+    </div>
+    <?php
 	if ($element->endRow) :
 		echo $gridEndLayout->render(new stdClass);
 		$rowStarted = false;

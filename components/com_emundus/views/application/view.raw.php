@@ -32,6 +32,7 @@ class EmundusViewApplication extends JViewLegacy {
     protected $_user = null;
     var $_db = null;
     var $student = null;
+    public $ccid = null;
 
     protected $synthesis;
 	protected $header;
@@ -64,6 +65,7 @@ class EmundusViewApplication extends JViewLegacy {
 
         $m_profiles = new EmundusModelProfile();
         $fnumInfos = $m_profiles->getFnumDetails($fnum);
+        $this->ccid = $fnumInfos['ccid'];
 
         $m_application = $this->getModel('Application');
 

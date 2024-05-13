@@ -469,45 +469,39 @@ class EmundusModelApplication extends JModelList
         return $res;
     }
 
+    /**
+     * @param $row
+     * @return int new comment id
+     * @throws Exception
+     */
     public function addComment($row)
     {
-        // Log the comment in the eMundus logging system.
-        $logsStd = new stdClass();
-        // Log only the body if there is no title
-        if (empty($row['reason'])) {
-            $logsStd->element = '[' . JText::_('COM_EMUNDUS_COMMENT_NO_TITLE') . ']';
-            $logsStd->details = $row['comment_body'];
-        } else {
-            $logsStd->element = '[' . $row['reason'] . ']';
-            $logsStd->details = $row['comment_body'];
-        }
+        $comment_id = 0;
 
-        //$logsStd->details =  $row['comment_body'];
-
-        $logsParams = array('created' => [$logsStd]);
-        EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($row['fnum'], -7), $row['fnum'], 10, 'c', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
-
-	    $now = EmundusHelperDate::getNow();
-
-        $query = 'INSERT INTO `#__emundus_comments` (applicant_id, user_id, reason, date, comment_body, fnum)
-                VALUES('.$row['applicant_id'].','.$row['user_id'].','.$this->_db->Quote($row['reason']).',"'.$now.'",'.$this->_db->Quote($row['comment_body']).','.$this->_db->Quote(@$row['fnum']).')';
-        $this->_db->setQuery($query);
+        $query = $this->_db->getQuery(true);
+        $query->insert($this->_db->quoteName('#__emundus_comments'))
+            ->columns('applicant_id, user_id, reason, date, comment_body, fnum')
+            ->values($row['applicant_id'] . ', ' . $row['user_id']. ', ' . $this->_db->quote($row['reason']) . ', ' .  $this->_db->quote(EmundusHelperDate::getNow()) . ', ' . $this->_db->quote($row['comment_body']). ', ' . $this->_db->quote($row['fnum']));
 
         try {
-            $this->_db->execute();
-            return $this->_db->insertid();
+            $this->_db->setQuery($query);
+            $inserted = $this->_db->execute();
+            if ($inserted) {
+                $comment_id = $this->_db->insertid();
+
+                if (!empty($comment_id)) {
+                    $logsStd = new stdClass();
+                    $logsStd->element = empty($row['reason']) ? '[' . JText::_('COM_EMUNDUS_COMMENT_NO_TITLE') . ']' : '[' . $row['reason'] . ']';
+                    $logsStd->details = $row['comment_body'];
+                    $logsParams = array('created' => [$logsStd]);
+                    EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($row['fnum'], -7), $row['fnum'], 10, 'c', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+                }
+            }
         } catch (Exception $e) {
-            JLog::add('Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
-            return null;
+            JLog::add('Failed to insert comment ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
         }
-    }
 
-    public function deleteData($id, $table)
-    {
-        $query = 'DELETE FROM `' . $table . '` WHERE id=' . $id;
-        $this->_db->setQuery($query);
-
-        return $this->_db->Query();
+        return $comment_id;
     }
 
     public function deleteAttachment($id)
@@ -1550,8 +1544,19 @@ class EmundusModelApplication extends JModelList
 
                 $allowed_groups = EmundusHelperAccess::getUserFabrikGroups($this->_user->id);
                 $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_user->id);
-
                 $allowEmbed = $this->allowEmbed(JURI::base() . 'index.php?lang=en');
+                $can_comment = EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $fnum);
+
+                if ($can_comment) {
+                    if (!class_exists('EmundusHelperFiles')) {
+                        require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
+                    }
+
+                    $ccid = EmundusHelperFiles::getIdFromFnum($fnum);
+                    require_once(JPATH_ROOT . '/components/com_emundus/models/comments.php');
+                    $m_comments = new EmundusModelComments();
+                    $file_comments = $m_comments->getComments($ccid, $this->_user->id);
+                }
 
                 foreach ($tableuser as $key => $itemt) {
 
@@ -2229,12 +2234,28 @@ class EmundusModelApplication extends JModelList
                                                 $elt = $element->content;
                                             }
 
-                                            // modulo for strips css //
                                             if ($modulo % 2) {
-                                                $forms .= '<tr class="table-strip-1">' . (!empty(JText::_($element->label)) ? '<td style="padding-right:50px;"><b>' . JText::_($element->label) . '</b></td>' : '') . '<td> ' . ((!in_array($element->plugin,['field','textarea'])) ? JText::_($elt) : $elt) . '</td></tr>';
+                                                $class = "table-strip-1";
                                             } else {
-                                                $forms .= '<tr class="table-strip-2">' . (!empty(JText::_($element->label)) ? '<td style="padding-right:50px;"><b>' . JText::_($element->label) . '</b></td>' : '') . '<td> ' . ((!in_array($element->plugin,['field','textarea'])) ? JText::_($elt) : $elt) . '</td></tr>';
+                                                $class = "table-strip-2";
                                             }
+
+                                            $tds = !empty(JText::_($element->label)) ? '<td style="padding-right:50px;"><b>' . JText::_($element->label) . '</b></td>' : '';
+                                            $tds .= '<td class="flex flex-row justify-between w-full" style="width:100%;"><span>' . ((!in_array($element->plugin,['field','textarea'])) ? JText::_($elt) : $elt) . '</span>';
+
+                                            if ($can_comment) {
+                                                $comment_classes = 'comment-icon material-icons-outlined cursor-pointer p-1';
+                                                foreach ($file_comments as $comment) {
+                                                    if ($comment['target_id'] == $element->id && $comment['target_type'] == 'element') {
+                                                        $comment_classes .= ' has-comments em-bg-main-500 em-text-neutral-300 rounded-full';
+                                                    }
+                                                }
+                                                $tds .= '<span class="' . $comment_classes . '" data-target-type="element" data-target-id="' . $element->id . '">comment</span>';
+                                            }
+
+                                            $tds .= '</td>';
+                                            $forms .= '<tr class="' . $class . '">' . $tds . '</tr>';
+
                                             $modulo++;
                                             unset($params);
                                         }
@@ -3836,34 +3857,96 @@ class EmundusModelApplication extends JModelList
         }
     }
 
-    public function deleteGroupAccess($fnum, $gid)
+    /**
+     * @param $fnum string
+     * @param $gid int
+     * @param $current_user int If null, the current user will be used
+     * @return false|mixed
+     */
+    public function deleteGroupAccess($fnum, $gid, $current_user = null)
     {
-        $dbo = $this->getDbo();
-        try
-        {
-            $query = "delete from #__emundus_group_assoc  where `group_id` = $gid and `fnum` like ".$dbo->quote($fnum);
-            $dbo->setQuery($query);
-            return $dbo->execute();
+        $deleted = false;
+
+        if (!empty($fnum) && !empty($gid)) {
+            if (empty($current_user)) {
+                $current_user = JFactory::getUser()->id;
+            }
+
+            $dbo = $this->getDbo();
+            $query = $dbo->getQuery(true);
+
+            $query->delete('#__emundus_group_assoc')
+                ->where($dbo->quoteName('group_id') . ' = ' . $gid)
+                ->andWhere($dbo->quoteName('fnum') . ' = ' . $dbo->quote($fnum));
+
+            try {
+                $dbo->setQuery($query);
+                $deleted = $dbo->execute();
+            } catch (Exception $e) {
+                JLog::add('Error in model/application at query: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+            }
+
+            if ($deleted) {
+                $query->clear()
+                    ->select('label')
+                    ->from('#__emundus_setup_groups')
+                    ->where('id = ' . $gid);
+
+                $dbo->setQuery($query);
+                $label = $dbo->loadResult();
+
+                $logsParams = ['deleted' => ['details' => $label]];
+                EmundusModelLogs::log($current_user, '', $fnum, 11, 'd', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+            }
         }
-        catch(Exception $e)
-        {
-            throw $e;
-        }
+
+        return $deleted;
     }
 
-    public function deleteUserAccess($fnum, $uid)
+    /**
+     * @param $fnum string
+     * @param $uid int
+     * @param $current_user int if null, the current user will be used
+     * @return false|mixed
+     */
+    public function deleteUserAccess($fnum, $uid, $current_user = null)
     {
-        $dbo = $this->getDbo();
-        try
-        {
-            $query = "delete from #__emundus_users_assoc where `user_id` = $uid and `fnum` like ".$dbo->quote($fnum);
-            $dbo->setQuery($query);
-            return $dbo->execute();
+        $deleted = false;
+
+        if (!empty($fnum) && !empty($uid)) {
+            if (empty($current_user)) {
+                $current_user = JFactory::getUser()->id;
+            }
+
+            $dbo = $this->getDbo();
+            $query = $dbo->getQuery(true);
+
+            $query->delete('#__emundus_users_assoc')
+                ->where($dbo->quoteName('user_id') . ' = ' . $uid)
+                ->andWhere($dbo->quoteName('fnum') . ' = ' . $dbo->quote($fnum));
+
+            try {
+                $dbo->setQuery($query);
+                $deleted = $dbo->execute();
+            } catch (Exception $e) {
+                JLog::add('Error in model/application at query: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+            }
+
+            if ($deleted) {
+                $query->clear()
+                    ->select('name')
+                    ->from('#__users')
+                    ->where('id = ' . $uid);
+
+                $dbo->setQuery($query);
+                $user_name = $dbo->loadResult();
+
+                $logsParams = ['deleted' => ['details' => $user_name]];
+                EmundusModelLogs::log($current_user, '', $fnum, 11, 'd', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+            }
         }
-        catch(Exception $e)
-        {
-            throw $e;
-        }
+
+        return $deleted;
     }
 
     public function getApplications($uid)

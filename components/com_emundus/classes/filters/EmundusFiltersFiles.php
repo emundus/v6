@@ -117,36 +117,9 @@ class EmundusFiltersFiles extends EmundusFilters
 
 		if (!empty($campaign_ids))
 		{
-			$db    = JFactory::getDbo();
-			$query = $db->getQuery(true);
-
-			// profiles from campaigns
-			$query->select('DISTINCT profile_id')
-				->from('#__emundus_setup_campaigns')
-				->where('id IN (' . implode(',', $db->quote($campaign_ids)) . ')');
-
-			$db->setQuery($query);
-			$profiles = $db->loadColumn();
-			foreach ($profiles as $profile)
-			{
-				if (!in_array($profile, $profile_ids))
-				{
-					$profile_ids[] = $profile;
-				}
-			}
-
-			// profiles from workflows
-			require_once(JPATH_SITE . '/components/com_emundus/models/campaign.php');
-			$m_campaign = new EmundusModelCampaign();
-			$workflows  = $m_campaign->getWorkflows($campaign_ids);
-
-			foreach ($workflows as $workflow)
-			{
-				if (!in_array($workflow->profile_id, $profile_ids))
-				{
-					$profile_ids[] = $workflow->profile_id;
-				}
-			}
+            require_once(JPATH_SITE . '/components/com_emundus/models/campaign.php');
+            $m_campaign = new EmundusModelCampaign();
+            $profile_ids = $m_campaign->getProfilesFromCampaignId($campaign_ids);
 		}
 
 		return $profile_ids;
@@ -208,78 +181,9 @@ class EmundusFiltersFiles extends EmundusFilters
 
 	private function getElementsFromFabrikForms($form_ids)
 	{
-		$elements = [];
-		$form_ids = array_unique($form_ids);
-
-		if (!empty($form_ids))
-		{
-			if ($this->h_cache->isEnabled())
-			{
-				foreach ($form_ids as $key => $form_id)
-				{
-					$cache_key      = 'elements_from_form_' . $form_id;
-					$cache_elements = $this->h_cache->get($cache_key);
-
-					if (!empty($cache_elements))
-					{
-						$elements = array_merge($elements, $cache_elements);
-						unset($form_ids[$key]);
-					}
-				}
-			}
-
-			if (!empty($form_ids))
-			{
-				$db    = JFactory::getDbo();
-				$query = $db->getQuery(true);
-
-				$query->clear()
-					->select('jfe.id, jfe.plugin, jfe.label, jfe.params, jffg.form_id as element_form_id, jff.label as element_form_label')
-					->from('jos_fabrik_elements as jfe')
-					->join('inner', 'jos_fabrik_formgroup as jffg ON jfe.group_id = jffg.group_id')
-					->join('inner', 'jos_fabrik_forms as jff ON jffg.form_id = jff.id')
-					->where('jffg.form_id IN (' . implode(',', $form_ids) . ')')
-					->andWhere('jfe.published = 1')
-					->andWhere('jfe.hidden = 0');
-
-				try
-				{
-					$db->setQuery($query);
-					$query_elements = $db->loadAssocList();
-					$elements       = array_merge($elements, $query_elements);
-
-					foreach ($elements as $key => $element)
-					{
-						$elements[$key]['label']              = JText::_($element['label']);
-						$elements[$key]['element_form_label'] = JText::_($element['element_form_label']);
-					}
-
-					if ($this->h_cache->isEnabled())
-					{
-						$elements_by_form = [];
-						foreach ($elements as $element)
-						{
-							if (!isset($elements_by_form[$element['element_form_id']]))
-							{
-								$elements_by_form[$element['element_form_id']] = [];
-							}
-							$elements_by_form[$element['element_form_id']][] = $element;
-						}
-
-						foreach ($elements_by_form as $form_id => $element_by_form)
-						{
-							$this->h_cache->set('elements_from_form_' . $form_id, $element_by_form);
-						}
-					}
-				}
-				catch (Exception $e)
-				{
-					JLog::add('Failed to get elements associated to profiles that current user can access : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
-				}
-			}
-		}
-
-		return $elements;
+		require_once(JPATH_ROOT . '/components/com_emundus/helpers/fabrik.php');
+        $h_fabrik = new EmundusHelperFabrik();
+        return $h_fabrik->getElementsFromFabrikForms($form_ids);
 	}
 
 	private function setDefaultFilters($config)
@@ -331,19 +235,27 @@ class EmundusFiltersFiles extends EmundusFilters
 				{
 					$position = array_search('status', $filter_names);
 
-					if ($position !== false && isset($filter_menu_values[$position]))
+					if ($position !== false && isset($filter_menu_values[$position]) && $filter_menu_values[$position] !== '')
 					{
 						$statuses = explode('|', $filter_menu_values[$position]);
-						$query->where('step IN (' . implode(',', $statuses) . ')');
+
+                        if (!empty($statuses)) {
+                            $query->where('step IN (' . implode(',', $statuses) . ')');
+                        }
 					}
 				}
 
 				$query->order('ordering ASC');
 
-				$db->setQuery($query);
-				$statuses = $db->loadObjectList();
+                try {
+                    $db->setQuery($query);
+                    $statuses = $db->loadObjectList();
+                } catch (Exception $e) {
+                    Log::add('Failed to get statuses : ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
+                    throw new Exception('Failed to get statuses ', 500);
+                }
 
-				$values = [];
+                $values = [];
 				foreach ($statuses as $status)
 				{
 					$values[] = ['value' => $status->step, 'label' => $status->value];
@@ -391,9 +303,14 @@ class EmundusFiltersFiles extends EmundusFilters
 
 					$query->order('ordering ASC');
 
-					$db->setQuery($query);
-					$programs = $db->loadAssocList();
-				}
+                    try {
+                        $db->setQuery($query);
+                        $programs = $db->loadAssocList();
+                    } catch (Exception $e) {
+                        Log::add('Failed to get programs : ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
+                        throw new Exception('Failed to get programs ', 500);
+                    }
+                }
 
 				$this->applied_filters[] = [
 					'uid'       => 'programs',
@@ -441,9 +358,14 @@ class EmundusFiltersFiles extends EmundusFilters
 
 					$query->order('id DESC');
 
-					$db->setQuery($query);
-					$campaigns = $db->loadAssocList();
-				}
+                    try {
+                        $db->setQuery($query);
+                        $campaigns = $db->loadAssocList();
+                    } catch (Exception $e) {
+                        Log::add('Failed to get campaigns : ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
+                        throw new Exception('Failed to get campaigns', 500);
+                    }
+                }
 
 				$this->applied_filters[] = [
 					'uid'       => 'campaigns',

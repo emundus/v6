@@ -96,7 +96,7 @@ endif;
 		<?php
 		echo $this->plugintop;
 		?>
-        
+
         <?php
         $buttons_tmpl = $this->loadTemplate('buttons');
         $related_datas_tmpl = $this->loadTemplate('relateddata');
@@ -118,11 +118,12 @@ endif;
         <?php endif; ?>
 
 		<?php
-		foreach ($this->groups as $group) :
+        $this->index_element_id = 0;
+        foreach ($this->groups as $group) :
 			$this->group = $group;
 			?>
 
-            <fieldset class="mb-6 <?php echo $group->class; ?> <?php if ($group->columns > 1) {
+            <div class="mb-6 <?php echo $group->class; ?> <?php if ($group->columns > 1) {
 				echo 'fabrikGroupColumns-' . $group->columns . ' fabrikGroupColumns';
 			} ?>" id="group<?php echo $group->id; ?>" style="<?php echo $group->css; ?>">
                 <?php if(($group->showLegend && !empty($group->title)) || !empty($group->intro)) : ?>
@@ -150,14 +151,14 @@ endif;
 				 *  * default_repeatgroup_table.php - repeat group rendered in a table.
 				 */
 				$this->elements = $group->elements;
-				echo $this->loadTemplate($group->tmpl);
+                echo $this->loadTemplate($group->tmpl);
 
 				if (!empty($group->outro)) : ?>
                     <div class="groupoutro"><?php echo $group->outro ?></div>
 				<?php
 				endif;
 				?>
-            </fieldset>
+            </div>
 		<?php
 		endforeach;
 		if ($model->editable) : ?>
@@ -181,6 +182,141 @@ endif;
 	endif; ?>
 </div>
 
+
+
+
+<?php
+
+$user = JFactory::getUser();
+$fnum = JFactory::getSession()->get('emundusUser')->fnum;
+if (EmundusHelperAccess::asAccessAction(10, 'r', $user->id, $fnum)) {
+
+    JText::script('COM_EMUNDUS_COMMENTS_ADD_COMMENT');
+    JText::script('COM_EMUNDUS_COMMENTS_ERROR_PLEASE_COMPLETE');
+    JText::script('COM_EMUNDUS_COMMENTS_ENTER_COMMENT');
+    JText::script('COM_EMUNDUS_COMMENTS_SENT');
+    JText::script('COM_EMUNDUS_FILES_ADD_COMMENT');
+    JText::script('COM_EMUNDUS_FILES_CANNOT_ACCESS_COMMENTS');
+    JText::script('COM_EMUNDUS_FILES_CANNOT_ACCESS_COMMENTS_DESC');
+    JText::script('COM_EMUNDUS_FILES_COMMENT_TITLE');
+    JText::script('COM_EMUNDUS_FILES_COMMENT_BODY');
+    JText::script('COM_EMUNDUS_FILES_VALIDATE_COMMENT');
+    JText::script('COM_EMUNDUS_FILES_COMMENT_DELETE');
+    JText::script('COM_EMUNDUS_COMMENTS_VISIBLE_PARTNERS');
+    JText::script('COM_EMUNDUS_COMMENTS_VISIBLE_ALL');
+    JText::script('COM_EMUNDUS_COMMENTS_ANSWERS');
+    JText::script('COM_EMUNDUS_COMMENTS_ANSWER');
+    JText::script('COM_EMUNDUS_COMMENTS_ADD_COMMENT_ON');
+    JText::script('COM_EMUNDUS_COMMENTS_CANCEL');
+    JText::script('COM_EMUNDUS_COMMENTS');
+
+    require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
+    $ccid = EmundusHelperFiles::getIdFromFnum($fnum);
+    $coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
+    $sysadmin_access = EmundusHelperAccess::isAdministrator($user->id);
+    $current_lang = JFactory::getLanguage();
+    $short_lang = substr($current_lang->getTag(), 0 , 2);
+    $languages = JLanguageHelper::getLanguages();
+    if (count($languages) > 1) {
+        $many_languages = '1';
+        require_once JPATH_SITE . '/components/com_emundus/models/translations.php';
+        $m_translations = new EmundusModelTranslations();
+        $default_lang = $m_translations->getDefaultLanguage()->lang_code;
+    } else {
+        $many_languages = '0';
+        $default_lang = $current_lang;
+    }
+
+    $xmlDoc = new DOMDocument();
+    if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
+        $release_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
+    }
+
+    ?>
+    <aside id="aside-comment-section" class="fixed right-0 em-white-bg shadow-[0_4px_3px_0px_rgba(0,0,0,0.1)] ease-out closed">
+        <!-- Comments -->
+        <div class="flex flex-row relative">
+            <span class="open-comment material-icons-outlined cursor-pointer absolute top-14 em-bg-main-500 rounded-l-lg em-text-neutral-300" onclick="openCommentAside()">
+                comment
+            </span>
+            <span class="close-comment material-icons-outlined cursor-pointer absolute top-14 em-bg-main-500 rounded-l-lg em-text-neutral-300" onclick="openCommentAside()">
+                close
+            </span>
+            <div id="em-component-vue"
+                 component="comments"
+                 user="<?= $user->id ?>"
+                 ccid="<?= $ccid ?>"
+                 is_applicant="1"
+                 current_form="<?= $form->id ?>"
+                 currentLanguage="<?= $current_lang->getTag() ?>"
+                 shortLang="<?= $short_lang ?>"
+                 coordinatorAccess="<?= $coordinator_access ?>"
+                 sysadminAccess="<?= $sysadmin_access ?>"
+                 manyLanguages="<?= $many_languages ?>"
+            >
+            </div>
+        </div>
+    </aside>
+    <script src="/media/com_emundus_vue/app_emundus.js?<?php echo $release_version ?>"></script>
+    <script src="/media/com_emundus_vue/chunk-vendors_emundus.js?<?php echo $release_version ?>"></script>
+
+    <script>
+        function openCommentAside(focusonelement = null, forceOpen = false) {
+            const aside = document.getElementById('aside-comment-section');
+            if (aside.classList.contains('closed') || forceOpen) {
+                aside.classList.remove('closed');
+            } else {
+                aside.classList.add('closed');
+            }
+
+            const event = new CustomEvent('focusOnCommentElement', {
+                detail: {
+                    targetId: focusonelement
+                }
+            });
+            document.dispatchEvent(event);
+        }
+
+        function openModalAddComment(element)
+        {
+            const event = new CustomEvent('openModalAddComment', {
+                detail: {
+                    targetType: element.dataset.targetType,
+                    targetId: element.dataset.targetId,
+                }
+            });
+
+            document.dispatchEvent(event);
+        }
+
+        document.addEventListener('click', function (e) {
+            if (e.target.classList.contains('comment-icon')) {
+                if (e.target.classList.contains('has-comments')) {
+                    openCommentAside(e.target.dataset.targetId, true);
+                } else {
+                    openModalAddComment(e.target);
+                }
+            }
+        });
+
+        document.addEventListener('commentsLoaded', (e) => {
+            if (e.detail.comments.length > 0) {
+                e.detail.comments.forEach((comment) => {
+                    const commentIcon = document.querySelector(`.comment-icon[data-target-id="${comment.target_id}"]`);
+                    if (commentIcon) {
+                        commentIcon.classList.add('has-comments');
+                        commentIcon.classList.add('em-bg-main-500');
+                        commentIcon.classList.add('em-text-neutral-300');
+                        commentIcon.classList.add('p-1');
+                        commentIcon.classList.add('rounded-full');
+                    }
+                });
+            }
+        });
+    </script>
+    <?php
+}
+?>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         // Set sidebar sticky depends on height of header

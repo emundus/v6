@@ -970,7 +970,7 @@ class EmundusModelProfile extends JModelList {
     }
 
     function getFnumDetails($fnum) {
-        $query = 'SELECT ecc.*, esc.*, ess.*, epd.profile as profile_id_form
+        $query = 'SELECT ecc.id as ccid, ecc.*, esc.*, ess.*, epd.profile as profile_id_form
 					FROM #__emundus_campaign_candidature AS ecc
 					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=ecc.campaign_id
 					LEFT JOIN #__emundus_setup_status as ess ON ess.step = ecc.status
@@ -980,7 +980,7 @@ class EmundusModelProfile extends JModelList {
             $this->_db->setQuery($query);
             $res = $this->_db->loadAssoc();
         } catch(Exception $e) {
-            $query = 'SELECT ecc.*, esc.*, ess.*
+            $query = 'SELECT ecc.id as ccid, ecc.*, esc.*, ess.*
 					FROM #__emundus_campaign_candidature AS ecc
 					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=ecc.campaign_id
 					LEFT JOIN #__emundus_setup_status as ess ON ess.step = ecc.status

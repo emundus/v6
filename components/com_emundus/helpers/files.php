@@ -4320,7 +4320,67 @@ class EmundusHelperFiles
 							$query = '(' . $element . ' != ' . $db->quote($values) . ' OR ' . $element . ' IS NULL ) ';
 						}
 						break;
-					case 'LIKE':
+                    case 'superior':
+                        if (is_array($values)) {
+                            $query = '(';
+                            foreach($values as $key => $value) {
+                                if ($key == 0) {
+                                    $query .= $element . ' > ' . $db->quote($value);
+                                } else {
+                                    $query .= ' AND ' . $element . ' > ' . $db->quote($value);
+                                }
+                            }
+                            $query .= ')';
+                        } else {
+                            $query = $element . ' > ' . $db->quote($values);
+                        }
+                        break;
+                    case 'superior_or_equal':
+                        if (is_array($values)) {
+                            $query = '(';
+                            foreach($values as $key => $value) {
+                                if ($key == 0) {
+                                    $query .= $element . ' >= ' . $db->quote($value);
+                                } else {
+                                    $query .= ' AND ' . $element . ' >= ' . $db->quote($value);
+                                }
+                            }
+                            $query .= ')';
+                        } else {
+                            $query = $element . ' >= ' . $db->quote($values);
+                        }
+                        break;
+                    case 'inferior':
+                        if (is_array($values)) {
+                            $query = '(';
+                            foreach($values as $key => $value) {
+                                if ($key == 0) {
+                                    $query .= $element . ' < ' . $db->quote($value);
+                                } else {
+                                    $query .= ' AND ' . $element . ' < ' . $db->quote($value);
+                                }
+                            }
+                            $query .= ')';
+                        } else {
+                            $query = $element . ' < ' . $db->quote($values);
+                        }
+                        break;
+                    case 'inferior_or_equal':
+                        if (is_array($values)) {
+                            $query = '(';
+                            foreach($values as $key => $value) {
+                                if ($key == 0) {
+                                    $query .= $element . ' <= ' . $db->quote($value);
+                                } else {
+                                    $query .= ' AND ' . $element . ' <= ' . $db->quote($value);
+                                }
+                            }
+                            $query .= ')';
+                        } else {
+                            $query = $element . ' <= ' . $db->quote($values);
+                        }
+                        break;
+                    case 'LIKE':
 						if (is_array($values)) {
 							$_values = implode(',', $db->quote($values));
 							$query = $element . ' IN (' . $_values . ')';
@@ -5017,5 +5077,48 @@ class EmundusHelperFiles
 
 		return $linked;
 	}
+
+    public static function getFnumFromId($id) {
+        $fnum = '';
+
+        if (!empty($id)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+            $query->select('fnum')
+                ->from('#__emundus_campaign_candidature')
+                ->where('id = ' . $id);
+
+            try {
+                $db->setQuery($query);
+                $fnum = $db->loadResult();
+            } catch (Exception $e) {
+                $fnum = '';
+            }
+        }
+
+        return $fnum;
+    }
+
+    public static function getIdFromFnum($fnum) {
+        $id = '';
+
+        if (!empty($fnum)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('id')
+                ->from('#__emundus_campaign_candidature')
+                ->where('fnum = ' . $db->quote($fnum));
+
+            try {
+                $db->setQuery($query);
+                $id = $db->loadResult();
+            } catch (Exception $e) {
+                $id = '';
+            }
+        }
+
+        return $id;
+    }
 }
 
