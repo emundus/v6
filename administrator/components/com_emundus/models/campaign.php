@@ -77,7 +77,7 @@ class EmundusModelAdministratorCampaign extends JModelList
         $tasks[] = $form['status'];
         if ($form['status']) {
             $form_id = $form['id'];
-            $group = EmundusHelperUpdate::addFabrikGroup(['name' => 'Informations spécifiques'], [], 1, true);
+            $group = EmundusHelperUpdate::addFabrikGroup(['name' => 'Informations spécifiques'], ['repeat_group_show_first' => 1], 1, true);
 
             if ($group['status']) {
                 EmundusHelperUpdate::joinFormGroup($form_id, [$group['id']]);
@@ -99,7 +99,7 @@ class EmundusModelAdministratorCampaign extends JModelList
                     'plugin'               => 'date',
                     'label'                => 'Date de création',
                     'show_in_list_summary' => 0,
-                    'hidden'               => 0
+                    'hidden'               => 1
                 ];
                 $result = EmundusHelperUpdate::addFabrikElement($datas);
                 $tasks[] = $result['status'];
@@ -111,7 +111,8 @@ class EmundusModelAdministratorCampaign extends JModelList
                     'label'                => 'Campagne',
                     'show_in_list_summary' => 0,
                     'hidden'               => 1,
-                    'default'              => '$input = JFactory::getApplication()->input;return $input->getInt(\'jos_emundus_setup_campaigns_more___campaign_id\', 0);'
+                    'default'              => '$input = JFactory::getApplication()->input;return $input->getInt(\'jos_emundus_setup_campaigns_more___campaign_id\', 0);',
+	                'eval'                 => 1
                 ];
                 $params = [
                     'database_join_display_type' => 'list',
