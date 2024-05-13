@@ -2169,7 +2169,7 @@ class EmundusModelApplication extends JModelList
                                             $tds .= '<td class="flex flex-row justify-between w-full" style="width:100%;"><span>' . ((!in_array($element->plugin,['field','textarea'])) ? JText::_($elt) : $elt) . '</span>';
 
                                             if ($can_comment) {
-                                                $comment_classes = 'comment-icon material-icons-outlined cursor-pointer p-1';
+                                                $comment_classes = 'comment-icon material-icons-outlined cursor-pointer p-1 h-fit';
                                                 foreach ($file_comments as $comment) {
                                                     if ($comment['target_id'] == $element->id && $comment['target_type'] == 'element') {
                                                         $comment_classes .= ' has-comments em-bg-main-500 em-text-neutral-300 rounded-full';
