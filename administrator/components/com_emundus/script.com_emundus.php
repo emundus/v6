@@ -4288,6 +4288,13 @@ if(in_array($applicant,$exceptions)){
 				EmundusHelperUpdate::insertTranslationsTag('COM_USERS_LOGIN_EMAIL_PLACEHOLDER','example@domain.com', 'override', null, null, null, 'en-GB');
 
 				EmundusHelperUpdate::addColumn('jos_emundus_widgets_repeat_access', 'access_level', 'INT', 11);
+
+
+                if (!class_exists('EmundusModelAdministratorCampaign')) {
+                    require_once(JPATH_ROOT . '/administrator/components/com_emundus/models/campaign.php');
+                }
+                $m_admin_campaign = new EmundusModelAdministratorCampaign();
+                $succeed['install_campaign_more'] = $m_admin_campaign->installCampaignMore();
 			}
 		}
 
