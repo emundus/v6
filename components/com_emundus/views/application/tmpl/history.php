@@ -22,11 +22,23 @@ use Joomla\CMS\Language\Text;
 <div id="attachments" class="mt-6">
 </div>
 
+<div id="comments" class="mt-6">
+</div>
 <script>
     //domready
     document.addEventListener("DOMContentLoaded", function (event) {
         displayHistory();
     });
+
+    function emptyElements(elements = ['application', 'attachments', 'history', 'comments']) {
+        elements.forEach((elementId) => {
+            const foundElement = document.getElementById(elementId);
+
+            if (foundElement) {
+                foundElement.innerHTML = '';
+            }
+        });
+    }
 
     function displayHistory() {
         toggleLoader();
@@ -37,8 +49,7 @@ use Joomla\CMS\Language\Text;
                 return response.text();
             }
         }).then((res) => {
-            document.getElementById('application').innerHTML = '';
-            document.getElementById('attachments').innerHTML = '';
+            emptyElements();
             document.getElementById('history').innerHTML = res;
 
             toggleLoader();
@@ -54,8 +65,7 @@ use Joomla\CMS\Language\Text;
                 return response.text();
             }
         }).then((res) => {
-            document.getElementById('history').innerHTML = '';
-            document.getElementById('attachments').innerHTML = '';
+            emptyElements();
             document.getElementById('application').innerHTML = res;
             toggleLoader();
         });
@@ -70,11 +80,29 @@ use Joomla\CMS\Language\Text;
                 return response.text();
             }
         }).then((res) => {
-            document.getElementById('history').innerHTML = '';
-            document.getElementById('application').innerHTML = '';
+            emptyElements();
 
             // Use jQuery is required to load javascript present in the html
             $('#attachments').append(res);
+            toggleLoader();
+        });
+    }
+
+    function displayComments() {
+        toggleLoader();
+
+        fetch('/index.php?option=com_emundus&view=application&layout=comment&format=raw&fnum=<?php echo $this->fnum ?>&ccid=<?php echo $this->ccid ?>', {
+            method: 'get',
+        }).then((response) => {
+            if (response.ok) {
+                return response.text();
+            }
+        }).then((res) => {
+            emptyElements();
+            document.getElementById('comments').innerHTML = res;
+
+            // Use jQuery is required to load javascript present in the html
+            $('#comments').append(res);
             toggleLoader();
         });
     }
@@ -106,6 +134,9 @@ use Joomla\CMS\Language\Text;
                 break;
             case 'attachments':
                 displayAttachments();
+                break;
+            case 'comments':
+                displayComments();
                 break;
         }
     }
