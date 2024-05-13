@@ -27,7 +27,9 @@
                     :class="activeMenu === indexMenu ? 'font-bold text-green-700 bg-[#008A351A]' : 'hover:bg-gray-100'"
               >
                 <i class="material-icons-outlined font-bold" :class="activeMenu === indexMenu ? 'text-green-700' : ''"
-                   name="icon-Menu" :id="'icon-'+indexMenu">{{ menu.icon }}</i>
+                   name="icon-Menu"
+                   :title="translate(menu.label)"
+                   :id="'icon-'+indexMenu">{{ menu.icon }}</i>
                 <span class="ms-2 font-bold"
                       v-if="minimized === false"
                       :class="activeMenu === indexMenu ? 'text-green-700' : ''">{{ translate(menu.label) }}</span>
