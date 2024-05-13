@@ -12,6 +12,7 @@
                 <option value="history">COM_EMUNDUS_APPLICATION_VIEW_HISTORY_TAB_HISTORY</option>
                 <option value="forms">COM_EMUNDUS_APPLICATION_VIEW_HISTORY_TAB_FORMS</option>
                 <option value="attachments">COM_EMUNDUS_APPLICATION_VIEW_HISTORY_TAB_ATTACHMENTS</option>
+                <option value="comments">COM_EMUNDUS_APPLICATION_VIEW_HISTORY_TAB_COMMENTS</option>
             </field>
         </fieldset>
     </fields>
