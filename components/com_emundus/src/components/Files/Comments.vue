@@ -81,7 +81,8 @@
           </div>
         </div>
         <div class="add-child-comment">
-          <textarea class="mb-2 p-2" @keyup.enter="addComment(comment.id)" v-model="newChildCommentText"></textarea>
+          <textarea class="mb-2 p-2" @keyup.enter="addComment(comment.id)" v-model="newChildCommentText"
+                    :placeholder="translate('COM_EMUNDUS_COMMENTS_ADD_COMMENT_PLACEHOLDER')"></textarea>
           <div class="w-full flex flex-row justify-end">
             <button id="add-comment-btn"
                     class="em-primary-button em-bg-main-500 em-neutral-300-color w-fit mt-2"
@@ -96,9 +97,10 @@
       </div>
     </div>
     <div id="add-comment-container">
-      <textarea @keyup.enter="addComment" v-model="newCommentText" class="p-2"></textarea>
+      <textarea @keyup.enter="addComment" v-model="newCommentText" class="p-2"
+                :placeholder="translate('COM_EMUNDUS_COMMENTS_ADD_COMMENT_PLACEHOLDER')"></textarea>
       <div v-if="!isApplicant" class="flex flex-row items-center">
-        <div class="flex flex-row items-center">
+        <div class="flex flex-row items-center mr-2">
           <input type="radio" name="visible_to_applicant" v-model="visible_to_applicant" :value="false"
                  id="visible-to-coords">
           <label for="visible-to-coords" class="m-0">{{ translate('COM_EMUNDUS_COMMENTS_VISIBLE_PARTNERS') }}</label>
@@ -127,7 +129,8 @@
       <div class="w-full h-full p-4 flex flex-col justify-between">
         <div>
           <h2 class="mb-3">{{ translate('COM_EMUNDUS_COMMENTS_ADD_COMMENT_ON') }} {{ targetLabel }}</h2>
-          <textarea v-model="newCommentText" class="p-2"></textarea>
+          <textarea v-model="newCommentText" class="p-2"
+                    :placeholder="translate('COM_EMUNDUS_COMMENTS_ADD_COMMENT_PLACEHOLDER')"></textarea>
           <div v-if="!isApplicant" class="flex flex-row items-center">
             <div class="flex flex-row items-center">
               <input type="radio" name="visible_to_applicant" v-model="visible_to_applicant" :value="false"
