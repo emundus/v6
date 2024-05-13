@@ -1435,23 +1435,27 @@ function setProgram(progCode) {
  * @param fnums
  */
 async function countFilesBeforeAction(fnums, action, verb) {
-    let form = new FormData();
-    form.append('fnums', fnums);
-    form.append('action_id', action);
-    form.append('verb', verb);
+    if (fnums !== 'all') {
+        return Object.keys(JSON.parse(fnums)).length;
+    } else {
+        let form = new FormData();
+        form.append('fnums', fnums);
+        form.append('action_id', action);
+        form.append('verb', verb);
 
-    // add catch to handle errors
-    return fetch('index.php?option=com_emundus&controller=files&task=countfilesbeforeaction',
-        {
-            body: form,
-            method: 'POST'
-        }).then((response) => {
-        return response.json();
-    }).then((json) => {
-        return json.data;
-    }).catch((error) => {
-        return 0;
-    });
+        // add catch to handle errors
+        return fetch('index.php?option=com_emundus&controller=files&task=countfilesbeforeaction',
+            {
+                body: form,
+                method: 'POST'
+            }).then((response) => {
+            return response.json();
+        }).then((json) => {
+            return json.data;
+        }).catch((error) => {
+            return 0;
+        });
+    }
 }
 
 function updateState(fnums, state)
