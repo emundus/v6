@@ -85,38 +85,38 @@ class PlgFabrik_Cronemunduslogsandmessagespurge extends PlgFabrik_Cron{
 
 		$logs     = $m_logs->deleteLogsBeforeADate($now);
 		$messages = $m_messages->deleteMessagesBeforeADate($now);
-		$tmp_documents = 0;
+		$tmp_files = 0;
 
 		$now = $this->getDate($amount_time_tmp, $unit_time_tmp);
 
 		// Clean tmp documents older than $now
-		foreach (glob(JPATH_SITE . '/tmp/*') as $document)
+		foreach (glob(JPATH_SITE . '/tmp/*') as $tmp_file)
 		{
-			if (!preg_match('/^backup_logs_and_messages_[a-zA-Z0-9_-]+\.zip$/', basename($document)) && basename($document) !== '.gitignore' && basename($document) !== 'index.html')
+			if (!preg_match('/^backup_logs_and_messages_[a-zA-Z0-9_-]+\.zip$/', basename($tmp_file)) && basename($tmp_file) !== '.gitignore' && basename($tmp_file) !== 'index.html')
 			{
-				$creation_date_time = new DateTime('@' . filectime($document));
+				$creation_date_time = new DateTime('@' . filectime($tmp_file));
 				if ($creation_date_time < $now)
 				{
-					if (is_file($document))
+					if (is_file($tmp_file))
 					{
-						unlink($document);
-						$tmp_documents += 1;
+						unlink($tmp_file);
+						$tmp_files += 1;
 					}
-					else if (is_dir($document))
+					else if (is_dir($tmp_file))
 					{
-						$files = glob($document . '/*');
+						$files = glob($tmp_file . '/*');
 						foreach ($files as $file)
 						{
 							unlink($file);
 						}
-						rmdir($document);
-						$tmp_documents += 1;
+						rmdir($tmp_file);
+						$tmp_files += 1;
 					}
 				}
 			}
 		}
 
-		return $logs + $messages + $tmp_documents;
+		return $logs + $messages + $tmp_files;
 	}
 
 	private function getDate($amount_time, $unit_time)
