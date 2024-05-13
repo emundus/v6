@@ -865,7 +865,7 @@ function runAction(action, url = '', option = '') {
             var fnums = getUserCheckArray();
 
             const nbFiles = countFilesBeforeAction(checkInput, 9, 'c');
-            nbFiles.then(function(nbFiles) {
+            nbFiles.then((nbFiles) => {
                 sendMailQueue(fnums, nbFiles);
             });
             break;
