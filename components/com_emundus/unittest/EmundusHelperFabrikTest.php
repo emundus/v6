@@ -75,4 +75,61 @@ class EmundusHelperFabrikTest extends TestCase
         $formatted_phone_number = $this->h_fabrik->getFormattedPhoneNumberValue($unformatted_phone_number, 2);
         $this->assertEmpty($formatted_phone_number, 'Incorrect phone number returns empty string');
     }
+
+	/**
+	 * @return void
+	 * @description Test the getElementByAlias() method
+	 * It should return the name and database name storage of the element with the alias passed as parameter
+	 */
+	public function testgetElementByAlias()
+	{
+		$form_id = $this->h_sample->getUnitTestFabrikForm();
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select('fe.id, fe.params as params, fe.parent_id as parent_id')
+			->from($db->quoteName('#__fabrik_elements', 'fe'))
+			->leftJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffg.group_id').' = '.$db->quoteName('fe.group_id'))
+			->leftJoin($db->quoteName('#__fabrik_lists','fl').' ON '.$db->quoteName('fl.form_id').' = '.$db->quoteName('ffg.form_id'))
+			->where($db->quoteName('ffg.form_id') . ' = ' . $form_id);
+
+		$db->setQuery($query);
+		$elements = $db->loadObjectList();
+
+		foreach ($elements as $element) {
+
+			$params = json_decode($element->params, true);
+			$params['alias'] = 'alias' . rand(0, 1000);
+			$params = json_encode($params);
+
+			$query = $db->getQuery(true);
+
+			$query->clear()
+				->update($db->quoteName('#__fabrik_elements'))
+				->set($db->quoteName('params') . ' = ' . $db->quote($params))
+				->where($db->quoteName('id') . ' = ' . $db->quote($element->id))
+				->limit(1);
+			$db->setQuery($query);
+			$db->execute();
+
+			$query->clear()
+				->select('fe.name AS name, fe.params AS params, fl.db_table_name')
+				->from($db->quoteName('#__fabrik_elements', 'fe'))
+				->leftJoin($db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $db->quoteName('ffg.group_id') . ' = ' . $db->quoteName('fe.group_id'))
+				->leftJoin($db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $db->quoteName('fl.form_id') . ' = ' . $db->quoteName('ffg.form_id'))
+				->where($db->quoteName('fe.id') . ' = ' . (int)$element->id);
+
+			$db->setQuery($query);
+			$element_after = $db->loadObject();
+
+			$params = json_decode($element_after->params, true);
+
+			$element_by_alias = $this->h_fabrik->getElementByAlias($params["alias"], $form_id);
+			$this->assertEquals($element_after->name, $element_by_alias->name, 'The element name obtained should be the same as the element name in the database.');
+			$this->assertEquals($element_after->db_table_name, $element_by_alias->db_table_name, 'The element table name obtained should be the same as the element table name in the database.');
+
+
+		}
+	}
 }

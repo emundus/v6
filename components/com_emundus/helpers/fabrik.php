@@ -19,6 +19,7 @@ jimport('joomla.application.component.helper');
 require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 use libphonenumber\PhoneNumberUtil;
 use libphonenumber\PhoneNumberFormat;
+use Joomla\CMS\Log\Log;
 
 /**
  * Content Component Query Helper
@@ -1028,4 +1029,40 @@ die("<script>
 
         return $formattedValue;
     }
+
+
+	/**
+	 * @param $alias     string The alias to search the element for
+	 * @param $form_id   int    The form id to search the element for
+	 * @param $pid       int    The parent id to search the element for
+	 *
+	 * @description Return element according to alias
+	 *
+	 * @return false|mixed|null
+	 */
+	static function getElementByAlias($alias,$form_id = null,$pid = null){
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		try {
+			$query->select('fl.db_table_name,fe.name')
+				->from($db->quoteName('#__fabrik_elements','fe'))
+				->leftJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffg.group_id').' = '.$db->quoteName('fe.group_id'))
+				->leftJoin($db->quoteName('#__fabrik_lists','fl').' ON '.$db->quoteName('fl.form_id').' = '.$db->quoteName('ffg.form_id'))
+				->where("JSON_EXTRACT(fe.params, '$.alias') = " . $db->quote($alias));
+			if(!empty($form_id)){
+				$query->where($db->quoteName('fl.form_id') . ' = ' . $db->quote($form_id));
+			}
+			if(!empty($pid)){
+				$query->where($db->quoteName('parent_id') . ' = ' . $db->quote($pid));
+			}
+			$db->setQuery($query);
+			return $db->loadObject();
+		}
+		catch (Exception $e) {
+			Log::add('component/com_emundus/helpers/fabrik | Cannot retrive element by alias : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+			return false;
+		}
+	}
 }
