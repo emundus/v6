@@ -65,9 +65,9 @@
           </div>
         </div>
 
-        <div class="em-p-16">
+        <div class="em-pt-16">
           <label for="element-alias">{{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_ALIAS') }}</label>
-          <input id="element-alias" name="element-alias" class="" type="text" v-model="element.params.alias"/>
+          <input id="element-alias" name="element-alias" type="text" v-model="element.params.alias"/>
         </div>
 
       </div>

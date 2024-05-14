@@ -656,7 +656,8 @@
 						   description="COM_FABRIK_FIELD_ELEMENT_ALIAS_DESC"
 						   label="COM_FABRIK_FIELD_ELEMENT_ALIAS_LABEL"
 						   required="false"
-						   size="35" />
+						   size="35"
+						   default="default_alias" />
 
 					<field name="edit_access_user"
 						type="listfields"
