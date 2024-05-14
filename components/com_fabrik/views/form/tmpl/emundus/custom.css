@@ -91,7 +91,6 @@ form .fabrikGroupColumns.fabrikGroup .row-fluid {
 
 .comment-icon {
     transition: all .3s;
-    opacity: 1 !important;
 }
 
 .comment-icon:not(.has-comments) {
@@ -100,4 +99,35 @@ form .fabrikGroupColumns.fabrikGroup .row-fluid {
 
 .fabrik-element-emundus-container:hover .comment-icon {
     opacity: 1 !important;
+}
+
+@media all and (max-width: 767px) {
+    #aside-comment-section {
+        top: 0;
+        height: 100vh;
+        width: 100%;
+    }
+
+    #aside-comment-section.closed {
+        right: -100%;
+    }
+
+    #aside-comment-section .open-comment {
+        top: 112px;
+    }
+
+    #aside-comment-section .close-comment {
+        left: 16px;
+        border-radius: 6px;
+        top: 4px;
+    }
+
+    #aside-comment-section #comments {
+        padding-top: 60px;
+    }
+
+    .comment-icon, .comment-icon:not(.has-comments) {
+        opacity: 1 !important;
+        margin-right: var(--em-spacing-2);
+    }
 }
