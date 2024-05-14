@@ -11,6 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
@@ -55,6 +56,11 @@ class PlgFabrik_Cronemunduslogsandmessagespurge extends PlgFabrik_Cron{
 		include_once(JPATH_SITE . '/components/com_emundus/models/logs.php');
 		include_once(JPATH_SITE . '/components/com_emundus/models/messages.php');
 		include_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
+		Log::addLogger(
+			array(
+				'text_file' => 'com_emundus.logsandmessagespurge.php',
+			),
+			Log::INFO, 'com_emundus_logsandmessagespurge');
 		$m_logs     = new EmundusModelLogs();
 		$m_messages = new EmundusModelMessages();
 
@@ -100,6 +106,7 @@ class PlgFabrik_Cronemunduslogsandmessagespurge extends PlgFabrik_Cron{
 				{
 					if (is_file($tmp_file))
 					{
+						Log::add('tmp/ file ' . basename($tmp_file) . ' deleted.', Log::INFO, 'com_emundus_logsandmessagespurge');
 						unlink($tmp_file);
 						$tmp_files += 1;
 					}
@@ -108,6 +115,7 @@ class PlgFabrik_Cronemunduslogsandmessagespurge extends PlgFabrik_Cron{
 						$files = glob($tmp_file . '/*');
 						foreach ($files as $file)
 						{
+							Log::add('tmp/ file ' . basename($file) . ' deleted.', Log::INFO, 'com_emundus_logsandmessagespurge');
 							unlink($file);
 						}
 						rmdir($tmp_file);
