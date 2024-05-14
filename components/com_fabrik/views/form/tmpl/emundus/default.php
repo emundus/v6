@@ -57,12 +57,24 @@ endif;
     <div class="mb-8">
         <div class="em-mt-8">
 	        <?php if ($this->params->get('show-title', 1)) : ?>
-                <?php if($display_required_icon == 0) : ?>
-                    <p class="mb-5 text-neutral-600"><?= JText::_('COM_FABRIK_REQUIRED_ICON_NOT_DISPLAYED') ?></p>
-                <?php endif; ?>
-                <div class="page-header">
-			        <?php $title = trim(preg_replace('/^([^-]+ - )/', '', $form->label)); ?>
-                    <h2 class="after-em-border after:bg-red-800"><?= JText::_($title) ?></h2>
+                <div class="flex flex-row">
+                    <?php if($eMConfig->get('allow_applicant_to_comment', 0)) {
+                        ?>
+                        <div class="fabrik-element-emundus-container flex flex-row justify-items-start items-start mr-5">
+                            <span class="material-icons-outlined cursor-pointer comment-icon" data-target-type="forms" data-target-id="<?= $form->id ?>">comment</span>
+                        </div>
+                        <?php
+                    }
+                    ?>
+                    <div>
+                        <?php if($display_required_icon == 0) : ?>
+                            <p class="mb-5 text-neutral-600"><?= JText::_('COM_FABRIK_REQUIRED_ICON_NOT_DISPLAYED') ?></p>
+                        <?php endif; ?>
+                        <div class="page-header">
+                            <?php $title = trim(preg_replace('/^([^-]+ - )/', '', $form->label)); ?>
+                            <h2 class="after-em-border after:bg-red-800"><?= JText::_($title) ?></h2>
+                        </div>
+                    </div>
                 </div>
 	        <?php endif; ?>
         </div>
