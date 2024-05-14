@@ -377,7 +377,7 @@ $current_tab = 0;
 											        <?php endif; ?>
                                                     <div class="em-w-100">
                                                         <div class="em-flex-row em-flex-space-between em-mb-12">
-                                                            <div>
+                                                            <div class="flex flex-row items-center">
                                                                 <?php
                                                                 if (empty($application->class)) {
                                                                     $application->class = 'default';
@@ -398,6 +398,19 @@ $current_tab = 0;
                                                                     <br>
                                                                     <p><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_ORDER_STATUS') ?> <span style="color: <?= $application->order_color; ?>"><?= JText::_(strtoupper($application->order_status)); ?></span></p>
                                                                 <?php endif; ?>
+                                                                <?php if ($show_nb_comments) {
+                                                                    $nb_comments = modemundusApplicationsHelper::getNbComments($application->fnum, $user->id);
+                                                                    if ($nb_comments > 0) {
+                                                                        ?>
+                                                                        <div class="em-mt-8 ml-2">
+                                                                            <a href="#">
+                                                                                <span class="material-icons em-text-neutral-600">chat_bubble_outline</span>
+                                                                                <span><?= $nb_comments; ?></span>
+                                                                            </a>
+                                                                        </div>
+                                                                        <?php
+                                                                    }
+                                                                }  ?>
                                                             </div>
                                                             <div class="mod_emundus_applications__container">
                                                                 <span class="material-icons em-text-neutral-600 em-font-weight-600"

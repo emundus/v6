@@ -351,6 +351,15 @@
 				</field>
 
 				<field showon="layout:_:tchooz"
+					   name="show_nb_comments"
+					   type="radio"
+					   default="0"
+					   label="MOD_EMUNDUS_SHOW_NB_COMMENTS"
+					   description="MOD_EMUNDUS_SHOW_NB_COMMENTS_DESC">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+				<field showon="layout:_:tchooz"
 					   name="mod_emundus_applications_actions"
 					   type="checkboxes"
 					   default=""

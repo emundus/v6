@@ -200,7 +200,7 @@ class EmundusModelComments extends JModelLegacy
      * @param $current_user
      * @return void
      */
-    public function getComments($file_id, $current_user) {
+    public function getComments($file_id, $current_user, $is_applicant = false) {
         $comments = [];
 
         if (!empty($file_id) && !empty($current_user)) {
@@ -208,6 +208,10 @@ class EmundusModelComments extends JModelLegacy
             $query->select('ec.*')
                 ->from($this->db->quoteName('#__emundus_comments', 'ec'))
                 ->where('ec.ccid = ' . $this->db->quote($file_id));
+
+            if ($is_applicant) {
+                $query->where('ec.visible_to_applicant = 1');
+            }
 
             try {
                 $this->db->setQuery($query);

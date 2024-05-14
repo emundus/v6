@@ -478,4 +478,25 @@ class modemundusApplicationsHelper {
 
         echo $html;
 	}
+
+    static function getNbComments($fnum, $current_user) {
+        $nb_comments = 0;
+
+        if (!empty($fnum)) {
+            if (!class_exists('EmundusHelperFiles')) {
+                require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
+            }
+            $ccid = EmundusHelperFiles::getIdFromFnum($fnum);
+
+            if (!class_exists('EmundusModelComments')) {
+                require_once(JPATH_ROOT . '/components/com_emundus/models/comments.php');
+            }
+            $m_comments = new EmundusModelComments();
+            $comments = $m_comments->getComments($ccid, $current_user, true);
+
+            $nb_comments = count($comments);
+        }
+
+        return $nb_comments;
+    }
 }
