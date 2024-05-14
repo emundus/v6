@@ -402,7 +402,7 @@ $current_tab = 0;
                                                                     $nb_comments = modemundusApplicationsHelper::getNbComments($application->ccid, $user->id);
                                                                     if ($nb_comments > 0) {
                                                                         ?>
-                                                                        <a href="<?= !empty($comments_page_alias) ? '/' . $comments_page_alias . '?ccid=' . $application->ccid . '&fnum=' . $application->fnum : '#'  ?>"  id="actions_button_comment" class="flex flex-row comments-icon-wrapper relative ml-2">
+                                                                        <a href="<?= !empty($comments_page_alias) ? '/' . $comments_page_alias . '?tab=comments&ccid=' . $application->ccid . '&fnum=' . $application->fnum : '#'  ?>"  id="actions_button_comment" class="flex flex-row comments-icon-wrapper relative ml-2">
                                                                             <span id="actions_button_comment_icon" class="material-icons em-neutral-300-color em-bg-main-500 p-2 rounded-full">comment</span>
                                                                             <span id="actions_button_comment_nb" class="nb-comments em-border-main-500 em-font-size-12 em-main-500-color em-white-bg border-2 absolute rounded-full p-1"><?= $nb_comments; ?></span>
                                                                         </a>

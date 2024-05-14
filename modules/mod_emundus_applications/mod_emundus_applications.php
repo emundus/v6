@@ -109,7 +109,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $show_archive_files = $params->get('show_archived_files', 1);
     $show_state_files = $params->get('show_state_files', 0);
     $show_payment_status = $params->get('show_payment_status', 0);
-    $show_nb_comments = $params->get('show_nb_comments', 0);
+    $show_nb_comments = $params->get('show_nb_comments', 0) &&  $eMConfig->get('allow_applicant_to_comment', 0);
     if ($show_nb_comments) {
         $comments_page_alias = modemundusApplicationsHelper::getCommentsPageBaseUrl();
     }
