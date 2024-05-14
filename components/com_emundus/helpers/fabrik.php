@@ -1077,24 +1077,37 @@ die("<script>
 	 */
 	static function getValueByAlias($alias,$fnum,$raw = 0)
 	{
-		$db = Factory::getDbo();
-		$query = $db->getQuery(true);
+		$element = EmundusHelperFabrik::getElementByAlias($alias);
 
-		try {
-			$query->select('fe.label')
-				->from($db->quoteName('#__fabrik_elements','fe'))
-				->leftJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffg.group_id').' = '.$db->quoteName('fe.group_id'))
-				->leftJoin($db->quoteName('#__fabrik_lists','fl').' ON '.$db->quoteName('fl.form_id').' = '.$db->quoteName('ffg.form_id'))
-				->where("fl.form_id = " . $db->quote($fnum))
-				->where("JSON_EXTRACT(fe.params, '$.alias') = " . $db->quote($alias));
-			$db->setQuery($query);
-			$label = $db->loadObject();
-			return Text::_($label);
+		if($element)
+		{
+			$db = Factory::getDbo();
+			$query = $db->getQuery(true);
+
+			try {
+				$query->select($db->quoteName($element->name, 'name'))
+					->from($db->quoteName($element->db_table_name))
+					->where("fnum = " . $db->quote($fnum));
+				$db->setQuery($query);
+				$label = $db->loadResult();
+				if(!empty($label)){
+					if($raw)
+					{
+						return $label;
+					}
+					else
+					{
+						return EmundusHelperFabrik::formatElementValue($element->name,$label);
+					}
+				}
+				return $label;
+			}
+			catch (Exception $e) {
+				Log::add('component/com_emundus/helpers/fabrik | Cannot retrive value by alias : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+				return false;
+			}
 		}
-		catch (Exception $e) {
-			Log::add('component/com_emundus/helpers/fabrik | Cannot retrive value by alias : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-			return false;
-		}
+		return $element;
 	}
 
 	/**
