@@ -127,20 +127,32 @@ endif;
 				echo 'fabrikGroupColumns-' . $group->columns . ' fabrikGroupColumns';
 			} ?>" id="group<?php echo $group->id; ?>" style="<?php echo $group->css; ?>">
                 <?php if(($group->showLegend && !empty($group->title)) || !empty($group->intro)) : ?>
-                <div class="mb-7">
+                <div class="flex flex-row mb-7">
                     <?php
-                    if ($group->showLegend) :?>
-                        <h3 class="after-em-border after:bg-neutral-500"><?php echo $group->title; ?></h3>
-                    <?php
-                    endif;
+                    if($eMConfig->get('allow_applicant_to_comment', 0)) {
+                        ?>
+                        <div class="fabrik-element-emundus-container flex flex-row justify-items-start items-start mr-5">
+                            <span class="material-icons-outlined cursor-pointer comment-icon" data-target-type="groups" data-target-id="<?= $group->id ?>">comment</span>
+                        </div>
+                        <?php
+                    }
+                    ?>
 
-                    if (!empty($group->intro)) : ?>
-                        <div class="groupintro mt-4"><?php echo $group->intro ?></div>
-                    <?php endif; ?>
+                    <div>
+                        <?php
+                        if ($group->showLegend) :?>
+                            <h3 class="after-em-border after:bg-neutral-500"><?php echo $group->title; ?></h3>
+                        <?php
+                        endif;
 
-	                <?php if(!empty($group->maxRepeat) && $group->maxRepeat > 1) : ?>
-                        <p class="em-text-neutral-600 mt-2"><?php echo JText::sprintf('COM_FABRIK_REPEAT_GROUP_MAX',$group->maxRepeat) ?></p>
-	                <?php endif; ?>
+                        if (!empty($group->intro)) : ?>
+                            <div class="groupintro mt-4"><?php echo $group->intro ?></div>
+                        <?php endif; ?>
+
+                        <?php if(!empty($group->maxRepeat) && $group->maxRepeat > 1) : ?>
+                            <p class="em-text-neutral-600 mt-2"><?php echo JText::sprintf('COM_FABRIK_REPEAT_GROUP_MAX',$group->maxRepeat) ?></p>
+                        <?php endif; ?>
+                    </div>
                 </div>
                 <?php endif; ?>
                 <?php

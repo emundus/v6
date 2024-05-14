@@ -255,7 +255,11 @@ class EmundusModelComments extends JModelLegacy
      */
     public function getTargetableElements($ccid)
     {
-        $elements = [];
+        $data = [
+            'forms' => [],
+            'groups' => [],
+            'elements' => []
+        ];
 
         if (!empty($ccid)) {
             $query = $this->db->getQuery(true);
@@ -279,12 +283,14 @@ class EmundusModelComments extends JModelLegacy
 
                     foreach($profile_ids as $profile_id) {
                         $forms = $m_form->getFormsByProfileId($profile_id);
+                        $data['forms'] = array_merge($data['forms'], $forms);
 
                         if (!empty($forms)) {
                             $form_ids = array_column($forms, 'id');
 
                             if (!empty($form_ids)) {
-                                $elements = array_merge($elements, $h_fabrik->getElementsFromFabrikForms($form_ids));
+                                $data['groups'] = array_merge($data['groups'], $h_fabrik->getGroupsFromFabrikForms($form_ids));
+                                $data['elements'] = array_merge($data['elements'], $h_fabrik->getElementsFromFabrikForms($form_ids));
                             }
                         }
                     }
@@ -292,6 +298,6 @@ class EmundusModelComments extends JModelLegacy
             }
         }
 
-        return $elements;
+        return $data;
     }
 }
