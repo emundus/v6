@@ -852,10 +852,6 @@ circle.circle {
 
 /* Nombre de commentaires */
 
-.comments-icon-wrapper {
-    opacity: 0.3;
-}
-
 .comments-icon-wrapper .nb-comments {
     top: -8px;
     right: -15px;
