@@ -256,6 +256,17 @@
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
+
+		<field
+			name="allow_applicant_to_comment"
+			type="radio"
+			default="0"
+			label="COM_EMUNDUS_ALLOW_APPLICANT_TO_COMMENT"
+			description="COM_EMUNDUS_ALLOW_APPLICANT_TO_COMMENT_DESC"
+		>
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
 	</fieldset>
 	<fieldset label="COM_EMUNDUS_FORM_BUILDER" name="form_builder" description="COM_EMUNDUS_FORM_BUILDER_DESC">
 		<field

@@ -173,7 +173,9 @@ endif;
 
 $user = JFactory::getUser();
 $fnum = JFactory::getSession()->get('emundusUser')->fnum;
-if (EmundusHelperAccess::asAccessAction(10, 'r', $user->id, $fnum)) {
+$allow_applicant_to_comment = $eMConfig->get('allow_applicant_to_comment', 1);
+
+if (EmundusHelperAccess::asAccessAction(10, 'r', $user->id, $fnum) && $allow_applicant_to_comment) {
     JText::script('COM_EMUNDUS_COMMENTS_ADD_COMMENT');
     JText::script('COM_EMUNDUS_COMMENTS_ERROR_PLEASE_COMPLETE');
     JText::script('COM_EMUNDUS_COMMENTS_ENTER_COMMENT');

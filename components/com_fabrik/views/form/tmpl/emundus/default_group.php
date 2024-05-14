@@ -66,13 +66,21 @@ foreach ($this->elements as $element) :
 		$displayData['row'] = $this->loadTemplate('group_labels_above');
 	}
 
-    ?>
-    <div class="fabrik-element-emundus-container flex flex-row justify-items-start items-start">
-        <div <?= $style ?>>
-            <span class="material-icons-outlined cursor-pointer comment-icon" data-target-type="element" data-target-id="<?= $element->element_fabrik_id ?>">comment</span>
+    $eMConfig = JComponentHelper::getParams('com_emundus');
+    $allow_applicant_to_comment = $eMConfig->get('allow_applicant_to_comment', 0);
+     if ($allow_applicant_to_comment) {
+        ?>
+        <div class="fabrik-element-emundus-container flex flex-row justify-items-start items-start">
+            <div <?= $style ?>>
+                <span class="material-icons-outlined cursor-pointer comment-icon" data-target-type="element" data-target-id="<?= $element->element_fabrik_id ?>">comment</span>
+            </div>
+            <?= $layout->render((object) $displayData); ?>
         </div>
-        <?= $layout->render((object) $displayData); ?>
-    </div>
+        <?php
+    } else {
+       echo $layout->render((object) $displayData);
+    }
+    ?>
     <?php
 	if ($element->endRow) :
 		echo $gridEndLayout->render(new stdClass);
