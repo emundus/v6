@@ -1,6 +1,13 @@
 <?php
 use Joomla\CMS\Language\Text;
 
+$default_tab = 'history';
+$jinput = JFactory::getApplication()->input;
+$tab = $jinput->getString('tab', $default_tab);
+if (!in_array($tab, $this->tabs)) {
+    $tab = $default_tab;
+}
+
 ?>
 
 <div class="flex items-center border-b-1 border-neutral-300">
@@ -27,7 +34,7 @@ use Joomla\CMS\Language\Text;
 <script>
     //domready
     document.addEventListener("DOMContentLoaded", function (event) {
-        displayHistory();
+        selectTab('<?php echo $tab; ?>');
     });
 
     function emptyElements(elements = ['application', 'attachments', 'history', 'comments']) {
