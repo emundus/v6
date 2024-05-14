@@ -1488,9 +1488,17 @@ class EmundusModelFormbuilder extends JModelList {
 						// Prepare label
 						if($labels != null) {
 							$label = $labels;
+
 						} else {
 							$label = $this->h_fabrik->initLabel($plugin);
 						}
+
+						$params['alias'] = $label['fr'];
+						$params['alias'] = strtolower(str_replace(' ', '_', $params['alias']));
+						$params['alias'] = htmlentities($params['alias'], ENT_COMPAT, "UTF-8");
+						$params['alias'] = preg_replace('/&([a-zA-Z])(uml|acute|grave|circ|tilde|cedil);/', '$1', $params['alias']);
+						$params['alias'] = html_entity_decode($params['alias']);
+
 						$this->translate('ELEMENT_' . $gid . '_' . $elementId, $label,'fabrik_elements',$elementId,'label');
 						if($evaluation){
 							$name = 'criteria_' . $gid . '_' . $elementId;
@@ -2001,7 +2009,7 @@ class EmundusModelFormbuilder extends JModelList {
                 }
             }
 
-			if($element['params']['alias'] === "" && isset($element['label']['fr'])){
+			if(($element['params']['alias'] === "" || $element['params']['alias'] === "element_sans_titre") && isset($element['label']['fr'])){
 				$element['params']['alias'] =  $element['label']['fr'];
 			}
 	        $element['params']['alias'] = strtolower(str_replace(' ', '_', $element['params']['alias']));
