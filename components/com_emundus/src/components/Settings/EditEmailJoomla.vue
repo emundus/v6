@@ -1,6 +1,9 @@
 <template>
   <div class="em-settings-menu">
 
+
+
+
     <!-- TODO: Create a information panel component -->
     <!-- -->
 

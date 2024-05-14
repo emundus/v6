@@ -13,7 +13,31 @@
       <div>
         <Content :ref="'content_'+activeMenuItem.name" :key="'json_'+activeMenuItem.name" v-if="activeMenuItem.type === 'JSON'" :json_source="'settings/'+activeMenuItem.source" @needSaving="handleNeedSaving" />
 
-        <component :ref="'content_'+activeMenuItem.name" v-else :is="activeMenuItem.component" :key="'component_'+activeMenuItem.name" v-bind="activeMenuItem.props" @needSaving="handleNeedSaving" />
+        <div id="accordion-collapse" v-else
+             class="flex flex-col justify-between w-full p-5 font-medium rtl:text-right text-black border border-gray-200 rounded-[15px] bg-white mb-3 gap-3 shadow"
+             data-accordion-target="#accordion-collapse-body-1" aria-expanded="true"
+             aria-controls="accordion-collapse-body-1">
+
+          <div @click="" class="flex items-center justify-between cursor-pointer">
+            <div class="flex">
+              <h1 id="accordion-collapse-heading-1" class="user-select-none flex flex-row justify-between">
+          <span :id="'Subtile'" class="text-2xl user-select-none">{{
+
+            }}</span>
+              </h1>
+            </div>
+            <!-- The expand icon of the section wich rotate-->
+            <span class="material-icons-outlined scale-150 user-select-none" :id="'SubtitleArrow'"
+                  name="SubtitleArrows"
+                  >expand_more</span>
+          </div>
+
+          <!-- The content of the section -->
+          <div name="SubMenuContent" class="flex flex-col" v-if=" true">
+            <component :ref="'content_'+activeMenuItem.name" :is="activeMenuItem.component" :key="'component_'+activeMenuItem.name" v-bind="activeMenuItem.props" @needSaving="handleNeedSaving" />
+          </div>
+        </div>
+
       </div>
     </div>
 
