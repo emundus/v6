@@ -3683,4 +3683,57 @@ class EmundusModelUsers extends JModelList {
 		//shuffle the password string before returning!
 		return str_shuffle($password);
 	}
+
+    public function repairEmundusUser($user_id){
+        // test if line is present in emundus_users for this account
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('id')
+            ->from('#__emundus_users')
+            ->where('user_id = '.$db->quote($user_id));
+        $db->setQuery($query);
+        $user = $db->loadResult();
+
+        if (empty($user)) {
+            $query->clear()
+                ->select('*')
+                ->from('#__users')
+                ->where('id = '.$db->quote($user_id));
+            $db->setQuery($query);
+            $user_details = $db->loadObject();
+
+            if (!empty($user_details)) {
+                $name = explode(' ',$user_details->name);
+                $firstname = $name[0];
+                unset($name[0]);
+                $lastname = implode(' ',$name);
+
+                $query->clear()
+                    ->insert('#__emundus_users')
+                    ->set('user_id = '.$db->quote($user_id))
+                    ->set('firstname = '.$db->quote($firstname))
+                    ->set('lastname = '.$db->quote($lastname))
+                    ->set('profile = 1000')
+                    ->set('schoolyear = '.$db->quote(''))
+                    ->set('disabled = 0')
+                    ->set('university_id = 0')
+                    ->set('email = '.$db->quote($user_details->email))
+                    ->set('registerDate = '.$db->quote($user_details->registerDate))
+                    ->set('name = '.$db->quote($user_details->name));
+
+                try {
+                    $db->setQuery($query);
+                    $db->execute();
+                    JLog::add('onUserLogin: reconstruction of user '.$user_id, JLog::INFO, 'com_emundus.error');
+
+                    require_once(JPATH_ROOT.'/components/com_emundus/models/profile.php');
+                    $m_profile = new EmundusModelProfile;
+                    $m_profile->initEmundusSession();
+                } catch (Exception $e) {
+                    JLog::add('com_emundus/models/users.php | error while trying to reconstruct user '.$user_id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                }
+            }
+        }
+    }
 }
