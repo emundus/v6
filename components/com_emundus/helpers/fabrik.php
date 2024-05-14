@@ -1030,6 +1030,39 @@ die("<script>
         return $formattedValue;
     }
 
+    static function getGroupsFromFabrikForms($form_ids)
+    {
+        $groups = [];
+        $form_ids = array_unique($form_ids);
+
+        if (!empty($form_ids)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->clear()
+                ->select('jfg.id, jfg.label, jffg.form_id')
+                ->from('jos_fabrik_groups as jfg')
+                ->join('inner', 'jos_fabrik_formgroup as jffg ON jfg.id = jffg.group_id')
+                ->join('inner', 'jos_fabrik_forms as jff ON jffg.form_id = jff.id')
+                ->where('jffg.form_id IN (' . implode(',', $form_ids) . ')')
+                ->andWhere('jfg.published = 1');
+
+            try {
+                $db->setQuery($query);
+                $groups = $db->loadAssocList();
+
+                foreach ($groups as $key => $group)
+                {
+                    $groups[$key]['label'] = JText::_($group['label']);
+                }
+            } catch (Exception $e) {
+                JLog::add('Failed to get groups associated to profiles that current user can access : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
+            }
+        }
+
+        return $groups;
+    }
+
     /**
      * @param $form_ids
      * @return array

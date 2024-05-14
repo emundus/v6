@@ -59,7 +59,7 @@
         <i v-if="comment.updated_by > 0" class="text-xs em-gray-color mt-3">{{ translate('COM_EMUNDUS_COMMENTS_EDITED') }}</i>
 
         <p v-if="comment.target_id > 0" class="text-sm em-gray-color mt-3">
-          {{ getCommentTargetLabel(comment.target_id) }}
+          {{ getCommentTargetLabel(comment.target_id, comment.target_type) }}
         </p>
 
         <div class="comment-children"
@@ -231,13 +231,17 @@ export default {
     newCommentText: '',
     newChildCommentText: '',
     target: {
-      type: 'element',
+      type: 'elements',
       id: 0,
     },
     visible_to_applicant: false,
     openedCommentId: 0,
     loading: false,
-    targetableElements: [],
+    targetableElements: {
+      elements: [],
+      groups: [],
+      forms: []
+    },
     focus: null,
     editable: null,
     tmpComment: null,
@@ -312,17 +316,32 @@ export default {
         this.handleError(error);
       });
     },
-    getCommentTargetLabel(target_id) {
+    getCommentTargetLabel(target_id, target_type = 'elements') {
       let label = '';
 
-      const target = this.targetableElements.find((element) => element.id === target_id);
+      // make sure targetableElements[target_type] entry exists
+      if (!this.targetableElements[target_type]) {
+        target_type = 'elements';
+      }
+
+      const target = this.targetableElements[target_type].find((element) => element.id === target_id);
       if (target) {
-        if (target.element_form_label.length > 0) {
-          label += `${target.element_form_label} > `;
+        if (target_type === 'elements') {
+          if (target.element_form_label.length > 0) {
+            label += `${target.element_form_label} > `;
+          }
+
+          if (target.element_group_label.length > 0) {
+            label += `${target.element_group_label} > `;
+          }
         }
 
-        if (target.element_group_label.length > 0) {
-          label += `${target.element_group_label} > `;
+        if (target_type === 'groups') {
+          // find label of the form
+          const form = this.targetableElements.forms.find((form) => form.id === target.form_id);
+          if (form) {
+            label += `${form.label} > `;
+          }
         }
 
         label += target.label;
@@ -436,7 +455,17 @@ export default {
       let displayedComments = this.comments;
       if (this.currentForm > 0) {
         displayedComments = displayedComments.filter((comment) => {
-          return comment.target_id == 0 || this.targetableElements.find((element) => element.id === comment.target_id && element.element_form_id === this.currentForm);
+          if (comment.target_id == 0) {
+            return true;
+          } else if (comment.target_type == 'elements') {
+            return this.targetableElements.elements.find((element) => element.id === comment.target_id && element.element_form_id === this.currentForm);
+          } else if (comment.target_type == 'groups') {
+            return this.targetableElements.groups.find((group) => group.id == comment.target_id).form_id == this.currentForm;
+          } else if (comment.target_type == 'forms') {
+            return comment.target_id == this.currentForm;
+          }
+
+          return false;
         });
       }
 
@@ -459,8 +488,6 @@ export default {
         return new Date(b.date_time) - new Date(a.date_time);
       });
 
-      console.log(parentComments);
-
       return parentComments;
     },
     childrenComments() {
@@ -479,7 +506,7 @@ export default {
       }, {});
     },
     targetLabel() {
-      return this.target.id > 0 ? this.getCommentTargetLabel(this.target.id) : '';
+      return this.target.id > 0 ? this.getCommentTargetLabel(this.target.id, this.target.type) : '';
     }
   }
 }
