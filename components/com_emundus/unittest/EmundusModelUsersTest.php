@@ -97,4 +97,23 @@ class EmundusModelUsersTest extends TestCase
 		$this->assertObjectHasAttribute('label', $profile, 'Profile details should contain label');
 		$this->assertObjectHasAttribute('class', $profile, 'Profile details should contain class');
 	}
+
+    public function testrepairEmundusUser() {
+        $this->assertEmpty($this->m_users->repairEmundusUser(0), 'Passing an empty user id should return false');
+        $this->assertEmpty($this->m_users->repairEmundusUser(999999), 'Passing an incorrect user id should return false');
+
+        $user_id = $this->h_sample->createSampleUser(2, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+        $this->assertTrue($this->m_users->repairEmundusUser($user_id), 'Passing a user id that has an emundus_users line should return true');
+
+        // Delete the emundus_users line
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->clear()
+            ->delete($db->quoteName('#__emundus_users'))
+            ->where($db->quoteName('user_id') . ' = ' . $db->quote($user_id));
+        $db->setQuery($query);
+        $db->execute();
+
+        $this->assertTrue($this->m_users->repairEmundusUser($user_id), 'Passing a user id that has a missing emundus_users line should return true after repair');
+    }
 }
