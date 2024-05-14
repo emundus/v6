@@ -2246,11 +2246,11 @@ class EmundusModelApplication extends JModelList
                                             if ($can_comment) {
                                                 $comment_classes = 'comment-icon material-icons-outlined cursor-pointer p-1 h-fit';
                                                 foreach ($file_comments as $comment) {
-                                                    if ($comment['target_id'] == $element->id && $comment['target_type'] == 'element') {
+                                                    if ($comment['target_id'] == $element->id && $comment['target_type'] == 'elements') {
                                                         $comment_classes .= ' has-comments em-bg-main-500 em-text-neutral-300 rounded-full';
                                                     }
                                                 }
-                                                $tds .= '<span class="' . $comment_classes . '" data-target-type="element" data-target-id="' . $element->id . '">comment</span>';
+                                                $tds .= '<span class="' . $comment_classes . '" data-target-type="elements" data-target-id="' . $element->id . '">comment</span>';
                                             }
 
                                             $tds .= '</td>';
