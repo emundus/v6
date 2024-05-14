@@ -855,6 +855,12 @@ circle.circle {
 .comments-icon-wrapper .nb-comments {
     top: -10px;
     right: -14px;
+    width: 24px;
+    height: 24px;
+    text-align: center;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 90%;
 }
 
 /*******************
