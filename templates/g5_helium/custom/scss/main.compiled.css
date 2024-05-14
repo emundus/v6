@@ -3408,6 +3408,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .border {
   border-width: 1px;
 }
+.border-2 {
+  border-width: 2px;
+}
 .border-s-4 {
   border-inline-start-width: 4px;
 }

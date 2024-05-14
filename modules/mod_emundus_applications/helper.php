@@ -499,4 +499,21 @@ class modemundusApplicationsHelper {
 
         return $nb_comments;
     }
+
+    static function getCommentsPageBaseUrl()
+    {
+        // get published men type component with link like '%option=com_emundus&view=history%'
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('alias')
+            ->from($db->quoteName('#__menu'))
+            ->where($db->quoteName('published') . ' = 1')
+            ->where($db->quoteName('link') . ' LIKE "%option=com_emundus&view=history%"');
+
+        $db->setQuery($query);
+        $alias = $db->loadResult();
+
+        return $alias;
+    }
 }
