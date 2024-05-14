@@ -42,6 +42,22 @@ require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.
 $m_users = new EmundusModelUsers();
 $profile_form = $m_users->getProfileForm();
 
+$this->display_comments = false;
+$allow_to_comment = $eMConfig->get('allow_applicant_to_comment', 0);
+if ($allow_to_comment) {
+    $session = JFactory::getSession();
+    $emundus_user = $session->get('emundusUser');
+    $current_user_profile = $emundus_user->profile;
+    $applicant_profiles = $m_users->getApplicantProfiles();
+    $applicant_profiles_ids = array_map(function($profile) {
+        return $profile->id;
+    }, $applicant_profiles);
+
+    if (in_array($current_user_profile, $applicant_profiles_ids)) {
+        $this->display_comments = true;
+    }
+}
+
 JText::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TITLE');
 JText::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TEXT');
 JText::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_CONFIRM');
@@ -73,12 +89,24 @@ endif;
     <div class="mb-8">
         <div class="em-mt-8">
 	        <?php if ($this->params->get('show-title', 1)) : ?>
-                <?php if($display_required_icon == 0) : ?>
-                    <p class="mb-5 text-neutral-600"><?= JText::_('COM_FABRIK_REQUIRED_ICON_NOT_DISPLAYED') ?></p>
-                <?php endif; ?>
-                <div class="page-header">
-			        <?php $title = trim(preg_replace('/^([^-]+ - )/', '', $form->label)); ?>
-                    <h2 class="after-em-border after:bg-red-800"><?= JText::_($title) ?></h2>
+                <div class="flex flex-row">
+                    <?php if($this->display_comments) {
+                        ?>
+                        <div class="fabrik-element-emundus-container flex flex-row justify-items-start items-start mr-5">
+                            <span class="material-icons-outlined cursor-pointer comment-icon" data-target-type="forms" data-target-id="<?= $form->id ?>">comment</span>
+                        </div>
+                        <?php
+                    }
+                    ?>
+                    <div>
+                        <?php if($display_required_icon == 0) : ?>
+                            <p class="mb-5 text-neutral-600"><?= JText::_('COM_FABRIK_REQUIRED_ICON_NOT_DISPLAYED') ?></p>
+                        <?php endif; ?>
+                        <div class="page-header">
+                            <?php $title = trim(preg_replace('/^([^-]+ - )/', '', $form->label)); ?>
+                            <h2 class="after-em-border after:bg-red-800"><?= JText::_($title) ?></h2>
+                        </div>
+                    </div>
                 </div>
 	        <?php endif; ?>
         </div>
@@ -129,7 +157,7 @@ endif;
                 <?php if(($group->showLegend && !empty($group->title)) || !empty($group->intro)) : ?>
                 <div class="flex flex-row mb-7">
                     <?php
-                    if($eMConfig->get('allow_applicant_to_comment', 0)) {
+                    if($this->display_comments) {
                         ?>
                         <div class="fabrik-element-emundus-container flex flex-row justify-items-start items-start mr-5">
                             <span class="material-icons-outlined cursor-pointer comment-icon" data-target-type="groups" data-target-id="<?= $group->id ?>">comment</span>
@@ -201,9 +229,8 @@ endif;
 
 $user = JFactory::getUser();
 $fnum = JFactory::getSession()->get('emundusUser')->fnum;
-$allow_applicant_to_comment = $eMConfig->get('allow_applicant_to_comment', 1);
 
-if (EmundusHelperAccess::asAccessAction(10, 'r', $user->id, $fnum) && $allow_applicant_to_comment) {
+if ($this->display_comments) {
     JText::script('COM_EMUNDUS_COMMENTS_ADD_COMMENT');
     JText::script('COM_EMUNDUS_COMMENTS_ERROR_PLEASE_COMPLETE');
     JText::script('COM_EMUNDUS_COMMENTS_ENTER_COMMENT');

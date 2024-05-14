@@ -393,9 +393,11 @@ export default {
     },
     deleteComment(commentId) {
       if (commentId > 0) {
+        this.comments = this.comments.filter((comment) => comment.id !== commentId);
+
         commentsService.deleteComment(commentId).then((response) => {
-          if (response.status) {
-            this.comments = this.comments.filter((comment) => comment.id !== commentId);
+          if (!response.status) {
+            // TODO: handle error
           }
         }).catch((error) => {
           this.handleError(error);
