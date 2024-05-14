@@ -420,6 +420,17 @@ $current_tab = 0;
                                                                         <span id="actions_button_collaborate_nb" class="nb-collaborators em-profile-color em-border-main-500 em-font-size-12 em-bg-neutral-100"><?= sizeof($application->collaborators) ?></span>
                                                                     </div>
                                                                 <?php endif; ?>
+                                                                <?php if ($show_nb_comments) {
+                                                                    $nb_comments = modemundusApplicationsHelper::getNbComments($application->fnum, $user->id);
+                                                                    if ($nb_comments > 0) {
+                                                                        ?>
+                                                                        <a href="<?= !empty($comments_page_alias) ? '/' . $comments_page_alias . '?&fnum=' . $application->fnum : '#'  ?>"  id="actions_button_comment" class="flex flex-row comments-icon-wrapper relative ml-2">
+                                                                            <span id="actions_button_comment_icon" class="material-icons em-neutral-300-color em-bg-main-500 p-2 rounded-full">chat_bubble_outline</span>
+                                                                            <span id="actions_button_comment_nb" class="nb-comments em-border-main-500 em-font-size-12 em-main-500-color em-white-bg border-2 absolute rounded-full p-1"><?= $nb_comments; ?></span>
+                                                                        </a>
+                                                                        <?php
+                                                                    }
+                                                                }  ?>
                                                             </div>
                                                             <div class="mod_emundus_applications__container">
                                                                 <span class="material-icons em-text-neutral-600 em-font-weight-600"

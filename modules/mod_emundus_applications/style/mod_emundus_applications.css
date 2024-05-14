@@ -881,6 +881,13 @@ circle.circle {
     }
 }
 
+/* Nombre de commentaires */
+
+.comments-icon-wrapper .nb-comments {
+    top: -10px;
+    right: -14px;
+}
+
 /*******************
  * Fin peps tuiles
  *******************/

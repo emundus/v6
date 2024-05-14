@@ -540,4 +540,42 @@ class modemundusApplicationsHelper {
 
         echo $html;
 	}
+
+    static function getNbComments($fnum, $current_user) {
+        $nb_comments = 0;
+
+        if (!empty($fnum)) {
+            if (!class_exists('EmundusHelperFiles')) {
+                require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
+            }
+            $ccid = EmundusHelperFiles::getIdFromFnum($fnum);
+
+            if (!class_exists('EmundusModelComments')) {
+                require_once(JPATH_ROOT . '/components/com_emundus/models/comments.php');
+            }
+            $m_comments = new EmundusModelComments();
+            $comments = $m_comments->getComments($ccid, $current_user, true);
+
+            $nb_comments = count($comments);
+        }
+
+        return $nb_comments;
+    }
+
+    static function getCommentsPageBaseUrl()
+    {
+        // get published men type component with link like '%option=com_emundus&view=history%'
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('alias')
+            ->from($db->quoteName('#__menu'))
+            ->where($db->quoteName('published') . ' = 1')
+            ->where($db->quoteName('link') . ' LIKE "%option=com_emundus&view=history%"');
+
+        $db->setQuery($query);
+        $alias = $db->loadResult();
+
+        return $alias;
+    }
 }
