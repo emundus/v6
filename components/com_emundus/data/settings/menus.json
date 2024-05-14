@@ -9,6 +9,7 @@
   },
   {
     "label": "COM_EMUNDUS_GLOBAL_PARMAS_MENUS_EMAIL",
+    "sectionTitle": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_MANAG_SERVER_MAIL",
     "name": "email_settings",
     "icon": "email",
     "type": "component",

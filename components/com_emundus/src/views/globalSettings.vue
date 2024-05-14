@@ -1,6 +1,6 @@
 <template>
   <div class="w-full flex gap-8">
-    <SidebarMenu json_source="settings/menus.json" @menuSelected="handleMenu" />
+    <SidebarMenu json_source="settings/menus.json" @menuSelected="handleMenu"/>
 
     <div class="w-full pt-6 pr-8 pb-3 pl-0" v-if="activeMenuItem">
       <h1 class="text-2xl pl-1 font-semibold text-green-700 mb-3">
@@ -11,30 +11,34 @@
       </h1>
 
       <div>
-        <Content :ref="'content_'+activeMenuItem.name" :key="'json_'+activeMenuItem.name" v-if="activeMenuItem.type === 'JSON'" :json_source="'settings/'+activeMenuItem.source" @needSaving="handleNeedSaving" />
+        <Content :ref="'content_'+activeMenuItem.name" :key="'json_'+activeMenuItem.name"
+                 v-if="activeMenuItem.type === 'JSON'" :json_source="'settings/'+activeMenuItem.source"
+                 @needSaving="handleNeedSaving"/>
 
         <div id="accordion-collapse" v-else
              class="flex flex-col justify-between w-full p-5 font-medium rtl:text-right text-black border border-gray-200 rounded-[15px] bg-white mb-3 gap-3 shadow"
              data-accordion-target="#accordion-collapse-body-1" aria-expanded="true"
              aria-controls="accordion-collapse-body-1">
 
-          <div @click="" class="flex items-center justify-between cursor-pointer">
+          <div @click="handleSectionComponent(activeMenuItem)" class="flex items-center justify-between cursor-pointer">
             <div class="flex">
               <h1 id="accordion-collapse-heading-1" class="user-select-none flex flex-row justify-between">
-          <span :id="'Subtile'" class="text-2xl user-select-none">{{
-
-            }}</span>
+                <span :id="'Subtile'"
+                      class="text-2xl user-select-none">{{ translate(activeMenuItem.sectionTitle) }}</span>
               </h1>
             </div>
             <!-- The expand icon of the section wich rotate-->
             <span class="material-icons-outlined scale-150 user-select-none" :id="'SubtitleArrow'"
                   name="SubtitleArrows"
-                  >expand_more</span>
+            >expand_more</span>
           </div>
 
           <!-- The content of the section -->
-          <div name="SubMenuContent" class="flex flex-col" v-if=" true">
-            <component :ref="'content_'+activeMenuItem.name" :is="activeMenuItem.component" :key="'component_'+activeMenuItem.name" v-bind="activeMenuItem.props" @needSaving="handleNeedSaving" />
+          <div name="SubMenuContent-componentSection" class="flex flex-col"
+               v-if="activeSectionComponent===activeMenuItem.sectionTitle">
+            <component :ref="'content_'+activeMenuItem.name" :is="activeMenuItem.component"
+                       :key="'component_'+activeMenuItem.name" v-bind="activeMenuItem.props"
+                       @needSaving="handleNeedSaving"/>
           </div>
         </div>
 
@@ -87,16 +91,18 @@ export default {
     needSaving: false,
 
     activeMenuItem: null,
+    activeSectionComponent: null,
   }),
 
-  created() {},
+  created() {
+  },
   mounted() {
     //this.URLMenu();
   },
 
   methods: {
     handleNeedSaving(needSaving) {
-      this.$store.commit("settings/setNeedSaving",needSaving);
+      this.$store.commit("settings/setNeedSaving", needSaving);
     },
 
     URLMenu() {
@@ -120,7 +126,7 @@ export default {
     },
 
     handleMenu(item) {
-      if(this.$store.state.settings.needSaving) {
+      if (this.$store.state.settings.needSaving) {
         Swal.fire({
           title: this.translate('COM_EMUNDUS_ONBOARD_WARNING'),
           text: this.translate('COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_UNSAVED'),
@@ -148,28 +154,31 @@ export default {
     },
 
     saveSection(menu, item = null) {
-      let vue_component = this.$refs['content_'+menu.name];
-      if(Array.isArray(vue_component)) {
+      let vue_component = this.$refs['content_' + menu.name];
+      if (Array.isArray(vue_component)) {
         vue_component = vue_component[0];
       }
 
-      if(typeof vue_component.saveMethod !== 'function') {
-        console.error('The component '+menu.name+' does not have a saveMethod function')
+      if (typeof vue_component.saveMethod !== 'function') {
+        console.error('The component ' + menu.name + ' does not have a saveMethod function')
         return
       }
 
       vue_component.saveMethod().then((response) => {
-        if(response === true) {
-          if(item !== null) {
+        if (response === true) {
+          if (item !== null) {
             this.activeMenuItem = item;
           }
         }
       });
     },
+   handleSectionComponent(element) {
+  this.activeSectionComponent = this.activeSectionComponent === element.sectionTitle ? null : element.sectionTitle;
+}
   },
   watch: {
-    activeMenuItem: function (val,oldVal) {
-      if(oldVal !== null) {
+    activeMenuItem: function (val, oldVal) {
+      if (oldVal !== null) {
         sessionStorage.setItem('tchooz_settings_selected_section/' + document.location.hostname, null);
       }
     }
@@ -179,7 +188,7 @@ export default {
 </script>
 
 <style>
-#header-b,#g-navigation {
+#header-b, #g-navigation {
   display: none;
 }
 </style>
