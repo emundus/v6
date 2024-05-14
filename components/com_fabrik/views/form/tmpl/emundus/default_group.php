@@ -66,9 +66,7 @@ foreach ($this->elements as $element) :
 		$displayData['row'] = $this->loadTemplate('group_labels_above');
 	}
 
-    $eMConfig = JComponentHelper::getParams('com_emundus');
-    $allow_applicant_to_comment = $eMConfig->get('allow_applicant_to_comment', 0);
-     if ($allow_applicant_to_comment) {
+     if ($this->display_comments) {
         ?>
         <div class="fabrik-element-emundus-container flex flex-row justify-items-start items-start">
             <div <?= $style ?>>
