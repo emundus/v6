@@ -23,9 +23,15 @@
         <div class="file-comment-header flex flex-row items-center justify-between mb-3">
           <div class="file-comment-header-left flex flex-row cursor-pointer items-center"
                @click="replyToComment(comment.id)">
-            <div class="flex flex-col mr-3">
-              <span class="em-text-neutral-500 text-xs">{{ comment.updated ? comment.updated : comment.date }}</span>
-              <span>{{ comment.username }}</span>
+            <div class="flex flex-row items-center">
+              <div class="profile-picture h-8 w-8 rounded-full border-2 mr-2 flex flex-row justify-center items-center">
+                <div v-if="comment.profile_picture" class="image h-full w-full rounded-full" :style="'background-image: url(' + comment.profile_picture + ')'"></div>
+                <span v-else>{{ comment.firstname.charAt(0) }}{{ comment.lastname.charAt(0) }}</span>
+              </div>
+              <div class="flex flex-col mr-3">
+                <span class="em-text-neutral-500 text-xs">{{ comment.updated ? comment.updated : comment.date }}</span>
+                <span>{{ comment.username }}</span>
+              </div>
             </div>
             <div>
             <span v-if="childrenComments[comment.id].length > 0" class="label em-bg-main-500">
@@ -67,10 +73,18 @@
           <hr>
           <div :id="'file-comment-' + child.id" v-for="child in childrenComments[comment.id]" :key="child.id" dir="ltr">
             <div class="child-comment flex flex-col border-s-4 my-3 px-3">
-              <div class="file-comment-header flex flex-row justify-between">
+              <div class="file-comment-header flex flex-row justify-between mb-2">
                 <div class="file-comment-header-left flex flex-col">
-                  <span class="em-text-neutral-500 text-xs">{{ child.updated ? child.updated : child.date }}</span>
-                  <span>{{ child.username }}</span>
+                  <div class="flex flex-row items-center">
+                    <div class="profile-picture h-8 w-8 rounded-full border-2 mr-2 flex flex-row justify-center items-center">
+                      <div v-if="comment.profile_picture" class="image h-full w-full rounded-full" :style="'background-image: url(' + comment.profile_picture + ')'"></div>
+                      <span v-else>{{ comment.firstname.charAt(0) }}{{ comment.lastname.charAt(0) }}</span>
+                    </div>
+                    <div class="flex flex-col mr-3">
+                      <span class="em-text-neutral-500 text-xs">{{ child.updated ? child.updated : child.date }}</span>
+                      <span>{{ child.username }}</span>
+                    </div>
+                  </div>
                 </div>
                 <div class="file-comment-header-left">
                   <span class="material-icons-outlined cursor-pointer" @click="deleteComment(child.id)">delete</span>
@@ -522,5 +536,10 @@ export default {
 <style scoped>
 #empty-comments {
   margin: var(--em-spacing-4) 0 !important;
+}
+
+.profile-picture .image{
+  background-size: cover;
+  background-position: center;
 }
 </style>

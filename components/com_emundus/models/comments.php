@@ -226,9 +226,10 @@ class EmundusModelComments extends JModelLegacy
                 $user_ids = array_unique($user_ids);
 
                 $query->clear()
-                    ->select('id, name')
-                    ->from($this->db->quoteName('#__users'))
-                    ->where('id IN (' . implode(',', $user_ids) . ')');
+                    ->select('u.id, eu.firstname, eu.lastname, CONCAT(eu.firstname, " ", eu.lastname) as name, eu.profile_picture')
+                    ->from($this->db->quoteName('#__users', 'u'))
+                    ->leftJoin($this->db->quoteName('#__emundus_users', 'eu') . ' ON eu.user_id = u.id')
+                    ->where('u.id IN (' . implode(',', $user_ids) . ')');
 
                 try {
                     $this->db->setQuery($query);
@@ -239,6 +240,9 @@ class EmundusModelComments extends JModelLegacy
 
                 foreach ($comments as $key => $comment) {
                     $comments[$key]['username'] = $users[$comment['user_id']]['name'];
+                    $comments[$key]['profile_picture'] = $users[$comment['user_id']]['profile_picture'];
+                    $comments[$key]['firstname'] = $users[$comment['user_id']]['firstname'];
+                    $comments[$key]['lastname'] = $users[$comment['user_id']]['lastname'];
                     $comments[$key]['date_time'] = strtotime($comment['date']);
                     $comments[$key]['date'] = EmundusHelperDate::displayDate($comment['date']);
                     $comments[$key]['updated'] = EmundusHelperDate::displayDate($comment['updated']);

@@ -2486,6 +2486,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .h-10 {
   height: var(--em-spacing-10);
 }
+.h-8 {
+  height: var(--em-spacing-8);
+}
 .h-fit {
   height: -moz-fit-content;
   height: fit-content;
@@ -2502,6 +2505,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .w-11\/12 {
   width: 91.666667%;
+}
+.w-8 {
+  width: var(--em-spacing-8);
 }
 .w-auto {
   width: auto;
