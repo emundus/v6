@@ -541,15 +541,10 @@ class modemundusApplicationsHelper {
         echo $html;
 	}
 
-    static function getNbComments($fnum, $current_user) {
+    static function getNbComments($ccid, $current_user) {
         $nb_comments = 0;
 
-        if (!empty($fnum)) {
-            if (!class_exists('EmundusHelperFiles')) {
-                require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
-            }
-            $ccid = EmundusHelperFiles::getIdFromFnum($fnum);
-
+        if (!empty($ccid)) {
             if (!class_exists('EmundusModelComments')) {
                 require_once(JPATH_ROOT . '/components/com_emundus/models/comments.php');
             }
@@ -564,14 +559,13 @@ class modemundusApplicationsHelper {
 
     static function getCommentsPageBaseUrl()
     {
-        // get published men type component with link like '%option=com_emundus&view=history%'
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
         $query->select('alias')
             ->from($db->quoteName('#__menu'))
             ->where($db->quoteName('published') . ' = 1')
-            ->where($db->quoteName('link') . ' LIKE "%option=com_emundus&view=history%"');
+            ->where($db->quoteName('link') . ' LIKE "%view=application&layout=history%"');
 
         $db->setQuery($query);
         $alias = $db->loadResult();
