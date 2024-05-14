@@ -10,9 +10,9 @@
       </select>
     </div>
 
-    <div v-if="parentComments.length > 0">
-      <div id="file-comment" v-for="comment in parentComments" :key="comment.id"
-           class="shadow-sm rounded-lg py-2 px-4 my-4 border"
+    <div v-if="parentComments.length > 0" id="comments-list-container" class="p-1">
+      <div :id="'file-comment-' + comment.id" v-for="comment in parentComments" :key="comment.id"
+           class="shadow rounded-lg py-2 px-4 my-4 border"
            :class="{
             'border-transparent': comment.id != openedCommentId,
             'focus em-border-main-500': comment.id == openedCommentId,
@@ -65,7 +65,7 @@
         <div class="comment-children"
              :class="{'opened': openedCommentId === comment.id, 'hidden': openedCommentId !== comment.id}">
           <hr>
-          <div v-for="child in childrenComments[comment.id]" :key="child.id" dir="ltr">
+          <div :id="'file-comment-' + child.id" v-for="child in childrenComments[comment.id]" :key="child.id" dir="ltr">
             <div class="child-comment flex flex-col border-s-4 my-3 px-3">
               <div class="file-comment-header flex flex-row justify-between">
                 <div class="file-comment-header-left flex flex-col">
@@ -274,6 +274,10 @@ export default {
 
           if (foundComment) {
             this.openedCommentId = foundComment.id;
+            const commentElement = document.getElementById(`file-comment-${foundComment.id}`);
+            if (commentElement) {
+              commentElement.scrollIntoView({behavior: 'smooth'});
+            }
           }
         } else {
           this.openedCommentId = 0;

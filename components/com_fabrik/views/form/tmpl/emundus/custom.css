@@ -55,6 +55,15 @@ form .fabrikGroupColumns.fabrikGroup .row-fluid {
     z-index: 9999;
 }
 
+#aside-comment-section #comments {
+    height: calc(100vh - 72px);
+}
+
+#aside-comment-section #comments-list-container {
+    max-height: 80%;
+    overflow-y: auto;
+}
+
 #aside-comment-section .close-comment, #aside-comment-section .open-comment {
     left: -52px;
     padding: 8px;
