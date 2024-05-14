@@ -174,7 +174,6 @@ endif;
 $user = JFactory::getUser();
 $fnum = JFactory::getSession()->get('emundusUser')->fnum;
 if (EmundusHelperAccess::asAccessAction(10, 'r', $user->id, $fnum)) {
-
     JText::script('COM_EMUNDUS_COMMENTS_ADD_COMMENT');
     JText::script('COM_EMUNDUS_COMMENTS_ERROR_PLEASE_COMPLETE');
     JText::script('COM_EMUNDUS_COMMENTS_ENTER_COMMENT');
@@ -192,7 +191,16 @@ if (EmundusHelperAccess::asAccessAction(10, 'r', $user->id, $fnum)) {
     JText::script('COM_EMUNDUS_COMMENTS_ANSWER');
     JText::script('COM_EMUNDUS_COMMENTS_ADD_COMMENT_ON');
     JText::script('COM_EMUNDUS_COMMENTS_CANCEL');
-    JText::script('COM_EMUNDUS_COMMENTS');
+    JText::script('COM_EMUNDUS_COMMENTS_UPDATE_COMMENT');
+    JText::script('COM_EMUNDUS_COMMENTS_ADD_COMMENT_PLACEHOLDER');
+    JText::script('COM_EMUNDUS_COMMENTS_CLOSE_COMMENT_THREAD');
+    JText::script('COM_EMUNDUS_COMMENTS_REOPEN_COMMENT_THREAD');
+    JText::script('COM_EMUNDUS_COMMENTS_SEARCH');
+    JText::script('COM_EMUNDUS_COMMENTS_ALL_THREAD');
+    JText::script('COM_EMUNDUS_COMMENTS_OPENED_THREAD');
+    JText::script('COM_EMUNDUS_COMMENTS_CLOSED_THREAD');
+    JText::script('COM_EMUNDUS_COMMENTS_EDITED');
+    JText::script('COM_EMUNDUS_COMMENTS_NO_COMMENTS');
 
     require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
     $ccid = EmundusHelperFiles::getIdFromFnum($fnum);
