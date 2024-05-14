@@ -407,6 +407,62 @@
 		<field name="expert_fabrikformid" type="text" default="110" label="COM_EMUNDUS_EXPERT_FIELD" description="COM_EMUNDUS_EXPERT_FIELD_DESC" />
 		<field name="expert_document_id" type="text" default="36" label="COM_EMUNDUS_EXPERT_DOCUMENT_FIELD" description="COM_EMUNDUS_EXPERT_DOCUMENT_FIELD_DESC" />
 		<field name="default_email_tmpl" type="text" default="expert" label="COM_EMUNDUS_EXPERT_DEFAULT_EMAIL_TMPL_FIELD" description="COM_EMUNDUS_EXPERT_DEFAULT_EMAIL_TMPL_FIELD_DESC" />
+		<field
+				name="spacer2"
+				type="spacer"
+				hr="true"
+		/>
+
+		<field name="default_mail_conf" label="COM_EMUNDUS_EMAILS_DEFAULT_CONFIG" type="note" default="0" description=""></field>
+
+		<field name="default_email_from" label="COM_EMUNDUS_EMAILS_DEFAULT_FROM_ADDRESS" type="email" default="jojo@gmail.com" description="" />
+		<field name="default_email_from_name" label="COM_EMUNDUS_EMAILS_DEFAULT_FROM_NAME" type="text" default="Jojo" description="" />
+		<field name="default_email_reply_to" label="COM_EMUNDUS_EMAILS_DEFAULT_REPLY_TO" type="email" default="juju@gmail.com" description="" />
+		<field name="default_email_reply_to_name" label="COM_EMUNDUS_EMAILS_DEFAULT_REPLY_TO_NAME" type="text" default="juju" description="" />
+		<field name="default_email_smtp_host" label="COM_EMUNDUS_EMAILS_DEFAULT_HOSTNAME" type="text" default="localhost" description="" />
+		<field name="default_email_smtp_port" label="COM_EMUNDUS_EMAILS_DEFAULT_PORT" type="number" default="25" description="" />
+		<field name="default_email_smtp_secure" label="COM_EMUNDUS_EMAILS_DEFAULT_SECURE" type="list" default="none" description="">
+			<option value="none">None</option>
+			<option value="ssl">SSL</option>
+			<option value="tls">TLS</option>
+		</field>
+		<field name="default_email_smtp_auth" label="COM_EMUNDUS_EMAILS_DEFAULT_AUTH" type="list" default="0" description="">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+		<field name="default_email_smtp_user" label="COM_EMUNDUS_EMAILS_DEFAULT_USERNAME" type="text" default="admin" description="" />
+		<field name="default_email_smtp_pass" label="COM_EMUNDUS_EMAILS_DEFAULT_PASSWORD" type="password" default="" description="" />
+
+		<field
+				name="spacer3"
+				type="spacer"
+				hr="true"
+		/>
+		<field name="custom_email_conf" label="COM_EMUNDUS_EMAILS_CUSTOM_DEFAULT_TOGGLE" type="list" default="1" description="">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+
+		<field name="custom_mail_conf" label="COM_EMUNDUS_EMAILS_CUSTOM_CONFIG" type="note" default="0" description=""></field>
+
+		<field name="custom_email_from" label="COM_EMUNDUS_EMAILS_CUSTOM_FROM_ADDRESS" type="email" default="jojo@gmail.com" description="" />
+		<field name="custom_email_from_name" label="COM_EMUNDUS_EMAILS_CUSTOM_FROM_NAME" type="text" default="Jojo" description="" />
+		<field name="custom_email_reply_to" label="COM_EMUNDUS_EMAILS_CUSTOM_REPLY_TO" type="email" default="juju@gmail.com" description="" />
+		<field name="custom_email_reply_to_name" label="COM_EMUNDUS_EMAILS_CUSTOM_REPLY_TO_NAME" type="text" default="juju" description="" />
+		<field name="custom_email_smtp_host" label="COM_EMUNDUS_EMAILS_CUSTOM_HOSTNAME" type="text" default="localhost" description="" />
+		<field name="custom_email_smtp_port" label="COM_EMUNDUS_EMAILS_CUSTOM_PORT" type="number" default="25" description="" />
+		<field name="custom_email_smtp_secure" label="COM_EMUNDUS_EMAILS_CUSTOM_SECURE" type="list" default="none" description="">
+			<option value="none">None</option>
+			<option value="ssl">SSL</option>
+			<option value="tls">TLS</option>
+		</field>
+		<field name="custom_email_smtp_auth" label="COM_EMUNDUS_EMAILS_CUSTOM_AUTH" type="list" default="0" description="">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+		<field name="custom_email_smtp_user" label="COM_EMUNDUS_EMAILS_CUSTOM_USERNAME" type="text" default="customadmin" description="" />
+		<field name="custom_email_smtp_pass" label="COM_EMUNDUS_EMAILS_CUSTOM_PASSWORD" type="password" default="" description="" />
+
 	</fieldset>
 	<fieldset label="COM_EMUNDUS_IMPORTS" name="imports" description="COM_EMUNDUS_IMPORTS_DESC">
 		<field name="ldapFiltersImport" type="text" required="false" label="COM_EMUNDUS_LDAP_FILTERS_IMPORT_LABEL" description="COM_EMUNDUS_LDAP_FILTERS_IMPORT_DESC" />

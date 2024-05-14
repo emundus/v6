@@ -4286,8 +4286,29 @@ if(in_array($applicant,$exceptions)){
 
                 //todo config value mail
 
+                EmundusHelperUpdate::updateExtensionParam('default_email_from',         'default-email-from@emundus.io');
+                EmundusHelperUpdate::updateExtensionParam('default_email_from_name',    'eMundusfrom');
+                EmundusHelperUpdate::updateExtensionParam('default_email_reply_to',     'default-email-reply@emundus.io');
+                EmundusHelperUpdate::updateExtensionParam('default_email_reply_to_name','eMundusreply');
+                EmundusHelperUpdate::updateExtensionParam('default_email_smtp_host',    'localhostDefault');
+                EmundusHelperUpdate::updateExtensionParam('default_email_smtp_port',    '25');
+                EmundusHelperUpdate::updateExtensionParam('default_email_smtp_secure',  '1');
+                EmundusHelperUpdate::updateExtensionParam('default_email_smtp_auth',    '1');
+                EmundusHelperUpdate::updateExtensionParam('default_email_smtp_user',    'userDefault');
+                EmundusHelperUpdate::updateExtensionParam('default_email_smtp_pass',    '');
 
+                EmundusHelperUpdate::updateExtensionParam('custom_email_conf',         '1');
 
+                EmundusHelperUpdate::updateExtensionParam('custom_email_from',          EmundusHelperUpdate::extractValueFromConfigurationFile("mailfrom"));
+                EmundusHelperUpdate::updateExtensionParam('custom_email_from_name',     EmundusHelperUpdate::extractValueFromConfigurationFile("fromname"));
+                EmundusHelperUpdate::updateExtensionParam('custom_email_reply_to',      EmundusHelperUpdate::extractValueFromConfigurationFile("replyto"));
+                EmundusHelperUpdate::updateExtensionParam('custom_email_reply_to_name', EmundusHelperUpdate::extractValueFromConfigurationFile("replytoname"));
+                EmundusHelperUpdate::updateExtensionParam('custom_email_smtp_host',     EmundusHelperUpdate::extractValueFromConfigurationFile("smtphost"));
+                EmundusHelperUpdate::updateExtensionParam('custom_email_smtp_port',     EmundusHelperUpdate::extractValueFromConfigurationFile("smtpport"));
+                EmundusHelperUpdate::updateExtensionParam('custom_email_smtp_secure',   EmundusHelperUpdate::extractValueFromConfigurationFile("smtpsecure"));
+                EmundusHelperUpdate::updateExtensionParam('custom_email_smtp_auth',     EmundusHelperUpdate::extractValueFromConfigurationFile("smtpauth"));
+                EmundusHelperUpdate::updateExtensionParam('custom_email_smtp_user',     EmundusHelperUpdate::extractValueFromConfigurationFile("smtpuser"));
+                EmundusHelperUpdate::updateExtensionParam('custom_email_smtp_pass',     EmundusHelperUpdate::extractValueFromConfigurationFile("smtppass"));
             }
         }
 

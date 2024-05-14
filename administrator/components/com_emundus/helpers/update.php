@@ -467,7 +467,7 @@ class EmundusHelperUpdate
     return $updated;
 }
 
-    public static function convertOldValueToConfigurationFile($newparams ,$oldparams , $correspondances)
+    public static function convertOldValueToConfigurationFile($newparams = [] ,$oldparams =[] , $correspondances =[])
     {
         $updated = false;
 
@@ -499,6 +499,19 @@ class EmundusHelperUpdate
 
 
         return $updated;
+    }
+
+    public static function extractValueFromConfigurationFile($param)
+    {
+        require_once(JPATH_SITE . '/components/com_config/model/cms.php');
+        require_once(JPATH_SITE . '/components/com_config/model/form.php');
+        require_once(JPATH_ROOT . '/administrator/components/com_config/model/application.php');
+
+        $model = new ConfigModelApplication();
+
+        $oldData = $model->getData();
+
+        return $oldData[$param];
     }
 
 	public static function getYamlVariable($key1,$file,$key2 = null) {
