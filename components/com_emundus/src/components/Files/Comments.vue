@@ -369,6 +369,7 @@ export default {
         if (response.status) {
           this.comments.push(response.data);
           this.resetAddComment();
+          this.getComments();
         }
       }).catch((error) => {
         this.handleError(error);
