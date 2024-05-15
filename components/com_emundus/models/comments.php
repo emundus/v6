@@ -3,19 +3,22 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+require_once(JPATH_ROOT . '/components/com_emundus/models/logs.php');
 jimport('joomla.application.component.controller');
 jimport('joomla.user.helper');
-
 
 class EmundusModelComments extends JModelLegacy
 {
     private $db;
+
+    private $logger;
 
     public function __construct($config = array())
     {
         parent::__construct($config);
 
         $this->db = JFactory::getDbo();
+        $this->logger = new EmundusModelLogs();
     }
 
     /**
@@ -35,7 +38,9 @@ class EmundusModelComments extends JModelLegacy
         }
 
         if (!empty($file_id) && !empty($comment)) {
-            $target_type = !empty($target) && isset($target['type']) ? $target['type'] : '';
+            $allowed_targets = ['forms', 'groups', 'elements'];
+
+            $target_type = !empty($target) && isset($target['type']) && in_array($target['type'], $allowed_targets) ? $target['type'] : '';
             $target_id = !empty($target) && isset($target['id']) ? $target['id'] : '';
 
             $query = $this->db->getQuery(true);
@@ -81,7 +86,9 @@ class EmundusModelComments extends JModelLegacy
                 if ($inserted) {
                     $new_comment_id = $this->db->insertid();
 
-                    // TODO: log added comments
+                    $params = ['details' => $comment];
+                    $this->logger->log($user, $file_infos['applicant_id'], $file_infos['fnum'], 10, 'c', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_CREATE', json_encode($params));
+                    $this->dispatchEvent('onAfterCommentAdded', ['comment_id' => $new_comment_id]);
                 }
             } catch (Exception $e) {
                 JLog::add('Failed to add comment ' . $e->getMessage(), JLog::ERROR, 'com_emundus.comments');
@@ -91,12 +98,27 @@ class EmundusModelComments extends JModelLegacy
         return $new_comment_id;
     }
 
+    /**
+     * @param $comment_id
+     * @param $user
+     * @return bool
+     */
     public function deleteComment($comment_id, $user) {
         $deleted = false;
 
         if (!empty($comment_id) && !empty($user)) {
             $query = $this->db->getQuery(true);
-            $query->delete($this->db->quoteName('#__emundus_comments'))
+
+            $query->select('ecc.fnum, ecc.applicant_id, ec.comment_body')
+                ->from($this->db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+                ->leftJoin($this->db->quoteName('#__emundus_comments', 'ec') . ' ON ecc.fnum = ec.fnum')
+                ->where('ec.id = ' . $this->db->quote($comment_id));
+
+            $this->db->setQuery($query);
+            $file_infos = $this->db->loadAssoc();
+
+            $query->clear()
+                ->delete($this->db->quoteName('#__emundus_comments'))
                 ->where('id = ' . $this->db->quote($comment_id))
                 ->orWhere('parent_id = ' . $this->db->quote($comment_id));
 
@@ -108,19 +130,36 @@ class EmundusModelComments extends JModelLegacy
             }
 
             if ($deleted) {
-                // TODO: log deleted comments
+                $params = ['comment_id' => $comment_id, 'details' => $file_infos['comment_body']];
+                $this->logger->log($user, $file_infos['applicant_id'], $file_infos['fnum'], 10, 'd', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_DELETE', json_encode($params));
+                $this->dispatchEvent('onAfterCommentDeleted', ['comment_id' => $comment_id, 'user_id' => $user]);
             }
         }
 
         return $deleted;
     }
 
+    /**
+     * @param $comment_id
+     * @param $user
+     * @return bool
+     */
     public function updateComment($comment_id, $comment, $user) {
         $updated = false;
 
         if (!empty($comment_id) && !empty($comment) && !empty($user)) {
             $query = $this->db->getQuery(true);
-            $query->update($this->db->quoteName('#__emundus_comments'))
+
+            $query->select('ecc.fnum, ecc.applicant_id, ec.comment_body')
+                ->from($this->db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+                ->leftJoin($this->db->quoteName('#__emundus_comments', 'ec') . ' ON ecc.fnum = ec.fnum')
+                ->where('ec.id = ' . $this->db->quote($comment_id));
+
+            $this->db->setQuery($query);
+            $file_infos = $this->db->loadAssoc();
+
+            $query->clear()
+                ->update($this->db->quoteName('#__emundus_comments'))
                 ->set($this->db->quoteName('comment_body') . ' = ' . $this->db->quote($comment))
                 ->set($this->db->quoteName('updated') . ' = NOW()')
                 ->set($this->db->quoteName('updated_by') . ' = ' . $this->db->quote($user))
@@ -134,7 +173,9 @@ class EmundusModelComments extends JModelLegacy
             }
 
             if ($updated) {
-                // TODO: log updated comments
+                $params = ['new_comment' => $comment, 'old_comment' => $file_infos['comment_body']];
+                $this->logger->log($user, $file_infos['applicant_id'], $file_infos['fnum'], 10, 'u', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_UPDATE', json_encode($params));
+                $this->dispatchEvent('onAfterCommentUpdated', ['comment_id' => $comment_id]);
             }
         }
 
@@ -303,5 +344,17 @@ class EmundusModelComments extends JModelLegacy
         }
 
         return $data;
+    }
+
+    /**
+     * @param $event
+     * @param $args
+     * @return void
+     */
+    private function dispatchEvent($event, $args) {
+        JPluginHelper::importPlugin('emundus');
+        $dispatcher = JEventDispatcher::getInstance();
+        $dispatcher->trigger($event, $args);
+        $dispatcher->trigger('callEventHandler', [$event, $args]);
     }
 }
