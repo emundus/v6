@@ -1560,7 +1560,7 @@ class EmundusModelApplication extends JModelList
 
                 foreach ($tableuser as $key => $itemt) {
 
-                    $forms .= '<br><hr><div class="TitlePersonalInfo em-personalInfo em-mb-12">';
+                    $forms .= '<br><hr><div class="TitlePersonalInfo em-personalInfo em-mb-12 title-applicant-form">';
                     $title = explode(' - ', JText::_($itemt->label));
                     if (empty($title[1])) {
                         $title= JText::_(trim($itemt->label));
@@ -1569,6 +1569,19 @@ class EmundusModelApplication extends JModelList
                     }
                     $forms .= '<h5>' . $title . '</h5>';
                     $form_params = json_decode($itemt->params);
+
+                    $forms .= '<div class="flex flex-row items-center">';
+
+                    if ($can_comment) {
+                        $comment_classes = 'comment-icon material-icons-outlined cursor-pointer p-1 h-fit mr-2 ';
+                        foreach ($file_comments as $comment) {
+                            if ($comment['target_id'] == $itemt->form_id && $comment['target_type'] == 'forms') {
+                                $comment_classes .= ' has-comments em-bg-main-500 em-text-neutral-300 rounded-full';
+                            }
+                        }
+
+                        $forms .= '<span class="' . $comment_classes . '" title="' . JText::_('COM_EMUNDUS_COMMENTS_ADD_COMMENT') . '" data-target-type="forms" data-target-id="' . $itemt->form_id . '">comment</span>';
+                    }
 
                     if ($h_access->asAccessAction(1, 'u', $this->_user->id, $fnum) && $itemt->db_table_name != '#__emundus_training') {
 
@@ -1593,7 +1606,8 @@ class EmundusModelApplication extends JModelList
                             }
                         }
                     }
-                    $forms .= '</div>';
+
+                    $forms .= '</div></div>';
 
                     // liste des groupes pour le formulaire d'une table
 	                $query = $this->_db->getQuery(true);
@@ -1664,13 +1678,43 @@ class EmundusModelApplication extends JModelList
                                     unset($element);
 
                                     $forms .= '<fieldset class="em-personalDetail">';
+
+                                    $forms .= '<div class="flex flex-row justify-between form-group-title">';
                                     $forms .= (!empty($itemg->label)) ? '<h6 class="em-font-weight-400">' . JText::_($itemg->label) . '</h6>' : '';
+
+                                    if ($can_comment) {
+                                        $comment_classes = 'comment-icon material-icons-outlined cursor-pointer p-1 h-fit ';
+                                        foreach ($file_comments as $comment) {
+                                            if ($comment['target_id'] == $itemg->group_id && $comment['target_type'] == 'groups') {
+                                                $comment_classes .= ' has-comments em-bg-main-500 em-text-neutral-300 rounded-full';
+                                            }
+                                        }
+
+                                        $forms .= '<span class="' . $comment_classes . '" title="' . JText::_('COM_EMUNDUS_COMMENTS_ADD_COMMENT') . '" data-target-type="groups" data-target-id="' . $itemg->group_id . '">comment</span>';
+                                    }
+
+                                    $forms .= '</div>';
 
                                     $forms .= '<table class="em-mt-8 em-mb-16 table table-bordered table-striped em-personalDetail-table-multiplleLine"><thead><tr> ';
 
                                     foreach ($elements as &$element) {
                                         if ($element->plugin != 'id') {
-                                            $forms .= '<th scope="col">' . JText::_($element->label) . '</th>';
+                                            $forms .= '<th scope="col">';
+
+                                            $forms .= '<div class="flex flex-row items-center"><span>' . JText::_($element->label) . '</span>';
+
+                                            if ($can_comment) {
+                                                $comment_classes = 'comment-icon material-icons-outlined cursor-pointer p-1 h-fit ml-2';
+                                                foreach ($file_comments as $comment) {
+                                                    if ($comment['target_id'] == $element->id && $comment['target_type'] == 'elements') {
+                                                        $comment_classes .= ' has-comments em-bg-main-500 em-text-neutral-300 rounded-full';
+                                                    }
+                                                }
+
+                                                $forms .= '<span class="' . $comment_classes . '" title="' . JText::_('COM_EMUNDUS_COMMENTS_ADD_COMMENT') . '" data-target-type="elements" data-target-id="' . $element->id . '">comment</span>';
+                                            }
+
+                                            $forms .= '</div></th>';
                                         }
                                     }
 
@@ -1951,8 +1995,23 @@ class EmundusModelApplication extends JModelList
 							{
                                 $check_not_empty_group = $this->checkEmptyGroups($elements ,$itemt->db_table_name, $fnum);
 
-                                if($check_not_empty_group && $g_params->repeat_group_show_first != -1) {
-                                    $forms .= '<table class="em-mt-8 em-mb-16 em-personalDetail-table-inline"><h6 class="em-font-weight-400">' . JText::_($itemg->label) . '</h6>';
+                                if ($check_not_empty_group && $g_params->repeat_group_show_first != -1) {
+                                    $forms .= '<table class="em-mt-8 em-mb-16 em-personalDetail-table-inline">';
+
+                                    $forms .= '<div class="flex flex-row justify-between form-group-title">';
+                                    $forms .= '<h6 class="em-font-weight-400">' . JText::_($itemg->label) . '</h6>';
+                                    if ($can_comment) {
+                                        $comment_classes = 'comment-icon material-icons-outlined cursor-pointer p-1 h-fit ';
+                                        foreach ($file_comments as $comment) {
+                                            if ($comment['target_id'] == $itemg->group_id && $comment['target_type'] == 'groups') {
+                                                $comment_classes .= ' has-comments em-bg-main-500 em-text-neutral-300 rounded-full';
+                                            }
+                                        }
+
+                                        $forms .= '<span class="' . $comment_classes . '" title="' . JText::_('COM_EMUNDUS_COMMENTS_ADD_COMMENT') . '" data-target-type="groups" data-target-id="' . $itemg->group_id . '">comment</span>';
+                                    }
+                                    $forms .= '</div>';
+
 
                                     $modulo = 0;
                                     foreach ($elements as &$element) {
@@ -2250,7 +2309,7 @@ class EmundusModelApplication extends JModelList
                                                         $comment_classes .= ' has-comments em-bg-main-500 em-text-neutral-300 rounded-full';
                                                     }
                                                 }
-                                                $tds .= '<span class="' . $comment_classes . '" data-target-type="elements" data-target-id="' . $element->id . '">comment</span>';
+                                                $tds .= '<span class="' . $comment_classes . '" title="' . JText::_('COM_EMUNDUS_COMMENTS_ADD_COMMENT') . '" data-target-type="elements" data-target-id="' . $element->id . '">comment</span>';
                                             }
 
                                             $tds .= '</td>';
