@@ -67,7 +67,7 @@
 
         <div class="em-pt-16">
           <label for="element-alias">{{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_ALIAS') }}</label>
-          <input id="element-alias" name="element-alias" type="text" :value="element.params.alias ? element.params.alias : ''" />
+          <input id="element-alias" name="element-alias" type="text" :value="this.element.params.alias ? this.element.params.alias : ''" />
         </div>
 
       </div>
