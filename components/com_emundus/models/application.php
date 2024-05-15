@@ -1681,7 +1681,22 @@ class EmundusModelApplication extends JModelList
 
                                     foreach ($elements as &$element) {
                                         if ($element->plugin != 'id') {
-                                            $forms .= '<th scope="col">' . JText::_($element->label) . '</th>';
+                                            $forms .= '<th scope="col">';
+
+                                            $forms .= '<div class="flex flex-row items-center"><span>' . JText::_($element->label) . '</span>';
+
+                                            if ($can_comment) {
+                                                $comment_classes = 'comment-icon material-icons-outlined cursor-pointer p-1 h-fit ml-2';
+                                                foreach ($file_comments as $comment) {
+                                                    if ($comment['target_id'] == $element->id && $comment['target_type'] == 'elements') {
+                                                        $comment_classes .= ' has-comments em-bg-main-500 em-text-neutral-300 rounded-full';
+                                                    }
+                                                }
+
+                                                $forms .= '<span class="' . $comment_classes . '" title="' . JText::_('COM_EMUNDUS_COMMENTS_ADD_COMMENT') . '" data-target-type="elements" data-target-id="' . $element->id . '">comment</span>';
+                                            }
+
+                                            $forms .= '</div></th>';
                                         }
                                     }
 

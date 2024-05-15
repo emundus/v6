@@ -280,7 +280,8 @@ $user = $this->userid;
         opacity: 0 !important;
     }
 
-    table tr:hover .comment-icon,
+    table:not(.em-personalDetail-table-multiplleLine) tr:hover .comment-icon,
+    .em-personalDetail-table-multiplleLine th:hover .comment-icon,
     .title-applicant-form:hover .comment-icon,
     .form-group-title:hover .comment-icon {
         opacity: 1 !important;
