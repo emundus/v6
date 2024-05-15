@@ -248,7 +248,7 @@ class EmundusModelComments extends JModelLegacy
      * @param $current_user
      * @return void
      */
-    public function getComments($file_id, $current_user, $is_applicant = false): array
+    public function getComments($file_id, $current_user, $is_applicant = false, $comment_ids = []): array
     {
         $comments = [];
 
@@ -260,6 +260,10 @@ class EmundusModelComments extends JModelLegacy
 
             if ($is_applicant) {
                 $query->where('ec.visible_to_applicant = 1');
+            }
+
+            if (!empty($comment_ids)) {
+                $query->where('ec.id IN (' . implode(',', $comment_ids) . ')');
             }
 
             try {

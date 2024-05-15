@@ -81,7 +81,7 @@ class EmundusControllerComments extends JControllerLegacy
                 if (!empty($comment_id)) {
                     $response['code'] = 200;
                     $response['status'] = true;
-                    $response['data'] = $model->getComment($comment_id);
+                    $response['data'] = $model->getComments($ccid, $this->user->id, false, [$comment_id])[0];
                 } else {
                     $response['message'] = Text::_('COM_EMUNDUS_ADD_COMMENT_FAILED');
                 }
