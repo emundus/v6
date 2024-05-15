@@ -266,10 +266,10 @@ if ($this->display_comments) {
     }
 
     $user_comment_access = [
-        'c' => EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $fnum),
-        'r' => EmundusHelperAccess::asAccessAction(10, 'r', $this->_user->id, $fnum),
-        'u' => EmundusHelperAccess::asAccessAction(10, 'u', $this->_user->id, $fnum),
-        'd' => EmundusHelperAccess::asAccessAction(10, 'd', $this->_user->id, $fnum),
+        'c' => EmundusHelperAccess::asAccessAction(10, 'c', $user->id, $fnum),
+        'r' => EmundusHelperAccess::asAccessAction(10, 'r', $user->id, $fnum),
+        'u' => EmundusHelperAccess::asAccessAction(10, 'u', $user->id, $fnum),
+        'd' => EmundusHelperAccess::asAccessAction(10, 'd', $user->id, $fnum),
     ];
 
     ?>
