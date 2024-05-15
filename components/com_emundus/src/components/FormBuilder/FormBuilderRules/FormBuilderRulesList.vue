@@ -58,7 +58,7 @@ export default {
   },
   methods: {
     getRules() {
-      return require('../../../../data/form-builder-rules.json');
+      return require('../../../../data/form-builder/form-builder-rules.json');
     },
 
     addRule(rule) {

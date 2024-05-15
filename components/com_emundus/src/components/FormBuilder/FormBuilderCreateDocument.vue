@@ -252,7 +252,7 @@ export default {
       this.document.mandatory = this.document.mandatory == "1" ? "0" : "1";
     },
     getFileTypes() {
-      this.fileTypes = require('../../../data/form-builder-filetypes.json');
+      this.fileTypes = require('../../../data/form-builder/form-builder-filetypes.json');
       this.fileTypes.forEach(filetype => {
         this.document.selectedTypes[filetype.value] = false;
       });

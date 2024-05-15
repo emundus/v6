@@ -34,7 +34,7 @@
 
 <script>
 import formBuilderService from '../../services/formbuilder';
-import sectionParams from '../../../data/form-builder-groups-params.json'
+import sectionParams from '../../../data/form-builder/form-builder-groups-params.json'
 import FormBuilderSectionParams from "./FormBuilderSections/FormBuilderSectionParams";
 
 

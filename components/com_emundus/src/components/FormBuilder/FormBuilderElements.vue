@@ -110,10 +110,10 @@ export default {
   },
   methods: {
     getElements() {
-      return require('../../../data/form-builder-elements.json');
+      return require('../../../data/form-builder/form-builder-elements.json');
     },
     getSections() {
-      return require('../../../data/form-builder-sections.json');
+      return require('../../../data/form-builder/form-builder-sections.json');
     },
     setCloneElement(element) {
       this.cloneElement = element;

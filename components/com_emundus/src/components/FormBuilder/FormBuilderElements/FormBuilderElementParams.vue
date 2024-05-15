@@ -1,15 +1,19 @@
 <template>
   <div>
-    <div v-for="param in params" v-if="(param.published && !param.sysadmin_only) || (sysadmin && param.sysadmin_only && param.published)" class="form-group mb-4">
+    <div v-for="param in params"
+         v-if="(param.published && !param.sysadmin_only) || (sysadmin && param.sysadmin_only && param.published)"
+         class="form-group mb-4">
       <label :class="param.type === 'repeatable' ? 'font-bold' : ''">{{ translate(param.label) }}</label>
 
       <!-- DROPDOWN -->
       <div v-if="param.type === 'dropdown' || param.type === 'sqldropdown'">
-        <select v-if="repeat_name !== '' && param.options.length > 0" v-model="element.params[repeat_name][index_name][param.name]" class="em-w-100">
+        <select v-if="repeat_name !== '' && param.options.length > 0"
+                v-model="element.params[repeat_name][index_name][param.name]" class="em-w-100">
           <option v-for="option in param.options" :value="option.value">{{ translate(option.label) }}</option>
         </select>
 
-        <select v-else-if="param.options.length > 0 && !param.multiple" v-model="element.params[param.name]" class="em-w-100">
+        <select v-else-if="param.options.length > 0 && !param.multiple" v-model="element.params[param.name]"
+                class="em-w-100">
           <option v-for="option in param.options" :value="option.value">{{ translate(option.label) }}</option>
         </select>
 
@@ -34,25 +38,29 @@
       </div>
 
       <!-- TEXTAREA -->
-      <textarea v-else-if="param.type === 'textarea' && repeat_name !== ''" v-model="element.params[repeat_name][index_name][param.name]" class="em-w-100"></textarea>
+      <textarea v-else-if="param.type === 'textarea' && repeat_name !== ''"
+                v-model="element.params[repeat_name][index_name][param.name]" class="em-w-100"></textarea>
       <textarea v-else-if="param.type === 'textarea'" v-model="element.params[param.name]" class="em-w-100"></textarea>
 
       <!-- DATABASEJOIN -->
       <div v-else-if="param.type === 'databasejoin' && repeat_name !== ''">
-        <select v-model="element.params[repeat_name][index_name][param.name]" :key="reloadOptions" :id="param.name" @change="updateDatabasejoinParams" class="em-w-100" :class="databasejoin_description ? 'em-mb-4' : ''">
+        <select v-model="element.params[repeat_name][index_name][param.name]" :key="reloadOptions" :id="param.name"
+                @change="updateDatabasejoinParams" class="em-w-100" :class="databasejoin_description ? 'em-mb-4' : ''">
           <option v-for="option in param.options" :value="option.database_name">{{ option.label }}</option>
         </select>
         <label v-if="databasejoin_description" style="font-size: small">{{ databasejoin_description }}</label>
       </div>
       <div v-else-if="param.type === 'databasejoin'">
-        <select v-model="element.params[param.name]" :key="reloadOptions" :id="param.name" @change="updateDatabasejoinParams" class="em-w-100" :class="databasejoin_description ? 'em-mb-4' : ''">
+        <select v-model="element.params[param.name]" :key="reloadOptions" :id="param.name"
+                @change="updateDatabasejoinParams" class="em-w-100" :class="databasejoin_description ? 'em-mb-4' : ''">
           <option v-for="option in param.options" :value="option.database_name">{{ option.label }}</option>
         </select>
         <label v-if="databasejoin_description" style="font-size: small">{{ databasejoin_description }}</label>
       </div>
 
       <div v-else-if="param.type === 'databasejoin_cascade' && repeat_name !== ''">
-        <select v-model="element.params[repeat_name][index_name][param.name]" :key="reloadOptionsCascade" class="em-w-100">
+        <select v-model="element.params[repeat_name][index_name][param.name]" :key="reloadOptionsCascade"
+                class="em-w-100">
           <option v-for="option in param.options" :value="option.COLUMN_NAME">{{ option.COLUMN_NAME }}</option>
         </select>
       </div>
@@ -67,23 +75,31 @@
         <div v-for="(repeat_param, key) in Object.entries(element.params[param.name])">
           <hr/>
           <div class="flex justify-between items-center">
-            <label>-- {{ (key+1) }} --</label>
-            <button v-if="key != 0 && (key+1) == Object.entries(element.params[param.name]).length" type="button" @click="removeRepeatableField(param.name,key)" class="mt-2 w-auto">
+            <label>-- {{ (key + 1) }} --</label>
+            <button v-if="key != 0 && (key+1) == Object.entries(element.params[param.name]).length" type="button"
+                    @click="removeRepeatableField(param.name,key)" class="mt-2 w-auto">
               <span class="material-icons-outlined text-red-500">close</span>
             </button>
           </div>
 
-          <form-builder-element-params  :key="param.name+key" :element="element" :params="param.fields" :repeat_name="param.name" :index="key" :databases="databases"></form-builder-element-params>
+          <form-builder-element-params :key="param.name+key" :element="element" :params="param.fields"
+                                       :repeat_name="param.name" :index="key"
+                                       :databases="databases"></form-builder-element-params>
         </div>
 
         <div class="flex justify-end">
-          <button type="button" @click="addRepeatableField(param.name)" class="em-tertiary-button mt-2 w-auto">{{ translate('COM_EMUNDUS_ONBOARD_PARAMS_ADD_REPEATABLE') }}</button>
+          <button type="button" @click="addRepeatableField(param.name)" class="em-tertiary-button mt-2 w-auto">
+            {{ translate('COM_EMUNDUS_ONBOARD_PARAMS_ADD_REPEATABLE') }}
+          </button>
         </div>
       </div>
 
       <!-- INPUT (TEXT,NUMBER) -->
-      <input v-else-if="repeat_name !== ''" :type="param.type" v-model="element.params[repeat_name][index_name][param.name]" class="em-w-100" :placeholder="translate(param.placeholder)"/>
-      <input v-else :type="param.type" v-model="element.params[param.name]" class="em-w-100" :placeholder="translate(param.placeholder)"/>
+      <input v-else-if="repeat_name !== ''" :type="param.type"
+             v-model="element.params[repeat_name][index_name][param.name]" class="em-w-100"
+             :placeholder="translate(param.placeholder)"/>
+      <input v-else :type="param.type" v-model="element.params[param.name]" class="em-w-100"
+             :placeholder="translate(param.placeholder)"/>
 
       <!-- HELPTEXT -->
       <label v-if="param.helptext !== ''" style="font-size: small">{{ translate(param.helptext) }}</label>
@@ -137,20 +153,20 @@ export default {
   }),
   created() {
     this.params.forEach((param) => {
-      if(param.type === 'databasejoin'){
-        if(this.sysadmin){
+      if (param.type === 'databasejoin') {
+        if (this.sysadmin) {
           this.loading = true;
           formBuilderService.getAllDatabases().then((response) => {
             param.options = response.data.data;
             this.reloadOptions += 1;
-            if(this.element.params['join_db_name'] != ""){
+            if (this.element.params['join_db_name'] != "") {
               this.updateDatabasejoinParams();
             }
             this.loading = false;
           });
         } else {
           param.options = this.databases;
-          if(this.element.params['join_db_name'] != ""){
+          if (this.element.params['join_db_name'] != "") {
             this.updateDatabasejoinParams();
           }
         }
@@ -161,38 +177,38 @@ export default {
         let key = param.key;
         let value = param.value;
 
-        if(param.table.includes('{')) {
-          let param_name = param.table.match(/\{(.*?)\}/g)[0].replace('{','').replace('}','');
+        if (param.table.includes('{')) {
+          let param_name = param.table.match(/\{(.*?)\}/g)[0].replace('{', '').replace('}', '');
           table = this.element.params[param_name];
         }
-        if(param.key.includes('{')) {
-          let param_name = param.key.match(/\{(.*?)\}/g)[0].replace('{','').replace('}','');
+        if (param.key.includes('{')) {
+          let param_name = param.key.match(/\{(.*?)\}/g)[0].replace('{', '').replace('}', '');
           key = this.element.params[param_name];
         }
-        if(param.value.includes('{')) {
-          let param_name = param.value.match(/\{(.*?)\}/g)[0].replace('{','').replace('}','');
+        if (param.value.includes('{')) {
+          let param_name = param.value.match(/\{(.*?)\}/g)[0].replace('{', '').replace('}', '');
           value = this.element.params[param_name];
         }
 
-        if(table.includes('{') || key.includes('{') || value.includes('{')) {
+        if (table.includes('{') || key.includes('{') || value.includes('{')) {
           return;
         }
 
         this.loading = true;
-        formBuilderService.getSqlDropdownOptions(table,key,value,param.translate).then((response) => {
+        formBuilderService.getSqlDropdownOptions(table, key, value, param.translate).then((response) => {
           param.options = response.data;
 
-          if(this.element.params[param.name] != ""){
+          if (this.element.params[param.name] && typeof this.element.params[param.name] === 'string') {
             let ids_to_exclude = this.element.params[param.name].split(',');
             const regex = /\'|"/ig;
 
             this.element.params[param.name] = [];
 
             ids_to_exclude.forEach(id => {
-              id = id.replace(regex,'');
+              id = id.replace(regex, '');
               let option = param.options.find(option => id == option.value);
 
-              if(option) {
+              if (option) {
                 this.element.params[param.name].push(option);
               }
             });
@@ -203,7 +219,7 @@ export default {
     })
   },
   methods: {
-    updateDatabasejoinParams(){
+    updateDatabasejoinParams() {
       if (!this.sysadmin) {
         const index = this.databases.map(e => e.database_name).indexOf(this.element.params['join_db_name']);
 
@@ -227,19 +243,19 @@ export default {
           this.params[index].options.push(new_option);
           setTimeout(() => {
             document.getElementById('join_db_name').disabled = true;
-          },500)
+          }, 500)
         }
       } else {
         formBuilderService.getDatabaseJoinOrderColumns(this.element.params['join_db_name']).then((response) => {
           let index = this.params.map(e => e.name).indexOf('join_key_column');
           this.params[index].options = response.data.data;
-          if(this.element.params['join_key_column'] == '') {
+          if (this.element.params['join_key_column'] == '') {
             this.element.params['join_key_column'] = this.params[index].options[0].COLUMN_NAME;
           }
 
           index = this.params.map(e => e.name).indexOf('join_val_column');
           this.params[index].options = response.data.data;
-          if(this.element.params['join_val_column'] == '') {
+          if (this.element.params['join_val_column'] == '') {
             this.element.params['join_val_column'] = this.params[index].options[0].COLUMN_NAME;
           }
 
@@ -249,13 +265,13 @@ export default {
     },
     addRepeatableField(param) {
       let index = Object.entries(this.element.params[param]).length;
-      this.element.params[param][param+index] = {};
+      this.element.params[param][param + index] = {};
       //this.element.params[param][param+index] = this.element.params[param][param+'0'];
 
       this.$forceUpdate();
     },
-    removeRepeatableField(param,key) {
-      delete this.element.params[param][param+key];
+    removeRepeatableField(param, key) {
+      delete this.element.params[param][param + key];
       this.$forceUpdate();
     },
     labelTranslate({label}) {
@@ -263,11 +279,11 @@ export default {
     }
   },
   computed: {
-    sysadmin: function(){
+    sysadmin: function () {
       return parseInt(this.$store.state.global.sysadminAccess);
     },
-    index_name: function() {
-      return this.repeat_name !== '' ? this.repeat_name+this.index : '';
+    index_name: function () {
+      return this.repeat_name !== '' ? this.repeat_name + this.index : '';
     }
   }
 }

@@ -6,7 +6,7 @@
           v-model="arraySubValues"
           handle=".handle-options"
           @end="updateOrder">
-        <div class="element-option em-flex-row em-flex-space-between em-mt-8 em-mb-8" v-for="(option, index) in arraySubValues" :key="option" @mouseover="optionHighlight = index;" @mouseleave="optionHighlight = null">
+        <div class="element-option em-flex-row em-flex-space-between em-mt-8 em-mb-8" v-for="(option, index) in arraySubValues" :key="index" @mouseover="optionHighlight = index;" @mouseleave="optionHighlight = null">
           <div class="em-flex-row em-w-100">
             <div class="em-flex-row">
               <span class="icon-handle" :style="optionHighlight === index ? 'opacity: 1' : 'opacity: 0'">

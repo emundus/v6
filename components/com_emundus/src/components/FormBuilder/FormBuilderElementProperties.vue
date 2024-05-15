@@ -82,7 +82,7 @@
 
 <script>
 import formBuilderService from '../../services/formbuilder';
-import elementParams from '../../../data/form-builder-elements-params.json'
+import elementParams from '../../../data/form-builder/form-builder-elements-params.json'
 import formBuilderMixin from "../../mixins/formbuilder";
 
 import FormBuilderElementParams from "./FormBuilderElements/FormBuilderElementParams";
