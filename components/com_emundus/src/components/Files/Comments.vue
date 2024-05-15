@@ -402,11 +402,19 @@ export default {
       this.target.id = 0;
       this.target.type = 'element';
       this.hideModal();
+
+      if (this.openedCommentId > 0) {
+        const openedComment = this.comments.find((comment) => comment.id == this.openedCommentId);
+        this.visible_to_applicant = openedComment.visible_to_applicant == 1;
+      }
     },
     replyToComment(commentId) {
       if (commentId > 0) {
         this.resetAddComment();
         this.openedCommentId = this.openedCommentId === commentId ? 0 : commentId;
+
+        const openedComment = this.comments.find((comment) => comment.id === commentId);
+        this.visible_to_applicant = openedComment.visible_to_applicant == 1;
       }
     },
     deleteComment(commentId) {
