@@ -103,7 +103,8 @@ class EmundusModelUsersTest extends TestCase
         $this->assertEmpty($this->m_users->repairEmundusUser(999999), 'Passing an incorrect user id should return false');
 
         $user_id = $this->h_sample->createSampleUser(2, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
-        $this->assertTrue($this->m_users->repairEmundusUser($user_id), 'Passing a user id that has an emundus_users line should return true');
+
+        $this->assertTrue($this->m_users->repairEmundusUser($user_id), 'Passing a user id that has an emundus_users line should return true as the function should still be executed correctly');
 
         // Delete the emundus_users line
         $db = JFactory::getDbo();
@@ -114,6 +115,6 @@ class EmundusModelUsersTest extends TestCase
         $db->setQuery($query);
         $db->execute();
 
-        $this->assertTrue($this->m_users->repairEmundusUser($user_id), 'Passing a user id that has a missing emundus_users line should return true after repair');
+        $this->assertTrue($this->m_users->repairEmundusUser($user_id), 'Passing a user id that has a missing emundus_users line should return true as the account should be repaired');
     }
 }

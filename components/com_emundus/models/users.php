@@ -3685,22 +3685,24 @@ class EmundusModelUsers extends JModelList {
 	}
 
     public function repairEmundusUser($user_id){
+        $repaired = false;
+
         if (!empty($user_id)) {
             // test if line is present in emundus_users for this account
             $db = JFactory::getDbo();
             $query = $db->getQuery(true);
 
-            $query->select('id')
-                ->from('#__emundus_users')
-                ->where('user_id = '.$db->quote($user_id));
+            $query->select($db->quoteName('id'))
+                ->from($db->quoteName('#__emundus_users'))
+                ->where($db->quoteName('user_id').' = '.$db->quote($user_id));
             $db->setQuery($query);
             $user = $db->loadResult();
 
             if (empty($user)) {
                 $query->clear()
                     ->select('*')
-                    ->from('#__users')
-                    ->where('id = '.$db->quote($user_id));
+                    ->from($db->quoteName('#__users'))
+                    ->where($db->quoteName('id').' = '.$db->quote($user_id));
                 $db->setQuery($query);
                 $user_details = $db->loadObject();
 
@@ -3711,40 +3713,37 @@ class EmundusModelUsers extends JModelList {
                     $lastname = implode(' ',$name);
 
                     $query->clear()
-                        ->insert('#__emundus_users')
-                        ->set('user_id = '.$db->quote($user_id))
-                        ->set('firstname = '.$db->quote($firstname))
-                        ->set('lastname = '.$db->quote($lastname))
-                        ->set('profile = 1000')
-                        ->set('schoolyear = '.$db->quote(''))
-                        ->set('disabled = 0')
-                        ->set('university_id = 0')
-                        ->set('email = '.$db->quote($user_details->email))
-                        ->set('registerDate = '.$db->quote($user_details->registerDate))
-                        ->set('name = '.$db->quote($user_details->name));
+                        ->insert($db->quoteName('#__emundus_users'))
+                        ->set($db->quoteName('user_id').' = '.$db->quote($user_id))
+                        ->set($db->quoteName('firstname').' = '.$db->quote($firstname))
+                        ->set($db->quoteName('lastname').' = '.$db->quote($lastname))
+                        ->set($db->quoteName('profile').' = 1000')
+                        ->set($db->quoteName('schoolyear').' = '.$db->quote(''))
+                        ->set($db->quoteName('disabled').' = 0')
+                        ->set($db->quoteName('university_id').' = 0')
+                        ->set($db->quoteName('email').' = '.$db->quote($user_details->email))
+                        ->set($db->quoteName('registerDate').' = é"'.$db->quote($user_details->registerDate))
+                        ->set($db->quoteName('name').' = '.$db->quote($user_details->name));
 
                     try {
                         $db->setQuery($query);
                         $db->execute();
-                        JLog::add('onUserLogin: reconstruction of user '.$user_id, JLog::INFO, 'com_emundus.error');
+                        JLog::add('com_emundus/models/users.php | reconstruction of user '.$user_id, JLog::INFO, 'com_emundus.error');
 
                         require_once(JPATH_ROOT.'/components/com_emundus/models/profile.php');
                         $m_profile = new EmundusModelProfile;
                         $m_profile->initEmundusSession();
 
-                        return true;
+                        $repaired = true;
                     } catch (Exception $e) {
-                        JLog::add('com_emundus/models/users.php | error while trying to reconstruct user '.$user_id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus.error');
-                        return false;
+                        JLog::add('com_emundus/models/users.php | error while trying to repair user '.$user_id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus.error');
                     }
-                } else {
-                    return false;
                 }
             } else {
-                return true;
+                $repaired = true;
             }
-        } else {
-            return false;
         }
+
+        return $repaired;
     }
 }
