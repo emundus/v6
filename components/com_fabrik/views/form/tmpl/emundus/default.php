@@ -281,6 +281,13 @@ if ($this->display_comments) {
         $release_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
     }
 
+    $user_comment_access = [
+        'c' => EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $fnum),
+        'r' => EmundusHelperAccess::asAccessAction(10, 'r', $this->_user->id, $fnum),
+        'u' => EmundusHelperAccess::asAccessAction(10, 'u', $this->_user->id, $fnum),
+        'd' => EmundusHelperAccess::asAccessAction(10, 'd', $this->_user->id, $fnum),
+    ];
+
     ?>
     <aside id="aside-comment-section" class="fixed right-0 em-white-bg shadow-[0_4px_3px_0px_rgba(0,0,0,0.1)] ease-out closed">
         <!-- Comments -->
@@ -295,6 +302,7 @@ if ($this->display_comments) {
                  component="comments"
                  user="<?= $user->id ?>"
                  ccid="<?= $ccid ?>"
+                 access='<?= json_encode($user_comment_access); ?>'
                  is_applicant="1"
                  current_form="<?= $form->id ?>"
                  currentLanguage="<?= $current_lang->getTag() ?>"
