@@ -36,6 +36,7 @@ class EmundusAdministratorModelComments extends JModelList
         $tasks[] = EmundusHelperUpdate::addColumn('jos_emundus_comments', 'updated_by', 'INT');
         $tasks[] = EmundusHelperUpdate::addColumn('jos_emundus_comments', 'target_type', 'VARCHAR', 255);
         $tasks[] = EmundusHelperUpdate::addColumn('jos_emundus_comments', 'target_id', 'INT');
+        $tasks[] = EmundusHelperUpdate::addColumn('jos_emundus_comments', 'visible_to_applicant', 'TINYINT', 1, 0, 1);
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -93,11 +94,16 @@ class EmundusAdministratorModelComments extends JModelList
                 'delete_cascade' => true,
             ],
         ];
-        EmundusHelperUpdate::createTable('jos_emundus_comments_read_by', $columns, $foreign_keys, 'Liste des utilisateurs ayant lu un commentaire');
-        
-        
+        $tasks[] = EmundusHelperUpdate::createTable('jos_emundus_comments_read_by', $columns, $foreign_keys, 'Liste des utilisateurs ayant lu un commentaire');
 
-        if (!in_array(false, $tasks)) {
+        $tasks[] = EmundusHelperUpdate::addCustomEvents([
+            ['label' => 'onAfterCommentAdded', 'category' => 'Comments'],
+            ['label' => 'onAfterCommentDeleted', 'category' => 'Comments'],
+            ['label' => 'onAfterCommentUpdated', 'category' => 'Comments']
+        ]);
+
+        $tasks_status = array_map(function ($task) { return $task['status']; }, $tasks);
+        if (!in_array(false, $tasks_status)) {
             $installed = true;
         }
 
