@@ -3,10 +3,15 @@
     <!--<h2 class="mb-2">{{ translate('COM_EMUNDUS_COMMENTS') }}</h2>-->
     <div v-if="comments.length > 0" id="filter-comments" class="flex flex-row">
       <input type="text" class="em-input mr-2" :placeholder="translate('COM_EMUNDUS_COMMENTS_SEARCH')" v-model="search" @keyup="onSearchChange">
-      <select v-model="filterOpenedState">
+      <select v-model="filterOpenedState" class="mr-2">
         <option value="all">{{ translate('COM_EMUNDUS_COMMENTS_ALL_THREAD') }}</option>
         <option value="1">{{ translate('COM_EMUNDUS_COMMENTS_OPENED_THREAD') }}</option>
         <option value="0">{{ translate('COM_EMUNDUS_COMMENTS_CLOSED_THREAD') }}</option>
+      </select>
+      <select v-model="filterVisibleToApplicant" v-if="!isApplicant">
+        <option value="all">{{ translate('COM_EMUNDUS_COMMENTS_VISIBLE_ALL_OPT') }}</option>
+        <option value="0">{{ translate('COM_EMUNDUS_COMMENTS_VISIBLE_PARTNERS') }}</option>
+        <option value="1">{{ translate('COM_EMUNDUS_COMMENTS_VISIBLE_ALL') }}</option>
       </select>
     </div>
 
@@ -262,7 +267,8 @@ export default {
     editable: null,
     tmpComment: null,
     search: '',
-    filterOpenedState: '1'
+    filterOpenedState: '1',
+    filterVisibleToApplicant: 'all'
   }),
   created() {
     this.getTargetableELements().then(() => {
@@ -506,6 +512,7 @@ export default {
       }
 
       displayedComments = this.filterOpenedState !== 'all' ? displayedComments.filter((comment) => comment.opened == this.filterOpenedState) : displayedComments;
+      displayedComments = this.filterVisibleToApplicant !== 'all' ? displayedComments.filter((comment) => comment.visible_to_applicant == this.filterVisibleToApplicant) : displayedComments;
 
       return this.isApplicant ? displayedComments.filter((comment) => comment.visible_to_applicant == 1) : displayedComments;
     },
