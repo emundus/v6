@@ -113,7 +113,7 @@ export default {
 
       params: [],
       enableEmail: 0,
-      customConfiguration: false,
+      customConfiguration: null,
       globalInformations: [],
       customInformations: [],
       config: {},
@@ -134,11 +134,12 @@ export default {
     this.customInformations = require('../../../data/settings/elementInSection/emails/custom.json');
   },
   mounted() {
-    this.getEmundusParams();
+    this.getEmundusParamsJoomlaConfiguration()
+    this.getEmundusParamsJoomlaExtensions()
   },
 
   methods: {
-    getEmundusParams() {
+    getEmundusParamsJoomlaConfiguration() {
       axios.get("index.php?option=com_emundus&controller=settings&task=getemundusparams")
           .then(response => {
             this.config = response.data;
@@ -158,6 +159,45 @@ export default {
           });
 
     },
+    getEmundusParamsJoomlaExtensions() {
+
+      axios.get("index.php?option=com_emundus&controller=settings&task=getemundusparamExtensions")
+          .then(response => {
+            this.CustomConfigServerMail = response.data;
+            this.filterEmundusParamsJoomlaExtensions('email_')
+
+          });
+    },
+    filterEmundusParamsJoomlaExtensions(filter) {
+      let result = [];
+      for (let index in this.CustomConfigServerMail) {
+        if (index.includes(filter)) {
+          let obj = {};
+          obj[index] = this.CustomConfigServerMail[index];
+          result.push(obj);
+        }
+      }
+      this.CustomConfigServerMail = result;
+     this.customConfiguration =  this.getEmundusparamsEmailValue('custom_email_conf'  , 'boolean');
+
+    },
+    getEmundusparamsEmailValue(specificValue , type){
+      let variableInput = null;
+      for (let index in this.CustomConfigServerMail) {
+        if (this.CustomConfigServerMail[index][specificValue]) {
+          if (type === 'boolean') {
+            if (this.CustomConfigServerMail[index][specificValue] ==  1 || this.CustomConfigServerMail[index][specificValue] == true || this.CustomConfigServerMail[index][specificValue] == "true") {
+              variableInput = true;}
+            else{
+              variableInput = false;
+            }
+            return variableInput;
+          }
+        }
+      }
+    },
+
+
     saveEmundusParam(param) {
       this.$emit('updateSaving', true);
 
@@ -204,7 +244,6 @@ export default {
           return false;
         }
       }
-
       return true;
     },
 
@@ -238,14 +277,31 @@ export default {
       }
       return false;
     },
+    updateValueParamsEmundusExtensions(variable, value) {
+      for (let index in this.CustomConfigServerMail) {
+        if (this.CustomConfigServerMail[index][variable]) {
+          this.CustomConfigServerMail[index][variable] = value;
+          this.saveEmundusParamsExtensions();
+        }
+      }
+    },
+    saveEmundusParamsExtensions(){
+      //this.$emit('updateSaving', true);
+      axios.post("index.php?option=com_emundus&controller=settings&task=saveemundusparamExtensions&params=" + this.CustomConfigServerMail)
+          .then(() => {
+            //this.$emit('updateSaving', false);
+            //this.$emit('updateLastSaving', this.formattedDate('', 'LT'));
+            //this.$emit('stateOfConfig', this.params);
+          });
+    }
   },
   computed: {
     computedEnableEmail: {
       get() {
-        return this.enableEmail === 1;
+        return this.enableEmail == 1 ? true : false;
       },
       set(value) {
-        this.enableEmail = value ? 1 : 0;
+        this.enableEmail = value ? "1" : "0";
       },
     },
   },
@@ -254,16 +310,33 @@ export default {
     parametersUpdated: function (val) {
       this.$emit('needSaving', val.length > 0)
     },
-
     enableEmail: function (val) {
-      if (val === "1"){val=1}else if (val === "0"){val=0}
+      if (val == 1)
+      {
+        val=1 ;
+      }
+      else if (val == 0)
+      {
+        val=0 ;
+      }
       this.saveEmundusParam({
         component: 'joomla',
         param: 'mailonline',
         value: val,
       });
 
-    }
+    },
+    customConfiguration: function (val) {
+      if (val == 1)
+      {
+        val="1" ;
+      }
+      else if (val == 0)
+      {
+        val="0" ;
+      }
+      this.updateValueParamsEmundusExtensions('custom_email_conf', val);
+    },
   },
 
 
