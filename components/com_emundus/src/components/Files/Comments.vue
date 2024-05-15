@@ -20,36 +20,38 @@
             'em-white-bg': comment.opened == 1,
          }"
       >
-        <p v-if="comment.target_id > 0" class="comment-target-label text-sm em-gray-color !mb-3">
-          {{ getCommentTargetLabel(comment.target_id, comment.target_type) }}
-        </p>
+        <div class="file-comment-header flex flex-col mb-3">
+          <p v-if="comment.target_id > 0" class="comment-target-label text-sm em-gray-color cursor-pointer !mb-3" @click="replyToComment(comment.id)">
+            {{ getCommentTargetLabel(comment.target_id, comment.target_type) }}
+          </p>
 
-        <div class="file-comment-header flex flex-row items-center justify-between mb-3">
-          <div class="file-comment-header-left flex flex-row cursor-pointer items-center"
-               @click="replyToComment(comment.id)">
-            <div class="flex flex-row items-center">
-              <div class="profile-picture h-8 w-8 rounded-full border-2 mr-2 flex flex-row justify-center items-center">
-                <div v-if="comment.profile_picture" class="image h-full w-full rounded-full" :style="'background-image: url(' + comment.profile_picture + ');background-size: cover;background-position: center;'"></div>
-                <span v-else>{{ comment.firstname.charAt(0) }}{{ comment.lastname.charAt(0) }}</span>
+          <div class="flex flex-row justify-between items-center">
+            <div class="file-comment-header-left flex flex-row cursor-pointer items-center"
+                 @click="replyToComment(comment.id)">
+              <div class="flex flex-row items-center">
+                <div class="profile-picture h-8 w-8 rounded-full border-2 mr-2 flex flex-row justify-center items-center">
+                  <div v-if="comment.profile_picture" class="image h-full w-full rounded-full" :style="'background-image: url(' + comment.profile_picture + ');background-size: cover;background-position: center;'"></div>
+                  <span v-else>{{ comment.firstname.charAt(0) }}{{ comment.lastname.charAt(0) }}</span>
+                </div>
+                <div class="flex flex-col mr-3">
+                  <span class="em-text-neutral-500 text-xs">{{ comment.updated ? comment.updated : comment.date }}</span>
+                  <span>{{ comment.username }}</span>
+                </div>
               </div>
-              <div class="flex flex-col mr-3">
-                <span class="em-text-neutral-500 text-xs">{{ comment.updated ? comment.updated : comment.date }}</span>
-                <span>{{ comment.username }}</span>
+              <div>
+                      <span v-if="childrenComments[comment.id].length > 0" class="label em-bg-main-500">
+                        {{ childrenComments[comment.id].length }}
+                        {{
+                          childrenComments[comment.id].length > 1 ? translate('COM_EMUNDUS_COMMENTS_ANSWERS') : translate('COM_EMUNDUS_COMMENTS_ANSWER')
+                        }}
+                      </span>
               </div>
             </div>
-            <div>
-            <span v-if="childrenComments[comment.id].length > 0" class="label em-bg-main-500">
-              {{ childrenComments[comment.id].length }}
-              {{
-                childrenComments[comment.id].length > 1 ? translate('COM_EMUNDUS_COMMENTS_ANSWERS') : translate('COM_EMUNDUS_COMMENTS_ANSWER')
-              }}
-            </span>
+            <div class="file-comment-header-right ease-in-out duration-300 opacity-0 group-hover:opacity-100">
+              <span class="material-icons-outlined cursor-pointer" @click="replyToComment(comment.id)">reply</span>
+              <span v-if="access.d" class="material-icons-outlined cursor-pointer" @click="deleteComment(comment.id)">delete</span>
+              <span v-if="access.u || (access.c && comment.user_id == user)" class="material-icons-outlined cursor-pointer" @click="makeCommentEditable(comment.id)">edit</span>
             </div>
-          </div>
-          <div class="file-comment-header-right opacity-0 group-hover:opacity-100">
-            <span class="material-icons-outlined cursor-pointer" @click="replyToComment(comment.id)">reply</span>
-            <span v-if="access.d" class="material-icons-outlined cursor-pointer" @click="deleteComment(comment.id)">delete</span>
-            <span v-if="access.u || (access.c && comment.user_id == user)" class="material-icons-outlined cursor-pointer" @click="makeCommentEditable(comment.id)">edit</span>
           </div>
         </div>
 
@@ -260,7 +262,7 @@ export default {
     editable: null,
     tmpComment: null,
     search: '',
-    filterOpenedState: 'all'
+    filterOpenedState: '1'
   }),
   created() {
     this.getTargetableELements().then(() => {
