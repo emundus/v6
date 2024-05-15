@@ -170,6 +170,7 @@ $user = $this->userid;
                         </div>
                     </div>
                     <script src="media/com_emundus_vue/app_emundus.js?<?php echo $release_version ?>"></script>
+                    <script src="media/com_emundus/js/comment.js"></script>
                 </aside>
             <?php endif; ?>
         </div>
@@ -195,44 +196,6 @@ $user = $this->userid;
                 export_pdf(JSON.stringify({0: fnum}), null, true);
             } else {
                 console.error('Function export_pdf does not exist');
-            }
-        }
-    });
-
-    function openCommentAside(focusonelement = null, forceOpen = false) {
-        const aside = document.getElementById('aside-comment-section');
-        if (aside.classList.contains('closed') || forceOpen) {
-            aside.classList.remove('closed');
-        } else {
-            aside.classList.add('closed');
-        }
-
-        const event = new CustomEvent('focusOnCommentElement', {
-            detail: {
-                targetId: focusonelement
-            }
-        });
-        document.dispatchEvent(event);
-    }
-
-    function openModalAddComment(element)
-    {
-        const event = new CustomEvent('openModalAddComment', {
-            detail: {
-                targetType: element.dataset.targetType,
-                targetId: element.dataset.targetId,
-            }
-        });
-
-        document.dispatchEvent(event);
-    }
-
-    document.addEventListener('click', function (e) {
-        if (e.target.classList.contains('comment-icon')) {
-            if (e.target.classList.contains('has-comments')) {
-                openCommentAside(e.target.dataset.targetId, true);
-            } else {
-                openModalAddComment(e.target);
             }
         }
     });
