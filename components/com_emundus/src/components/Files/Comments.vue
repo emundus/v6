@@ -20,12 +20,16 @@
             'em-white-bg': comment.opened == 1,
          }"
       >
+        <p v-if="comment.target_id > 0" class="comment-target-label text-sm em-gray-color !mb-3">
+          {{ getCommentTargetLabel(comment.target_id, comment.target_type) }}
+        </p>
+
         <div class="file-comment-header flex flex-row items-center justify-between mb-3">
           <div class="file-comment-header-left flex flex-row cursor-pointer items-center"
                @click="replyToComment(comment.id)">
             <div class="flex flex-row items-center">
               <div class="profile-picture h-8 w-8 rounded-full border-2 mr-2 flex flex-row justify-center items-center">
-                <div v-if="comment.profile_picture" class="image h-full w-full rounded-full" :style="'background-image: url(' + comment.profile_picture + ')'"></div>
+                <div v-if="comment.profile_picture" class="image h-full w-full rounded-full" :style="'background-image: url(' + comment.profile_picture + ');background-size: cover;background-position: center;'"></div>
                 <span v-else>{{ comment.firstname.charAt(0) }}{{ comment.lastname.charAt(0) }}</span>
               </div>
               <div class="flex flex-col mr-3">
@@ -64,10 +68,6 @@
         <p class="comment-body" v-else>{{ comment.comment_body }}</p>
         <i v-if="comment.updated_by > 0" class="text-xs em-gray-color mt-3">{{ translate('COM_EMUNDUS_COMMENTS_EDITED') }}</i>
 
-        <p v-if="comment.target_id > 0" class="text-sm em-gray-color mt-3">
-          {{ getCommentTargetLabel(comment.target_id, comment.target_type) }}
-        </p>
-
         <div class="comment-children"
              :class="{'opened': openedCommentId === comment.id, 'hidden': openedCommentId !== comment.id}">
           <hr>
@@ -77,7 +77,7 @@
                 <div class="file-comment-header-left flex flex-col">
                   <div class="flex flex-row items-center">
                     <div class="profile-picture h-8 w-8 rounded-full border-2 mr-2 flex flex-row justify-center items-center">
-                      <div v-if="comment.profile_picture" class="image h-full w-full rounded-full" :style="'background-image: url(' + comment.profile_picture + ')'"></div>
+                      <div v-if="comment.profile_picture" class="image h-full w-full rounded-full" :style="'background-image: url(' + comment.profile_picture + '); background-size: cover;background-position: center;'"></div>
                       <span v-else>{{ comment.firstname.charAt(0) }}{{ comment.lastname.charAt(0) }}</span>
                     </div>
                     <div class="flex flex-col mr-3">
@@ -468,7 +468,7 @@ export default {
       });
     },
     onSearchChange() {
-      this.highlight(this.search, ['.comment-body']);
+      this.highlight(this.search, ['.comment-body', '.comment-target-label']);
     }
   },
   computed: {
@@ -499,8 +499,10 @@ export default {
 
       if (this.search.length > 0) {
         parentComments = parentComments.filter((comment) => {
-          return comment.comment_body.toLowerCase().includes(this.search.toLowerCase()) || this.childrenComments[comment.id].some((child) => {
-            return child.comment_body.toLowerCase().includes(this.search.toLowerCase());
+          return comment.comment_body.toLowerCase().includes(this.search.toLowerCase())
+              || this.getCommentTargetLabel(comment.target_id, comment.target_type).toLowerCase().includes(this.search.toLowerCase())
+              || this.childrenComments[comment.id].some((child) => {
+            return child.comment_body.toLowerCase().includes(this.search.toLowerCase()) || this.getCommentTargetLabel(child.target_id, child.target_type).toLowerCase().includes(this.search.toLowerCase());
           });
         });
       }
@@ -536,10 +538,5 @@ export default {
 <style scoped>
 #empty-comments {
   margin: var(--em-spacing-4) 0 !important;
-}
-
-.profile-picture .image{
-  background-size: cover;
-  background-position: center;
 }
 </style>
