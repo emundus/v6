@@ -1,12 +1,5 @@
 <template>
   <div class="em-settings-menu">
-
-
-
-
-    <!-- TODO: Create a information panel component -->
-    <!-- -->
-
     <div class="w-5/6" v-if="!loading">
 
       <!-- GLOBAL CONFIGURATION -->
@@ -15,7 +8,7 @@
           <input type="checkbox"
                  class="em-toggle-check"
                  :id="'published'"
-                 v-model="enableEmail"
+                 v-model=" computedEnableEmail "
           />
           <strong class="b em-toggle-switch"></strong>
           <strong class="b em-toggle-track"></strong>
@@ -23,9 +16,9 @@
         <span for="published" class="ml-2">{{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_ENABLE') }}</span>
       </div>
 
-      <div class="mt-6" v-if="enableEmail">
+      <div class="mt-6" v-if="enableEmail  && computedEnableEmail">
         <label class="font-medium">{{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_GLOBAL') }}</label>
-        <div class="grid grid-cols-2 gap-6 p-3 bg-[#008A351A] rounded" v-if="enableEmail">
+        <div class="grid grid-cols-2 gap-6 p-3 bg-[#008A351A] rounded">
           <div class="form-group w-full" v-for="param in globalInformations"
                :key="param.param">
             <label :for="'param_' + param.param" class="flex items-center font-medium">
@@ -39,7 +32,7 @@
       </div>
 
       <!-- CUSTOM CONFIGURATION -->
-      <div class="mt-8 mb-4 flex items-center" v-if="enableEmail">
+      <div class="mt-8 mb-4 flex items-center" v-if="enableEmail && computedEnableEmail">
         <div class="em-toggle">
           <input type="checkbox"
                  class="em-toggle-check"
@@ -71,8 +64,10 @@
       </div>
     </div>
 
-    <!-- TODO: Adding buttons to save and test the configuration -->
-    <!-- -->
+    <div v-if=" !computedEnableEmail" class="bg-orange-300 rounded flex items-center pb-2">
+        <span class="material-icons-outlined scale-150 ml-2 mt-2">warning</span>
+        <p class="ml-2 mt-2">{{ translate(warning) }}</p>
+      </div>
 
     <div class="em-page-loader" v-if="loading"></div>
   </div>
@@ -101,7 +96,12 @@ export default {
       type: Number,
       default: -1,
       required: false
-    }
+    },
+    warning: {
+      type: String,
+      default: "",
+      required: false
+    },
   },
 
   mixins: [mixin],
@@ -112,7 +112,7 @@ export default {
       parametersUpdated: [],
 
       params: [],
-      enableEmail: false,
+      enableEmail: 0,
       customConfiguration: false,
       globalInformations: [],
       customInformations: [],
@@ -124,15 +124,14 @@ export default {
       emailValidationMessage: [],
       emailValidationColor: [],
 
-
       AuthSMTP: false,
       editableParamsServerMail: null,
     };
   },
 
   created() {
-    this.globalInformations = require('../../../data/settings/emails/global.json');
-    this.customInformations = require('../../../data/settings/emails/custom.json');
+    this.globalInformations = require('../../../data/settings/elementInSection/emails/global.json');
+    this.customInformations = require('../../../data/settings/elementInSection/emails/custom.json');
   },
   mounted() {
     this.getEmundusParams();
@@ -155,7 +154,6 @@ export default {
               }
             });
             this.loading = false;
-
             this.enableEmail = this.config['joomla']['mailonline'];
           });
 
@@ -241,13 +239,33 @@ export default {
       return false;
     },
   },
-  computed: {},
+  computed: {
+    computedEnableEmail: {
+      get() {
+        return this.enableEmail === 1;
+      },
+      set(value) {
+        this.enableEmail = value ? 1 : 0;
+      },
+    },
+  },
 
   watch: {
     parametersUpdated: function (val) {
       this.$emit('needSaving', val.length > 0)
+    },
+
+    enableEmail: function (val) {
+      if (val === "1"){val=1}else if (val === "0"){val=0}
+      this.saveEmundusParam({
+        component: 'joomla',
+        param: 'mailonline',
+        value: val,
+      });
+
     }
   },
+
 
 };
 </script>

@@ -14,7 +14,7 @@
     "name": "file_settings",
     "component": "SiteSettings",
     "props": {
-      "json_source": "file-settings.json"
+      "json_source": "elementInSection/file-settings.json"
     }
   }
 ]

@@ -4,7 +4,7 @@
     "name": "general_settings",
     "icon": "display_settings",
     "type": "JSON",
-    "source": "general.json",
+    "source": "sectionsOfmenu/general.json",
     "published": true
   },
   {
@@ -12,16 +12,20 @@
     "sectionTitle": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_MANAG_SERVER_MAIL",
     "name": "email_settings",
     "icon": "email",
-    "type": "component",
+    "type": "sectionComponent",
     "component": "EditEmailJoomla",
-    "published": true
+    "published": true,
+    "helptext": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_EMAIL_HELPTEXT",
+    "props": {
+      "warning": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_MAIL_WARNING"
+    }
   },
   {
     "label": "COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_CONTENT",
     "name": "content_settings",
     "icon": "notes",
     "type": "JSON",
-    "source": "content.json",
+    "source": "sectionsOfmenu/content.json",
     "published": true
   },
   {
@@ -29,11 +33,12 @@
     "name": "files_management",
     "icon": "source",
     "type": "JSON",
-    "source": "files.json",
+    "source": "sectionsOfmenu/manage-files.json",
     "published": true
   },
   {
     "label": "COM_EMUNDUS_GLOBAL_PARMAS_MENUS_SUPPL_MOD",
+    "SectionTitle": "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_MANAG_SUPPL_MOD",
     "name": "addon_modules",
     "icon": "dashboard_customize",
     "type": "component",

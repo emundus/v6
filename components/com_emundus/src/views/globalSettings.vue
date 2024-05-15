@@ -1,6 +1,6 @@
 <template>
   <div class="w-full flex gap-8">
-    <SidebarMenu json_source="settings/menus.json" @menuSelected="handleMenu"/>
+    <SidebarMenu json_source="settings/ListOfmenus.json" @menuSelected="handleMenu"/>
 
     <div class="w-full pt-6 pr-8 pb-3 pl-0" v-if="activeMenuItem">
       <h1 class="text-2xl pl-1 font-semibold text-green-700 mb-3">
@@ -15,7 +15,7 @@
                  v-if="activeMenuItem.type === 'JSON'" :json_source="'settings/'+activeMenuItem.source"
                  @needSaving="handleNeedSaving"/>
 
-        <div id="accordion-collapse" v-else
+        <div id="accordion-collapse" v-else-if="activeMenuItem.type === 'sectionComponent'"
              class="flex flex-col justify-between w-full p-5 font-medium rtl:text-right text-black border border-gray-200 rounded-[15px] bg-white mb-3 gap-3 shadow"
              data-accordion-target="#accordion-collapse-body-1" aria-expanded="true"
              aria-controls="accordion-collapse-body-1">
@@ -36,10 +36,16 @@
           <!-- The content of the section -->
           <div name="SubMenuContent-componentSection" class="flex flex-col"
                v-if="activeSectionComponent===activeMenuItem.sectionTitle">
+            <Info v-if="activeMenuItem.helptext" :text="activeMenuItem.helptext"></Info>
             <component :ref="'content_'+activeMenuItem.name" :is="activeMenuItem.component"
                        :key="'component_'+activeMenuItem.name" v-bind="activeMenuItem.props"
                        @needSaving="handleNeedSaving"/>
           </div>
+        </div>
+        <div v-else >
+          <component :ref="'content_'+activeMenuItem.name" :is="activeMenuItem.component"
+                     :key="'component_'+activeMenuItem.name" v-bind="activeMenuItem.props"
+                     @needSaving="handleNeedSaving"/>
         </div>
 
       </div>
@@ -57,6 +63,7 @@ import Multiselect from 'vue-multiselect';
 import SidebarMenu from "@/components/Menus/SidebarMenu.vue";
 import Content from "@/components/Settings/Content.vue";
 import Addons from "@/components/Settings/Addons.vue";
+import Info from "@/components/info.vue";
 import Swal from "sweetalert2";
 
 
@@ -67,7 +74,8 @@ export default {
     SidebarMenu,
     EditEmailJoomla,
     Multiselect,
-    Addons
+    Addons,
+    Info,
   },
   props: {
     actualLanguage: {
@@ -81,7 +89,11 @@ export default {
     manyLanguages: {
       type: Number,
       default: 1
-    }
+    },
+    helptext: {
+      type: String,
+      default: ''
+    },
   },
 
   data: () => ({

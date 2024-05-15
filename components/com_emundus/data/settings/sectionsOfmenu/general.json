@@ -4,7 +4,7 @@
     "name": "site_settings",
     "component": "SiteSettings",
     "props": {
-      "json_source": "site-settings.json",
+      "json_source": "elementInSection/site-settings.json",
       "displayLanguage": true
     }
   },

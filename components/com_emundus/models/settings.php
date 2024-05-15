@@ -1468,8 +1468,8 @@ class EmundusModelsettings extends JModelList {
 	{
 		$params = ['emundus' => [], 'joomla' => []];
 
-		$settings_general = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings/site-settings.json');
-		$settings_applicants = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings/file-settings.json');
+		$settings_general = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings/elementInSection/site-settings.json');
+		$settings_applicants = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings/elementInSection/file-settings.json');
         $settings_mail_base = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings-mail-ADDRESS-custom.json');
         $settings_mail_server_custom = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings-mail-SERVER-custom.json');
 

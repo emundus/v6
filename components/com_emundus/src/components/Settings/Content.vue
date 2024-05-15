@@ -21,6 +21,7 @@
 
       <!-- The content of the section -->
       <div name="SubMenuContent" class="flex flex-col" v-if="activeSection === indexSection">
+        <Info v-if="section.helptext" :text="section.helptext"></Info>
         <component :ref="'component_'+section.name" :is="section.component" :key="activeSection" v-bind="section.props" @needSaving="handleNeedSaving">
         </component>
       </div>
@@ -39,6 +40,7 @@ import Orphelins from "@/components/Settings/Translation/Orphelins.vue";
 import Translations from "@/components/Settings/Translation/Translations.vue";
 import EditArticle from "@/components/Settings/Content/EditArticle.vue";
 import EditFooter from "@/components/Settings/Content/EditFooter.vue";
+import Info from "@/components/info.vue";
 import Swal from "sweetalert2";
 
 export default {
@@ -52,7 +54,8 @@ export default {
     Orphelins,
     Translations,
     EditArticle,
-    EditFooter
+    EditFooter,
+    Info,
   },
   props: {
     json_source: {
@@ -72,11 +75,13 @@ export default {
     }
   },
   created() {
+
     this.sections = require('../../../data/' + this.$props.json_source);
     const sessionSection = sessionStorage.getItem('tchooz_settings_selected_section/'+ document.location.hostname);
     if(sessionSection) {
       this.activeSection = parseInt(sessionSection);
     }
+    console.log('sections', this.sections)
   },
   mounted() {
   },

@@ -12182,6 +12182,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .bg-\[\#008A351A\] {
   background-color: #008A351A;
 }
+.bg-blue-300 {
+  background-color: var(--blue-300);
+}
 .bg-blue-500 {
   background-color: var(--blue-500);
 }
@@ -12203,6 +12206,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .bg-neutral-400 {
   background-color: var(--neutral-400);
+}
+.bg-orange-300 {
+  background-color: var(--orange-300);
 }
 .bg-red-50 {
   background-color: var(--red-50);
