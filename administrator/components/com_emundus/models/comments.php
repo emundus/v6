@@ -96,11 +96,7 @@ class EmundusAdministratorModelComments extends JModelList
         ];
         $tasks[] = EmundusHelperUpdate::createTable('jos_emundus_comments_read_by', $columns, $foreign_keys, 'Liste des utilisateurs ayant lu un commentaire');
 
-        $tasks[] = EmundusHelperUpdate::addCustomEvents([
-            ['label' => 'onAfterCommentAdded', 'category' => 'Comments'],
-            ['label' => 'onAfterCommentDeleted', 'category' => 'Comments'],
-            ['label' => 'onAfterCommentUpdated', 'category' => 'Comments']
-        ]);
+        $tasks[] = EmundusHelperUpdate::addCustomEvents([['label' => 'onAfterCommentDeleted', 'category' => 'Comments']]);
 
         $tasks_status = array_map(function ($task) { return $task['status']; }, $tasks);
         if (!in_array(false, $tasks_status)) {

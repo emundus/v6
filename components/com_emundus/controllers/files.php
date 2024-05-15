@@ -545,7 +545,11 @@ class EmundusControllerFiles extends JControllerLegacy
             if (!empty($comment) && !empty($fnums)) {
                 $fnums = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
                 $fnumErrorList = [];
-                $m_application = new EmundusModelApplication();
+
+                if (!class_exists('EmundusModelComments')) {
+                    require_once (JPATH_ROOT . '/components/com_emundus/models/comments.php');
+                }
+                $m_comments = new EmundusModelComments();
 
                 foreach ($fnums as $fnum) {
                     if (EmundusHelperAccess::asAccessAction(10, 'c', $user, $fnum)) {
@@ -565,12 +569,10 @@ class EmundusControllerFiles extends JControllerLegacy
                         $dispatcher->trigger('onBeforeCommentAdd', [$comment_content]);
                         $dispatcher->trigger('callEventHandler', ['onBeforeCommentAdd', ['comment' => $comment_content]]);
 
-                        $new_comment_id = $m_application->addComment((array('applicant_id' => $aid, 'user_id' => $user, 'reason' => $title, 'comment_body' => $comment, 'fnum' => $fnum, 'status_from' => -1, 'status_to' => -1,)));
+                        $ccid = EmundusHelperFiles::getIdFromFnum($fnum);
+                        $new_comment_id = $m_comments->addComment($ccid, $comment_content, [], 0, 0, $user);
                         if (empty($new_comment_id)) {
                             $fnumErrorList[] = $fnum;
-                        } else {
-                            $dispatcher->trigger('onAfterCommentAdd', [$comment_content]);
-                            $dispatcher->trigger('callEventHandler', ['onAfterCommentAdd', ['comment' => $comment_content]]);
                         }
                     } else {
                         $fnumErrorList[] = $fnum;

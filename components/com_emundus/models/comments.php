@@ -88,7 +88,12 @@ class EmundusModelComments extends JModelLegacy
 
                     $params = ['details' => $comment];
                     $this->logger->log($user, $file_infos['applicant_id'], $file_infos['fnum'], 10, 'c', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_CREATE', json_encode($params));
-                    $this->dispatchEvent('onAfterCommentAdded', ['comment_id' => $new_comment_id]);
+                    $this->dispatchEvent('onAfterCommentAdd', ['comment_id' => $new_comment_id, 'comment' => [
+                        'applicant_id' => $file_infos['applicant_id'],
+                        'user_id' => $user,
+                        'comment_body' => $comment,
+                        'fnum' => $file_infos['fnum']
+                    ]]);
                 }
             } catch (Exception $e) {
                 JLog::add('Failed to add comment ' . $e->getMessage(), JLog::ERROR, 'com_emundus.comments');
@@ -177,7 +182,7 @@ class EmundusModelComments extends JModelLegacy
             if ($updated) {
                 $params = ['new_comment' => $comment, 'old_comment' => $file_infos['comment_body']];
                 $this->logger->log($user, $file_infos['applicant_id'], $file_infos['fnum'], 10, 'u', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_UPDATE', json_encode($params));
-                $this->dispatchEvent('onAfterCommentUpdated', ['comment_id' => $comment_id]);
+                $this->dispatchEvent('onAfterCommentUpdate', ['comment_id' => $comment_id]);
             }
         }
 
@@ -243,7 +248,7 @@ class EmundusModelComments extends JModelLegacy
      * @param $current_user
      * @return void
      */
-    public function getComments($file_id, $current_user, $is_applicant = false): array
+    public function getComments($file_id, $current_user, $is_applicant = false, $comment_ids = []): array
     {
         $comments = [];
 
@@ -255,6 +260,10 @@ class EmundusModelComments extends JModelLegacy
 
             if ($is_applicant) {
                 $query->where('ec.visible_to_applicant = 1');
+            }
+
+            if (!empty($comment_ids)) {
+                $query->where('ec.id IN (' . implode(',', $comment_ids) . ')');
             }
 
             try {
