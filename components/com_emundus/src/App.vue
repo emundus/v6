@@ -29,6 +29,12 @@
         :user="datas.user.value"
         :is-applicant="datas.is_applicant && datas.is_applicant.value == 1"
         :current-form="datas.current_form && datas.current_form.value"
+        :access="datas.access && datas.access.value ? JSON.parse(datas.access.value) : {
+          'c': false,
+          'r': true,
+          'u': false,
+          'd': false
+        }"
     >
 
     </Comments>

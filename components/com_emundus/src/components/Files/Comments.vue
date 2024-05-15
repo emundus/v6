@@ -48,8 +48,8 @@
           </div>
           <div class="file-comment-header-right opacity-0 group-hover:opacity-100">
             <span class="material-icons-outlined cursor-pointer" @click="replyToComment(comment.id)">reply</span>
-            <span class="material-icons-outlined cursor-pointer" @click="deleteComment(comment.id)">delete</span>
-            <span v-if="comment.user_id == user" class="material-icons-outlined cursor-pointer" @click="makeCommentEditable(comment.id)">edit</span>
+            <span v-if="access.d" class="material-icons-outlined cursor-pointer" @click="deleteComment(comment.id)">delete</span>
+            <span v-if="access.u || (access.c && comment.user_id == user)" class="material-icons-outlined cursor-pointer" @click="makeCommentEditable(comment.id)">edit</span>
           </div>
         </div>
 
@@ -87,8 +87,8 @@
                   </div>
                 </div>
                 <div class="file-comment-header-left">
-                  <span class="material-icons-outlined cursor-pointer" @click="deleteComment(child.id)">delete</span>
-                  <span v-if="child.user_id == user" class="material-icons-outlined cursor-pointer" @click="makeCommentEditable(child.id)">edit</span>
+                  <span v-if="access.d" class="material-icons-outlined cursor-pointer" @click="deleteComment(child.id)">delete</span>
+                  <span v-if="access.u || (access.c && child.user_id == user)" class="material-icons-outlined cursor-pointer" @click="makeCommentEditable(child.id)">edit</span>
                 </div>
               </div>
 
@@ -224,10 +224,10 @@ export default {
     access: {
       type: Object,
       default: () => ({
-        c: true,
+        c: false,
         r: true,
-        u: true,
-        d: true
+        u: false,
+        d: false
       })
     },
     isApplicant: {
@@ -370,26 +370,28 @@ export default {
     addComment(parent_id = 0) {
       this.loading = true;
 
-      if (this.isApplicant) {
-        this.visible_to_applicant = true;
-      }
-
-      let commentContent = this.newCommentText;
-      if (parent_id !== 0) {
-        commentContent = this.newChildCommentText;
-      }
-
-      commentsService.addComment(this.ccid, commentContent, this.target, this.visible_to_applicant, parent_id).then((response) => {
-        if (response.status) {
-          this.comments.push(response.data);
-          this.resetAddComment();
-          this.getComments();
+      if (this.access.c) {
+        if (this.isApplicant) {
+          this.visible_to_applicant = true;
         }
-      }).catch((error) => {
-        this.handleError(error);
-      }).finally(() => {
-        this.loading = false;
-      });
+
+        let commentContent = this.newCommentText;
+        if (parent_id !== 0) {
+          commentContent = this.newChildCommentText;
+        }
+
+        commentsService.addComment(this.ccid, commentContent, this.target, this.visible_to_applicant, parent_id).then((response) => {
+          if (response.status) {
+            this.comments.push(response.data);
+            this.resetAddComment();
+            this.getComments();
+          }
+        }).catch((error) => {
+          this.handleError(error);
+        }).finally(() => {
+          this.loading = false;
+        });
+      }
     },
     resetAddComment() {
       this.newCommentText = '';
@@ -406,7 +408,7 @@ export default {
       }
     },
     deleteComment(commentId) {
-      if (commentId > 0) {
+      if (commentId > 0 && this.access.d) {
         this.comments = this.comments.filter((comment) => comment.id !== commentId);
 
         commentsService.deleteComment(commentId).then((response) => {
@@ -442,16 +444,19 @@ export default {
     updateComment(commentId) {
       this.loading = true;
 
-      const commentContent = this.comments.find((comment) => comment.id === commentId).comment_body;
-      commentsService.updateComment(commentId, commentContent).then((response) => {
-        // nothing to do
-      }).catch((error) => {
-        this.handleError(error);
-      }).finally(() => {
-        this.loading = false;
-        this.editable = null;
-        this.tmpComment = null;
-      });
+      const commentToUpdate = this.comments.find((comment) => comment.id === commentId);
+      if (this.access.u || (this.access.c && commentToUpdate.user == this.user)) {
+        const commentContent = commentToUpdate.comment_body;
+        commentsService.updateComment(commentId, commentContent).then((response) => {
+          // nothing to do
+        }).catch((error) => {
+          this.handleError(error);
+        }).finally(() => {
+          this.loading = false;
+          this.editable = null;
+          this.tmpComment = null;
+        });
+      }
     },
     updateCommentOpenedState(commentId, state) {
       this.loading = true;

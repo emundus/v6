@@ -29,6 +29,14 @@ if (count($languages) > 1) {
     $many_languages = '0';
     $default_lang = $current_lang;
 }
+
+
+$user_comment_access = [
+    'c' => EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $fnum),
+    'r' => EmundusHelperAccess::asAccessAction(10, 'r', $this->_user->id, $fnum),
+    'u' => EmundusHelperAccess::asAccessAction(10, 'u', $this->_user->id, $fnum),
+    'd' => EmundusHelperAccess::asAccessAction(10, 'd', $this->_user->id, $fnum),
+];
 ?>
 
 <div class="row">
@@ -50,6 +58,7 @@ if (count($languages) > 1) {
      component="comments"
      user="<?= $this->_user->id ?>"
      ccid="<?= $this->ccid ?>"
+     access='<?= json_encode($user_comment_access); ?>'
      is_applicant="<?= 0 ?>"
      current_form="<?= 0 ?>"
      currentLanguage="<?= $current_lang->getTag() ?>"
