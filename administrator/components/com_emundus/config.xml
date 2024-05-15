@@ -95,7 +95,7 @@
 
 		<field name="photo_attachment"
 			   type="sql"
-			   default=""
+			   default="10"
 			   label="COM_EMUNDUS_PHOTO_ATTACHMENT"
 			   description="COM_EMUNDUS_PHOTO_ATTACHMENT_DESC"
 			   query="SELECT id, value as label FROM jos_emundus_setup_attachments"

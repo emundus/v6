@@ -859,7 +859,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	    try {
 		    $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
 
-            $photo_attachment_id = $eMConfig->get('photo_attachment', '');
+            $photo_attachment_id = $eMConfig->get('photo_attachment', 10);
 
             // Users informations
             $query = 'SELECT u.id AS user_id, c.firstname, c.lastname, a.filename AS avatar, p.label AS cb_profile, c.profile, esc.label, esc.year AS cb_schoolyear, esc.training, u.id, u.registerDate, u.email, epd.gender, epd.nationality, epd.birth_date, ed.user, ecc.date_submitted
