@@ -12,7 +12,7 @@
 
     <div v-if="parentComments.length > 0" id="comments-list-container" class="p-1">
       <div :id="'file-comment-' + comment.id" v-for="comment in parentComments" :key="comment.id"
-           class="shadow rounded-lg py-2 px-4 my-4 border"
+           class="group shadow rounded-lg py-2 px-4 my-4 border"
            :class="{
             'border-transparent': comment.id != openedCommentId,
             'focus em-border-main-500': comment.id == openedCommentId,
@@ -46,7 +46,7 @@
             </span>
             </div>
           </div>
-          <div class="file-comment-header-right">
+          <div class="file-comment-header-right opacity-0 group-hover:opacity-100">
             <span class="material-icons-outlined cursor-pointer" @click="replyToComment(comment.id)">reply</span>
             <span class="material-icons-outlined cursor-pointer" @click="deleteComment(comment.id)">delete</span>
             <span v-if="comment.user_id == user" class="material-icons-outlined cursor-pointer" @click="makeCommentEditable(comment.id)">edit</span>

@@ -3920,6 +3920,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+.opacity-0 {
+  opacity: 0;
+}
 .opacity-50 {
   opacity: 0.5;
 }
@@ -5294,6 +5297,9 @@ small {
 .after\:bg-red-800::after {
   content: var(--tw-content);
   background-color: var(--red-800);
+}
+.group:hover .group-hover\:opacity-100 {
+  opacity: 1;
 }
 @media (min-width: 1024px) {
   .lg\:mb-3 {
