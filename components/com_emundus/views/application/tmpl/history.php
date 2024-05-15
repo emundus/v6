@@ -34,8 +34,14 @@ if (!in_array($input_tab, $this->tabs)) {
 <script>
     //domready
     document.addEventListener("DOMContentLoaded", function (event) {
-        displayHistory();
-        selectTab('<?= $input_tab; ?>');
+        const tab = '<?= $input_tab; ?>';
+
+        // If tab is history, load history data, tab is already selected but data is not loaded
+        if (tab === 'history') {
+            displayHistory();
+        } else {
+            selectTab(tab);
+        }
     });
 
     function emptyElements(elements = ['application', 'attachments', 'history', 'comments']) {
