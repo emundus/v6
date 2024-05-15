@@ -170,7 +170,7 @@ $user = $this->userid;
                         </div>
                     </div>
                     <script src="media/com_emundus_vue/app_emundus.js?<?php echo $release_version ?>"></script>
-                    <script src="media/com_emundus/js/comment.js"></script>
+                    <script src="media/com_emundus/js/comment.js?<?php echo $release_version ?>"></script>
                 </aside>
             <?php endif; ?>
         </div>
