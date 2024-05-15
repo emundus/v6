@@ -119,6 +119,7 @@ export default {
       config: {},
 
       CustomConfigServerMail: {},
+      ParamJoomlaEmundusExtensions: {},
 
       //TODO: Move to Parameter component
       emailValidationMessage: [],
@@ -159,45 +160,6 @@ export default {
           });
 
     },
-    getEmundusParamsJoomlaExtensions() {
-
-      axios.get("index.php?option=com_emundus&controller=settings&task=getemundusparamExtensions")
-          .then(response => {
-            this.CustomConfigServerMail = response.data;
-            this.filterEmundusParamsJoomlaExtensions('email_')
-
-          });
-    },
-    filterEmundusParamsJoomlaExtensions(filter) {
-      let result = [];
-      for (let index in this.CustomConfigServerMail) {
-        if (index.includes(filter)) {
-          let obj = {};
-          obj[index] = this.CustomConfigServerMail[index];
-          result.push(obj);
-        }
-      }
-      this.CustomConfigServerMail = result;
-     this.customConfiguration =  this.getEmundusparamsEmailValue('custom_email_conf'  , 'boolean');
-
-    },
-    getEmundusparamsEmailValue(specificValue , type){
-      let variableInput = null;
-      for (let index in this.CustomConfigServerMail) {
-        if (this.CustomConfigServerMail[index][specificValue]) {
-          if (type === 'boolean') {
-            if (this.CustomConfigServerMail[index][specificValue] ==  1 || this.CustomConfigServerMail[index][specificValue] == true || this.CustomConfigServerMail[index][specificValue] == "true") {
-              variableInput = true;}
-            else{
-              variableInput = false;
-            }
-            return variableInput;
-          }
-        }
-      }
-    },
-
-
     saveEmundusParam(param) {
       this.$emit('updateSaving', true);
 
@@ -218,6 +180,68 @@ export default {
         this.$emit('stateOfConfig', this.params);
       });
     },
+
+    getEmundusParamsJoomlaExtensions() {
+      axios.get("index.php?option=com_emundus&controller=settings&task=getemundusparamExtensions")
+          .then(response => {
+            this.CustomConfigServerMail = response.data;
+            this.filterEmundusParamsJoomlaExtensions('email_')
+          });
+    },
+    filterEmundusParamsJoomlaExtensions(filter) {
+      let result = [];
+      for (let index in this.CustomConfigServerMail) {
+        if (index.includes(filter)) {
+          let obj = {};
+          obj[index] = this.CustomConfigServerMail[index];
+          result.push(obj);
+        }
+      }
+      this.ParamJoomlaEmundusExtensions = result;
+     this.customConfiguration =  this.getEmundusparamsEmailValue('custom_email_conf'  , 'boolean');
+    },
+    getEmundusparamsEmailValue(specificValue , type){
+      let variableInput = null;
+      for (let index in this.ParamJoomlaEmundusExtensions) {
+        if (this.ParamJoomlaEmundusExtensions[index][specificValue]) {
+          if (type === 'boolean') {
+            if (this.ParamJoomlaEmundusExtensions[index][specificValue] ==  1 || this.ParamJoomlaEmundusExtensions[index][specificValue] == true || this.ParamJoomlaEmundusExtensions[index][specificValue] == "true") {
+              variableInput = true;}
+            else{
+              variableInput = false;
+            }
+            return variableInput;
+          }
+        }
+      }
+    },
+    updateValueParamsEmundusExtensions(variable, value) {
+      console.log(this.ParamJoomlaEmundusExtensions)
+      console.log("update start")
+      console.log(this.CustomConfigServerMail[variable]);
+      for (let index in this.ParamJoomlaEmundusExtensions) {
+        if (this.ParamJoomlaEmundusExtensions[index][variable]) {
+          this.ParamJoomlaEmundusExtensions[index][variable] = value;
+          this.CustomConfigServerMail[variable] = value;
+        }
+      }
+      console.log(this.ParamJoomlaEmundusExtensions)
+      console.log("update end");
+      this.saveEmundusParamsExtensions();
+    },
+    saveEmundusParamsExtensions(){
+      //this.$emit('updateSaving', true);
+      console.log(this.CustomConfigServerMail);
+      axios.post("index.php?option=com_emundus&controller=settings&task=saveemundusparamExtensions&params=" + JSON.stringify(this.CustomConfigServerMail))
+          .then(() => {
+            //this.$emit('updateSaving', false);
+            //this.$emit('updateLastSaving', this.formattedDate('', 'LT'));
+            //this.$emit('stateOfConfig', this.params);
+          });
+    },
+
+
+
 
     displayHelp(message) {
       Swal.fire({
@@ -258,6 +282,7 @@ export default {
       }
     },
 
+    /*
     //TODO: Move to Parameter component
     validateEmail(email) {
       let res = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
@@ -277,23 +302,9 @@ export default {
       }
       return false;
     },
-    updateValueParamsEmundusExtensions(variable, value) {
-      for (let index in this.CustomConfigServerMail) {
-        if (this.CustomConfigServerMail[index][variable]) {
-          this.CustomConfigServerMail[index][variable] = value;
-          this.saveEmundusParamsExtensions();
-        }
-      }
-    },
-    saveEmundusParamsExtensions(){
-      //this.$emit('updateSaving', true);
-      axios.post("index.php?option=com_emundus&controller=settings&task=saveemundusparamExtensions&params=" + this.CustomConfigServerMail)
-          .then(() => {
-            //this.$emit('updateSaving', false);
-            //this.$emit('updateLastSaving', this.formattedDate('', 'LT'));
-            //this.$emit('stateOfConfig', this.params);
-          });
-    }
+*/
+
+
   },
   computed: {
     computedEnableEmail: {
@@ -310,7 +321,7 @@ export default {
     parametersUpdated: function (val) {
       this.$emit('needSaving', val.length > 0)
     },
-    enableEmail: function (val) {
+    enableEmail: function (val , oldVal) {
       if (val == 1)
       {
         val=1 ;
@@ -319,14 +330,17 @@ export default {
       {
         val=0 ;
       }
-      this.saveEmundusParam({
-        component: 'joomla',
-        param: 'mailonline',
-        value: val,
-      });
+      if  (val != oldVal)
+      {
+        this.saveEmundusParam({
+          component: 'joomla',
+          param: 'mailonline',
+          value: val,
+        });
+      }
 
     },
-    customConfiguration: function (val) {
+    customConfiguration: function (val , oldVal) {
       if (val == 1)
       {
         val="1" ;
@@ -335,7 +349,10 @@ export default {
       {
         val="0" ;
       }
-      this.updateValueParamsEmundusExtensions('custom_email_conf', val);
+      if (oldVal != null)
+      {
+        this.updateValueParamsEmundusExtensions('custom_email_conf', val);
+      }
     },
   },
 
