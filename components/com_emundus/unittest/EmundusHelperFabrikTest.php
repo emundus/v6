@@ -2,6 +2,7 @@
 
 
 use PHPUnit\Framework\TestCase;
+use Joomla\CMS\Factory;
 
 ini_set('display_errors', false);
 error_reporting(E_ALL);
@@ -87,7 +88,7 @@ class EmundusHelperFabrikTest extends TestCase
 
 		$form_id = $this->h_sample->getUnitTestFabrikForm();
 
-		$db = JFactory::getDbo();
+		$db = Factory::getDbo();
 		$query = $db->getQuery(true);
 
 		$query->select('fe.id, fe.name, fe.params, fl.db_table_name')
@@ -138,7 +139,7 @@ class EmundusHelperFabrikTest extends TestCase
 
 		$form_id = $this->h_sample->getUnitTestFabrikForm();
 
-		$db = JFactory::getDbo();
+		$db = Factory::getDbo();
 		$query = $db->getQuery(true);
 
 		$query->select('fe.id, fe.name, fe.params, fl.db_table_name ')
