@@ -585,7 +585,12 @@ class plgUserEmundus extends JPlugin
                 include_once(JPATH_SITE . '/components/com_emundus/models/profile.php');
                 $m_users = new EmundusModelUsers();
                 $m_profile = new EmundusModelProfile();
-                $m_users->repairEmundusUser(JFactory::getUser()->id);
+
+                $user_repaired = $m_users->repairEmundusUser(JFactory::getUser()->id);
+                if (!$user_repaired) {
+                    return false;
+                }
+
                 $m_profile->initEmundusSession();
                 $user = JFactory::getSession()->get('emundusUser');
 
