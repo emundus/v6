@@ -90,7 +90,7 @@ class EmundusHelperFabrikTest extends TestCase
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
-		$query->select('fe.name, fe.params, fl.db_table_name')
+		$query->select('fe.id, fe.name, fe.params, fl.db_table_name')
 			->from($db->quoteName('#__fabrik_elements', 'fe'))
 			->leftJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffg.group_id').' = '.$db->quoteName('fe.group_id'))
 			->leftJoin($db->quoteName('#__fabrik_lists','fl').' ON '.$db->quoteName('fl.form_id').' = '.$db->quoteName('ffg.form_id'))
@@ -102,6 +102,24 @@ class EmundusHelperFabrikTest extends TestCase
 		foreach ($elements as $element) {
 			$params = json_decode($element->params, true);
 
+			if(empty($params["alias"]))
+			{
+				$params['alias'] = 'alias' . rand(0, 1000);
+				$params = json_encode($params);
+
+				$query = $db->getQuery(true);
+
+				$query->clear()
+					->update($db->quoteName('#__fabrik_elements'))
+					->set($db->quoteName('params') . ' = ' . $db->quote($params))
+					->where($db->quoteName('id') . ' = ' . $db->quote($element->id))
+					->limit(1);
+				$db->setQuery($query);
+				$db->execute();
+
+				$params = json_decode($params, true);
+			}
+
 			$element_by_alias = $this->h_fabrik->getElementByAlias($params["alias"], $form_id);
 			$this->assertEquals($element->name, $element_by_alias->name, 'The element name obtained should be the same as the element name in the database.');
 			$this->assertEquals($element->db_table_name, $element_by_alias->db_table_name, 'The database table name storage obtained should be the same as the database table name storage in the database.');
@@ -111,7 +129,7 @@ class EmundusHelperFabrikTest extends TestCase
 	/**
 	 * @return void
 	 * @description Test the getValueByAlias() method
-	 * It should return the value of the element with the alias et form number passed as parameters
+	 * It should return the value of the element with the alias and form number passed as parameters
 	 */
 	public function testGetValueByAlias()
 	{
@@ -123,7 +141,7 @@ class EmundusHelperFabrikTest extends TestCase
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
-		$query->select('fe.name, fe.params, fl.db_table_name ')
+		$query->select('fe.id, fe.name, fe.params, fl.db_table_name ')
 			->from($db->quoteName('#__fabrik_elements', 'fe'))
 			->leftJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffg.group_id').' = '.$db->quoteName('fe.group_id'))
 			->leftJoin($db->quoteName('#__fabrik_lists','fl').' ON '.$db->quoteName('fl.form_id').' = '.$db->quoteName('ffg.form_id'))
@@ -146,6 +164,24 @@ class EmundusHelperFabrikTest extends TestCase
 			$db->setQuery($query);
 			$fnum = $db->loadObject();
 
+			if(empty($params["alias"]))
+			{
+				$params['alias'] = 'alias' . rand(0, 1000);
+				$params = json_encode($params);
+
+				$query = $db->getQuery(true);
+
+				$query->clear()
+					->update($db->quoteName('#__fabrik_elements'))
+					->set($db->quoteName('params') . ' = ' . $db->quote($params))
+					->where($db->quoteName('id') . ' = ' . $db->quote($element->id))
+					->limit(1);
+				$db->setQuery($query);
+				$db->execute();
+
+				$params = json_decode($params, true);
+			}
+
 			$value = $this->h_fabrik->getValueByAlias($params["alias"], $fnum->fnum);
 			$value_raw = $this->h_fabrik->getValueByAlias($params["alias"], $fnum->fnum, 1);
 
@@ -159,8 +195,8 @@ class EmundusHelperFabrikTest extends TestCase
 			if(!empty($expected))
 			{
 				$expected_formatted = EmundusHelperFabrik::formatElementValue($element->name, $expected);
-				$this->assertEquals($expected_formatted, $value, 'The value obtained should be the same as the element name in the database.');
-				$this->assertEquals($expected, $value_raw, 'The value obtained should be the same as the element name in the database.');
+				$this->assertEquals($expected_formatted, $value, 'The value formatted obtained should be the same as the value formatted in the database.');
+				$this->assertEquals($expected, $value_raw, 'The value obtained should be the same as the value in the database.');
 			}
 			$element_id++;
 		}
