@@ -9,26 +9,6 @@ JFactory::getSession()->set('application_layout', 'form');
 
 $defaultpid = $this->defaultpid;
 $user = $this->userid;
-
-$coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id);
-$sysadmin_access = EmundusHelperAccess::isAdministrator($this->_user->id);
-$xmlDoc = new DOMDocument();
-if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
-    $release_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
-}
-
-$current_lang = JFactory::getLanguage();
-$short_lang = substr($current_lang->getTag(), 0 , 2);
-$languages = JLanguageHelper::getLanguages();
-if (count($languages) > 1) {
-    $many_languages = '1';
-    require_once JPATH_SITE . '/components/com_emundus/models/translations.php';
-    $m_translations = new EmundusModelTranslations();
-    $default_lang = $m_translations->getDefaultLanguage()->lang_code;
-} else {
-    $many_languages = '0';
-    $default_lang = $current_lang;
-}
 ?>
 
 <style type="text/css">
@@ -137,6 +117,34 @@ if (count($languages) > 1) {
                 </div>
             </div>
             <?php if (EmundusHelperAccess::asAccessAction(10, 'c', $user, $this->fnum)): ?>
+                <?php
+                    $coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user);
+                    $sysadmin_access = EmundusHelperAccess::isAdministrator($user);
+                    $xmlDoc = new DOMDocument();
+                    if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
+                        $release_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
+                    }
+
+                    $current_lang = JFactory::getLanguage();
+                    $short_lang = substr($current_lang->getTag(), 0 , 2);
+                    $languages = JLanguageHelper::getLanguages();
+                    if (count($languages) > 1) {
+                        $many_languages = '1';
+                        require_once JPATH_SITE . '/components/com_emundus/models/translations.php';
+                        $m_translations = new EmundusModelTranslations();
+                        $default_lang = $m_translations->getDefaultLanguage()->lang_code;
+                    } else {
+                        $many_languages = '0';
+                        $default_lang = $current_lang;
+                    }
+
+                    $user_comment_access = [
+                        'c' => EmundusHelperAccess::asAccessAction(10, 'c', $user, $this->fnum),
+                        'r' => EmundusHelperAccess::asAccessAction(10, 'r', $user, $this->fnum),
+                        'u' => EmundusHelperAccess::asAccessAction(10, 'u', $user, $this->fnum),
+                        'd' => EmundusHelperAccess::asAccessAction(10, 'd', $user, $this->fnum),
+                    ];
+                ?>
                 <aside id="aside-comment-section" class="fixed right-0 em-white-bg shadow ease-out closed">
                     <!-- Comments -->
                     <div class="flex flex-row relative">
@@ -150,6 +158,7 @@ if (count($languages) > 1) {
                              component="comments"
                              user="<?= $this->_user->id ?>"
                              ccid="<?= $this->ccid ?>"
+                             access='<?= json_encode($user_comment_access) ?>'
                              is_applicant="<?= 0 ?>"
                              current_form="<?= 0 ?>"
                              currentLanguage="<?= $current_lang->getTag() ?>"
@@ -271,7 +280,9 @@ if (count($languages) > 1) {
         opacity: 0 !important;
     }
 
-    table tr:hover .comment-icon {
+    table tr:hover .comment-icon,
+    .title-applicant-form:hover .comment-icon,
+    .form-group-title:hover .comment-icon {
         opacity: 1 !important;
     }
 </style>
