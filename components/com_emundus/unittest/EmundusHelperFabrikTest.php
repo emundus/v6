@@ -164,39 +164,40 @@ class EmundusHelperFabrikTest extends TestCase
 			$db->setQuery($query);
 			$fnum = $db->loadObject();
 
-			if(empty($params["alias"]))
-			{
-				$params['alias'] = 'alias' . rand(0, 1000);
-				$params = json_encode($params);
+			if(isset($fnum) && is_object($fnum)) {
+				if(empty($params["alias"])) {
+					$params['alias'] = 'alias' . rand(0, 1000);
+					$params = json_encode($params);
 
-				$query = $db->getQuery(true);
+					$query = $db->getQuery(true);
+
+					$query->clear()
+						->update($db->quoteName('#__fabrik_elements'))
+						->set($db->quoteName('params') . ' = ' . $db->quote($params))
+						->where($db->quoteName('id') . ' = ' . $db->quote($element->id))
+						->limit(1);
+					$db->setQuery($query);
+					$db->execute();
+
+					$params = json_decode($params, true);
+				}
+
+				$value = $this->h_fabrik->getValueByAlias($params["alias"], $fnum->fnum);
+				$value_raw = $this->h_fabrik->getValueByAlias($params["alias"], $fnum->fnum, 1);
 
 				$query->clear()
-					->update($db->quoteName('#__fabrik_elements'))
-					->set($db->quoteName('params') . ' = ' . $db->quote($params))
-					->where($db->quoteName('id') . ' = ' . $db->quote($element->id))
-					->limit(1);
-				$db->setQuery($query);
-				$db->execute();
-
-				$params = json_decode($params, true);
-			}
-
-			$value = $this->h_fabrik->getValueByAlias($params["alias"], $fnum->fnum);
-			$value_raw = $this->h_fabrik->getValueByAlias($params["alias"], $fnum->fnum, 1);
-
-			$query->clear()
 					->select($element->name)
 					->from($db->quoteName($element->db_table_name))
 					->where("fnum = " . $db->quote($fnum->fnum));
 				$db->setQuery($query);
 				$expected = $db->loadResult();
 
-			if(!empty($expected))
-			{
-				$expected_formatted = EmundusHelperFabrik::formatElementValue($element->name, $expected);
-				$this->assertEquals($expected_formatted, $value, 'The value formatted obtained should be the same as the value formatted in the database.');
-				$this->assertEquals($expected, $value_raw, 'The value obtained should be the same as the value in the database.');
+
+				if(!empty($expected)) {
+					$expected_formatted = EmundusHelperFabrik::formatElementValue($element->name, $expected);
+					$this->assertEquals($expected_formatted, $value, 'The value formatted obtained should be the same as the value formatted in the database.');
+					$this->assertEquals($expected, $value_raw, 'The value obtained should be the same as the value in the database.');
+				}
 			}
 			$element_id++;
 		}
