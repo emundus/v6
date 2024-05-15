@@ -12,7 +12,7 @@
 
     <div v-if="parentComments.length > 0" id="comments-list-container" class="p-1">
       <div :id="'file-comment-' + comment.id" v-for="comment in parentComments" :key="comment.id"
-           class="shadow rounded-lg py-2 px-4 my-4 border"
+           class="group shadow rounded-lg py-2 px-4 my-4 border"
            :class="{
             'border-transparent': comment.id != openedCommentId,
             'focus em-border-main-500': comment.id == openedCommentId,
@@ -20,12 +20,16 @@
             'em-white-bg': comment.opened == 1,
          }"
       >
+        <p v-if="comment.target_id > 0" class="comment-target-label text-sm em-gray-color !mb-3">
+          {{ getCommentTargetLabel(comment.target_id, comment.target_type) }}
+        </p>
+
         <div class="file-comment-header flex flex-row items-center justify-between mb-3">
           <div class="file-comment-header-left flex flex-row cursor-pointer items-center"
                @click="replyToComment(comment.id)">
             <div class="flex flex-row items-center">
               <div class="profile-picture h-8 w-8 rounded-full border-2 mr-2 flex flex-row justify-center items-center">
-                <div v-if="comment.profile_picture" class="image h-full w-full rounded-full" :style="'background-image: url(' + comment.profile_picture + ')'"></div>
+                <div v-if="comment.profile_picture" class="image h-full w-full rounded-full" :style="'background-image: url(' + comment.profile_picture + ');background-size: cover;background-position: center;'"></div>
                 <span v-else>{{ comment.firstname.charAt(0) }}{{ comment.lastname.charAt(0) }}</span>
               </div>
               <div class="flex flex-col mr-3">
@@ -42,10 +46,10 @@
             </span>
             </div>
           </div>
-          <div class="file-comment-header-right">
+          <div class="file-comment-header-right opacity-0 group-hover:opacity-100">
             <span class="material-icons-outlined cursor-pointer" @click="replyToComment(comment.id)">reply</span>
-            <span class="material-icons-outlined cursor-pointer" @click="deleteComment(comment.id)">delete</span>
-            <span v-if="comment.user_id == user" class="material-icons-outlined cursor-pointer" @click="makeCommentEditable(comment.id)">edit</span>
+            <span v-if="access.d" class="material-icons-outlined cursor-pointer" @click="deleteComment(comment.id)">delete</span>
+            <span v-if="access.u || (access.c && comment.user_id == user)" class="material-icons-outlined cursor-pointer" @click="makeCommentEditable(comment.id)">edit</span>
           </div>
         </div>
 
@@ -64,10 +68,6 @@
         <p class="comment-body" v-else>{{ comment.comment_body }}</p>
         <i v-if="comment.updated_by > 0" class="text-xs em-gray-color mt-3">{{ translate('COM_EMUNDUS_COMMENTS_EDITED') }}</i>
 
-        <p v-if="comment.target_id > 0" class="text-sm em-gray-color mt-3">
-          {{ getCommentTargetLabel(comment.target_id, comment.target_type) }}
-        </p>
-
         <div class="comment-children"
              :class="{'opened': openedCommentId === comment.id, 'hidden': openedCommentId !== comment.id}">
           <hr>
@@ -77,7 +77,7 @@
                 <div class="file-comment-header-left flex flex-col">
                   <div class="flex flex-row items-center">
                     <div class="profile-picture h-8 w-8 rounded-full border-2 mr-2 flex flex-row justify-center items-center">
-                      <div v-if="comment.profile_picture" class="image h-full w-full rounded-full" :style="'background-image: url(' + comment.profile_picture + ')'"></div>
+                      <div v-if="comment.profile_picture" class="image h-full w-full rounded-full" :style="'background-image: url(' + comment.profile_picture + '); background-size: cover;background-position: center;'"></div>
                       <span v-else>{{ comment.firstname.charAt(0) }}{{ comment.lastname.charAt(0) }}</span>
                     </div>
                     <div class="flex flex-col mr-3">
@@ -87,8 +87,8 @@
                   </div>
                 </div>
                 <div class="file-comment-header-left">
-                  <span class="material-icons-outlined cursor-pointer" @click="deleteComment(child.id)">delete</span>
-                  <span v-if="child.user_id == user" class="material-icons-outlined cursor-pointer" @click="makeCommentEditable(child.id)">edit</span>
+                  <span v-if="access.d" class="material-icons-outlined cursor-pointer" @click="deleteComment(child.id)">delete</span>
+                  <span v-if="access.u || (access.c && child.user_id == user)" class="material-icons-outlined cursor-pointer" @click="makeCommentEditable(child.id)">edit</span>
                 </div>
               </div>
 
@@ -224,10 +224,10 @@ export default {
     access: {
       type: Object,
       default: () => ({
-        c: true,
+        c: false,
         r: true,
-        u: true,
-        d: true
+        u: false,
+        d: false
       })
     },
     isApplicant: {
@@ -370,26 +370,28 @@ export default {
     addComment(parent_id = 0) {
       this.loading = true;
 
-      if (this.isApplicant) {
-        this.visible_to_applicant = true;
-      }
-
-      let commentContent = this.newCommentText;
-      if (parent_id !== 0) {
-        commentContent = this.newChildCommentText;
-      }
-
-      commentsService.addComment(this.ccid, commentContent, this.target, this.visible_to_applicant, parent_id).then((response) => {
-        if (response.status) {
-          this.comments.push(response.data);
-          this.resetAddComment();
-          this.getComments();
+      if (this.access.c) {
+        if (this.isApplicant) {
+          this.visible_to_applicant = true;
         }
-      }).catch((error) => {
-        this.handleError(error);
-      }).finally(() => {
-        this.loading = false;
-      });
+
+        let commentContent = this.newCommentText;
+        if (parent_id !== 0) {
+          commentContent = this.newChildCommentText;
+        }
+
+        commentsService.addComment(this.ccid, commentContent, this.target, this.visible_to_applicant, parent_id).then((response) => {
+          if (response.status) {
+            this.comments.push(response.data);
+            this.resetAddComment();
+            this.getComments();
+          }
+        }).catch((error) => {
+          this.handleError(error);
+        }).finally(() => {
+          this.loading = false;
+        });
+      }
     },
     resetAddComment() {
       this.newCommentText = '';
@@ -406,7 +408,7 @@ export default {
       }
     },
     deleteComment(commentId) {
-      if (commentId > 0) {
+      if (commentId > 0 && this.access.d) {
         this.comments = this.comments.filter((comment) => comment.id !== commentId);
 
         commentsService.deleteComment(commentId).then((response) => {
@@ -442,16 +444,19 @@ export default {
     updateComment(commentId) {
       this.loading = true;
 
-      const commentContent = this.comments.find((comment) => comment.id === commentId).comment_body;
-      commentsService.updateComment(commentId, commentContent).then((response) => {
-        // nothing to do
-      }).catch((error) => {
-        this.handleError(error);
-      }).finally(() => {
-        this.loading = false;
-        this.editable = null;
-        this.tmpComment = null;
-      });
+      const commentToUpdate = this.comments.find((comment) => comment.id === commentId);
+      if (this.access.u || (this.access.c && commentToUpdate.user == this.user)) {
+        const commentContent = commentToUpdate.comment_body;
+        commentsService.updateComment(commentId, commentContent).then((response) => {
+          // nothing to do
+        }).catch((error) => {
+          this.handleError(error);
+        }).finally(() => {
+          this.loading = false;
+          this.editable = null;
+          this.tmpComment = null;
+        });
+      }
     },
     updateCommentOpenedState(commentId, state) {
       this.loading = true;
@@ -468,7 +473,7 @@ export default {
       });
     },
     onSearchChange() {
-      this.highlight(this.search, ['.comment-body']);
+      this.highlight(this.search, ['.comment-body', '.comment-target-label']);
     }
   },
   computed: {
@@ -499,8 +504,10 @@ export default {
 
       if (this.search.length > 0) {
         parentComments = parentComments.filter((comment) => {
-          return comment.comment_body.toLowerCase().includes(this.search.toLowerCase()) || this.childrenComments[comment.id].some((child) => {
-            return child.comment_body.toLowerCase().includes(this.search.toLowerCase());
+          return comment.comment_body.toLowerCase().includes(this.search.toLowerCase())
+              || this.getCommentTargetLabel(comment.target_id, comment.target_type).toLowerCase().includes(this.search.toLowerCase())
+              || this.childrenComments[comment.id].some((child) => {
+            return child.comment_body.toLowerCase().includes(this.search.toLowerCase()) || this.getCommentTargetLabel(child.target_id, child.target_type).toLowerCase().includes(this.search.toLowerCase());
           });
         });
       }
@@ -536,10 +543,5 @@ export default {
 <style scoped>
 #empty-comments {
   margin: var(--em-spacing-4) 0 !important;
-}
-
-.profile-picture .image{
-  background-size: cover;
-  background-position: center;
 }
 </style>
