@@ -103,7 +103,8 @@ class EmundusModelComments extends JModelLegacy
      * @param $user
      * @return bool
      */
-    public function deleteComment($comment_id, $user) {
+    public function deleteComment($comment_id, $user): bool
+    {
         $deleted = false;
 
         if (!empty($comment_id) && !empty($user)) {
@@ -144,7 +145,8 @@ class EmundusModelComments extends JModelLegacy
      * @param $user
      * @return bool
      */
-    public function updateComment($comment_id, $comment, $user) {
+    public function updateComment($comment_id, $comment, $user): bool
+    {
         $updated = false;
 
         if (!empty($comment_id) && !empty($comment) && !empty($user)) {
@@ -188,7 +190,7 @@ class EmundusModelComments extends JModelLegacy
      * @param $user
      * @return false|mixed
      */
-    public function updateCommentOpenedState($comment_id, $opened, $user)
+    public function updateCommentOpenedState($comment_id, $opened, $user): bool
     {
         $updated = false;
 
@@ -241,7 +243,8 @@ class EmundusModelComments extends JModelLegacy
      * @param $current_user
      * @return void
      */
-    public function getComments($file_id, $current_user, $is_applicant = false) {
+    public function getComments($file_id, $current_user, $is_applicant = false): array
+    {
         $comments = [];
 
         if (!empty($file_id) && !empty($current_user)) {
@@ -298,7 +301,7 @@ class EmundusModelComments extends JModelLegacy
      * @param $fnum
      * @return array
      */
-    public function getTargetableElements($ccid)
+    public function getTargetableElements($ccid): array
     {
         $data = [
             'forms' => [],
@@ -351,7 +354,8 @@ class EmundusModelComments extends JModelLegacy
      * @param $args
      * @return void
      */
-    private function dispatchEvent($event, $args) {
+    private function dispatchEvent($event, $args): void
+    {
         JPluginHelper::importPlugin('emundus');
         $dispatcher = JEventDispatcher::getInstance();
         $dispatcher->trigger($event, $args);
