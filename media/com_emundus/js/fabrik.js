@@ -395,7 +395,7 @@ function checkPasswordSymbols(element) {
 
 /**
  * Return the showed value in the form
- * <div> element from attachment for fileupload
+ * <div> element from attachment for fileupload and panel
  * @param element
  * @returns {string|HTMLElement}
  */
@@ -447,7 +447,11 @@ function getElementShowedValue(element) {
     }
 }
 
-
+/**
+ * Toggle readonly mode for one or multiple elements
+ * @param elements
+ * @param toogle {boolean} - true to enable readonly mode, false to disable
+ */
 function toggleReadOnly(elements, toogle = true) {
 
     if (!Array.isArray(elements)) elements = [elements];
