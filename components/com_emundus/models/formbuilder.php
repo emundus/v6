@@ -1498,6 +1498,8 @@ class EmundusModelFormbuilder extends JModelList {
 						$params['alias'] = htmlentities($params['alias'], ENT_COMPAT, "UTF-8");
 						$params['alias'] = preg_replace('/&([a-zA-Z])(uml|acute|grave|circ|tilde|cedil);/', '$1', $params['alias']);
 						$params['alias'] = html_entity_decode($params['alias']);
+						$params['alias'] = preg_replace('/[^\x20-\x7E]/','', $params['alias']);
+						$params['alias'] = preg_replace('/[^a-zA-Z0-9_]/', '', $params['alias']);
 
 						$this->translate('ELEMENT_' . $gid . '_' . $elementId, $label,'fabrik_elements',$elementId,'label');
 						if($evaluation){
@@ -2016,6 +2018,9 @@ class EmundusModelFormbuilder extends JModelList {
 	        $element['params']['alias'] = htmlentities($element['params']['alias'], ENT_COMPAT, "UTF-8");
 	        $element['params']['alias'] = preg_replace('/&([a-zA-Z])(uml|acute|grave|circ|tilde|cedil);/', '$1', $element['params']['alias']);
 	        $element['params']['alias'] = html_entity_decode($element['params']['alias']);
+	        $element['params']['alias'] = preg_replace('/[^\x20-\x7E]/','', $element['params']['alias']);
+	        $element['params']['alias'] = preg_replace('/[^a-zA-Z0-9_]/', '', $element['params']['alias']);
+
 
 	        // Update the element
             $fields = array(

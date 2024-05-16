@@ -518,6 +518,8 @@ class FabrikAdminModelElement extends FabModelAdmin
 		$data['params']['alias'] = htmlentities($data['params']['alias'], ENT_COMPAT, "UTF-8");
 		$data['params']['alias'] = preg_replace('/&([a-zA-Z])(uml|acute|grave|circ|tilde|cedil);/', '$1', $data['params']['alias']);
 		$data['params']['alias'] = html_entity_decode($data['params']['alias']);
+		$data['params']['alias'] = preg_replace('/[^\x20-\x7E]/','', $data['params']['alias']);
+		$data['params']['alias'] = preg_replace('/[^a-zA-Z0-9_]/', '', $data['params']['alias']);
 
 
 		jimport('joomla.utilities.date');
