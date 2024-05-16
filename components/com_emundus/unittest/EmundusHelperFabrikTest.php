@@ -363,7 +363,6 @@ class EmundusHelperFabrikTest extends TestCase
 			if(empty($params["alias"]))
 			{
 				$params['alias'] = 'alias' . rand(0, 1000);
-				$query = $db->getQuery(true);
 
 				$query->clear()
 					->update($db->quoteName('#__fabrik_elements'))
@@ -404,17 +403,18 @@ class EmundusHelperFabrikTest extends TestCase
 		$db->setQuery($query);
 		$elements = $db->loadObjectList();
 
-		$element_id = 1;
-
 		foreach ($elements as $element) {
 
 			$query->clear()
-				->select('tb.fnum')
+				->select('tb.fnum, tb.' . $element->name)
 				->from($db->quoteName($element->db_table_name, 'tb'))
-				->where("tb.id = " . $db->quote($element_id));
+				->where('tb.id = (SELECT MIN(id) FROM ' . $db->quoteName($element->db_table_name) . ')');
 
 			$db->setQuery($query);
-			$fnum = $db->loadResult();
+			$results = $db->loadObject();
+
+			$fnum = $results->fnum;
+			$expected = $results->{$element->name};
 
 			if(isset($fnum)) {
 
@@ -423,7 +423,6 @@ class EmundusHelperFabrikTest extends TestCase
 				if(empty($params["alias"])) {
 
 					$params['alias'] = 'alias' . rand(0, 1000);
-					$query = $db->getQuery(true);
 
 					$query->clear()
 						->update($db->quoteName('#__fabrik_elements'))
@@ -437,20 +436,12 @@ class EmundusHelperFabrikTest extends TestCase
 				$value = $this->h_fabrik->getValueByAlias($params["alias"], $fnum);
 				$value_raw = $this->h_fabrik->getValueByAlias($params["alias"], $fnum, 1);
 
-				$query->clear()
-					->select($element->name)
-					->from($db->quoteName($element->db_table_name))
-					->where("fnum = " . $db->quote($fnum));
-				$db->setQuery($query);
-				$expected = $db->loadResult();
-
 				if(!empty($expected)) {
 					$expected_formatted = EmundusHelperFabrik::formatElementValue($element->name, $expected);
 					$this->assertEquals($expected_formatted, $value, 'The value formatted obtained should be the same as the value formatted in the database.');
 					$this->assertEquals($expected, $value_raw, 'The value obtained should be the same as the value in the database.');
 				}
 			}
-			$element_id++;
 		}
 	}
 }
