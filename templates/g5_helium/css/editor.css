@@ -141,6 +141,152 @@ li {
 	line-height: normal;
 }
 
+
+ol li:not(.ql-direction-rtl) {
+	padding-left: 0;
+}
+
+ol li.ql-direction-rtl {
+	padding-right: 1.5em;
+}
+
+ol li {
+	counter-reset: list-1 list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9;
+	counter-increment: list-0;
+}
+
+ol li::marker {
+	content: counter(list-0, decimal) '. ';
+}
+
+ol li.ql-indent-1 {
+	counter-increment: list-1;
+}
+
+ol li.ql-indent-1::marker {
+	content: counter(list-1, decimal) '. ';
+}
+
+ol li.ql-indent-1 {
+	counter-reset: list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9;
+}
+
+ol li.ql-indent-2 {
+	counter-increment: list-2;
+}
+
+ol li.ql-indent-2::marker {
+	content: counter(list-2, decimal) '. ';
+}
+
+ol li.ql-indent-2 {
+	counter-reset: list-3 list-4 list-5 list-6 list-7 list-8 list-9;
+}
+
+ol li.ql-indent-3 {
+	counter-increment: list-3;
+}
+
+ol li.ql-indent-3::marker {
+	content: counter(list-3, decimal) '. ';
+}
+
+ol li.ql-indent-3 {
+	counter-reset: list-4 list-5 list-6 list-7 list-8 list-9;
+}
+
+ol li.ql-indent-4 {
+	counter-increment: list-4;
+}
+
+ol li.ql-indent-4::marker {
+	content: counter(list-4, decimal) '. ';
+}
+
+ol li.ql-indent-4 {
+	counter-reset: list-5 list-6 list-7 list-8 list-9;
+}
+
+ol li.ql-indent-5 {
+	counter-increment: list-5;
+}
+
+ol li.ql-indent-5::marker {
+	content: counter(list-5, decimal) '. ';
+}
+
+ol li.ql-indent-5 {
+	counter-reset: list-6 list-7 list-8 list-9;
+}
+
+ol li.ql-indent-6 {
+	counter-increment: list-6;
+}
+
+ol li.ql-indent-6::marker {
+	content: counter(list-6, decimal) '. ';
+}
+
+ol li.ql-indent-6 {
+	counter-reset: list-7 list-8 list-9;
+}
+
+ol li.ql-indent-7 {
+	counter-increment: list-7;
+}
+
+ol li.ql-indent-7::marker {
+	content: counter(list-7, decimal) '. ';
+}
+
+ol li.ql-indent-7 {
+	counter-reset: list-8 list-9;
+}
+
+ol li.ql-indent-8 {
+	counter-increment: list-8;
+}
+
+ol li.ql-indent-8::marker {
+	content: counter(list-8, decimal) '. ';
+}
+
+ol li.ql-indent-8 {
+	counter-reset: list-9;
+}
+
+li.ql-indent-1 {
+	margin-left: 24px;
+}
+
+li.ql-indent-2 {
+	margin-left: 48px;
+}
+
+li.ql-indent-3 {
+	margin-left: 72px;
+}
+
+li.ql-indent-4 {
+	margin-left: 96px;
+}
+
+li.ql-indent-5 {
+	margin-left: 120px;
+}
+
+li.ql-indent-6 {
+	margin-left: 144px;
+}
+
+li.ql-indent-7 {
+	margin-left: 168px;
+}
+
+li.ql-indent-8 {
+	margin-left: 192px;
+}
+
 hr {
 	margin: 16px 0;
 	border-bottom: 1px solid #e0e0e5;

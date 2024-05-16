@@ -35,7 +35,6 @@ export default {
     toolbarOptions: {
       complete: [
         ['bold', 'italic', 'underline', 'strike'],
-        ['blockquote'],
         ['link'],
 
         [{'header': 1}, {'header': 2}],
@@ -44,7 +43,6 @@ export default {
         [{'size': ['small', false, 'large', 'huge']}],
 
         [{'color': []}],
-        [{'font': []}],
         [{'align': []}],
       ],
       light: [
