@@ -53,7 +53,7 @@
     </div>
 
     <div v-else-if="parameter.type === 'yesno'">
-      <fieldset class="" data-toggle="buttons" class="flex items-center gap-2">
+      <fieldset  data-toggle="buttons" class="flex items-center gap-2">
         <label :for="'param_' + parameter.param + '_input_0'" :class="[value == 0 ? 'bg-red-700' : 'bg-white border-neutral-400']" class="w-60 h-10 p-2.5 rounded-lg border justify-center items-center gap-2.5 inline-flex">
           <input v-model="value" type="radio" class="fabrikinput !hidden" :name="'param_' + parameter.param + '[]'" :id="'param_' + parameter.param + '_input_0'" value="0" :checked="value === 0">
           <span :class="[value == 0 ? 'text-white' : 'text-green-700']">{{ translate('JNO') }}</span>
@@ -65,7 +65,7 @@
       </fieldset>
     </div>
 
-    <div v-else-if="parameter.type === 'toggle'">
+    <div v-else-if="parameter.type === 'toggle'" class="mb-4 flex items-center">
       <div class="em-toggle">
         <input type="checkbox"
                class="em-toggle-check"

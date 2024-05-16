@@ -20,7 +20,7 @@
     <!-- The content of the section -->
     <div name="SubMenuContent-componentSection" class="flex flex-col"
          v-if="activeSectionComponent===activeMenuItem.sectionTitle">
-      <Info v-if="activeMenuItem.helptext" :text="activeMenuItem.helptext"></Info>
+      <Info v-if="activeMenuItem.helptext" :text="activeMenuItem.helptext" class="mb-4"></Info>
       <component :ref="'content_'+activeMenuItem.name" :is="activeMenuItem.component"
                  :key="'component_'+activeMenuItem.name" v-bind="activeMenuItem.props"
                  @needSaving="handleNeedSaving"/>

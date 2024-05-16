@@ -18,7 +18,7 @@
 
       <div class="mt-6" v-if="enableEmail  && computedEnableEmail">
         <!--<label class="font-medium">{{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_GLOBAL') }}</label>  -->
-        <div class="grid grid-cols-2 gap-6 p-3 bg-[#008A351A] rounded">
+        <div class="grid grid-cols-2 gap-6 p-3">
           <div class="form-group w-full" v-for="param in globalInformations"
                :key="param.param">
             <label :for="'param_' + param.param" class="flex items-center font-medium">
@@ -60,7 +60,7 @@
 
       <div class="mt-6" v-if="customConfiguration && enableEmail && computedEnableEmail">
         <!--<label class="font-medium">{{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION') }}</label> -->
-        <div class="grid grid-cols-2 gap-6 p-3 bg-[#008A351A] rounded">
+        <div class="grid grid-cols-2 gap-6 p-3 ">
           <div class="form-group w-full !ml-0 mr-0 mt-0"
                :class="['smtpsecure','smtpauth'].includes(param.param) ? 'col-span-full' : ''"
                v-for="param in customInformations"
@@ -72,8 +72,8 @@
             </label>
             <Parameter :parameter="param" @needSaving="updateParameterToSaving"/>
           </div>
-          <Info :text="'COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_MAIL_SUBSECTION_SERVER_EMAIL_CONF_ADVICE'" class=" mt-4"></Info>
         </div>
+        <Info :text="'COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_MAIL_SUBSECTION_SERVER_EMAIL_CONF_ADVICE'" class=" mt-4"></Info>
       </div>
     </div>
 
@@ -322,9 +322,7 @@ export default {
       }
     },
 
-    /*
-    //TODO: Move to Parameter component
-*/
+
 
 
   },
