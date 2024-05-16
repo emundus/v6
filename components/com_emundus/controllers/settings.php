@@ -957,27 +957,31 @@ class EmundusControllersettings extends JControllerLegacy
 
     public function saveemundusparamExtensions()
     {
-        $user = JFactory::getUser();
-        $response = ['status' => true, 'msg' => JText::_('test TODO methode saveemundusparamExtensions')];
+        $db = JFactory::getDbo(); // Get the database object
+        $jinput = JFactory::getApplication()->input; // Get the input object
+        $params = $jinput->json->get('data', '', 'RAW'); // Get JSON data from the request
 
-            $jinput = JFactory::getApplication()->input;
-        $params = $jinput->get('params'); // Get the params from the input object
-        $params = json_decode($params, true); // Decode the JSON string into an array
-            echo $params;
+        $query = $db->getQuery(true); // Create a new query object
 
-            /*if (!empty($params)) {
-                $response['msg'] = JText::_('MISSING_PARAMS');
-                $params = json_decode($params, true);
+        $fields = array( // Create an array of fields to update
+            $db->quoteName('params') . ' = ' . $db->quote($params) // Set the params column to the new params
+        );
 
-                if ($this->m_settings->saveEmundusParamExtensions($params)) {
-                    $response['msg'] = JText::_('SUCCESS');
-                    $response['status'] = true;
-                }
-            }*/
+        $conditions = array( // Create an array of conditions
+            $db->quoteName('name') . ' = ' . $db->quote('com_emundus') // Where the name is com_emundus
+        );
 
+        $query->update($db->quoteName('#__extensions')) // Update the jos_extensions table
+        ->set($fields) // Set the fields
+        ->where($conditions); // Set the conditions
 
-        echo json_encode($response);
+        $db->setQuery($query); // Set the query
+
+        $result = $db->execute(); // Execute the query
+
+        echo $result; // Output the result
         exit;
+
     }
 
     public function updateemundusparam()

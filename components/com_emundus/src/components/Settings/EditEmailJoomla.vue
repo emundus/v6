@@ -216,23 +216,25 @@ export default {
       }
     },
     updateValueParamsEmundusExtensions(variable, value) {
-      console.log(this.ParamJoomlaEmundusExtensions)
-      console.log("update start")
-      console.log(this.CustomConfigServerMail[variable]);
       for (let index in this.ParamJoomlaEmundusExtensions) {
         if (this.ParamJoomlaEmundusExtensions[index][variable]) {
           this.ParamJoomlaEmundusExtensions[index][variable] = value;
           this.CustomConfigServerMail[variable] = value;
         }
       }
-      console.log(this.ParamJoomlaEmundusExtensions)
-      console.log("update end");
+
       this.saveEmundusParamsExtensions();
     },
     saveEmundusParamsExtensions(){
-      //this.$emit('updateSaving', true);
-      console.log(this.CustomConfigServerMail);
-      axios.post("index.php?option=com_emundus&controller=settings&task=saveemundusparamExtensions&params=" + JSON.stringify(this.CustomConfigServerMail))
+      axios.post("index.php?option=com_emundus&controller=settings&task=saveemundusparamExtensions",
+          {
+            data: JSON.stringify(this.CustomConfigServerMail)
+          },
+          {
+            headers: {
+              "Content-Type": "application/json"
+            }
+          })
           .then(() => {
             //this.$emit('updateSaving', false);
             //this.$emit('updateLastSaving', this.formattedDate('', 'LT'));
