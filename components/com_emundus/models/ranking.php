@@ -19,6 +19,8 @@ class EmundusModelRanking extends JModelList
     public $filters = [];
     private $h_files = null;
 
+    private $logger = null;
+
     private $db = null;
 
     public function __construct($config = array())
@@ -31,9 +33,22 @@ class EmundusModelRanking extends JModelList
             require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
         }
         $this->h_files = new EmundusHelperFiles();
+
+        if (!class_exists('EmundusModelLogs')) {
+            require_once(JPATH_ROOT . '/components/com_emundus/models/logs.php');
+        }
+        $this->logger = new EmundusModelLogs();
+
         $this->db = Factory::getDBO();
 
         JLog::addLogger(['text_file' => 'com_emundus.ranking.php'], JLog::ALL);
+    }
+
+    private function dispatchEvent($event, $args) {
+        JPluginHelper::importPlugin('emundus');
+        $dispatcher = Factory::getApplication()->getDispatcher();
+        $dispatcher->trigger($event, $args);
+        $dispatcher->trigger('callEventHandler', [$event, $args]);
     }
 
     /**
@@ -468,6 +483,8 @@ class EmundusModelRanking extends JModelList
                 }
             }
         }
+
+        $this->dispatchEvent('onGetFilesUserCanRank', ['files' => &$files, 'user_id' => $user_id, 'page' => $page, 'limit' => $limit, 'sort' => $sort, 'hierarchy_order_by' => $hierarchy_order_by, 'package' => $package]);
 
         return $files;
     }
@@ -916,6 +933,8 @@ class EmundusModelRanking extends JModelList
                 throw new Exception(Text::_('COM_EMUNDUS_RANKING_UPDATE_RANKING_ERROR_RANK_OWN_FILE'));
             }
 
+            $this->dispatchEvent('onBeforeUpdateFileRanking', ['id' => $id, 'user_id' => $user_id, 'new_rank' => $new_rank, 'hierarchy_id' => $hierarchy_id, 'package_id' => $package_id]);
+
             $query->clear()
                 ->select($this->db->quoteName('cc.status'))
                 ->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
@@ -1175,6 +1194,14 @@ class EmundusModelRanking extends JModelList
 
                     $this->db->setQuery($query);
                     $updated = $this->db->execute();
+                }
+
+                if ($updated) {
+                    $fnum = EmundusHelperFiles::getFnumFromId($id);
+                    $user_to = EmundusHelperFiles::getApplicantIdFromFileId($id);
+                    $action_id = $this->logger->getActionId('ranking');
+                    $this->logger->log($user_id, $user_to, $fnum, $action_id, 'u', 'COM_EMUNDUS_RANKING_UPDATE_RANKING', json_encode(['old_rank' => $old_rank, 'new_rank' => $new_rank]));
+                    $this->dispatchEvent('onAfterUpdateFileRanking', ['id' => $id, 'user_id' => $user_id, 'new_rank' => $new_rank, 'old_rank' => $old_rank, 'hierarchy_id' => $hierarchy_id, 'package_id' => $package_id]);
                 }
             } else {
                 throw new Exception(Text::_('COM_EMUNDUS_RANKING_UPDATE_RANKING_ERROR_RANK_NOT_ALLOWED_STATUS'));

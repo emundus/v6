@@ -527,4 +527,22 @@ class EmundusModelLogs extends JModelList {
 
         return $logs;
     }
+
+    public function getActionId($action_name)
+    {
+        $action_id = 0;
+
+        if (!empty($action_name)) {
+            $query = $this->db->getQuery(true);
+            $query->clear()
+                ->select($this->db->quoteName('id'))
+                ->from($this->db->quoteName('#__emundus_setup_actions'))
+                ->where($this->db->quoteName('name') . ' = ' . $this->db->quote($action_name));
+
+            $this->db->setQuery($query);
+            $action_id = $this->db->loadResult();
+        }
+
+        return $action_id;
+    }
 }

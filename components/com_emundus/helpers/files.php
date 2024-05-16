@@ -5174,5 +5174,71 @@ class EmundusHelperFiles
 
 		return $linked;
 	}
+
+    public static function getFnumFromId($id) {
+        $fnum = '';
+
+        if (!empty($id)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+            $query->select('fnum')
+                ->from('#__emundus_campaign_candidature')
+                ->where('id = ' . $id);
+
+            try {
+                $db->setQuery($query);
+                $fnum = $db->loadResult();
+            } catch (Exception $e) {
+                $fnum = '';
+            }
+        }
+
+        return $fnum;
+    }
+
+    public static function getIdFromFnum($fnum) {
+        $id = '';
+
+        if (!empty($fnum)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('id')
+                ->from('#__emundus_campaign_candidature')
+                ->where('fnum = ' . $db->quote($fnum));
+
+            try {
+                $db->setQuery($query);
+                $id = $db->loadResult();
+            } catch (Exception $e) {
+                $id = '';
+            }
+        }
+
+        return $id;
+    }
+
+    public static function getApplicantIdFromFileId($id)
+    {
+        $applicant_id = 0;
+
+        if (!empty($id)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('applicant_id')
+                ->from('#__emundus_campaign_candidature')
+                ->where('id = ' . $db->quote($id));
+
+            try {
+                $db->setQuery($query);
+                $applicant_id = $db->loadResult();
+            } catch (Exception $e) {
+                $applicant_id = 0;
+            }
+        }
+
+        return $applicant_id;
+    }
 }
 
