@@ -106,19 +106,15 @@ class EmundusHelperFabrikTest extends TestCase
 			if(empty($params["alias"]))
 			{
 				$params['alias'] = 'alias' . rand(0, 1000);
-				$params = json_encode($params);
-
 				$query = $db->getQuery(true);
 
 				$query->clear()
 					->update($db->quoteName('#__fabrik_elements'))
-					->set($db->quoteName('params') . ' = ' . $db->quote($params))
-					->where($db->quoteName('id') . ' = ' . $db->quote($element->id))
+					->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+					->where($db->quoteName('id') . ' = ' . $element->id)
 					->limit(1);
 				$db->setQuery($query);
 				$db->execute();
-
-				$params = json_decode($params, true);
 			}
 
 			$element_by_alias = $this->h_fabrik->getElementByAlias($params["alias"], $form_id);
@@ -168,20 +164,17 @@ class EmundusHelperFabrikTest extends TestCase
 				$params = json_decode($element->params, true);
 
 				if(empty($params["alias"])) {
-					$params['alias'] = 'alias' . rand(0, 1000);
-					$params = json_encode($params);
 
+					$params['alias'] = 'alias' . rand(0, 1000);
 					$query = $db->getQuery(true);
 
 					$query->clear()
 						->update($db->quoteName('#__fabrik_elements'))
-						->set($db->quoteName('params') . ' = ' . $db->quote($params))
+						->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
 						->where($db->quoteName('id') . ' = ' . $db->quote($element->id))
 						->limit(1);
 					$db->setQuery($query);
 					$db->execute();
-
-					$params = json_decode($params, true);
 				}
 
 				$value = $this->h_fabrik->getValueByAlias($params["alias"], $fnum);
