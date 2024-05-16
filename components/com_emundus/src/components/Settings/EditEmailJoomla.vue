@@ -17,7 +17,7 @@
       </div>
 
       <div class="mt-6" v-if="enableEmail  && computedEnableEmail">
-        <label class="font-medium">{{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_GLOBAL') }}</label>
+        <!--<label class="font-medium">{{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_GLOBAL') }}</label>  -->
         <div class="grid grid-cols-2 gap-6 p-3 bg-[#008A351A] rounded">
           <div class="form-group w-full" v-for="param in globalInformations"
                :key="param.param">
@@ -45,21 +45,34 @@
         <span for="published" class="ml-2">{{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CUSTOM') }}</span>
       </div>
 
-      <div class="mt-6" v-if="customConfiguration && enableEmail">
-        <label class="font-medium">{{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION') }}</label>
+      <div v-if="enableEmail && computedEnableEmail">
+        <div v-for="param in customInformations" :key="param.param" v-if="param.param === 'mailfrom-default' || param.param === 'fromname-default'">
+          <label :for="'param_' + param.param" class="flex items-center font-medium">
+            {{ translate(param.label) }}
+            <span v-if="param.helptext" class="material-icons-outlined ml-2" @click="displayHelp(param.helptext)">help_outline</span>
+          </label>
+          <Parameter :parameter="param" @needSaving="updateParameterToSaving"/>
+        </div>
+      </div>
+
+
+
+
+      <div class="mt-6" v-if="customConfiguration && enableEmail && computedEnableEmail">
+        <!--<label class="font-medium">{{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION') }}</label> -->
         <div class="grid grid-cols-2 gap-6 p-3 bg-[#008A351A] rounded">
           <div class="form-group w-full !ml-0 mr-0 mt-0"
                :class="['smtpsecure','smtpauth'].includes(param.param) ? 'col-span-full' : ''"
                v-for="param in customInformations"
-               v-if="checkSmtpAuth(param)"
+               v-if="checkSmtpAuth(param) && param.param !== 'mailfrom-default' && param.param !== 'fromname-default'"
                :key="param.param">
-            <label :for="'param_' + param.param" class="flex items-center font-medium">
+            <label :for="'param_' + param.param" class="flex items-center font-medium" v-if="(param.component !== 'joomla' || param.type !=='toggle')">
               {{ translate(param.label) }}
               <span v-if="param.helptext" class="material-icons-outlined ml-2" @click="displayHelp(param.helptext)">help_outline</span>
             </label>
-
             <Parameter :parameter="param" @needSaving="updateParameterToSaving"/>
           </div>
+          <Info :text="'COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_MAIL_SUBSECTION_SERVER_EMAIL_CONF_ADVICE'" class=" mt-4"></Info>
         </div>
       </div>
     </div>
@@ -78,13 +91,14 @@ import axios from "axios";
 
 import mixin from "@/mixins/mixin";
 import Swal from "sweetalert2";
-import Parameter from "@/components/Settings/Files/Parameter.vue";
+import Parameter from "@/components/Settings/Parameter.vue";
+import Info from "@/components/info.vue";
 
 const qs = require("qs");
 
 export default {
   name: "EditEmailJoomla",
-  components: {Parameter},
+  components: {Info, Parameter},
   props: {
     type: String,
     showValueMail: {
@@ -157,6 +171,14 @@ export default {
             });
             this.loading = false;
             this.enableEmail = this.config['joomla']['mailonline'];
+            this.AuthSMTP = this.config['joomla']['smtpauth'];
+            for ( index in this.customInformations)
+            {
+              if (this.customInformations[index].param === 'smtpauth')
+              {
+                this.customInformations[index].value = this.AuthSMTP;
+              }
+            }
           });
 
     },
@@ -198,7 +220,17 @@ export default {
         }
       }
       this.ParamJoomlaEmundusExtensions = result;
-     this.customConfiguration =  this.getEmundusparamsEmailValue('custom_email_conf'  , 'boolean');
+      let specificValue = '';
+      for (let index in this.ParamJoomlaEmundusExtensions)
+      {
+        specificValue = this.ParamJoomlaEmundusExtensions[index];
+        specificValue = Object.keys(specificValue)[0];
+        switch (specificValue) {
+          case 'custom_email_conf':
+            this.customConfiguration =  this.getEmundusparamsEmailValue(specificValue  , 'boolean');
+            break;
+        }
+      }
     },
     getEmundusparamsEmailValue(specificValue , type){
       let variableInput = null;
@@ -275,9 +307,19 @@ export default {
 
     updateParameterToSaving(needSaving, parameter) {
       if (needSaving) {
+        if (parameter.param === 'smtpauth') {
+          console.log("EditEmailJoomla.vue -");
+          console.log(parameter);
+          this.saveEmundusParam({
+            component: 'joomla',
+            param: parameter.param,
+            value: parameter.value ? 1 : 0,
+          });
+        }
         let checkExisting = this.parametersUpdated.find((param) => param.param === parameter.param);
         if (!checkExisting) {
           this.parametersUpdated.push(parameter);
+
         }
       } else {
         this.parametersUpdated = this.parametersUpdated.filter((param) => param.param !== parameter.param);

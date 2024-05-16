@@ -2,6 +2,21 @@
   {
     "displayed": true,
     "component": "joomla",
+    "label": "COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_SENDER",
+    "param": "mailfrom-default",
+    "type": "email"
+  },
+  {
+    "displayed": true,
+    "component": "joomla",
+    "label": "COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_SENDER_NAME",
+    "param": "fromname-default",
+    "type": "text",
+    "placeholder": "adam"
+  },
+  {
+    "displayed": true,
+    "component": "joomla",
     "label": "COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION_SMTP_HOST",
     "param": "smtphost",
     "type": "text",
@@ -41,18 +56,8 @@
     "component": "joomla",
     "label": "COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION_SMTP_ENABLE",
     "param": "smtpauth",
-    "type": "yesno",
-    "options": [
-      {
-        "value": 0,
-        "label": "JNO"
-      },
-      {
-        "value": 1,
-        "label": "JYES"
-      }
-    ],
-    "value": 0
+    "type": "toggle",
+    "value": false
   },
   {
     "displayed": true,

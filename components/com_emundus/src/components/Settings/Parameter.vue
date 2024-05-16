@@ -65,6 +65,19 @@
       </fieldset>
     </div>
 
+    <div v-else-if="parameter.type === 'toggle'">
+      <div class="em-toggle">
+        <input type="checkbox"
+               class="em-toggle-check"
+               :id="'published'"
+               v-model="value"
+        />
+        <strong class="b em-toggle-switch"></strong>
+        <strong class="b em-toggle-track"></strong>
+      </div>
+      <span for="published" class="ml-2">{{ translate(parameter.label) }}</span>
+      </div>
+
     <input v-else :type="parameter.type" class="form-control !mb-0"
            :placeholder="parameter.placeholder"
            :id="'param_' + parameter.param"
@@ -77,7 +90,7 @@
 
 <script>
 import Multiselect from "vue-multiselect";
-import settingsService from "../../../services/settings";
+import settingsService from "../../services/settings";
 
 export default {
   name: "Parameter",
@@ -127,7 +140,7 @@ export default {
         this.$props.parameter.value = val;
 
         if(oldVal !== null) {
-          if (this.initValue !== val) {
+          if (oldVal !== val) {
             this.$emit('needSaving', true, this.$props.parameter)
           } else {
             this.$emit('needSaving', false, this.$props.parameter)

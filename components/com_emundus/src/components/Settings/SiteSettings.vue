@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import Parameter from "@/components/Settings/Files/Parameter.vue";
+import Parameter from "@/components/Settings/Parameter.vue";
 import axios from "axios";
 import Swal from "sweetalert2";
 import Global from "@/components/Settings/Translation/Global.vue";
