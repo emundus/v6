@@ -24,11 +24,6 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use libphonenumber\PhoneNumberUtil;
 use libphonenumber\PhoneNumberFormat;
-use Joomla\CMS\Log\Log;
-use Joomla\CMS\Factory;
-use Joomla\CMS\Language\Text;
-
-
 
 /**
  * Content Component Query Helper
