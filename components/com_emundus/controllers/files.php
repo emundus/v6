@@ -934,7 +934,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $trigger_emails = $m_email->getEmailTrigger($state, $code, $to_applicant);
 
-        echo json_encode((object)(array('status' => !empty($trigger_emails), 'msg' => JText::_('COM_EMUNDUS_APPLICATION_MAIL_CHANGE_STATUT_INFO'))));
+        echo json_encode((object)(array('status' => !empty($trigger_emails), 'msg' => JText::sprintf('COM_EMUNDUS_APPLICATION_MAIL_CHANGE_STATUT_INFO', sizeof($validFnums)))));
         exit;
     }
 
@@ -2137,11 +2137,32 @@ class EmundusControllerFiles extends JControllerLegacy
                         $files_export = EmundusHelperExport::getAttachmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id']);
                     }
                 }
+                $check_eval = $eMConfig->get('check_eval', 0);
+                $skip_eval = false;
+                if ($check_eval == 1){
+                    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
+                    $m_eval = new EmundusModelEvaluation();
+                    $eval = $m_eval->getEvaluationsFnum($fnum);
+                    if(empty($eval)){
+                        $skip_eval = true;
+                    }
+                }
 
-                if ($assessment)
+                $check_decision = $eMConfig->get('check_decision', 0);
+                $skip_decision = false;
+                if ($check_decision == 1){
+                    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'decision.php');
+                    $m_decision = new EmundusModelDecision();
+                    $getDecision = $m_decision->getDecisionFnum($fnum);
+                    if(empty($getDecision)){
+                        $skip_decision = true;
+                    }
+                }
+
+                if ($assessment && !$skip_eval)
                     $files_list[] = EmundusHelperExport::getEvalPDF($fnum, $options);
 
-                if ($decision)
+                if ($decision && !$skip_decision)
                     $files_list[] = EmundusHelperExport::getDecisionPDF($fnum, $options);
 
                 if ($admission)
@@ -2997,15 +3018,33 @@ class EmundusControllerFiles extends JControllerLegacy
                     }
                 }
 
+                $check_eval = $eMConfig->get('check_eval', 0);
+                $skip_eval = false;
+                if ($check_eval == 1){
+                    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
+                    $m_eval = new EmundusModelEvaluation();
+                    $eval = $m_eval->getEvaluationsFnum($fnum);
+                    if(empty($eval)){
+                        $skip_eval = true;
+                    }
+                }
 
+                $check_decision = $eMConfig->get('check_decision', 0);
+                $skip_decision = false;
+                if ($check_decision == 1){
+                    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'decision.php');
+                    $m_decision = new EmundusModelDecision();
+                    $getDecision = $m_decision->getDecisionFnum($fnum);
+                    if(empty($getDecision)){
+                        $skip_decision = true;
+                    }
+                }
 
-	            if ($assessment) {
+                if ($assessment && !$skip_eval)
                     $files_list[] = EmundusHelperExport::getEvalPDF($fnum, $options);
-                }
 
-                if ($decision) {
+                if ($decision && !$skip_decision)
                     $files_list[] = EmundusHelperExport::getDecisionPDF($fnum, $options);
-                }
 
                 if ($admission) {
 	                $admission_file = EmundusHelperExport::getAdmissionPDF($fnum, $options);
@@ -4286,4 +4325,45 @@ class EmundusControllerFiles extends JControllerLegacy
 		echo json_encode($response);
 		exit;
 	}
+
+    public function countfilesbeforeaction()
+    {
+        $response = ['status' => false, 'code' => 403, 'msg' => JText::_('ACCESS_DENIED')];
+
+        if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+            $app    = JFactory::getApplication();
+            $jinput = $app->input;
+            $fnums  = $jinput->getString('fnums', null);
+            $action = $jinput->getInt('action_id', 0);
+            $verb = $jinput->getString('verb', '');
+
+            if (!empty($fnums)) {
+                $m_files = new EmundusModelFiles();
+
+                if ($fnums === 'all') {
+                    $fnums = $m_files->getAllFnums();
+                } else if (!is_array($fnums)) {
+                    $fnums = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
+                }
+
+                $validFnums = [];
+                foreach ($fnums as $fnum) {
+                    if (EmundusHelperAccess::asAccessAction($action, $verb, $this->_user->id, $fnum)) {
+                        $validFnums[] = $fnum;
+                    }
+                }
+
+                $response['status'] = true;
+                $response['code'] = 200;
+                $response['msg'] = JText::_('SUCCESS');
+                $response['data'] = sizeof($validFnums);
+            } else {
+                $response['msg'] = JText::_('MISSING_PARAMS');
+                $response['code'] = 400;
+            }
+        }
+
+        echo json_encode($response);
+        exit;
+    }
 }
