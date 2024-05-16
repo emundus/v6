@@ -476,7 +476,8 @@ class FileMaker
     }
 
     public function deleteAllLinkedData($uuidConnect, $fnum, $uuid, $status,$layout,$scriptName = "zWebFormulaire_Delete_AllLinkedData" ){
-        $url = "layouts/".$layout."/script/".$scriptName."?script.param=" . $uuidConnect;
+        //$url = "layouts/".$layout."/script/".$scriptName."?script.param=" . $uuidConnect;
+        $url = "layouts/".$layout."/script/".$scriptName."?script.param=" . $uuid;
         $res = $this->get($url);
         if (!empty($res->response)) {
             $response = $res->response;
@@ -512,7 +513,7 @@ class FileMaker
     public function uploadAllAssocAttachementsAssocToFile($fnum, $applicant_id, $recordId)
     {
         $result = false;
-        
+
         $query = $this->db->getQuery(true);
         $query->select('esa.filemaker, eu.filename, eu.local_filename')
             ->from($this->db->quoteName('#__emundus_uploads', 'eu'))
@@ -616,7 +617,7 @@ class FileMaker
     public function retrieveAssociatedElementsWithGroup($groups_id, $step)
     {
         $associated_elements = [];
-        
+
         $query = $this->db->getQuery(true);
         $query->select('jfe.*,zfe.file_maker_attribute_name')
             ->from($this->db->quoteName('jos_fabrik_elements', 'jfe'))
@@ -751,7 +752,7 @@ class FileMaker
 
     public function createPortalDataIfTupleRecordIdIsEmpty($data, $filemaker_form, $uuid_formulaire, $fnum, $uuid_connect, $status):array
     {
-        
+
         $query = $this->db->getQuery(true);
         $empty_indexes = array_keys(array_filter($data, function ($assocArray) {
             return empty($assocArray["recordId"]);
@@ -843,7 +844,7 @@ class FileMaker
     public function logActionIntoEmundusFileMakerlog($action_type, $fnum, $uuid, $uuidConnect, $status, $params = "", $action_status, $endpoint_url, $response_message)
     {
         $result = false;
-        
+
         $now = new DateTime();
         $now->setTimezone(new DateTimeZone('UTC'));
         $now = $now->format('Y-m-d H:i:s');
@@ -865,7 +866,7 @@ class FileMaker
     public function retrieveJointureInformationOfRepeatGroup($group_id)
     {
         $result = false;
-        
+
         $query = $this->db->getQuery(true);
 
         $query->select('join_from_table,table_join,table_join_key,table_key')
@@ -885,7 +886,7 @@ class FileMaker
     public function retrieveDatabaseJoinElementValue($dbtable, $column_where, $needed)
     {
         $result = 0;
-        
+
         $query = $this->db->getQuery(true);
         $query->select('*')
             ->from($this->db->quoteName($dbtable))
@@ -918,7 +919,7 @@ class FileMaker
 
         $countries_list_response = $this->post($url, json_encode($queryBody));
         if (!empty($countries_list_response->response)) {
-            
+
             $query = $this->db->getQuery(true);
             foreach (($countries_list_response->response)->data as $data) {
                 $query->clear();
@@ -944,7 +945,7 @@ class FileMaker
     public function updateCountryReferentials($id, $data)
     {
         $result = false;
-        
+
         $query = $this->db->getQuery(true);
         $query ->update($this->db->quoteName('data_country_institut_francais'))
             ->set($this->db->quoteName('label_fr') . ' = ' . $this->db->quote($data->Libcog))
@@ -965,7 +966,7 @@ class FileMaker
     public function addCountryToReferential($data)
     {
         $result = false;
-        
+
         $query = $this->db->getQuery(true);
         $query->clear();
         $query->insert($this->db->quoteName('data_country_institut_francais'))
@@ -1008,7 +1009,7 @@ class FileMaker
 	{
 		$user_id = 0;
 		$email = preg_replace('/\r/', '', $email);
-		
+
 		$query = $this->db->getQuery(true);
 
 		$query->select('*')
@@ -1141,7 +1142,7 @@ class FileMaker
 	{
 		$file = new stdClass();
 
-		
+
 		$query = $this->db->getQuery(true);
 
 		$query->select('*')
@@ -1187,7 +1188,7 @@ class FileMaker
 				$now = new DateTime();
 				$now->setTimezone(new DateTimeZone('UTC'));
 				$now = $now->format('Y-m-d H:i:s');
-				
+
 				$elements_names = ["time_date", "fnum", "user"];
 				$elements_assoc_filemaker_attribute = [];
 				$elements_values = [$this->db->quote($now), $fnum, $user_id];
@@ -1447,7 +1448,7 @@ class FileMaker
 	public function retrieveDataBaseJoinElementJointureInformations($element, $needed)
 	{
 		$result = 0;
-		
+
 		$query = $this->db->getQuery(true);
 		$query->select('table_join,params')
 			->from($this->db->quoteName('#__fabrik_joins'))
@@ -1648,7 +1649,7 @@ class FileMaker
 	private function getRowInTable($fnum, $db_table_name)
 	{
 		$file = new stdClass();
-		
+
 		$query = $this->db->getQuery(true);
 
 		if(!empty($fnum) && !empty($db_table_name))
