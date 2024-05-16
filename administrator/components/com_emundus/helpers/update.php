@@ -1645,6 +1645,7 @@ class EmundusHelperUpdate
                     'path' => $params['path'] ?: $alias,
                     'type' => $params['type'] ?: 'url',
                     'link' => $params['link'] ?: '#',
+					'note' => $params['note'] ?: '',
                     'access' => $params['access'] ?: 1,
                     'component_id' => $params['component_id'] ?: 0,
                     'template_style_id' => $params['template_style_id'] ?: 22,
@@ -2712,7 +2713,10 @@ class EmundusHelperUpdate
 				}
 				$db->setQuery($query);
 				$result['status'] = $db->execute();
-			}
+			} else {
+                $result['message'] = 'CREATE TABLE : Table already exists.';
+                $result['status'] = true;
+            }
 		} catch (Exception $e) {
 			$result['message'] = 'ADDING TABLE : Error : ' . $e->getMessage();
 		}
