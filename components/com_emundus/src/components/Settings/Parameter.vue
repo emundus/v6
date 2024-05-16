@@ -78,13 +78,24 @@
       <span for="published" class="ml-2">{{ translate(parameter.label) }}</span>
       </div>
 
-    <input v-else :type="parameter.type" class="form-control !mb-0"
+    <div v-else>
+    <input  :type="parameter.type" class="form-control !mb-0"
            :placeholder="parameter.placeholder"
            :id="'param_' + parameter.param"
            v-model="value"
            :maxlength="parameter.maxlength"
            :readonly="parameter.editable === false"
+            @keydown.enter="validate(parameter)"
+            @focusout="validate(parameter)"
     >
+      <div v-if="parameter.type==='email'" :id="'emailCheck-'+parameter.param"
+           :style="{ color: emailValidationColor[parameter.param] }">
+        {{
+          translate(validationString)
+        }}
+      </div>
+
+    </div>
   </div>
 </template>
 
@@ -108,10 +119,13 @@ export default {
 
       tagOptions: [],
       timezoneOptions: [],
+      emailValidationMessage: [],
+      emailValidationColor: [],
+      validationString :""
     }
   },
   created() {
-    if(this.$props.parameter.type === 'timezone') {
+    if(this.$props.parameter && this.$props.parameter.type === 'timezone') {
       settingsService.getTimezoneList().then((response) => {
         if(response.data.status) {
           this.timezoneOptions = response.data.data;
@@ -119,7 +133,7 @@ export default {
           this.initValue = this.value;
         }
       });
-    } else {
+    } else if (this.$props.parameter) {
       this.value = this.$props.parameter.value;
       this.initValue = this.value;
     }
@@ -133,6 +147,30 @@ export default {
       this.tagOptions.push(tag)
       this.parameter.value.push(tag)
     },
+    validateEmail(email) {
+      let res = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
+      return res.test(email);
+    },
+    validate(paramEmail) {
+      let paramEmailId = paramEmail.param;
+      let email = this.value;
+      this.emailValidationMessage[paramEmail.param] = "";
+
+      if (this.validateEmail(email)) {
+         this.$set(this.emailValidationMessage, paramEmail.param,   email );
+        this.validationString = "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_MAIL_CHECK_INPUT_MAIL_YES"
+         this.$set(this.emailValidationColor, paramEmail.param, "green");
+        //this.saveEmundusParam(paramEmail);
+
+      } else {
+         this.$set(this.emailValidationMessage, paramEmail.param,  email)
+        this.validationString = "COM_EMUNDUS_GLOBAL_PARMAS_SECTIONS_MAIL_CHECK_INPUT_MAIL_NO"
+         this.$set(this.emailValidationColor, paramEmail.param, "red");
+
+      }
+      return false;
+    },
+
   },
   watch: {
     value: {

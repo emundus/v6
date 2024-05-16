@@ -135,9 +135,7 @@ export default {
       CustomConfigServerMail: {},
       ParamJoomlaEmundusExtensions: {},
 
-      //TODO: Move to Parameter component
-      emailValidationMessage: [],
-      emailValidationColor: [],
+
 
       AuthSMTP: false,
       editableParamsServerMail: null,
@@ -308,8 +306,6 @@ export default {
     updateParameterToSaving(needSaving, parameter) {
       if (needSaving) {
         if (parameter.param === 'smtpauth') {
-          console.log("EditEmailJoomla.vue -");
-          console.log(parameter);
           this.saveEmundusParam({
             component: 'joomla',
             param: parameter.param,
@@ -328,24 +324,6 @@ export default {
 
     /*
     //TODO: Move to Parameter component
-    validateEmail(email) {
-      let res = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
-      return res.test(email);
-    },
-    validate(paramEmail) {
-      let paramEmailId = paramEmail.param;
-      let email = this.params[paramEmailId].value;
-      this.emailValidationMessage[paramEmail.param] = "";
-      if (this.validateEmail(email)) {
-        this.$set(this.emailValidationMessage, paramEmail.param, email + " is valid");
-        this.$set(this.emailValidationColor, paramEmail.param, "green");
-        this.saveEmundusParam(paramEmail);
-      } else {
-        this.$set(this.emailValidationMessage, paramEmail.param, email + " is not valid");
-        this.$set(this.emailValidationColor, paramEmail.param, "red");
-      }
-      return false;
-    },
 */
 
 
