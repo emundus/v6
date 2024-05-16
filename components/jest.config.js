@@ -5,7 +5,6 @@ module.exports = {
   testTimeout: 5000,
   testEnvironment: 'jsdom',
   moduleNameMapper: {
-    '^@/components/(.*)$': '<rootDir>/com_emundus/src/components/$1',
-    '^@/views/(.*)$': '<rootDir>/com_emundus/src/views/$1'
+    '^@/(.*)$': '<rootDir>/com_emundus/src/$1',
   }
 };

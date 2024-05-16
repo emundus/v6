@@ -4248,6 +4248,37 @@ if(in_array($applicant,$exceptions)){
 
                     EmundusHelperUpdate::insertTranslationsTag('SETUP_GROUPS_AVAILABLE_STATUS', 'Statuts');
                     EmundusHelperUpdate::insertTranslationsTag('SETUP_GROUPS_AVAILABLE_STATUS', 'Statuses', 'override', null, null, null, 'en-GB');
+
+	                $datas = [
+		                'menutype'     => 'actions-users',
+		                'title'        => 'Exporter',
+		                'alias'        => 'export',
+		                'link'         => '',
+		                'type'         => 'heading',
+		                'component_id' => 0,
+	                ];
+	                $export_menu = EmundusHelperUpdate::addJoomlaMenu($datas);
+
+                    if($export_menu['status'])
+	                {
+		                EmundusHelperUpdate::insertFalangTranslation(1, $export_menu['id'], 'menu', 'title', 'Export');
+
+		                $datas = [
+			                'menutype'     => 'actions-users',
+			                'title'        => 'Exporter vers Excel',
+			                'alias'        => 'export-excel',
+			                'type'         => 'url',
+			                'link'         => 'index.php?option=com_emundus&view=users&format=raw&layout=export&Itemid={Itemid}',
+			                'component_id' => 0,
+			                'note'         => '12|r|1|6'
+		                ];
+		                $export_action = EmundusHelperUpdate::addJoomlaMenu($datas,$export_menu['id']);
+
+						if($export_action['status'])
+						{
+							EmundusHelperUpdate::insertFalangTranslation(1, $export_action['id'], 'menu', 'title', 'Export to Excel');
+						}
+                    }
                 }
 
 				EmundusHelperUpdate::insertTranslationsTag('COM_USERS_LOGIN_SHOW_PASSWORD','Afficher le mot de passe');
@@ -4257,6 +4288,13 @@ if(in_array($applicant,$exceptions)){
 				EmundusHelperUpdate::insertTranslationsTag('COM_USERS_LOGIN_EMAIL_PLACEHOLDER','example@domain.com', 'override', null, null, null, 'en-GB');
 
 				EmundusHelperUpdate::addColumn('jos_emundus_widgets_repeat_access', 'access_level', 'INT', 11);
+
+
+                if (!class_exists('EmundusModelAdministratorCampaign')) {
+                    require_once(JPATH_ROOT . '/administrator/components/com_emundus/models/campaign.php');
+                }
+                $m_admin_campaign = new EmundusModelAdministratorCampaign();
+                $succeed['install_campaign_more'] = $m_admin_campaign->installCampaignMore();
 			}
 		}
 
