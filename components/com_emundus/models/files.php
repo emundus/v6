@@ -5098,7 +5098,7 @@ class EmundusModelFiles extends JModelLegacy
 
     public function makeAttachmentsEditableByApplicant($fnum, $profile)
     {
-        $res = true;
+        $res = false;
 
         $attachment_to_keep_non_deletable = ComponentHelper::getParams('com_emundus')->get('attachment_to_keep_non_deletable', '');
 
@@ -5129,11 +5129,10 @@ class EmundusModelFiles extends JModelLegacy
                     $res = $db->execute();
                 } catch (Exception $e) {
                     JLog::add('Error making attachments editable by applicant for fnum: '.$fnum.' and profile: '.$profile.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-                    $res = false;
                 }
+            } else {
+                $res = true;
             }
-        } else {
-            $res = false;
         }
 
         return $res;
