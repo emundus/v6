@@ -66,10 +66,6 @@ echo <<<EOT
     margin-top: var(--m-16) !important;
     color: var(--neutral-900) !important;
 }
- 
-.catalogue-description .fabrikElementReadOnly * {
-    color: var(--neutral-900) !important;
-}
 
 .catalogue-description .fabrikElementReadOnly ul, 
 .catalogue-description .fabrikElementReadOnly ol {
