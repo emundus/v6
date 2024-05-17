@@ -1622,25 +1622,9 @@ class EmundusModelFiles extends JModelLegacy
                         $db->setQuery($query);
                         $db->execute();
                     }
-
-                    $can_edit_back_documents = ComponentHelper::getParams('com_emundus')->get('can_edit_back_documents', 0);
-                    if ($can_edit_back_documents) {
-                        $m_profile = new EmundusModelProfile;
-                        $current_profile = $m_profile->getProfileByStatus($fnum);
-
-                        if (!empty($current_profile)) {
-                            if ($current_profile['phase'] == 1) {
-                                $this->makeAttachmentsEditableByApplicant($fnum, $current_profile['profile']);
-                            } else {
-                                $status_for_send = explode(',',ComponentHelper::getParams('com_emundus')->get('status_for_send', '0'));
-                                $edit_status = array_unique(array_merge(['0'], $status_for_send));
-                                if (in_array($state, $edit_status)) {
-                                    $this->makeAttachmentsEditableByApplicant($fnum, $current_profile['profile']);
-                                }
-                            }
-                        }
-                    }
                 }
+
+                $this->makeAttachmentsEditableByApplicant($fnums, $state);
             } catch (Exception $e) {
                 echo $e->getMessage();
                 JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
@@ -5096,45 +5080,72 @@ class EmundusModelFiles extends JModelLegacy
         return $nom;
     }
 
-    public function makeAttachmentsEditableByApplicant($fnum, $profile)
+    /**
+     * @param $fnums
+     * @param $state
+     * @return bool|mixed
+     */
+    public function makeAttachmentsEditableByApplicant($fnums, $state)
     {
-        $res = false;
+        $updated = false;
 
-        $attachment_to_keep_non_deletable = ComponentHelper::getParams('com_emundus')->get('attachment_to_keep_non_deletable', '');
+        if (!empty($fnums) && isset($state)) {
+            $emundus_config = ComponentHelper::getParams('com_emundus');
+            $can_edit_back_documents = $emundus_config->get('can_edit_back_documents', 0);
+            if ($can_edit_back_documents) {
+                $attachment_to_keep_non_deletable = explode(',', $emundus_config->get('attachment_to_keep_non_deletable', '0'));
+                $status_for_send = explode(',', $emundus_config->get('status_for_send', '0'));
+                $edit_status = array_unique(array_merge(['0'], $status_for_send));
+                $m_profile = new EmundusModelProfile();
 
-        if (isset($fnum) && isset($profile)) {
-            $fnumInfos = $this->getFnumInfos($fnum);
+                $tasks = [];
+                foreach ($fnums as $fnum) {
+                    $current_profile = $m_profile->getProfileByStatus($fnum);
 
-            $db = $this->getDbo();
-            $query = $db->getQuery(true);
+                    if (empty($current_profile['workflow_id'])) {
+                        if (!in_array($state, $edit_status)) {
+                            continue;
+                        }
+                    }
 
-            $query->select('attachment_id')
-                ->from('#__emundus_setup_attachment_profiles')
-                ->where('profile_id = ' . $db->quote($profile));
-            if (!empty($attachment_to_keep_non_deletable)) {
-                $query->andWhere('attachment_id NOT IN (' . implode(',', $db->quote($attachment_to_keep_non_deletable)) . ')');
-            }
-            $db->setQuery($query);
-            $attachments = $db->loadColumn();
+                    $fnumInfos = $this->getFnumInfos($fnum);
 
-            if (!empty($attachments)) {
-                try {
-                    $query->clear()
-                        ->update('#__emundus_uploads')
-                        ->set('can_be_deleted = 1')
-                        ->where('fnum LIKE ' . $db->quote($fnum))
-                        ->andWhere('attachment_id IN (' . implode(',', $attachments) . ')')
-                        ->andWhere('user_id = '.$fnumInfos['applicant_id']);
+                    $db = $this->getDbo();
+                    $query = $db->getQuery(true);
+
+                    $query->select('attachment_id')
+                        ->from('#__emundus_setup_attachment_profiles')
+                        ->where('profile_id = ' . $db->quote($current_profile['profile']));
+
+                    if (!empty($attachment_to_keep_non_deletable)) {
+                        $query->andWhere('attachment_id NOT IN (' . implode(',', $db->quote($attachment_to_keep_non_deletable)) . ')');
+                    }
+
                     $db->setQuery($query);
-                    $res = $db->execute();
-                } catch (Exception $e) {
-                    JLog::add('Error making attachments editable by applicant for fnum: '.$fnum.' and profile: '.$profile.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                    $attachments = $db->loadColumn();
+
+                    if (!empty($attachments)) {
+                        try {
+                            $query->clear()
+                                ->update('#__emundus_uploads')
+                                ->set('can_be_deleted = 1')
+                                ->where('fnum LIKE ' . $db->quote($fnum))
+                                ->andWhere('attachment_id IN (' . implode(',', $attachments) . ')')
+                                ->andWhere('user_id = ' . $fnumInfos['applicant_id']);
+                            $db->setQuery($query);
+                            $tasks[] = $db->execute();
+                        } catch (Exception $e) {
+                            JLog::add('Error making attachments editable by applicant for fnum: ' . $fnum . ' and profile: ' . $current_profile['profile'] . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+                        }
+                    } else {
+                        $tasks[] = true;
+                    }
                 }
-            } else {
-                $res = true;
+
+                $updated = !in_array(false, $tasks, true);
             }
         }
 
-        return $res;
+        return $updated;
     }
 }
