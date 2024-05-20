@@ -606,7 +606,7 @@ class EmundusModelRanking extends JModelList
         return $status;
     }
 
-    private function getHierarchyData($hierarchy_id) {
+    public function getHierarchyData($hierarchy_id) {
         $hierarchy = [];
 
         if (!empty($hierarchy_id)) {
