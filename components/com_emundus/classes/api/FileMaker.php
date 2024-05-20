@@ -355,7 +355,7 @@ class FileMaker
     }
 
 
-    private function loginApi(): Boolean
+    private function loginApi(): boolean
     {
         $this->setHeaders(true);
         $login_response = $this->post("sessions");
