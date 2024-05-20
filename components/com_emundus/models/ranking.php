@@ -16,6 +16,8 @@ require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
 class EmundusModelRanking extends JModelList
 {
 
+    private $can_user_rank_himself = false;
+
     public $filters = [];
     private $h_files = null;
 
@@ -711,10 +713,13 @@ class EmundusModelRanking extends JModelList
                 ->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
                 ->leftJoin($this->db->quoteName('#__emundus_users_assoc', 'eua') . ' ON ' . $this->db->quoteName('cc.fnum') . ' = ' . $this->db->quoteName('eua.fnum'))
                 ->where($this->db->quoteName('eua.user_id') . ' = ' . $this->db->quote($user_id))
-                ->andWhere($this->db->quoteName('cc.applicant_id') . ' != ' . $this->db->quote($user_id))
                 ->andWhere($this->db->quoteName('eua.action_id') . ' = 1')
                 ->andWhere($this->db->quoteName('eua.r') . ' = 1')
                 ->andWhere($this->db->quoteName('cc.published') . ' = 1');
+
+            if (!$this->can_user_rank_himself) {
+                $query->andWhere($this->db->quoteName('cc.applicant_id') . ' != ' . $this->db->quote($user_id));
+            }
 
 
             if (!empty($package)) {
@@ -750,10 +755,13 @@ class EmundusModelRanking extends JModelList
                     ->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
                     ->leftJoin($this->db->quoteName('#__emundus_group_assoc', 'ega') . ' ON ' . $this->db->quoteName('cc.fnum') . ' = ' . $this->db->quoteName('ega.fnum'))
                     ->where($this->db->quoteName('ega.group_id') . ' IN (' . implode(',', $groups) . ')')
-                    ->andWhere($this->db->quoteName('cc.applicant_id') . ' != ' . $this->db->quote($user_id))
                     ->andWhere($this->db->quoteName('ega.action_id') . ' = 1')
                     ->andWhere($this->db->quoteName('ega.r') . ' = 1')
                     ->andWhere($this->db->quoteName('cc.published') . ' = 1');
+
+                if (!$this->can_user_rank_himself) {
+                    $query->andWhere($this->db->quoteName('cc.applicant_id') . ' != ' . $this->db->quote($user_id));
+                }
 
                 if (!empty($package)) {
                     $data = $this->getHierarchyData($hierarchy);
@@ -782,8 +790,11 @@ class EmundusModelRanking extends JModelList
                     ->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
                     ->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->db->quoteName('cc.campaign_id') . ' = ' . $this->db->quoteName('esc.id'))
                     ->where($this->db->quoteName('esc.training') . ' IN (' . implode(',', $this->db->quote($programs)) . ')')
-                    ->andWhere($this->db->quoteName('cc.applicant_id') . ' != ' . $this->db->quote($user_id))
                     ->andWhere($this->db->quoteName('cc.published') . ' = 1');
+
+                if (!$this->can_user_rank_himself) {
+                    $query->andWhere($this->db->quoteName('cc.applicant_id') . ' != ' . $this->db->quote($user_id));
+                }
 
                 if (!empty($package)) {
                     $data = $this->getHierarchyData($hierarchy);
@@ -1020,7 +1031,7 @@ class EmundusModelRanking extends JModelList
             $this->db->setQuery($query);
             $applicant_id = $this->db->loadResult();
 
-            if ($applicant_id == $user_id) {
+            if ($applicant_id == $user_id && !$this->can_user_rank_himself) {
                 throw new Exception(Text::_('COM_EMUNDUS_RANKING_UPDATE_RANKING_ERROR_RANK_OWN_FILE'));
             }
 
