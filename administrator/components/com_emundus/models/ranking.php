@@ -78,6 +78,20 @@ class EmundusAdministrationModelRanking extends JModelList
                 'null' => 0,
                 'default' => $db->quote('jos_emundus_setup_campaigns.id'),
             ],
+            [
+                'name' => 'package_start_date_field',
+                'type' => 'varchar',
+                'length' => 255,
+                'null' => 0,
+                'default' => $db->quote(''),
+            ],
+            [
+                'name' => 'package_end_date_field',
+                'type' => 'varchar',
+                'length' => 255,
+                'null' => 0,
+                'default' => $db->quote(''),
+            ]
         ];
         $foreign_keys = [
             [
@@ -371,6 +385,11 @@ class EmundusAdministrationModelRanking extends JModelList
                 $app->enqueueMessage('Email ranking_locked not created', 'error');
             }
         }
+
+        EmundusHelperUpdate::addCustomEvents([
+            ['label' => 'onAfterUpdateFileRanking', 'category' => 'Classement'],
+            ['label' => 'onGetFilesUserCanRank', 'category' => 'Classement']
+        ]);
 
         if (!in_array(false, $tasks)) {
             $installed = true;

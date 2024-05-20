@@ -21,6 +21,12 @@
     </nav>
     <div v-if="selectedPackage !== null">
       <h3>{{ selectedPackageItem.label }}</h3>
+
+      <div class="package-dates mt-2">
+        <p v-if="selectedPackageItem.start_date" :id="'package-start-date-' +  selectedPackageItem.id"> {{ translate('COM_EMUNDUS_RANKING_PACKAGE_START_DATE') }} <strong>{{ selectedPackageItem.start_date }}</strong></p>
+        <p v-if="selectedPackageItem.end_date" :id="'package-end-date-' +  selectedPackageItem.id"> {{ translate('COM_EMUNDUS_RANKING_PACKAGE_END_DATE') }} <strong>{{ selectedPackageItem.end_date }}</strong></p>
+      </div>
+
       <ranking
           :key="'classement-' + selectedPackage"
           :user="user"
