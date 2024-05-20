@@ -303,12 +303,13 @@ class EmundusModelRanking extends JModelList
         foreach($packages as $key => $package) {
             if (!empty($package['start_date'])) {
                 $packages[$key]['start_time'] = strtotime($package['start_date']);
-                $packages[$key]['start_date'] = date('d/m/Y H\hi', $packages[$key]['start_time']);
+                $packages[$key]['start_date'] = EmundusHelperDate::displayDate($package['start_date'], 'd/m/Y H\hi', 0);
             }
 
             if (!empty($package['end_date'])) {
                 $packages[$key]['end_time'] = strtotime($package['end_date']);
-                $packages[$key]['end_date'] = date('d/m/Y H\hi', $packages[$key]['end_time']);
+                $packages[$key]['end_date'] = EmundusHelperDate::displayDate($package['end_date'], 'd/m/Y H\hi', 0);
+
             }
         }
 
@@ -452,17 +453,17 @@ class EmundusModelRanking extends JModelList
                         ->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
                         ->leftJoin($this->db->quoteName('#__emundus_ranking', 'er') . ' ON ' . $this->db->quoteName('cc.id') . ' = ' . $this->db->quoteName('er.ccid'))
                         ->where($this->db->quoteName('cc.id') . ' IN (' . implode(',', $ids) . ')')
-                        ->andWhere($this->db->quoteName('er.hierarchy_id') . ' = ' . $this->db->quote($hierarchy_order_by) . ' OR ' . $this->db->quoteName('cc.id') . ' NOT IN (
+                        ->andWhere('(' . $this->db->quoteName('er.hierarchy_id') . ' = ' . $this->db->quote($hierarchy_order_by) . ' 
+                          '. ( !empty($package_id) ?  ' AND ' . $this->db->quoteName('er.package') . ' = ' . $this->db->quote($package_id)  : ' ')
+                          .') OR ' . $this->db->quoteName('cc.id') . ' NOT IN (
                             SELECT cc.id
                             FROM `jos_emundus_campaign_candidature` AS `cc`
                             LEFT JOIN `jos_emundus_ranking` AS `er` ON `cc`.`id` = `er`.`ccid`
                             WHERE `cc`.`id` IN (' . implode(',', $ids) . ')
-                            AND `er`.`hierarchy_id` = ' . $this->db->quote($hierarchy_order_by) . ')'
+                            AND `er`.`hierarchy_id` = ' . $this->db->quote($hierarchy_order_by)
+                            . ( !empty($package_id) ?  ' AND `er`.`package` = ' . $this->db->quote($package_id)  : ' ' )
+                            . ')'
                         );
-
-                    if (!empty($package_id)) {
-                        $sub_query->andWhere($this->db->quoteName('er.package') . ' = ' . $this->db->quote($package_id));
-                    }
 
                     if ($limit !== -1) {
                         $sub_query->setLimit($limit, $offset);
@@ -605,7 +606,7 @@ class EmundusModelRanking extends JModelList
         return $status;
     }
 
-    private function getHierarchyData($hierarchy_id) {
+    public function getHierarchyData($hierarchy_id) {
         $hierarchy = [];
 
         if (!empty($hierarchy_id)) {

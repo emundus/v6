@@ -40,6 +40,7 @@ class EmundusViewRanking extends JViewLegacy
         $this->db = Factory::getDBO();
         $this->model = new EmundusModelRanking();
         $this->hierarchy_id = $this->model->getUserHierarchy($this->user->id);
+        $this->hierarchy = $this->model->getHierarchyData($this->hierarchy_id);
 
         $menu = Factory::getApplication()->getMenu();
         $active = $menu->getActive();
