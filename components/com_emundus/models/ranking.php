@@ -303,12 +303,13 @@ class EmundusModelRanking extends JModelList
         foreach($packages as $key => $package) {
             if (!empty($package['start_date'])) {
                 $packages[$key]['start_time'] = strtotime($package['start_date']);
-                $packages[$key]['start_date'] = date('d/m/Y H\hi', $packages[$key]['start_time']);
+                $packages[$key]['start_date'] = EmundusHelperDate::displayDate($package['start_date'], 'd/m/Y H\hi', 0);
             }
 
             if (!empty($package['end_date'])) {
                 $packages[$key]['end_time'] = strtotime($package['end_date']);
-                $packages[$key]['end_date'] = date('d/m/Y H\hi', $packages[$key]['end_time']);
+                $packages[$key]['end_date'] = EmundusHelperDate::displayDate($package['end_date'], 'd/m/Y H\hi', 0);
+
             }
         }
 
