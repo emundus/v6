@@ -46,7 +46,7 @@ class EmundusModelRanking extends JModelList
 
     private function dispatchEvent($event, $args) {
         JPluginHelper::importPlugin('emundus');
-        $dispatcher = Factory::getApplication()->getDispatcher();
+        $dispatcher = JDispatcher::getInstance();
         $dispatcher->trigger($event, $args);
         $dispatcher->trigger('callEventHandler', [$event, $args]);
     }
@@ -212,7 +212,7 @@ class EmundusModelRanking extends JModelList
     /**
      * get hierarchy packages for a user
      */
-    public function getUserPackages($user_id) {
+    public function getUserPackages($user_id, $package_id = null) {
         $packages = [];
 
         if (!empty($user_id)) {
@@ -223,11 +223,15 @@ class EmundusModelRanking extends JModelList
                 $ccids = $this->getAllFilesRankerCanAccessTo($user_id, $hierarchy['id']);
 
                 $query = $this->db->getQuery(true);
-                $query->select('DISTINCT esc.id, esc.label')
+                $query->select('DISTINCT esc.id, esc.label, esc.start_date, esc.end_date')
                     ->from($this->db->quoteName('#__emundus_setup_campaigns', 'esc'))
                     ->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'cc') . ' ON ' . $this->db->quoteName('esc.id') . ' = ' . $this->db->quoteName('cc.campaign_id'))
                     ->where($this->db->quoteName('cc.id') . ' IN (' . implode(',', $ccids) . ')')
                     ->andWhere($this->db->quoteName('esc.published') . ' = 1');
+
+                if (!empty($package_id)) {
+                    $query->andWhere($this->db->quoteName('esc.id') . ' = ' . $this->db->quote($package_id));
+                }
 
                 try {
                     $this->db->setQuery($query);
@@ -236,11 +240,73 @@ class EmundusModelRanking extends JModelList
                     JLog::add('getHierarchyPackages ' . $e->getMessage(), JLog::ERROR, 'com_emundus.ranking.php');
                     $packages = [];
                 }
+
+                if (!empty($hierarchy['package_start_date_field'])) {
+                    list($table, $column) = explode('.', $hierarchy['package_start_date_field']);
+                    $package_column = $table === 'jos_emundus_setup_campaigns' ? 'id' : 'campaign_id';
+
+                    foreach($packages as $key => $package) {
+                        $query->clear()
+                            ->select($this->db->quoteName($column))
+                            ->from($this->db->quoteName($table))
+                            ->where($this->db->quoteName($package_column) . ' = ' . $this->db->quote($package['id']));
+
+                        try {
+                            $this->db->setQuery($query);
+                            $package_start_date = $this->db->loadResult();
+
+                            if (!empty($package_start_date)) {
+                                $packages[$key]['start_date'] = $package_start_date;
+                            }
+                        } catch (Exception $e) {
+                            JLog::add('getHierarchyPackages ' . $e->getMessage(), JLog::ERROR, 'com_emundus.ranking.php');
+                            $packages[$key]['start_date'] = null;
+                        }
+                    }
+                }
+
+                if (!empty($hierarchy['package_end_date_field'])) {
+                    list($table, $column) = explode('.', $hierarchy['package_end_date_field']);
+                    $package_column = $table === 'jos_emundus_setup_campaigns' ? 'id' : 'campaign_id';
+
+                    foreach($packages as $key => $package) {
+                        $query->clear()
+                            ->select($this->db->quoteName($column))
+                            ->from($this->db->quoteName($table))
+                            ->where($this->db->quoteName($package_column) . ' = ' . $this->db->quote($package['id']));
+
+                        try {
+                            $this->db->setQuery($query);
+                            $package_end_date = $this->db->loadResult();
+
+                            if (!empty($package_end_date)) {
+                                $packages[$key]['end_date'] = $package_end_date;
+                            }
+                        } catch (Exception $e) {
+                            JLog::add('getHierarchyPackages ' . $e->getMessage(), JLog::ERROR, 'com_emundus.ranking.php');
+                            $packages[$key]['end_date'] = null;
+                        }
+                    }
+                }
             } else {
                 $packages[] = [
                     'id' => 0,
-                    'label' => 'All'
+                    'label' => 'All',
+                    'start_date' => null,
+                    'end_date' => null
                 ];
+            }
+        }
+
+        foreach($packages as $key => $package) {
+            if (!empty($package['start_date'])) {
+                $packages[$key]['start_time'] = strtotime($package['start_date']);
+                $packages[$key]['start_date'] = date('d/m/Y H\hi', $packages[$key]['start_time']);
+            }
+
+            if (!empty($package['end_date'])) {
+                $packages[$key]['end_time'] = strtotime($package['end_date']);
+                $packages[$key]['end_date'] = date('d/m/Y H\hi', $packages[$key]['end_time']);
             }
         }
 
@@ -283,15 +349,24 @@ class EmundusModelRanking extends JModelList
             $files_by_package[] = [
                 'package' => [
                     'id' => 0,
-                    'label' => 'All'
+                    'label' => JText::_('COM_EMUNDUS_RANKING_ALL'),
+                    'start_date' => null,
+                    'end_date' => null
                 ],
                 'files' => $this->getFilesUserCanRank($user_id, $page, $limit, $sort, $hierarchy_order_by)
             ];
         } else {
             foreach ($packages as $package) {
+                $files_package = $this->getFilesUserCanRank($user_id, $page, $limit, $sort, $hierarchy_order_by, $package['id']);
+                if ((!empty($package['start_time']) && $package['start_time'] > time()) || (!empty($package['end_time']) && $package['end_date'] < time())) {
+                    foreach ($files_package['data'] as $key => $file) {
+                        $files_package['data'][$key]['locked'] = 1;
+                    }
+                }
+
                 $files_by_package[] = [
                     'package' => $package,
-                    'files' => $this->getFilesUserCanRank($user_id, $page, $limit, $sort, $hierarchy_order_by, $package['id'])
+                    'files' => $files_package
                 ];
             }
         }
@@ -305,7 +380,7 @@ class EmundusModelRanking extends JModelList
      * @param $limit
      * @return array|mixed
      */
-    public function getFilesUserCanRank($user_id, $page = 1, $limit = 10, $sort = 'ASC', $hierarchy_order_by = 'default', $package = null)
+    public function getFilesUserCanRank($user_id, $page = 1, $limit = 10, $sort = 'ASC', $hierarchy_order_by = 'default', $package_id = null)
     {
         $files = [
             'total' => 0,
@@ -327,7 +402,7 @@ class EmundusModelRanking extends JModelList
         $status = $this->getStatusUserCanRank($user_id, $hierarchy);
 
         if ($status !== null) {
-            $ids = $this->getAllFilesRankerCanAccessTo($user_id, $hierarchy, $package);
+            $ids = $this->getAllFilesRankerCanAccessTo($user_id, $hierarchy, $package_id);
             if (!empty($ids)) {
                 $MAX_RANK_VALUE = 999999;
 
@@ -340,8 +415,8 @@ class EmundusModelRanking extends JModelList
                     ->where($this->db->quoteName('ccid') . ' IN (' . implode(',', $ids) . ')')
                     ->andWhere($this->db->quoteName('hierarchy_id') . ' = ' . $this->db->quote($hierarchy));
 
-                if (!empty($package)) {
-                    $query->andWhere($this->db->quoteName('package') . ' = ' . $this->db->quote($package));
+                if (!empty($package_id)) {
+                    $query->andWhere($this->db->quoteName('package') . ' = ' . $this->db->quote($package_id));
                 }
 
                 try {
@@ -363,11 +438,12 @@ class EmundusModelRanking extends JModelList
                 // if the user has a hierarchy order by, we need to get the rank of the files in that hierarchy
                 if (!empty($hierarchy_order_by) && $hierarchy_order_by !== 'default' && $hierarchy_order_by != $hierarchy) {
                     $leftJoin = $this->db->quoteName('#__emundus_ranking', 'er') . ' ON ' . $this->db->quoteName('cc.id') . ' = ' . $this->db->quoteName('er.ccid') . ' AND er.hierarchy_id  = ' . $hierarchy;
+
                     if (!empty($package_id)) {
                         $leftJoin .= ' AND ' . $this->db->quoteName('er.package') . ' = ' . $this->db->quote($package_id);
                     }
-                    $query->leftJoin($leftJoin);
 
+                    $query->leftJoin($leftJoin);
                     $sub_query = $this->db->getQuery(true);
                     $sub_query->clear()
                         ->select('DISTINCT cc.id as ccid, IF(er.hierarchy_id = ' . $this->db->quote($hierarchy_order_by) . ', er.rank, -1) as `rank`')
@@ -411,12 +487,14 @@ class EmundusModelRanking extends JModelList
                         $query->order('IFNULL(er.rank, -1) ' . $sort);
                     }
                 } else {
-                    $query->leftJoin($this->db->quoteName('#__emundus_ranking', 'er') . ' ON ' . $this->db->quoteName('cc.id') . ' = ' . $this->db->quoteName('er.ccid')  . ' AND `er`.`hierarchy_id` = ' . $this->db->quote($hierarchy));
-                    $query->where($this->db->quoteName('cc.id') . ' IN (' . implode(',', $ids) . ')');
+                    $leftJoin = $this->db->quoteName('#__emundus_ranking', 'er') . ' ON ' . $this->db->quoteName('cc.id') . ' = ' . $this->db->quoteName('er.ccid') . ' AND `er`.`hierarchy_id` = ' . $this->db->quote($hierarchy);
 
                     if (!empty($package_id)) {
-                        $query->andWhere($this->db->quoteName('cc.package') . ' = ' . $this->db->quote($package_id));
+                        $leftJoin .= ' AND ' . $this->db->quoteName('er.package') . ' = ' . $this->db->quote($package_id);
                     }
+
+                    $query->leftJoin($leftJoin);
+                    $query->where($this->db->quoteName('cc.id') . ' IN (' . implode(',', $ids) . ')');
 
                     if ($limit !== -1) {
                         $query->setLimit($limit, $offset);
@@ -481,10 +559,23 @@ class EmundusModelRanking extends JModelList
                         }
                     });
                 }
+
+                if (!empty($package_id)) {
+                    $packages_data = $this->getUserPackages($user_id, $package_id);
+
+                    if (!empty($packages_data)) {
+                        // check package dates and lock files if necessary
+                        if ((!empty($packages_data[0]['start_time']) && $packages_data[0]['start_time'] > time()) || (!empty($packages_data[0]['end_time']) && $packages_data[0]['end_time'] < time())) {
+                            foreach ($files['data'] as $key => $file) {
+                                $files['data'][$key]['locked'] = 1;
+                            }
+                        }
+                    }
+                }
             }
         }
 
-        $this->dispatchEvent('onGetFilesUserCanRank', ['files' => &$files, 'user_id' => $user_id, 'page' => $page, 'limit' => $limit, 'sort' => $sort, 'hierarchy_order_by' => $hierarchy_order_by, 'package' => $package]);
+        $this->dispatchEvent('onGetFilesUserCanRank', ['files' => &$files, 'user_id' => $user_id, 'page' => $page, 'limit' => $limit, 'sort' => $sort, 'hierarchy_order_by' => $hierarchy_order_by, 'package_id' => $package_id]);
 
         return $files;
     }

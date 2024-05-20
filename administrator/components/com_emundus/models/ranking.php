@@ -78,6 +78,20 @@ class EmundusAdministrationModelRanking extends JModelList
                 'null' => 0,
                 'default' => $db->quote('jos_emundus_setup_campaigns.id'),
             ],
+            [
+                'name' => 'package_start_date_field',
+                'type' => 'varchar',
+                'length' => 255,
+                'null' => 0,
+                'default' => $db->quote(''),
+            ],
+            [
+                'name' => 'package_end_date_field',
+                'type' => 'varchar',
+                'length' => 255,
+                'null' => 0,
+                'default' => $db->quote(''),
+            ]
         ];
         $foreign_keys = [
             [
