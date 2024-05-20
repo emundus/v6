@@ -21,7 +21,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
         getFocusEvent: function () {
             return 'click';
         },
-        
+
         getValue: function () {
             var v = [];
             if (!this.options.editable) {
@@ -32,7 +32,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
             this._getSubElements().each(function (f) {
                 v.push(jQuery(f).val());
             });
-            return v;
+            return v.join(this.options.separator);
         },
 
         update: function (val) {

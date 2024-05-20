@@ -149,7 +149,7 @@ define(['jquery', 'fab/element'],
 
         getValue: function ()
         {
-            return this.mask.unmaskedValue;
+            return this.mask.unmaskedValue + ' ' + this.HTMLSelectElement.textContent + ' (' + this.HTMLSelectElement.value + ')';
         },
 
         setValue: function (val)

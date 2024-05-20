@@ -1129,3 +1129,20 @@ var FbFileUpload = {
         return uploaded;
     }
 };
+
+define(['jquery', 'fab/element'], function (jQuery, FbElement) {
+
+    window.FbEmundus_FileUpload = new Class({
+        Extends: FbElement,
+
+        initialize: function (element, options) {
+            this.setPlugin('emundus_fileupload');
+            this.parent(element, options);
+        },
+
+        cloned: function (c) {
+            this.parent(c);
+        }
+    });
+    return window.FbEmundus_FileUpload;
+});

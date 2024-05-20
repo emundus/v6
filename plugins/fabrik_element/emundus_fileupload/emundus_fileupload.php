@@ -679,7 +679,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         JText::script('PLG_ELEMENT_FIELD_UPLOAD');
         JText::script('PLG_ELEMENT_FILEUPLOAD_UPLOADED_FILES');
 
-        return array('FbField', $id, $opts);
+        return array('FbEmundus_FileUpload', $id, $opts);
     }
 
     /**
