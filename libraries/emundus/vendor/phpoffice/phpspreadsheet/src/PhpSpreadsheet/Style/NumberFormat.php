@@ -79,14 +79,10 @@ class NumberFormat extends Supervisor
         self::FORMAT_DATE_TIME8,
     ];
 
-    /** @deprecated 1.28 use FORMAT_CURRENCY_USD_INTEGER instead */
-    const FORMAT_CURRENCY_USD_SIMPLE = '"$"#,##0_-';
-    const FORMAT_CURRENCY_USD_INTEGER = '$#,##0_-';
-    const FORMAT_CURRENCY_USD = '$#,##0.00_-';
-    /** @deprecated 1.28 use FORMAT_CURRENCY_EUR_INTEGER instead */
-    const FORMAT_CURRENCY_EUR_SIMPLE = '#,##0_-"€"';
-    const FORMAT_CURRENCY_EUR_INTEGER = '#,##0_-[$€]';
-    const FORMAT_CURRENCY_EUR = '#,##0.00_-[$€]';
+    const FORMAT_CURRENCY_USD_SIMPLE = '"$"#,##0.00_-';
+    const FORMAT_CURRENCY_USD = '$#,##0_-';
+    const FORMAT_CURRENCY_EUR_SIMPLE = '#,##0.00_-"€"';
+    const FORMAT_CURRENCY_EUR = '#,##0_-"€"';
     const FORMAT_ACCOUNTING_USD = '_("$"* #,##0.00_);_("$"* \(#,##0.00\);_("$"* "-"??_);_(@_)';
     const FORMAT_ACCOUNTING_EUR = '_("€"* #,##0.00_);_("€"* \(#,##0.00\);_("€"* "-"??_);_(@_)';
 
@@ -217,7 +213,7 @@ class NumberFormat extends Supervisor
      *
      * @return $this
      */
-    public function setFormatCode(string $formatCode)
+    public function setFormatCode($formatCode)
     {
         if ($formatCode == '') {
             $formatCode = self::FORMAT_GENERAL;
@@ -251,11 +247,11 @@ class NumberFormat extends Supervisor
     /**
      * Set Built-In Format Code.
      *
-     * @param int $formatCodeIndex Id of the built-in format code to use
+     * @param int $formatCodeIndex
      *
      * @return $this
      */
-    public function setBuiltInFormatCode(int $formatCodeIndex)
+    public function setBuiltInFormatCode($formatCodeIndex)
     {
         if ($this->isSupervisor) {
             $styleArray = $this->getStyleArray(['formatCode' => self::builtInFormatCode($formatCodeIndex)]);
@@ -436,8 +432,7 @@ class NumberFormat extends Supervisor
      * Convert a value in a pre-defined format to a PHP string.
      *
      * @param mixed $value Value to format
-     * @param string $format Format code: see = self::FORMAT_* for predefined values;
-     *                          or can be any valid MS Excel custom format string
+     * @param string $format Format code, see = self::FORMAT_*
      * @param array $callBack Callback function for additional formatting of string
      *
      * @return string Formatted string

@@ -13,6 +13,10 @@ include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile
 $m_profile = new EmundusModelProfile();
 
 $user = JFactory::getSession()->get('emundusUser');
+if(empty($user->firstname) && empty($user->lastname)) {
+	$m_profile->initEmundusSession();
+	$user = JFactory::getSession()->get('emundusUser');
+}
 $applicant_profiles = $m_profile->getApplicantsProfilesArray();
 
 $specific_profiles = $params->get('for_specific_profiles', '');
@@ -33,10 +37,13 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 	$m_application = new EmundusModelApplication();
 
+	require_once (JPATH_SITE.'/components/com_emundus/helpers/cache.php');
+	$hash = EmundusHelperCache::getCurrentGitHash();
+
     $document = JFactory::getDocument();
     $document->addStyleSheet("media/com_emundus/lib/bootstrap-336/css/bootstrap.min.css" );
     $document->addStyleSheet("media/com_emundus/lib/jquery-plugin-circliful-master/css/material-design-iconic-font.min.css" );
-    $document->addStyleSheet("modules/mod_emundus_applications/style/mod_emundus_applications.css" );
+    $document->addStyleSheet("modules/mod_emundus_applications/style/mod_emundus_applications.css?".$hash);
 
     $document->addCustomTag('<!--[if lt IE 9]><script language="javascript" type="text/javascript" src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script><![endif]-->');
     $document->addCustomTag('<!--[if lt IE 9]><script language="javascript" type="text/javascript" src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->');
@@ -81,6 +88,8 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $mod_emundus_applications_show_programme = $params->get('mod_emundus_applications_show_programme',1);
     $mod_emundus_applications_show_end_date = $params->get('mod_emundus_applications_show_end_date',1);
     $show_add_application = $params->get('show_add_application', 1);
+	$mod_em_campaign_display_svg = $params->get('mod_em_campaign_display_svg', 1);
+	$mod_em_campaign_display_hover_offset = $params->get('mod_em_campaign_display_hover_offset', 1);
     $show_show_campaigns = $params->get('show_show_campaigns', 0);
     $campaigns_list_url = $params->get('show_campaigns_url', 'liste-des-campagnes');
     $position_add_application = (int)$params->get('position_add_application', 0);
@@ -106,6 +115,8 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     } else {
 		$visible_status = [];
     }
+	$selected_campaigns = $params->get('selected_campaigns', []);
+
     $mod_em_applications_show_search = $params->get('mod_em_applications_show_search', 1);
     $mod_em_applications_show_sort = $params->get('mod_em_applications_show_sort', 0);
     $mod_em_applications_show_filters = $params->get('mod_em_applications_show_filters', 0);
@@ -135,7 +146,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
         $applications = modemundusApplicationsHelper::getApplications($layout, $query_order_by);
     } else {
         // We send the layout as a param because Hesam needs different information.
-        $applications = modemundusApplicationsHelper::getApplications($layout, $query_order_by);
+        $applications = modemundusApplicationsHelper::getApplications($layout, $query_order_by, $params);
 		$tabs = $m_application->getTabs(JFactory::getUser()->id);
     }
 
@@ -159,14 +170,13 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $m_files = new EmundusModelFiles();
     $m_campaign = new EmundusModelCampaign();
 
-
     $fnums = array_keys($applications);
 
     $progress = $m_application->getFilesProgress($fnums);
     $attachments = $progress['attachments'];
     $forms = $progress['forms'];
 
-    if ($show_add_application) {
+    if ($show_add_application || in_array('copy', $actions)) {
         if (EmundusHelperAccess::asAccessAction(1, 'c')) {
             $applicant_can_renew = 1;
         } else {
@@ -230,13 +240,22 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     }
 
     if (!empty($show_payment_status)) {
-
         foreach ($applications as $application => $val) {
             $order_status = modemundusApplicationsHelper::getHikashopOrder($applications[$application]);
             $applications[$application]->order_status = $order_status->orderstatus_namekey;
             $applications[$application]->order_color = $order_status->orderstatus_color;
         }
+    }
 
+    $override_default_content = JText::_($params->get('override_default_content', ''));
+    if (!empty($override_default_content)) {
+        try {
+            $post = array('APPLICANT_ID'   => $user->id, 'FNUM' => '');
+            $tags              = $m_email->setTags($user->id, $post, null, '', $override_default_content);
+            $override_default_content = preg_replace($tags['patterns'], $tags['replacements'], $override_default_content);
+        } catch (Exception $e) {
+            $override_default_content = JText::_($params->get('override_default_content', ''));
+        }
     }
 
     $status = $m_files->getStatus();

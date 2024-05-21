@@ -16,8 +16,9 @@ define('JPATH_BASE', dirname(__DIR__) . '/../../');
 
 include_once(JPATH_BASE . 'includes/defines.php');
 include_once(JPATH_BASE . 'includes/framework.php');
-include_once(JPATH_SITE . '/components/com_emundus/unittest/helpers/samples.php');
-include_once(JPATH_SITE . '/components/com_emundus/models/emails.php');
+include_once(JPATH_ROOT . '/components/com_emundus/unittest/helpers/samples.php');
+include_once(JPATH_ROOT . '/components/com_emundus/models/emails.php');
+include_once(JPATH_ROOT . '/components/com_emundus/models/profile.php');
 
 jimport('joomla.user.helper');
 jimport( 'joomla.application.application' );
@@ -35,10 +36,8 @@ class EmundusModelEmailsTest extends TestCase
     public function __construct(?string $name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
-        $this->m_emails = new EmundusModelEmails;
-		$this->h_sample = new EmundusUnittestHelperSamples;
-
 	    $app = JFactory::getApplication();
+	    $this->h_sample = new EmundusUnittestHelperSamples;
 	    $username = 'test-expert-email-' . rand(0, 1000) . '@emundus.fr';
 	    $this->h_sample->createSampleUser(9, $username);
 	    $logged_in = $app->login([
@@ -46,9 +45,9 @@ class EmundusModelEmailsTest extends TestCase
 		    'password' => 'test1234'
 	    ]);
 
-	    include_once(JPATH_SITE . '/components/com_emundus/models/profile.php');
 	    $m_profile = new EmundusModelProfile();
 	    $m_profile->initEmundusSession();
+        $this->m_emails = new EmundusModelEmails;
     }
 
 	public function testFoo()
@@ -130,7 +129,6 @@ class EmundusModelEmailsTest extends TestCase
 		$params = [
 			'mail_from' => '',
 			'mail_from_name' => '',
-			'mail_to' => [],
 			'mail_subject' => '',
 			'mail_body' => '',
 			'fnums' => []
@@ -165,4 +163,105 @@ class EmundusModelEmailsTest extends TestCase
 		 * $this->assertContains($params['mail_to'][0], $response['sent'], 'L\'envoi de l\'email expert a fonctionné.');
 		 */
 	}
+
+
+	function testsetTagsFabrik() {
+		$user_id = $this->h_sample->getSampleUser(9);
+		$program = $this->h_sample->createSampleProgram();
+		$campaign_id = $this->h_sample->createSampleCampaign($program);
+		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
+
+		$string = 'Une chaine sans tag fabrik';
+		$new_string = $this->m_emails->setTagsFabrik($string, [$fnum]);
+
+		$this->assertEquals($string, $new_string, 'La chaine ne contient pas de tag fabrik, elle n\'a pas été modifiée');
+
+		$string = 'Une chaine avec un tag fabrik ${99999}';
+		$new_string = $this->m_emails->setTagsFabrik($string, [$fnum]);
+
+		$this->assertNotEquals($string, $new_string, 'La chaine contient un tag fabrik, elle a été modifiée');
+
+		$string = 'Une chaine avec un tag fabrik existant correspondant à la campagne ${1906}';
+		$new_string = $this->m_emails->setTagsFabrik($string, [$fnum]);
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query->select('label')
+			->from('#__emundus_setup_campaigns')
+			->where('id = ' . $campaign_id);
+
+		$db->setQuery($query);
+		$campaign_label = $db->loadResult();
+
+		$new_string_expected = 'Une chaine avec un tag fabrik existant correspondant à la campagne ' . $campaign_label;
+		$this->assertEquals($new_string_expected, $new_string, 'La chaine utilisant un tag fabrik existant retourne le résultat attendu');
+
+		$string = 'Une chaine avec un tag fabrik existant correspondant à la campagne ${1906} et un tag fabrik inexistant ${99999}';
+		$new_string = $this->m_emails->setTagsFabrik($string, [$fnum]);
+		$new_string_expected = 'Une chaine avec un tag fabrik existant correspondant à la campagne ' . $campaign_label . ' et un tag fabrik inexistant ';
+		$this->assertEquals($new_string_expected, $new_string, 'La chaine utilisant un tag fabrik existant et un tag fabrik inexistant retourne le résultat attendu');
+
+		$string = 'Une chaine avec plusieurs tags fabriks existants ${1906} et un tag fabrik inexistant ${99999} puis ${1906}';
+		$new_string = $this->m_emails->setTagsFabrik($string, [$fnum]);
+		$new_string_expected = 'Une chaine avec plusieurs tags fabriks existants ' . $campaign_label . ' et un tag fabrik inexistant  puis ' . $campaign_label;
+		$this->assertEquals($new_string_expected, $new_string, 'La chaine utilisant plusieurs tags fabriks existants et un tag fabrik inexistant retourne le résultat attendu');
+	}
+
+	public function testgetMessagesToFromUser()
+	{
+		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$program = $this->h_sample->createSampleProgram();
+		$campaign_id = $this->h_sample->createSampleCampaign($program);
+		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
+
+		$messages = $this->m_emails->get_messages_to_from_user($user_id);
+		$this->assertEmpty($messages, 'La récupération des emails a échoué car aucun logs n\'a été créé sur cet utilisateur');
+
+		$log = [
+			'user_id_from'  => $user_id,
+			'user_id_to'    => $user_id,
+			'subject'       => 'Envoi de message',
+			'message'       => 'Corps du message',
+			'type'          => 1,
+			'email_id'      => 1,
+			'email_cc' => '',
+		];
+		$this->m_emails->logEmail($log,$fnum);
+
+		$messages = $this->m_emails->get_messages_to_from_user($user_id);
+		$this->assertNotEmpty($messages, 'La récupération des emails a réussi après avoir loggé l\'envoi d\'un email');
+		$this->assertObjectHasAttribute('fnum_to',$messages[0]);
+	}
+
+    public function testsendEmailNoFnum()
+    {
+        $email_address = '';
+        $email_id = 0;
+        $sent = $this->m_emails->sendEmailNoFnum($email_address, $email_id);
+        $this->assertFalse($sent, 'L\'envoi d\'un email sans adresse ou id a échoué');
+
+        $email_address = 'jeremy.legendre+test@emundus.fr';
+        $sent = $this->m_emails->sendEmailNoFnum($email_address, $email_id);
+        $this->assertFalse($sent, 'L\'envoi d\'un email sans id a échoué');
+
+        $data = [
+            'lbl' => 'Test d envoi de mail',
+            'subject' => 'Test d envoi de mail',
+            'name' => '',
+            'emailfrom' => '',
+            'message' => '<p>Test</p>',
+            'type' => 2,
+            'category' => '',
+            'published' => 1
+        ];
+
+        $email_id = $this->m_emails->createEmail($data);
+        $sent = $this->m_emails->sendEmailNoFnum('', $email_id);
+        $this->assertFalse($sent, 'L\'envoi d\'un email sans adresse a échoué');
+
+        /*
+         * $sent = $this->m_emails->sendEmailNoFnum($email_address, $email_id);
+         * todo: ajout d'un serveur smtp pour les tests
+         */
+    }
 }

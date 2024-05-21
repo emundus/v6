@@ -13,15 +13,19 @@ $layout = $params->get('layout', 'default');
 // Include the syndicate functions only once
 require_once dirname(__FILE__).'/helper.php';
 include_once(JPATH_BASE.'/components/com_emundus/models/profile.php');
+include_once(JPATH_BASE.'/components/com_emundus/models/users.php');
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
 
 $user = JFactory::getSession()->get('emundusUser');
 
 // Here we get the menu which is defined in the params
 $jooomla_menu_name = $params->get('menu_name', 0);
-$switch_profile_redirect = $params->get('switch_profile_redirect', 'index.php');
+
+$switch_profile_redirect = EmundusHelperMenu::getHomepageLink($params->get('switch_profile_redirect', 'index.php'));
 
 $primary_color = $params->get('primary_color', 'ECF0F1');
 $secondary_color = $params->get('secondary_color', 'F89406');
+$display_svg  = $params->get('display_svg', 1);
 $icon = $params->get('icon', 'big circular user outline icon');
 $show_logout = $params->get('show_logout', '1');
 $show_update = $params->get('show_update', '1');
@@ -34,9 +38,32 @@ $link_register = $params->get('link_register', 'index.php?option=com_fabrik&view
 $link_forgotten_password = $params->get('link_forgotten_password', 'index.php?option=com_users&view=reset&Itemid=2833');
 $show_registration = $params->get('show_registration', '0');
 $link_edit_profile = JRoute::_('index.php?Itemid=' . $params->get('link_edit_profile', 2805));
+$custom_actions = $params->get('custom_actions', []);
+
+if (!empty($custom_actions) && !empty($user->id)) {
+	foreach ($custom_actions as $key => $action) {
+        $pass = true;
+
+        if (!empty($action->condition)) {
+            try {
+                $pass = eval($action->condition);
+            } catch (Exception $e) {
+                $pass = false;
+            }
+        }
+
+        if (!$pass) {
+	        unset($custom_actions->$key);
+            continue;
+        }
+
+        if (!empty($action->link) && strpos($action->link, '{fnum}') !== false) {
+            $action->link = str_replace('{fnum}', $user->fnum, $action->link);
+        }
+    }
+}
 
 $document = JFactory::getDocument();
-$document->addStyleSheet('media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css');
 
 if ($jooomla_menu_name !== 0 || $jooomla_menu_name !== '0') {
     $list = modEmundusUserDropdownHelper::getList($jooomla_menu_name);
@@ -53,6 +80,11 @@ if ($show_registration == 0 || ($show_registration == 1 && $user === null && mod
 //
 $m_profiles = new EmundusModelProfile;
 $app_prof = $m_profiles->getApplicantsProfilesArray();
+
+if(!empty($user->profile)) {
+	$user_profile = $m_profiles->getProfileById($user->profile);
+	$profile_label = in_array($user->profile, $app_prof) ?  JText::_('APPLICANT') : $user_profile['label'];
+}
 
 $user_prof = [];
 foreach ($user->emProfiles as $prof) {
@@ -85,6 +117,17 @@ $is_anonym_user = $user->anonym;
 $allow_anonym_files = $eMConfig->get('allow_anonym_files', false);
 if ($is_anonym_user && !$allow_anonym_files) {
     return;
+}
+
+$m_users = new EmundusModelUsers;
+$profile_details = new stdClass();
+if (!JFactory::getUser()->guest) {
+	if (!empty($user->profile)) {
+		$profile_details = $m_users->getProfileDetails($user->profile);
+	} else {
+		$profile_details->class = '';
+		$profile_details->published = '';
+	}
 }
 
 require JModuleHelper::getLayoutPath('mod_emundus_user_dropdown', $layout);

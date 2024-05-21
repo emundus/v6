@@ -6,6 +6,7 @@
         <div class="input-group">
           <label for="description">{{ translate("DESCRIPTION") }}</label>
           <textarea
+              v-if="attachment.allowed_types !== 'video'"
               name="description"
               id="description"
               type="text"
@@ -14,6 +15,7 @@
               @focusout="saveChanges"
           >
 					</textarea>
+          <span v-else v-html="attachmentDescription"></span>
         </div>
 
         <div
@@ -343,7 +345,7 @@ export default {
 
     button {
       transition: all 0.3s;
-      padding: 8px 12px;
+      padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
     }
   }
 

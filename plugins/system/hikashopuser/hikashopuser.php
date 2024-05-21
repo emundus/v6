@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	4.7.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -554,7 +554,7 @@ class plgSystemHikashopuser extends JPlugin {
 				hikaInput::get()->set('task', $layout);
 			}
 		}
-		if(in_array((string)$view, array('product', 'category', '')) && in_array((string)$layout, array('show', 'listing', ''))) {
+		if(version_compare(JVERSION,'3.0','>=') && in_array((string)$view, array('product', 'category', '')) && in_array((string)$layout, array('show', 'listing', ''))) {
 			$app = JFactory::getApplication();
 			$body = $app->getBody();
 			if(strpos($body, 'hreflang')) {

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	4.7.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -1346,6 +1346,9 @@ class ProductViewProduct extends HikaShopView {
 		if(empty($variants) || !count($variants))
 			return;
 
+		$database->setQuery('SELECT * FROM #__hikashop_variant WHERE variant_characteristic_id IN ('.implode(',', array_keys($this->characteristicsToBeDisplayed)).') AND variant_product_id IN ('.implode(',',$product_ids).') ORDER BY ordering ASC');
+		$links = $database->loadObjectList();
+
 		$database->setQuery('SELECT * FROM #__hikashop_variant AS v LEFT JOIN #__hikashop_characteristic AS c ON v.variant_characteristic_id=c.characteristic_id WHERE characteristic_parent_id IN ('.implode(',', array_keys($this->characteristicsToBeDisplayed)).') AND variant_product_id IN ('.implode(',',array_keys($variants)).') ORDER BY c.characteristic_ordering ASC');
 		$values = $database->loadObjectList();
 
@@ -1355,15 +1358,29 @@ class ProductViewProduct extends HikaShopView {
 		foreach($values as $value) {
 			foreach($this->rows as $k => $row) {
 				if($variants[$value->variant_product_id]->product_parent_id == $row->product_id) {
+					$ordering = 0;
+					foreach($links as $link) {
+						if($link->variant_product_id == $row->product_id && $link->variant_characteristic_id == $value->characteristic_parent_id) {
+							$ordering = $link->ordering;
+							break;
+						}
+					}
+					if(empty($ordering))
+						$ordering = $value->characteristic_ordering.'_'.$value->characteristic_parent_id;
 					if(!isset($this->rows[$k]->characteristics))
 						$this->rows[$k]->characteristics = array();
-					if(!isset($this->rows[$k]->characteristics[$value->characteristic_parent_id]))
-						$this->rows[$k]->characteristics[$value->characteristic_parent_id] = hikashop_copy($this->characteristicsToBeDisplayed[$value->characteristic_parent_id]);
-					if(!isset($this->rows[$k]->characteristics[$value->characteristic_parent_id]->availableValues))
-						$this->rows[$k]->characteristics[$value->characteristic_parent_id]->availableValues = array();
-					$this->rows[$k]->characteristics[$value->characteristic_parent_id]->availableValues[$value->characteristic_id] = $value;
+					if(!isset($this->rows[$k]->characteristics[$ordering]))
+						$this->rows[$k]->characteristics[$ordering] = hikashop_copy($this->characteristicsToBeDisplayed[$value->characteristic_parent_id]);
+					if(!isset($this->rows[$k]->characteristics[$ordering]->availableValues))
+						$this->rows[$k]->characteristics[$ordering]->availableValues = array();
+					$this->rows[$k]->characteristics[$ordering]->availableValues[$value->characteristic_id] = $value;
 					break;
 				}
+			}
+		}
+		foreach($this->rows as $k => $row) {
+			if(isset($this->rows[$k]->characteristics)) {
+				ksort($this->rows[$k]->characteristics);
 			}
 		}
 	}

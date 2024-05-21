@@ -137,7 +137,6 @@ class EmundusHelperList{
 			WHERE ege.applicant_id = '.$user_id.'
 			AND ege.campaign_id='.$campaign_id;
         $db->setQuery( $query );
-        // var_dump($query);
         return $db->loadObjectList('id');
     }
 

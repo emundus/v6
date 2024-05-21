@@ -204,32 +204,36 @@ class EmundusModelMessages extends JModelList {
      * @return Object The email we seek, false if none is found.
      */
     function getEmail($id) {
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
+        $email = null;
 
-        $query->select('e.*, et.*, GROUP_CONCAT(etr.tags) as tags, GROUP_CONCAT(ca.candidate_attachment) AS candidate_attachments, GROUP_CONCAT(la.letter_attachment) AS letter_attachments')
-            ->from($db->quoteName('#__emundus_setup_emails','e'))
-            ->leftJoin($db->quoteName('#__emundus_email_templates','et').' ON '.$db->quoteName('e.email_tmpl').' = '.$db->quoteName('et.id'))
-            ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_tags','etr').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('etr.parent_id'))
-            ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_candidate_attachment','ca').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('ca.parent_id'))
-            ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment','la').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('la.parent_id'));
+        if (!empty($id)) {
+            $db = JFactory::getDBO();
+            $query = $db->getQuery(true);
 
-        // Allow the function to dynamically decide if it is getting by ID or label depending on the value submitted.
-        if (is_numeric($id)) {
-            $query->where($db->quoteName('e.id').' = '.$id);
-        } else {
-            $query->where($db->quoteName('e.lbl').' LIKE '.$db->quote($id));
+            $query->select('e.*, et.*, GROUP_CONCAT(etr.tags) as tags, GROUP_CONCAT(ca.candidate_attachment) AS candidate_attachments, GROUP_CONCAT(la.letter_attachment) AS letter_attachments, GROUP_CONCAT(r.receivers) AS receivers')
+                ->from($db->quoteName('#__emundus_setup_emails','e'))
+                ->leftJoin($db->quoteName('#__emundus_email_templates','et').' ON '.$db->quoteName('e.email_tmpl').' = '.$db->quoteName('et.id'))
+                ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_tags','etr').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('etr.parent_id'))
+                ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_candidate_attachment','ca').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('ca.parent_id'))
+                ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment','la').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('la.parent_id'))
+                ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_receivers','r').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('r.parent_id'));
+
+            // Allow the function to dynamically decide if it is getting by ID or label depending on the value submitted.
+            if (is_numeric($id)) {
+                $query->where($db->quoteName('e.id').' = '.$id);
+            } else {
+                $query->where($db->quoteName('e.lbl').' LIKE '.$db->quote($id));
+            }
+
+            try {
+                $db->setQuery($query);
+                $email = $db->loadObject();
+            } catch (Exception $e) {
+                JLog::add('Error getting template in model/messages at query :'.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+            }
         }
 
-
-        try {
-            $db->setQuery($query);
-            return $db->loadObject();
-        } catch (Exception $e) {
-            JLog::add('Error getting template in model/messages at query :'.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
-            return new stdClass;
-        }
-
+        return $email;
     }
 
     /**
@@ -457,8 +461,7 @@ class EmundusModelMessages extends JModelList {
 
         try {
 
-            $phpWord = new \PhpOffice\PhpWord\PhpWord();
-            $preprocess = $phpWord->loadTemplate(JPATH_SITE.$letter->file);
+			$preprocess = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_SITE.$letter->file);
             $tags = $preprocess->getVariables();
 
             $idFabrik   = array();
@@ -590,7 +593,7 @@ class EmundusModelMessages extends JModelList {
             unset($preprocess);
 
         } catch (Exception $e) {
-            JLog::add('Error generating DOC file in model/messages', JLog::ERROR, 'com_emundus');
+            JLog::add('Error generating DOC file in model/messages ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
             return false;
         }
 

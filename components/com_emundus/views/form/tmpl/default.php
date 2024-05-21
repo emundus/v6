@@ -48,6 +48,8 @@ JText::script('COM_EMUNDUS_ONBOARD_FILTER_OPEN');
 JText::script('COM_EMUNDUS_ONBOARD_FILTER_CLOSE');
 JText::script('COM_EMUNDUS_ONBOARD_FILTER_PUBLISH_FORM');
 JText::script('COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH_FORM');
+JText::script('COM_EMUNDUS_ONBOARD_FILTER_PUBLISH');
+JText::script('COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH');
 JText::script('COM_EMUNDUS_ONBOARD_SELECT');
 JText::script('COM_EMUNDUS_ONBOARD_DESELECT');
 JText::script('COM_EMUNDUS_ONBOARD_TOTAL');
@@ -115,10 +117,8 @@ $user = JFactory::getUser();
 $coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
 $sysadmin_access = EmundusHelperAccess::isAdministrator($user->id);
 
-$xmlDoc = new DOMDocument();
-if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
-    $release_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
-}
+require_once (JPATH_COMPONENT.DS.'helpers'.DS.'cache.php');
+$hash = EmundusHelperCache::getCurrentGitHash();
 ?>
 
 <list id="em-component-vue"
@@ -132,4 +132,4 @@ if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml'
 >
 </list>
 
-<script src="media/com_emundus_vue/app_emundus.js?<?php echo $release_version ?>"></script>
+<script src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>

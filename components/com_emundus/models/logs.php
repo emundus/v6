@@ -11,6 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+require_once (JPATH_SITE.'/components/com_emundus/helpers/date.php');
 class EmundusModelLogs extends JModelList {
 
 	// Add Class variables.
@@ -23,7 +24,6 @@ class EmundusModelLogs extends JModelList {
 	 */
 	public function __construct() {
 		parent::__construct();
-		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'date.php');
 
 		// Assign values to class variables.
 		$this->user = JFactory::getUser();
@@ -53,9 +53,9 @@ class EmundusModelLogs extends JModelList {
 
         if (!empty($user_from)) {
             $eMConfig = JComponentHelper::getParams('com_emundus');
-            $log_actions = $eMConfig->get('log_actions', null);
-            $log_actions_exclude = $eMConfig->get('log_actions_exclude', null);
-            $log_actions_exclude_user = $eMConfig->get('log_actions_exclude_user', 62);
+            $log_actions = $eMConfig->get('log_actions', '');
+            $log_actions_exclude = $eMConfig->get('log_actions_exclude', '');
+            $log_actions_exclude_user = $eMConfig->get('log_actions_exclude_user', '62');
 
             if ($eMConfig->get('logs', 0) && (empty($log_actions) || in_array($action, explode(',',$log_actions)))) {
                 if (!in_array($action, explode(',', $log_actions_exclude))) {
@@ -65,12 +65,11 @@ class EmundusModelLogs extends JModelList {
 
                         $ip = JFactory::getApplication()->input->server->get('REMOTE_ADDR','');
                         $user_to = empty($user_to) ? '' : $user_to;
-                        $now = new DateTime();
-                        $now->setTimezone(new DateTimeZone('UTC'));
-                        $now = $now->format('Y-m-d H:i:s');
+
+                        $now = EmundusHelperDate::getNow();
 
                         $columns = ['timestamp', 'user_id_from', 'user_id_to', 'fnum_to', 'action_id', 'verb', 'message', 'params', 'ip_from'];
-                        $values  = [$db->quote($now), $user_from, $user_to, $db->quote($fnum), $action, $db->quote($crud), $db->quote($message), $db->quote($params), $db->quote($ip)];
+                        $values  = [$db->quote($now), $db->quote($user_from), $db->quote($user_to), $db->quote($fnum), $action, $db->quote($crud), $db->quote($message), $db->quote($params), $db->quote($ip)];
 
                         $query->insert($db->quoteName('#__emundus_logs'))
                             ->columns($db->quoteName($columns))
@@ -91,6 +90,57 @@ class EmundusModelLogs extends JModelList {
 
         return $logged;
     }
+
+	static function logs($user_from, $fnums, $action, $crud = '', $message = '', $params = '') {
+		$logged = false;
+		jimport('joomla.log.log');
+		JLog::addLogger(['text_file' => 'com_emundus.logs.php'], JLog::ERROR, 'com_emundus');
+
+		if (!empty($user_from) && !empty($fnums)) {
+			if (!is_array($fnums)) {
+				$fnums = [$fnums];
+			}
+
+			$eMConfig = JComponentHelper::getParams('com_emundus');
+			$log_actions = $eMConfig->get('log_actions', null);
+			$log_actions_exclude = $eMConfig->get('log_actions_exclude', null);
+			$log_actions_exclude_user = $eMConfig->get('log_actions_exclude_user', 62);
+
+			if ($eMConfig->get('logs', 0) && (empty($log_actions) || in_array($action, explode(',',$log_actions)))) {
+				if (!in_array($action, explode(',', $log_actions_exclude))) {
+					if (!in_array($user_from, explode(',', $log_actions_exclude_user))) {
+						$db = JFactory::getDbo();
+						$query = $db->getQuery(true);
+
+						$ip = JFactory::getApplication()->input->server->get('REMOTE_ADDR','');
+						$user_to = empty($user_to) ? null : $user_to;
+
+						$now = EmundusHelperDate::getNow();
+
+						$columns = ['timestamp', 'user_id_from', 'user_id_to', 'fnum_to', 'action_id', 'verb', 'message', 'params', 'ip_from'];
+						$query->insert($db->quoteName('#__emundus_logs'))
+							->columns($db->quoteName($columns));
+
+						foreach($fnums as $fnum) {
+							$query->values($db->quote($now) . ',' . $db->quote($user_from) . ', null,' . $db->quote($fnum) . ',' . $action . ',' . $db->quote($crud) . ',' . $db->quote($message). ',' . $db->quote($params) . ',' . $db->quote($ip));
+						}
+
+						try {
+							$db->setQuery($query);
+							$logged = $db->execute();
+						} catch (Exception $e) {
+							JLog::add('Error logging at the following query: ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.error');
+						}
+					}
+				}
+			}
+		} else {
+			JLog::add('Error in action [' . $action . ' - ' . $crud . '] - ' . $message . ' user_from cannot be null in EmundusModelLogs::logs', JLog::WARNING, 'com_emundus');
+		}
+
+
+		return $logged;
+	}
 
     /**
 	 * Gets the actions done by a user. Can be filtered by action and/or CRUD.
@@ -193,51 +243,52 @@ class EmundusModelLogs extends JModelList {
 	 */
 	public function getActionsOnFnum($fnum, $user_from = null, $action = null, $crud = null, $offset = null, $limit = 100) {
 		$results = [];
-        $db = JFactory::getDbo();
-		$query = $db->getQuery(true);
 
-        $user_from = implode(',', $user_from);
-        $action = implode(',', $action);
-        $crud = implode(',', $db->quote($crud));
+        if (!empty($fnum)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
 
-        if (empty($user_from)) {
-            JLog::add('Error in action [' . $action . ' - ' . $crud . '] user_from cannot be null in EmundusModelLogs::log', JLog::WARNING, 'com_emundus');
-            return false;
-        }
+            $user_from = is_array($user_from) ? implode(',', $user_from) : $user_from;
+            $action = is_array($action) ? implode(',', $action) : $action;
 
-        $eMConfig = JComponentHelper::getParams('com_emundus');
-        $showTimeFormat = $eMConfig->get('log_show_timeformat', 0);
-        $showTimeOrder = $eMConfig->get('log_show_timeorder', 'DESC');
-
-		// Build a where depending on what params are present.
-        $where = $db->quoteName('fnum_to').' LIKE '.$db->quote($fnum);
-        if (!empty($user_from))
-            $where .= ' AND '.$db->quoteName('user_id_from').' IN ('.$user_from . ')';
-        if (!empty($action))
-            $where .= ' AND '.$db->quoteName('action_id').' IN ('. $action . ')';
-        if (!empty($crud))
-            $where .= ' AND '.$db->quoteName('verb').' IN ( '. $crud . ')';
-
-        $query->select('lg.*, us.firstname, us.lastname')
-			->from($db->quoteName('#__emundus_logs', 'lg'))
-			->leftJoin($db->quoteName('#__emundus_users', 'us').' ON '.$db->QuoteName('us.user_id').' = '.$db->QuoteName('lg.user_id_from'))
-			->where($where)
-            ->order($db->quoteName('lg.timestamp') . ' ' . $showTimeOrder);
-
-        if(!is_null($offset)) {
-            $query->setLimit($limit, $offset);
-        }
-
-        try {
-            $db->setQuery($query);
-            $results = $db->loadObjectList();
-
-            foreach ($results as $result) {
-                $result->date = EmundusHelperDate::displayDate($result->timestamp,'DATE_FORMAT_LC2',(int)$showTimeFormat);
+            if (is_array($crud)) {
+                $crud =  implode(',', $db->quote($crud));
+            } else if (!empty($crud)) {
+                $crud = $db->quote($crud);
             }
-		} catch (Exception $e) {
-            JLog::add('Could not getActionsOnFnum in model logs at query: '.preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-		}
+
+            $eMConfig = JComponentHelper::getParams('com_emundus');
+            $showTimeFormat = $eMConfig->get('log_show_timeformat', 0);
+            $showTimeOrder = $eMConfig->get('log_show_timeorder', 'DESC');
+
+            // Build a where depending on what params are present.
+            $where = $db->quoteName('fnum_to').' LIKE '.$db->quote($fnum);
+            if (!empty($user_from))
+                $where .= ' AND '.$db->quoteName('user_id_from').' IN ('.$user_from . ')';
+            if (!empty($action))
+                $where .= ' AND '.$db->quoteName('action_id').' IN ('. $action . ')';
+            if (!empty($crud))
+                $where .= ' AND '.$db->quoteName('verb').' IN ( '. $crud . ')';
+
+            $query->select('lg.*, us.firstname, us.lastname')
+                ->from($db->quoteName('#__emundus_logs', 'lg'))
+                ->leftJoin($db->quoteName('#__emundus_users', 'us').' ON '.$db->QuoteName('us.user_id').' = '.$db->QuoteName('lg.user_id_from'))
+                ->where($where)
+                ->order($db->quoteName('lg.timestamp') . ' ' . $showTimeOrder);
+
+            if(!is_null($offset)) {
+                $query->setLimit($limit, $offset);
+            }
+            try {
+                $db->setQuery($query);
+                $results = $db->loadObjectList();
+                foreach ($results as $result) {
+                    $result->date = EmundusHelperDate::displayDate($result->timestamp,'DATE_FORMAT_LC2',(int)$showTimeFormat);
+                }
+            } catch (Exception $e) {
+                JLog::add('Could not getActionsOnFnum in model logs at query: '.preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            }
+        }
 
         return $results;
 	}
@@ -303,8 +354,8 @@ class EmundusModelLogs extends JModelList {
 		$query->select('label')
 			->from($db->quoteName('#__emundus_setup_actions'))
 			->where($db->quoteName('id').' = '.$db->quote($action));
-		$db->setQuery($query);
 
+        $db->setQuery($query);
 		$action_category = $db->loadResult();
 
 		// Decode the json params string
@@ -320,10 +371,13 @@ class EmundusModelLogs extends JModelList {
             case ('c'):
                 $action_name = $action_category . '_CREATE';
                 foreach ($params->created as $value) {
-                    if(isset($value->details) and ($value->details) !== null) {
-                        $action_details .= '<span style="margin-bottom: 0.5rem"><b>' . $value->element . '</b></span>';
-                        $action_details .= '<div><span class="em-main-500-color" style="margin-bottom: 0.5rem">' . $value->details . '</span>';
-                        $action_details .= '</div>';
+                    if(is_object($value)) {
+                        if (!empty($value->element)) {
+                            $action_details .= '<span style="margin-bottom: 0.5rem"><b>' . $value->element . '</b></span>';
+                        }
+                        if (!empty($value->details)) {
+                            $action_details .= '<div class="em-flex-row"><span class="em-red-500-color">' . $value->details . '</span></div>';
+                        }
                     } else {
                         $action_details .= '<p>' . $value . '</p>';
                     }
@@ -334,9 +388,10 @@ class EmundusModelLogs extends JModelList {
                 break;
             case ('u'):
                 $action_name = $action_category . '_UPDATE';
-                $action_details = '<b>' . reset($params->updated)->description . '</b>';
 
                 if (!empty($params->updated)) {
+                    $action_details = '<b>' . reset($params->updated)->description . '</b>';
+
                     foreach ($params->updated as $value) {
                         $action_details .= '<div class="em-flex-row"><span>' . $value->element . '&nbsp</span>&nbsp';
                         $value->old = !empty($value->old) ? $value->old : '';
@@ -371,10 +426,13 @@ class EmundusModelLogs extends JModelList {
             case ('d'):
                 $action_name = $action_category . '_DELETE';
                 foreach ($params->deleted as $value) {
-                    if(isset($value->details) and ($value->details) !== null) {
-                        $action_details .= '<span style="margin-bottom: 0.5rem"><b>' . $value->element . '</b></span>';
-                        $action_details .= '<div class="em-flex-row"><span class="em-red-500-color">' . $value->details . '&nbsp</span>&nbsp';
-                        $action_details .= '</div>';
+                    if(is_object($value)) {
+                        if (!empty($value->element)) {
+                            $action_details .= '<span style="margin-bottom: 0.5rem"><b>' . $value->element . '</b></span>';
+                        }
+                        if (!empty($value->details)) {
+                            $action_details .= '<div class="em-flex-row"><span class="em-red-500-color">' . $value->details . '</span></div>';
+                        }
                     } else {
                         $action_details .= '<p>' . $value . '</p>';
                     }

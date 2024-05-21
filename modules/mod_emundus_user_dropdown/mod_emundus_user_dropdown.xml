@@ -29,6 +29,10 @@
 				<field name="menu_name" type="text" default="0" size="5" label="COM_EMUNDUS_USERDROPDOWN_MENU_NAME" description="COM_EMUNDUS_USERDROPDOWN_MENU_NAME_DESC" />
 				<field name="primary_color" type="text" default="ECF0F1" size="5" label="COM_EMUNDUS_USERDROPDOWN_PRIMARY_COLOR" description="COM_EMUNDUS_USERDROPDOWN_PRIMARY_COLOR_DESC" />
 				<field name="secondary_color" type="text" default="F89406" size="5" label="COM_EMUNDUS_USERDROPDOWN_SECONDARY_COLOR" description="COM_EMUNDUS_USERDROPDOWN_SECONDARY_COLOR_DESC" />
+				<field name="display_svg" type="radio" default="1" label="COM_EMUNDUS_USERDROPDOWN_DISPLAY_SVG" description="COM_EMUNDUS_USERDROPDOWN_DISPLAY_SVG_DESC" class="btn-group btn-group-yesno">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
 				<field name="show_logout" type="radio" default="1" label="Show logout button" description="Shows the logout button at the bottom of the dropdown" class="btn-group btn-group-yesno">
 					<option value="0">JNo</option>
 					<option value="1">JYes</option>
@@ -71,6 +75,57 @@
 				</field>
 
 				<field name="switch_profile_redirect" type="text" default="index.php" size="5" label="COM_EMUNDUS_USERDROPDOWN_SWITCH_PROFILE_REDIRECT" description="COM_EMUNDUS_USERDROPDOWN_SWITCH_PROFILE_REDIRECT_DESC" />
+
+				<field
+						name="custom_actions"
+						type="subform"
+						label="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS"
+						description="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS_DESC"
+						multiple="true"
+						layout="joomla.form.field.subform.repeatable-table">
+					<form>
+						<field
+								name="title"
+								type="text"
+								label="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS_TITLE"
+								description="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS_TITLE_DESC"
+								size="5"
+						/>
+						<field
+								name="type"
+								type="list"
+								label="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS_TYPE"
+								description="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS_TYPE_DESC"
+								size="5"
+						>
+							<option value="link">Link</option>
+							<option value="button">Button</option>
+						</field>
+						<field
+								showon="type:link"
+								name="link"
+								type="text"
+								label="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS_LINK"
+								description="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS_LINK_DESC"
+								size="5"
+						/>
+						<field
+							showon="type:button"
+							name="onclick"
+							type="text"
+							label="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS_ONCLICK"
+							description="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS_ONCLICK_DESC"
+							size="5"
+						/>
+						<field
+								name="condition"
+								type="textarea"
+								label="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS_CONDITION"
+								description="MOD_EMUNDUS_USERDROPDOWN_CUSTOM_ACTIONS_CONDITION_DESC"
+								size="5"
+						/>
+					</form>
+				</field>
 			</fieldset>
 		</fields>
 	</config>

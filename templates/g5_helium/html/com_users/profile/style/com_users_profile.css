@@ -1,9 +1,8 @@
 button.btn-primary{
-    background: #e03c32;
     background-color: #e03c32;
     border: 1px solid #e03c32;
     border-radius: 4px;
-    padding: 8px 12px!important;
+    padding: var(--em-spacing-vertical) var(--em-spacing-horizontal) !important;
 }
 button.btn-primary:hover{
     background-color: transparent;
@@ -11,11 +10,10 @@ button.btn-primary:hover{
     outline: none;
 }
 a.btn{
-    background: #29d4ff;
     background-color: #29d4ff;
     border: 1px solid #29d4ff;
     border-radius: 4px;
-    padding: 8px 12px;
+    padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
 }
 a.btn:hover{
     background-color: transparent;
@@ -28,17 +26,14 @@ a.btn:hover{
     padding: 0;
 }
 
-
 form#member-profile.well {
     background: #fff;
-    border: none;
-    margin-top: 50px;
-    margin-bottom: 50px;
+    margin: 0px auto 50px auto;
     padding: 32px 32px 24px 32px;
-    border-radius: 16px !important;
+    border-radius: var(--em-form-br-block) !important;
     width: 84%;
-    margin-left: auto;
-    margin-right: auto;
+    border: 1px solid #EDEDED;
+    box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
 }
 
 form#member-profile  fieldset .em-heading-form {
@@ -56,7 +51,7 @@ form#member-profile  fieldset .em-heading-form {
     text-align: center;
     padding-top: 24px;
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     flex-direction: row;
 }
 
@@ -92,13 +87,13 @@ form#member-profile.well legend {
     color: var(--neutral-800);
     font-weight: 600;
     margin: 0 !important;
-    font-family: var(--font);
+    font-family: var(--em-applicant-font-title);
 }
 
 form#member-profile.form-validate.form-horizontal.well input {
     width: 100%;
     color: var(--neutral-600);
-    font-family: var(--font);
+    font-family: var(--em-applicant-font);
     height: 48px;
     border-radius: 8px;
     padding: 0 12px 0 12px;
@@ -107,7 +102,6 @@ form#member-profile.form-validate.form-horizontal.well input {
     margin-top: 6px;
     margin-bottom: 0;
     background-color: #fff;
-    width: 100%;
 }
 
 form#member-profile.form-validate.form-horizontal.well input:hover {
@@ -122,7 +116,7 @@ form#member-profile.form-validate.form-horizontal.well input:focus {
 }
 
 form#member-profile .control-group .control-label label {
-    font-family: var(--font);
+    font-family: var(--em-applicant-font);
     font-size: 14px;
     font-style: normal;
     font-weight: 500;
@@ -135,19 +129,20 @@ form#member-profile .control-group .control-label label {
 }
 form#member-profile.form-validate.form-horizontal.well button.btn.btn-primary.validate {
     text-transform: capitalize;
-    border-radius: 4px;
+    border-radius: var(--em-applicant-br);
     margin-bottom: 0;
-    height: 38px;
     display: flex;
     align-items: center;
+    padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
 }
 form#member-profile.form-validate.form-horizontal.well a.btn {
     font-weight: 300;
     margin-right: 16px !important;
     margin-bottom: 0;
-    height: 38px;
     display: flex;
+    border-radius: var(--em-applicant-br);
     align-items: center;
+    padding: var(--em-spacing-vertical) var(--em-spacing-horizontal) !important;
 }
 form#member-profile.form-validate.form-horizontal.well fieldset:nth-child(2) {
     margin-top: 20px;
@@ -155,12 +150,12 @@ form#member-profile.form-validate.form-horizontal.well fieldset:nth-child(2) {
 form#member-profile.form-validate.form-horizontal.well label {
     font-size: 14px;
     color: var(--neutral-800);
-    font-family: var(--font);
+    font-family: var(--em-applicant-font);
 }
 
-form#member-profile.form-validate.form-horizontal.well span {
+form#member-profile.form-validate.form-horizontal.well span:not(.material-icons) {
     color: var(--neutral-600);
-    font-family: var(--font);
+    font-family: var(--em-applicant-font);
     font-size: 12px;
 }
 
@@ -180,13 +175,8 @@ form#member-profile.form-validate.form-horizontal.well  label.required::after{
 @media all and (max-width: 767px) {
     form#member-profile {
         padding: 2rem 3rem 1rem 3rem;
-    }
-
-    .view-profile #member-profile > .control-group .controls {
-        flex-direction: column;
-        row-gap: 8px;
-        display: flex;
-        align-items: flex-start;
+        width: 100% !important;
+        margin: 0 0 50px 0 !important;
     }
 
     .view-profile form#member-profile.form-validate.form-horizontal.well button.btn.btn-primary.validate {

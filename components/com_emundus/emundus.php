@@ -12,11 +12,12 @@ defined('_JEXEC') or die('ACCESS_DENIED');
 // Require the base controller
 require_once( JPATH_COMPONENT.DS.'controller.php' );
 
-// emundus helpers
+// Helpers
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'files.php');
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
+
 // LOGGER
 jimport('joomla.log.log');
 JLog::addLogger(
@@ -40,10 +41,12 @@ JLog::addLogger(
     JLog::ALL,
     array('com_emundus.webhook')
 );
-// translation for javacript
+
+// Translations for Javascript
 JText::script('PLEASE_SELECT');
 JText::script('IN');
 JText::script('ALL');
+JText::script('ALL_FEMININE');
 JText::script('USERNAME');
 JText::script('EMAIL');
 JText::script('APPLICATION_CREATION_DATE');
@@ -54,6 +57,8 @@ JText::script('COM_EMUNDUS_ONBOARD_OK');
 JText::script('COM_EMUNDUS_ONBOARD_CANCEL');
 
 JText::script('COM_EMUNDUS_EX');
+JText::script('COM_EMUNDUS_ADD');
+JText::script('COM_EMUNDUS_THESIS_DELETE');
 JText::script('COM_EMUNDUS_APPLICATION_TAG');
 JText::script('COM_EMUNDUS_ACCESS_FILE');
 JText::script('COM_EMUNDUS_ACCESS_ATTACHMENT');
@@ -123,6 +128,7 @@ JText::script('COM_EMUNDUS_ACTIONS_CANCEL');
 JText::script('COM_EMUNDUS_OK');
 JText::script('COM_EMUNDUS_ACTIONS_BACK');
 JText::script('COM_EMUNDUS_USERNAME');
+JText::script('COM_EMUNDUS_FORM_YEARS_OLD');
 JText::script('ID');
 JText::script('COM_EMUNDUS_ACTIONS_ALL');
 JText::script('COM_EMUNDUS_IN');
@@ -131,6 +137,16 @@ JText::script('SELECT_HERE');
 JText::script('COM_EMUNDUS_FILTERS_CHECK_ALL_ALL');
 JText::script('COM_EMUNDUS_FILES_SAVE_FILTER');
 JText::script('COM_EMUNDUS_FILES_ENTER_HERE');
+JText::script('COM_EMUNDUS_ONBOARD_BUILDER_CURRENCY_OPTIONS');
+JText::script('COM_EMUNDUS_ONBOARD_TYPE_CURRENCY');
+JText::script('COM_EMUNDUS_ONBOARD_BUILDER_CURRENCY_ALL_OPTIONS');
+JText::script('COM_EMUNDUS_ONBOARD_BUILDER_CURRENCY_CURRENCY');
+JText::script('COM_EMUNDUS_ONBOARD_BUILDER_CURRENCY_THOUSAND_SEPARATOR');
+JText::script('COM_EMUNDUS_ONBOARD_BUILDER_CURRENCY_DECIMAL_SEPARATOR');
+JText::script('COM_EMUNDUS_ONBOARD_BUILDER_CURRENCY_DECIMAL_NUMBERS');
+JText::script('COM_EMUNDUS_ONBOARD_BUILDER_CURRENCY_REGEX');
+JText::script('COM_EMUNDUS_CAMPAIGN_MORE');
+JText::script('COM_EMUNDUS_CAMPAIGN_MORE_DESC');
 
 JText::script('USERNAME_Q');
 JText::script('ID_Q');
@@ -159,6 +175,7 @@ JText::script('COM_EMUNDUS_EXPORTS_ASSESSMENT_PDF');
 JText::script('JYES');
 JText::script('JNO');
 JText::script('COM_EMUNDUS_PLEASE_SELECT');
+JText::script('COM_EMUNDUS_PLEASE_SELECT_MULTIPLE');
 JText::script('COM_EMUNDUS_EXPORTS_CHANGE_STATUS');
 JText::script('COM_EMUNDUS_EXPORTS_EXPORT_SET_TAG');
 JText::script('COM_EMUNDUS_ATTACHMENTS_YOU_MUST_SELECT_ATTACHMENT');
@@ -194,6 +211,8 @@ JText::script('COM_EMUNDUS_FILES_SELECT_ALL_FILES');
 JText::script('COM_EMUNDUS_USERS_SELECT_USER');
 JText::script('COM_EMUNDUS_USERS_SELECT_USERS');
 JText::script('COM_EMUNDUS_APPLICATION_WARNING_CHANGE_STATUS');
+JText::script('COM_EMUNDUS_APPLICATION_WARNING_CHANGE_STATUS_OF_NB_FILES');
+JText::script('COM_EMUNDUS_APPLICATION_WARNING_CHANGE_STATUS_OF_NB_FILES_2');
 JText::script('COM_EMUNDUS_APPLICATION_MAIL_CHANGE_STATUT_INFO');
 JText::script('COM_EMUNDUS_APPLICATION_VALIDATE_CHANGE_STATUT');
 JText::script('COM_EMUNDUS_APPLICATION_CANCEL_CHANGE_STATUT');
@@ -235,9 +254,6 @@ JText::script('COM_EMUNDUS_STATE');
 JText::script('COM_EMUNDUS_PROFILE_SWITCH_PROFILE');
 JText::script('COM_EMUNDUS_PROFILE_PROFILE_CHOSEN');
 Jtext::script('COM_EMUNDUS_USERS_ARE_YOU_SURE_TO_REGENERATE_PASSWORD');
-Jtext::script('COM_EMUNDUS_USERS_EDIT_PROFILE_PICTURE_ERROR_TITLE');
-Jtext::script('COM_EMUNDUS_USERS_EDIT_PROFILE_PICTURE_ERROR_TEXT');
-Jtext::script('COM_EMUNDUS_USERS_EDIT_PROFILE_PICTURE_ERROR_UPDATE_TEXT');
 
 //Export Excel
 JText::script('COM_EMUNDUS_ADD_DATA_TO_CSV');
@@ -247,7 +263,10 @@ JText::script('COM_EMUNDUS_ERROR_CSV_CAPACITY');
 JText::script('COM_EMUNDUS_XLS_GENERATION');
 JText::script('COM_EMUNDUS_EXPORT_FINISHED');
 JText::script('COM_EMUNDUS_ERROR_CAPACITY_XLS');
+JText::script('COM_EMUNDUS_EXPORT_EXCEL');
 JText::script('COM_EMUNDUS_CREATE_CSV');
+JText::script('COM_EMUNDUS_ATTACHMENTS_DOWNLOAD');
+JText::script('COM_EMUNDUS_ATTACHMENTS_DOWNLOAD_READY');
 JText::script('EXPECTED_GRADUATION_DATE');
 JText::script('GRADE_POINT_AVERAGE');
 JText::script('GRADUATION_DATE');
@@ -328,6 +347,7 @@ JText::script('CHOOSE_YOUR_OPTION');
 JText::script('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS_OTHERS_EVAL');
 JText::script('COM_EMUNDUS_EXPORTS_GENERATE_EXCEL');
 JText::script('COM_EMUNDUS_USER_REGENERATE_PASSWORD_SUCCESS');
+JText::script('COM_EMUNDUS_EXPORTS_SELECT_AT_LEAST_ONE_INFORMATION');
 
 //Export PDF
 JText::script('COM_EMUNDUS_EXPORTS_PDF_GENERATION');
@@ -350,6 +370,10 @@ JText::script('COM_EMUNDUS_APPLICATION_SENT_ON');
 JText::script('DOCUMENT_PRINTED_ON');
 JText::script('COM_EMUNDUS_USERS_ARE_YOU_SURE_TO_DELETE_USERS');
 JText::script('COM_EMUNDUS_USERS_EDIT_PROFILE_NO_FORM_FOUND');
+JText::script('JCANCEL');
+JText::script('JACTION_DELETE');
+JText::script('COM_EMUNDUS_USERS_EDIT_PROFILE_NO_FORM_FOUND');
+JText::script('COM_EMUNDUS_WANT_RESET_PASSWORD');
 
 // Submit application
 JText::script('COM_EMUNDUS_CONGRATULATIONS');
@@ -379,7 +403,6 @@ JText::script('COM_EMUNDUS_EMAILS_CANCEL_EMAIL');
 
 //view application layout share
 JText::script('COM_EMUNDUS_ACCESS_ARE_YOU_SURE_YOU_WANT_TO_REMOVE_THIS_ACCESS');
-
 
 //view ametys
 JText::script('COM_EMUNDUS_CANNOT_RETRIEVE_EMUNDUS_PROGRAMME_LIST');
@@ -520,6 +543,7 @@ JText::script('COM_EMUNDUS_EXPORTS_EXPORT');
 JText::script('COM_EMUNDUS_EXPORTS_EXPORT_TO_ZIP');
 JText::script('COM_EMUNDUS_ACTIONS_SEARCH');
 JText::script('COM_EMUNDUS_TROMBINOSCOPE');
+JText::script('COM_EMUNDUS_ONBOARD_ADD_NEW_DOCUMENT');
 
 JText::script('COM_EMUNDUS_VIEW_FORM_SELECT_PROFILE');
 JText::script('COM_EMUNDUS_VIEW_FORM_OTHER_PROFILES');
@@ -600,6 +624,19 @@ JText::script('COM_EMUNDUS_EDIT_COMMENT_TITLE');
 JText::script('COM_EMUNDUS_FORM_BUILDER_DELETE_MODEL');
 JText::script('COM_EMUNDUS_FORM_PAGE_MODELS');
 JText::script('COM_EMUNDUS_FORM_MY_FORMS');
+JText::script('COM_EMUNDUS_ONBOARD_PROGRAM_ADDUSER');
+JText::script('COM_EMUNDUS_ACTIONS_EDIT_USER');
+JText::script('COM_EMUNDUS_USERS_ERROR_PLEASE_COMPLETE');
+JText::script('COM_EMUNDUS_USERS_SHOW_USER_RIGHTS');
+JText::script('COM_EMUNDUS_MAILS_SEND_EMAIL');
+JText::script('COM_EMUNDUS_USERS_CREATE_GROUP');
+JText::script('COM_EMUNDUS_USERS_AFFECT_USER');
+JText::script('COM_EMUNDUS_USERS_AFFECT_GROUP_ERROR');
+JText::script('COM_EMUNDUS_ERROR_OCCURED');
+JText::script('COM_EMUNDUS_USERS_CREATE_USER_CONFIRM');
+JText::script('COM_EMUNDUS_USERS_EDIT_USER_CONFIRM');
+JText::script('COM_EMUNDUS_USERS_AFFECT_USER_CONFIRM');
+JText::script('COM_EMUNDUS_MAIL_SEND_NEW');
 
 // PASSWORD CHARACTER VALIDATION
 JText::script('COM_EMUNDUS_PASSWORD_WRONG_FORMAT_TITLE');
@@ -610,8 +647,9 @@ JText::script('COM_EMUNDUS_DELETE_ADVANCED_FILTERS');
 
 JText::script('COM_EMUNDUS_MAIL_GB_BUTTON');
 
-
-// ONBOARD
+JText::script('COM_EMUNDUS_EMAIL_CURRENT_FILE');
+JText::script('COM_EMUNDUS_EMAIL_ALL_FILES');
+JText::script('COM_EMUNDUS_EMAIL_ON_FILE');
 
 $app = JFactory::getApplication();
 
@@ -633,50 +671,60 @@ $user = JFactory::getUser();
 $secret = JFactory::getConfig()->get('secret');
 $webhook_token = JFactory::getConfig()->get('webhook_token') ?: '';
 
+$eMConfig = JComponentHelper::getParams('com_emundus');
+$cdn = $eMConfig->get('use_cdn', 1);
+
 $name = $app->input->get('view', '', 'CMD');
 $task = $app->input->get('task', '', 'CMD');
 $format = $app->input->get('format', '', 'CMD');
 $token = $app->input->get('token', '', 'ALNUM');
 
-$xmlDoc = new DOMDocument();
-$release_version = '1.0.0';
-if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
-    $release_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
-}
+require_once (JPATH_SITE.'/components/com_emundus/helpers/cache.php');
+$hash = EmundusHelperCache::getCurrentGitHash();
+$document = JFactory::getDocument();
 
 if(!in_array($name,['settings','campaigns','emails','form'])) {
-    JHTML::script("//cdnjs.cloudflare.com/ajax/libs/tinymce/4.4.1/tinymce.min.js");
-    JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
-    JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
-    JHtml::script('media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
+    if($cdn == 1)
+    {
+        $document->addScript("//cdnjs.cloudflare.com/ajax/libs/tinymce/4.4.1/tinymce.min.js");
+    } else {
+        $document->addScript('media/com_emundus/js/lib/tinymce.min.js');
+    }
+    $document->addScript('media/com_emundus/lib/jquery-1.12.4.min.js');
+    $document->addScript('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
+    $document->addScript('media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
     //TODO : Stop use chosen replace by an other js native library
-    //JHtml::script('media/com_emundus/lib/chosen/chosen.jquery.min.js' );
-    JHtml::script('media/jui/js/chosen.jquery.min.js');
-    JFactory::getDocument()->addScript('media/com_emundus/js/em_files.js?' . $release_version);
-    JFactory::getDocument()->addScript('media/com_emundus/js/mixins/exports.js?' . $release_version);
-    JFactory::getDocument()->addScript('media/com_emundus/js/mixins/utilities.js?' . $release_version);
-    JHTML::script('libraries/emundus/selectize/dist/js/standalone/selectize.js' );
-    JHTML::script('libraries/emundus/sumoselect/jquery.sumoselect.min.js');
+    //$document->addScript('media/com_emundus/lib/chosen/chosen.jquery.min.js' );
+    $document->addScript('media/jui/js/chosen.jquery.min.js');
+    $document->addScript('media/com_emundus/js/em_files.js?' . $hash);
+    $document->addScript('media/com_emundus/js/mixins/exports.js?' . $hash);
+    $document->addScript('media/com_emundus/js/mixins/utilities.js?' . $hash);
+    $document->addScript('libraries/emundus/selectize/dist/js/standalone/selectize.js' );
+    $document->addScript('libraries/emundus/sumoselect/jquery.sumoselect.min.js');
 
-    JHtml::styleSheet('media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css' );
-    //JHtml::styleSheet('media/com_emundus/lib/chosen/chosen.min.css');
-    JHtml::styleSheet('media/jui/css/chosen.css');
-    JHtml::styleSheet('media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
-    JHtml::styleSheet('media/com_emundus/css/emundus_files.css');
-    JHTML::stylesheet('libraries/emundus/selectize/dist/css/normalize.css' );
-    JHTML::stylesheet('libraries/emundus/selectize/dist/css/selectize.default.css' );
-    JHTML::stylesheet('libraries/emundus/sumoselect/sumoselect.css');
+    //$document->addStyleSheet('media/com_emundus/css/reset.css');
+    $document->addStyleSheet('media/jui/css/chosen.css');
+    $document->addStyleSheet('media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
+    $document->addStyleSheet('media/com_emundus/css/emundus_files.css?'.$hash);
+    $document->addStyleSheet('libraries/emundus/selectize/dist/css/normalize.css' );
+    $document->addStyleSheet('libraries/emundus/selectize/dist/css/selectize.default.css' );
+    $document->addStyleSheet('libraries/emundus/sumoselect/sumoselect.css');
 }
-JHTML::script('media/com_emundus_vue/chunk-vendors_emundus.js');
 
-JHtml::styleSheet('media/com_emundus_vue/app_emundus.css');
-JHTML::styleSheet('https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined');
+// VUE
+$document->addScript('media/com_emundus_vue/chunk-vendors_emundus.js?'.$hash);
+$document->addStyleSheet('media/com_emundus_vue/app_emundus.css?'.$hash);
 
-/** QUILL */
-JHTML::script('https://cdn.quilljs.com/1.3.6/quill.min.js');
-JHtml::script('components/com_emundus/src/assets/js/quill/image-resize.min.js');
-JHtml::styleSheet('components/com_emundus/src/assets/js/quill/quill-mention/quill.mention.min.css');
-JHtml::script('components/com_emundus/src/assets/js/quill/quill-mention/quill.mention.min.js');
+// QUILL
+if($cdn == 1)
+{
+    $document->addScript('https://cdn.quilljs.com/1.3.6/quill.min.js');
+} else {
+    $document->addScript('media/com_emundus/js/lib/quill.min.js');
+}
+$document->addScript('components/com_emundus/src/assets/js/quill/image-resize.min.js');
+$document->addStyleSheet('components/com_emundus/src/assets/js/quill/quill-mention/quill.mention.min.css');
+$document->addScript('components/com_emundus/src/assets/js/quill/quill-mention/quill.mention.min.js');
 
 // The task 'getproductpdf' can be executed as public (when not signed in and form any view).
 if ($task == 'getproductpdf') {
@@ -687,11 +735,11 @@ if ($user->authorise('core.viewjob', 'com_emundus') && ($name == 'jobs' || $name
 {
     $controller->execute($task);
 }
-elseif ($user->guest && (($name === 'webhook' || $app->input->get('controller', '', 'WORD') === 'webhook') && $format === 'raw') && ($secret === $token || $webhook_token == JApplicationHelper::getHash($token)))
+elseif ($user->guest && ((($name === 'webhook' || $app->input->get('controller', '', 'WORD') === 'webhook') && $format === 'raw') && ($secret === $token || $webhook_token == JApplicationHelper::getHash($token)) || $task == 'getfilereferent'))
 {
     $controller->execute($task);
 }
-elseif ($user->guest && $name != 'emailalert' && $name !='programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign' && $json != 'json') && $task != 'passrequest' && $task != 'getusername')
+elseif ($user->guest && $name != 'emailalert' && $name !='programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign' && $json != 'json') && $task != 'passrequest' && $task != 'getusername' && $task != 'getpasswordsecurity')
 {
     JPluginHelper::importPlugin('emundus', 'custom_event_handler');
     $app->triggerEvent('callEventHandler', ['onAccessDenied', []]);

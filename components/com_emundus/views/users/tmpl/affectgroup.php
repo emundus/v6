@@ -7,10 +7,13 @@
  */
 ?>
 
+<style>
+    form {
+        margin: 0;
+    }
+</style>
+
 <form action = "index.php?option=com_emundus&controller=users&task=affectgroups" id="em-affect-groups" class="em-affect-groups" role="form" method="post">
-	<h3>
-		<?php echo JText::_('COM_EMUNDUS_GROUPS_SELECT_A_GROUP')?>
-	</h3>
 	<fieldset class="em-affect-groups-groupList">
 		<div class="form-group">
 			<label class="control-label em-affect-groups-groupList-label" for="agroups"><?php echo JText::_('COM_EMUNDUS_GROUPS_LIST'); ?></label>

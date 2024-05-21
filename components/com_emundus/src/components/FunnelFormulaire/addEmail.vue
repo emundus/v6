@@ -15,7 +15,7 @@
         :key="'manual-' + manual_trigger"
     />
     <div class="em-flex-row">
-      <span class="em-h4">{{ CandidateAction }}</span>
+      <h4>{{ CandidateAction }}</h4>
     </div>
     <p>{{ TheCandidateDescription }}</p>
 
@@ -50,7 +50,7 @@
               <span class="material-icons-outlined">edit</span>
             </a>
             <a class="em-pointer" @click="removeTrigger(trigger.trigger_id)":title="removeTrig">
-              <span class="material-icons-outlined">close</span>
+              <span class="material-icons-outlined em-red-500-color">close</span>
             </a>
           </div>
         </div>
@@ -58,7 +58,7 @@
     </transition-group>
 
     <div class="em-flex-row">
-      <span class="em-h4 em-mt-16">{{ ManagerAction }}</span>
+      <h4 class="em-mt-16">{{ ManagerAction }}</h4>
     </div>
     <p>{{ ManualDescription }}</p>
 

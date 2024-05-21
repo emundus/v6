@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	4.7.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -123,7 +123,7 @@ class hikashopUpdateHelper{
 			,'plg_hikashoppayment_paygate' => array('HikaShop PayGate payment plugin',0,0)
 			,'plg_hikashoppayment_payjunction' => array('HikaShop PayJunction payment plugin',0,0)
 			,'plg_hikashoppayment_paymentexpress' => array('HikaShop Payment Express PxPost payment plugin',0,0)
-			,'plg_hikashoppayment_paypal' => array('HikaShop Paypal payment plugin',0,0)
+			,'plg_hikashoppayment_paypal' => array('HikaShop Paypal (legacy) payment plugin',0,0)
 			,'plg_hikashoppayment_paypaladvanced' => array('HikaShop Paypal Advanced payment plugin',0,0)
 			,'plg_hikashoppayment_paypalcheckout' => array('HikaShop Paypal Checkout payment plugin',0,0)
 			,'plg_hikashoppayment_paypalexpress' => array('HikaShop Paypal Express Checkout payment plugin',0,0)
@@ -218,7 +218,7 @@ class hikashopUpdateHelper{
 				$extensionData->copyright = '(C) 2011-'.date('Y').' HIKARI SOFTWARE. All rights reserved.';
 				$extensionData->authorEmail = 'contact@hikashop.com';
 				$extensionData->authorUrl = 'https://www.hikashop.com';
-				$extensionData->version = '4.7.3';
+				$extensionData->version = '4.7.4';
 				$extensionData->description = $oneExt->name;
 				$extensionData->group = '';
 				$extensionData->filename = $oneExt->element;
@@ -493,7 +493,7 @@ class hikashopUpdateHelper{
 		$content = file_get_contents($path);
 		if(empty($content)) return;
 
-		$menuFileContent = 'COM_HIKASHOP="HikaShop"'."\r\n".'HIKASHOP="HikaShop"'."\r\n";
+		$menuFileContent = 'COM_HIKASHOP="HikaShop"'."\r\n".'HIKASHOP="HikaShop"'."\r\n".'COM_HIKASHOP_DASHBOARD_VIEW_TITLE="DASHBOARD"'."\r\n";
 		$menuStrings = array('PRODUCTS','CATEGORIES','USERS','ORDERS','CONFIGURATION','DISCOUNTS','HELP','UPDATE_ABOUT');
 		foreach($menuStrings as $oneString){
 			preg_match('#(\n|\r)(HIKA_)?'.$oneString.'="(.*)"#i',$content,$matches);

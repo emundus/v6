@@ -11,16 +11,12 @@ export default {
         const task = create ? 'createdocument' : 'updatedocument';
 
         try {
-            const response = await client().post(
-                'index.php?option=com_emundus&controller=campaign&task=' + task,
-                formData
-            );
+            const response = await client().post('index.php?option=com_emundus&controller=campaign&task=' + task, formData);
 
             return response.data;
         } catch (e) {
             return {
-                status: false,
-                msg: e.message
+                status: false, msg: e.message
             };
         }
     },
@@ -32,43 +28,40 @@ export default {
         });
 
         try {
-            const response = await client().post(
-                'index.php?option=com_emundus&controller=campaign&task=updatedocumentmandatory' ,
-                formData
-            );
+            const response = await client().post('index.php?option=com_emundus&controller=campaign&task=updatedocumentmandatory', formData);
 
             return response.data;
         } catch (e) {
             return {
-                status: false,
-                msg: e.message
+                status: false, msg: e.message
             };
         }
     },
 
-    async getAllCampaigns(filter = '',sort = 'DESC',recherche = '',lim = 9999,page = 0,program = 'all') {
+    async getAllCampaigns(filter = '', sort = 'DESC', recherche = '', lim = 9999, page = 0, program = 'all') {
         try {
             const response = await client().get('index.php?option=com_emundus&controller=campaign&task=getallcampaign', {
                 params: {
-                    filter: filter,
-                    sort: sort,
-                    recherche: recherche,
-                    lim: lim,
-                    page: page,
-                    program: program,
+                    filter: filter, sort: sort, recherche: recherche, lim: lim, page: page, program: program,
                 }
             });
 
             return response.data;
         } catch (e) {
             return {
-                status: false,
-                msg: e.message
+                status: false, msg: e.message
             };
         }
     },
 
-    async createCampaign(form){
+    async createCampaign(form) {
+        // label, start_date and end_date are required
+        if (!form.label || !form.start_date || !form.end_date) {
+            return {
+                status: false, msg: 'Label, start date and end date are required'
+            };
+        }
+
         try {
             const formData = new FormData();
             formData.append('label', JSON.stringify(form.label));
@@ -84,40 +77,57 @@ export default {
             formData.append('limit', form.limit);
             formData.append('limit_status', form.limit_status);
 
-            return await client().post(`index.php?option=com_emundus&controller=campaign&task=createcampaign`,
-                formData,
-                {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
+            return await client().post(`index.php?option=com_emundus&controller=campaign&task=createcampaign`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
                 }
-            );
+            });
         } catch (e) {
             return {
-                status: false,
-                msg: e.message
+                status: false, msg: e.message
             };
         }
     },
 
-    async pinCampaign(cid){
+    async pinCampaign(cid) {
+        // cid must be an integer
+        if (cid < 1) {
+            return {
+                status: false, msg: 'Invalid campaign ID'
+            };
+        }
+
         try {
             const formData = new FormData();
             formData.append('cid', cid);
 
-            return await client().post(`index.php?option=com_emundus&controller=campaign&task=pincampaign`,
-                formData,
-                {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
+            return await client().post(`index.php?option=com_emundus&controller=campaign&task=pincampaign`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
                 }
-            );
+            });
         } catch (e) {
             return {
-                status: false,
-                msg: e.message
+                status: false, msg: e.message
+            };
+        }
+    },
+
+    async getCampaignMoreFormUrl(cid) {
+        if (cid < 1) {
+            return {
+                status: false, msg: 'Invalid campaign ID'
+            };
+        }
+
+        try {
+            const response = await client().get(`/index.php?option=com_emundus&controller=campaign&task=getcampaignmoreformurl&cid=${cid}`);
+
+            return response.data;
+        } catch (e) {
+            return {
+                status: false, msg: e.message
             };
         }
     }
-}
+};

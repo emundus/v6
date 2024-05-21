@@ -80,8 +80,6 @@ class TextData
      *      Use the CONCATENATE() method in the TextData\Concatenate class instead
      * @see TextData\Concatenate::CONCATENATE()
      *
-     * @param array $args
-     *
      * @return string
      */
     public static function CONCATENATE(...$args)

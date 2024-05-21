@@ -25,7 +25,7 @@ class TimeValue
      * Excel Function:
      *        TIMEVALUE(timeValue)
      *
-     * @param null|array|string $timeValue A text string that represents a time in any one of the Microsoft
+     * @param array|string $timeValue A text string that represents a time in any one of the Microsoft
      *                                    Excel time formats; for example, "6:45 PM" and "18:45" text strings
      *                                    within quotation marks that represent time.
      *                                    Date information in time_text is ignored.
@@ -40,11 +40,6 @@ class TimeValue
     {
         if (is_array($timeValue)) {
             return self::evaluateSingleArgumentArray([self::class, __FUNCTION__], $timeValue);
-        }
-
-        // try to parse as time iff there is at least one digit
-        if (is_string($timeValue) && preg_match('/\\d/', $timeValue) !== 1) {
-            return ExcelError::VALUE();
         }
 
         $timeValue = trim($timeValue ?? '', '"');

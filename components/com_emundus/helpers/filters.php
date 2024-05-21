@@ -32,34 +32,31 @@ class EmundusHelperFilters {
 	*/
 	public static function insertValuesInQueryResult($results, $options) {
 		foreach ($results as $key => $result) {
-			if (array_key_exists('params', $result)) {
-				if (is_array($result)) {
+			if (is_array($result) && array_key_exists('params', $result)) {
+				$results[$key]['table_label'] = JText::_($results[$key]['table_label']);
+				$results[$key]['group_label'] = JText::_($results[$key]['group_label']);
+				$results[$key]['element_label'] = JText::_($results[$key]['element_label']);
 
-					$results[$key]['table_label'] = JText::_($results[$key]['table_label']);
-					$results[$key]['group_label'] = JText::_($results[$key]['group_label']);
-					$results[$key]['element_label'] = JText::_($results[$key]['element_label']);
-
-					$params = json_decode($result['params']);
-					foreach ($options as $option) {
-						if (property_exists($params, 'sub_options') && array_key_exists($option, $params->sub_options)) {
-							$results[$key][$option] = implode('|', $params->sub_options->$option);
-						} else {
-							$results[$key][$option] = '';
-						}
+				$params = json_decode($result['params']);
+				foreach ($options as $option) {
+					if (property_exists($params, 'sub_options') && property_exists($params->sub_options, $option)) {
+						$results[$key][$option] = implode('|', $params->sub_options->$option);
+					} else {
+						$results[$key][$option] = '';
 					}
-				} else {
+				}
+			} else if (property_exists($result, 'params')) {
 
-					$results[$key]->table_label = JText::_($results[$key]->table_label);
-					$results[$key]->group_label = JText::_($results[$key]->group_label);
-					$results[$key]->element_label = JText::_($results[$key]->element_label);
+				$results[$key]->table_label = JText::_($results[$key]->table_label);
+				$results[$key]->group_label = JText::_($results[$key]->group_label);
+				$results[$key]->element_label = JText::_($results[$key]->element_label);
 
-					$params = json_decode($result->params);
-					foreach ($options as $option) {
-						if (property_exists($params, 'sub_options') && array_key_exists($option, $params->sub_options)) {
-							$results[$key]->$option = implode('|', $params->sub_options->$option);
-						} else {
-							$results[$key]->$option = '';
-						}
+				$params = json_decode($result->params);
+				foreach ($options as $option) {
+					if (property_exists($params, 'sub_options') && property_exists($params->sub_options, $option)) {
+						$results[$key]->$option = implode('|', $params->sub_options->$option);
+					} else {
+						$results[$key]->$option = '';
 					}
 				}
 			}
@@ -323,10 +320,8 @@ class EmundusHelperFilters {
 					AND element.plugin != "display"
 				ORDER BY formgroup.ordering, element.ordering';
 		try {
-			//die(str_replace("#_", "jos", $query));
 			$db->setQuery($query);
 			return $db->loadObjectList();
-
 		} catch (Exception $e) {
 			throw $e;
 		}
@@ -339,7 +334,7 @@ class EmundusHelperFilters {
 	* @param 	int 	Does the element are an hidden element ?
 	* @return   array 	list of Fabrik element ID used in evaluation form
 	**/
-	function getAllElementsByGroups($groups, $show_in_list_summary=null, $hidden=null) {
+	static function getAllElementsByGroups($groups, $show_in_list_summary=null, $hidden=null) {
 		$elements = [];
 
 		if (!empty($groups)) {
@@ -362,7 +357,7 @@ class EmundusHelperFilters {
 			if ($hidden !== null) {
 				$query->andWhere('jfe.hidden = ' . $hidden);
 			}
-			$query->order('find_in_set(jfg.id, "'. $groups . '"), jfe.ordering');
+			$query->order('jffg.ordering, jfe.ordering');
 			try {
 				$db->setQuery($query);
 				$elements = $db->loadObjectList();

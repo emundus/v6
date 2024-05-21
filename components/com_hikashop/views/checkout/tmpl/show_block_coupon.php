@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	4.7.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -49,6 +49,8 @@ defined('_JEXEC') or die('Restricted access');
 if(!window.checkout) window.checkout = {};
 window.Oby.registerAjax(['checkout.coupon.updated','cart.updated', 'checkout.cart.updated'], function(params){
 	if(params && (params.cart_empty || (params.resp && params.resp.empty))) return;
+	if(window.checkout.isSource(params, <?php echo (int)$this->step; ?>, <?php echo (int)$this->module_position; ?>))
+		return;
 	window.checkout.refreshCoupon(<?php echo (int)$this->step; ?>, <?php echo (int)$this->module_position; ?>);
 });
 window.checkout.refreshCoupon = function(step, id) { return window.checkout.refreshBlock('coupon', step, id); };

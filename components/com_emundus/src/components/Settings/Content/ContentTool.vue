@@ -12,8 +12,8 @@
       <div class="em-modal-header">
         <div class="em-flex-space-between em-flex-row em-pointer" @click.prevent="$modal.hide('contentTool')">
           <div class="em-w-max-content em-flex-row">
-            <span class="material-icons-outlined">arrow_back</span>
-            <span class="em-ml-8">{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
+            <span class="material-icons-outlined">navigate_before</span>
+            <span class="em-ml-8 em-text-neutral-900">{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
           </div>
           <div v-if="saving" class="em-flex-row em-flex-start">
             <div class="em-loader em-mr-8"></div>
@@ -34,8 +34,15 @@
           </div>
         </div>
 
-        <transition name="fade" mode="out-in">
-          <EditArticle v-if="selectedMenu.type === 'article'" :key="currentMenu" :article_id="selectedMenu.id" :article_alias="selectedMenu.alias" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving"></EditArticle>
+        <transition name="fade" mode="out-in" v-if="selectedMenu">
+          <EditArticle v-if="selectedMenu.type === 'article'"
+                       :key="currentMenu"
+                       :article_id="selectedMenu.id" :article_alias="selectedMenu.alias" :category="selectedMenu.category" :published="selectedMenu.published"
+                       class="em-modal-component"
+                       @updateSaving="updateSaving"
+                       @updateLastSaving="updateLastSaving"
+                       @updatePublished="updatePublished"
+          ></EditArticle>
           <EditFooter v-else-if="selectedMenu.type === 'footer'" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving"></EditFooter>
         </transition>
       </div>
@@ -50,57 +57,69 @@
 /* COMPONENTS */
 import EditArticle from "./EditArticle";
 import EditFooter from "./EditFooter";
+import client from "com_emundus/src/services/axiosClient";
+import mixin from "com_emundus/src/mixins/mixin";
 
 export default {
   name: "contentTool",
   props: { },
   components: {EditFooter, EditArticle},
+  mixins: [mixin],
   data() {
     return {
       currentMenu: 1,
-      menus: [
-        {
-          type: "article",
-          id: 52,
-          alias: null,
-          title: "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_HOMEPAGE",
-          index: 1
-        },
-        {
-          type: "article",
-          alias: "mentions-legales",
-          title: "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_LEGAL_MENTION",
-          index: 2
-        },
-        {
-          type: "article",
-          alias: "politique-de-confidentialite-des-donnees",
-          title: "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_DATAS",
-          index: 3
-        },
-        {
-          type: "article",
-          alias: "gestion-de-vos-droits",
-          title: "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_RIGHTS",
-          index: 4
-        },
-        {
-          type: "article",
-          alias: "gestion-des-cookies",
-          title: "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_COOKIES",
-          index: 5
-        },
-        {
-          type: "footer",
-          title: "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_FOOTER",
-          index: 6
-        },
-      ],
+      menus: [],
 
       loading: false,
       saving: false,
       last_save: null,
     }
+  },
+  created() {
+    let index = 1;
+
+    client().get("index.php?option=com_emundus&controller=settings&task=gethomearticle").then(response => {
+      this.menus.push({
+        type: "article",
+        id: response.data.data,
+        title: "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_HOMEPAGE",
+        index: index,
+        category: 'homepage',
+        published: 1
+      });
+
+      client().get("index.php?option=com_emundus&controller=settings&task=getrgpdarticles").then(response => {
+        response.data.data.forEach((article) => {
+          index++;
+          if(article.id) {
+            this.menus.push({
+              type: "article",
+              id: parseInt(article.id),
+              title: article.title,
+              index: index,
+              category: 'rgpd',
+              published: article.published
+            });
+          } else {
+            this.menus.push({
+              type: "article",
+              alias: article.alias,
+              title: article.title,
+              index: index,
+              category: 'rgpd',
+              published: article.published
+            });
+          }
+        });
+
+        index++;
+        this.menus.push({
+          type: "footer",
+          title: "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_FOOTER",
+          index: index
+        });
+      });
+    });
   },
   methods:{
     beforeClose(event) {
@@ -114,6 +133,14 @@ export default {
 
     updateLastSaving(last_save){
       this.last_save = last_save;
+    },
+
+    updatePublished(published){
+      this.menus.forEach((menu) => {
+        if (menu.index === this.currentMenu) {
+          menu.published = Number(published);
+        }
+      });
     }
   },
   computed: {

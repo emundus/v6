@@ -201,23 +201,72 @@ class EmundusModelAdmission extends JModelList
                     $query = preg_replace('#{my->id}#', $current_user->id, $query);
                     $query = preg_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), $query);
                     $this->_elements_default[] = $query;
-                }
-                elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'radiobutton') {
+                } elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'checkbox') {
+                    if (@$group_params->repeat_group_button == 1) {
+                        $element_attribs = json_decode($def_elmt->element_attribs);
+                        $select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
+                        foreach ($element_attribs->sub_options->sub_values as $key => $value) {
+                            $select = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+                        }
+                        $select = str_replace($def_elmt->tab_name . '.' . $def_elmt->element_name,'GROUP_CONCAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.' SEPARATOR ", ")',$select);
 
-                    $element_attribs = json_decode($def_elmt->element_attribs);
-                    $select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
-                    foreach ($element_attribs->sub_options->sub_values as $key => $value) {
-                        $select = 'REPLACE('.$select.', "'.$value.'", "'.$element_attribs->sub_options->sub_labels[$key].'")';
+                        $this->_elements_default[] = '(
+                                    SELECT ' . $select . '
+                                    FROM '.$def_elmt->table_join.'
+                                    WHERE '.$def_elmt->table_join.'.parent_id = '.$def_elmt->tab_name.'.id
+                                  ) AS `'.$def_elmt->table_join.'___' . $def_elmt->element_name.'`';
+                    } else {
+                        $element_attribs = json_decode($def_elmt->element_attribs);
+                        $select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
+                        foreach ($element_attribs->sub_options->sub_values as $key => $value) {
+                            $select = 'REPLACE(' . $select . ', "' . $value . '", "' .
+                                JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+                        }
+                        $this->_elements_default[] = $select . ' AS ' . $def_elmt->tab_name . '___' . $def_elmt->element_name;
                     }
-                    $this->_elements_default[] = $select.' AS '.$def_elmt->tab_name . '___' . $def_elmt->element_name;
+                } elseif ($def_elmt->element_plugin == 'radiobutton') {
+                    if (!empty($group_params->repeat_group_button) && $group_params->repeat_group_button == 1) {
+                        $element_attribs = json_decode($def_elmt->element_attribs);
+                        $select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
+                        foreach ($element_attribs->sub_options->sub_values as $key => $value) {
+                            $select = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+                        }
+                        $select = str_replace($def_elmt->tab_name . '.' . $def_elmt->element_name,'GROUP_CONCAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.' SEPARATOR ", ")',$select);
+                        $this->_elements_default[] = '(
+                                    SELECT ' . $select . '
+                                    FROM '.$def_elmt->table_join.'
+                                    WHERE '.$def_elmt->table_join.'.parent_id = '.$def_elmt->tab_name.'.id
+                                  ) AS `'.$def_elmt->table_join.'___' . $def_elmt->element_name.'`';
+                    } else {
+                        $element_attribs = json_decode($def_elmt->element_attribs);
 
-                } else {
+                        $element_replacement = $def_elmt->tab_name . '___' . $def_elmt->element_name;
+                        $select = $def_elmt->tab_name . '.' . $def_elmt->element_name . ' AS ' . $db->quote($element_replacement) . ', CASE ';
+                        foreach ($element_attribs->sub_options->sub_values as $key => $value) {
+                            $select .= ' WHEN ' . $def_elmt->tab_name . '.' . $def_elmt->element_name . ' = ' . $db->quote($value) . ' THEN ' .  $db->quote(JText::_(addslashes($element_attribs->sub_options->sub_labels[$key]))) ;
+                        }
+                        $select .= ' ELSE ' . $def_elmt->tab_name . '.' . $def_elmt->element_name;
+                        $select .= ' END AS ' . $db->quote($element_replacement);
+
+                        $this->_elements_default[] = $select;
+                    }
+                } elseif ($def_elmt->element_plugin == 'yesno') {
                     if (@$group_params->repeat_group_button == 1) {
                         $this->_elements_default[] = '(
-														SELECT  GROUP_CONCAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.'  SEPARATOR ", ")
-														FROM '.$def_elmt->table_join.'
-														WHERE '.$def_elmt->table_join.'.parent_id = '.$def_elmt->tab_name.'.id
-													  ) AS `'.$def_elmt->table_join.'___' . $def_elmt->element_name.'`';
+                                                        SELECT REPLACE(REPLACE(GROUP_CONCAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.'  SEPARATOR ", "), "0", "' . JText::_('JNO') . '"), "1", "' . JText::_('JYES') . '")
+                                                        FROM '.$def_elmt->table_join.'
+                                                        WHERE '.$def_elmt->table_join.'.parent_id = '.$def_elmt->tab_name.'.id
+                                                      ) AS `'.$def_elmt->table_join.'___' . $def_elmt->element_name.'`';
+                    } else {
+                        $this->_elements_default[] = 'REPLACE(REPLACE('.$def_elmt->tab_name.'.'.$def_elmt->element_name.', "0", "' . JText::_('JNO') . '"), "1", "' . JText::_('JYES') . '")  AS '.$def_elmt->tab_name.'___'.$def_elmt->element_name;
+                    }
+                }else {
+                    if (@$group_params->repeat_group_button == 1) {
+                        $this->_elements_default[] = '(
+                                                        SELECT  GROUP_CONCAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.'  SEPARATOR ", ")
+                                                        FROM '.$def_elmt->table_join.'
+                                                        WHERE '.$def_elmt->table_join.'.parent_id = '.$def_elmt->tab_name.'.id
+                                                      ) AS `'.$def_elmt->table_join.'___' . $def_elmt->element_name.'`';
                     } else {
                         $this->_elements_default[] = $def_elmt->tab_name.'.'.$def_elmt->element_name.' AS '.$def_elmt->tab_name.'___'.$def_elmt->element_name;
                     }
@@ -271,52 +320,49 @@ class EmundusModelAdmission extends JModelList
      * @return array list of Fabrik element ID used in admission form
      * @throws Exception
      */
-    public function getAdmissionElementsName($show_in_list_summary = 1, $hidden = 0, $code = null) {
+    public function getAdmissionElementsName($show_in_list_summary = 1, $hidden = 0, $code = null, $all = null) {
+	    $elements = [];
         $session = JFactory::getSession();
         $h_list = new EmundusHelperList;
 
-        if ($session->has('filt_params')) {
-
+        if ($session->has('filt_params') || !empty($all)) {
             $filt_params = $session->get('filt_params');
 
-            if (is_array($filt_params['programme']) && count(@$filt_params['programme']) > 0) {
-
+            if (!empty($filt_params) && !empty($filt_params['programme']) && is_array($filt_params['programme']) && $filt_params['programme'][0] != '%') {
                 foreach (array_unique($filt_params['programme']) as $value) {
                     $groups = $this->getGroupsAdmissionByProgramme($value);
-                    if (empty($groups)) {
-                        $decision_elt_list = array();
-                    } else {
+                    if (!empty($groups)) {
                         $decision_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
-                        if (count($decision_elt_list) > 0) {
+
+                        if (!empty($decision_elt_list)) {
                             foreach ($decision_elt_list as $del) {
-                                if (isset($del->element_id) && !empty($del->element_id)) {
+                                if (!empty($del->element_id)) {
                                     $elements[] = $h_list->getElementsDetailsByID($del->element_id)[0];
                                 }
                             }
                         }
                     }
                 }
-            } else {
-                if (!empty($code)) {
-                    foreach ($code as $value) {
-                        $groups = $this->getGroupsAdmissionByProgramme($value);
-                        if (empty($groups)) {
-                            $decision_elt_list = array();
-                        } else {
-                            $decision_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
-                            if (count($decision_elt_list) > 0) {
-                                foreach ($decision_elt_list as $del) {
-                                    if (isset($del->element_id) && !empty($del->element_id)) {
-                                        $elements[] = $h_list->getElementsDetailsByID($del->element_id)[0];
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+            } else if (!empty($code)) {
+	            foreach ($code as $value) {
+		            $groups = $this->getGroupsAdmissionByProgramme($value);
+
+		            if (!empty($groups)) {
+			            $decision_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
+
+			            if (!empty($decision_elt_list)) {
+				            foreach ($decision_elt_list as $del) {
+					            if (!empty($del->element_id)) {
+						            $elements[] = $h_list->getElementsDetailsByID($del->element_id)[0];
+					            }
+				            }
+			            }
+		            }
+	            }
             }
         }
-        return @$elements;
+
+        return $elements;
     }
 
     /**
@@ -330,7 +376,9 @@ class EmundusModelAdmission extends JModelList
      **@throws Exception
      */
     public function getApplicantAdmissionElementsName($show_in_list_summary=1, $hidden=0, $code = null, $all = null) {
-        $session = JFactory::getSession();
+	    $elements = [];
+
+		$session = JFactory::getSession();
         $h_list = new EmundusHelperList;
         $jinput = JFactory::getApplication()->input;
         $view = $jinput->getString('view', null);
@@ -340,9 +388,9 @@ class EmundusModelAdmission extends JModelList
 
             $filt_params = $session->get('filt_params');
 
-            if ($view != 'export_select_columns' && is_array(@$filt_params['programme']) && count(@$filt_params['programme']) > 0) {
+            if ($view != 'export_select_columns' && !empty($filt_params['programme']) && is_array(@$filt_params['programme'])  && $filt_params['programme'][0] != '%') {
                 $programmes = array_unique($filt_params['programme']);
-            } elseif(!empty($code)) {
+            } else if (!empty($code)) {
                 $programmes = array_unique($code);
             } else {
                 return array();
@@ -350,14 +398,11 @@ class EmundusModelAdmission extends JModelList
 
             foreach ($programmes as $value) {
                 $groups = $this->getGroupsApplicantAdmissionByProgramme($value);
-                if (empty($groups)) {
-                    $admission_elt_list = array();
-                } else {
+                if (!empty($groups)) {
                     $admission_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
-
-                    if (count($admission_elt_list)>0) {
+                    if (!empty($admission_elt_list)) {
                         foreach ($admission_elt_list as $ael) {
-                            if (isset($ael->element_id) && !empty($ael->element_id)) {
+                            if (!empty($ael->element_id)) {
                                 $elements[] = $h_list->getElementsDetailsByID($ael->element_id)[0];
                             }
                         }
@@ -379,12 +424,12 @@ class EmundusModelAdmission extends JModelList
     public function getAllAdmissionElements($show_in_list_summary, $programme_code) {
         $session = JFactory::getSession();
 
+		$get_all = false;
         if ($session->has('filt_params')) {
             $elements_id = array();
             $filt_params = $session->get('filt_params');
 
             if (is_array(@$filt_params['programme']) && $filt_params['programme'][0] != '%') {
-
                 foreach ($filt_params['programme'] as $value) {
                     if ($value == $programme_code) {
                         $groups = $this->getGroupsAdmissionByProgramme($value);
@@ -398,21 +443,25 @@ class EmundusModelAdmission extends JModelList
                         }
                     }
                 }
-
             } else {
-
-                $groups = $this->getGroupsAdmissionByProgramme($programme_code);
-                if (!empty($groups)) {
-                    $admission_elt_list = $this->getAllElementsByGroups($groups, $show_in_list_summary); // $show_in_list_summary
-                    if (count($admission_elt_list)>0) {
-                        foreach ($admission_elt_list as $eel) {
-                            $elements_id[] = $eel->element_id;
-                        }
-                    }
-                }
+	            $get_all = true;
             }
-
+        } else {
+			$get_all = true;
         }
+
+		if ($get_all) {
+			$groups = $this->getGroupsAdmissionByProgramme($programme_code);
+			if (!empty($groups)) {
+				$admission_elt_list = $this->getAllElementsByGroups($groups, $show_in_list_summary); // $show_in_list_summary
+				if (count($admission_elt_list)>0) {
+					foreach ($admission_elt_list as $eel) {
+						$elements_id[] = $eel->element_id;
+					}
+				}
+			}
+		}
+
         return @$elements_id;
     }
 
@@ -826,7 +875,7 @@ class EmundusModelAdmission extends JModelList
                 if (!isset($lastTab))
                     $lastTab = array();
                 if (!in_array($elt->tab_name, $lastTab))
-                    $leftJoin .= 'left join ' . $elt->tab_name .  ' ON '. $elt->tab_name .'.fnum = c.fnum ';
+                    $leftJoin .= 'left join ' . $elt->tab_name .  ' ON '. $elt->tab_name .'.fnum = jecc.fnum ';
                 if(!empty($elt->table_join)) {
                     $lastTab[] = $elt->table_join;
                     $group_by .= ', '.$elt->table_join.'___'.$elt->element_name;
@@ -1050,21 +1099,22 @@ class EmundusModelAdmission extends JModelList
     }
 
     // get string of fabrik group ID use for application form
-    public function getGroupsAdmissionByProgramme($code){
-        $db = $this->getDbo();
-        $query = 'select fabrik_admission_group_id from #__emundus_setup_programmes where code like '.$db->Quote($code);
+    public function getGroupsAdmissionByProgramme($code) {
+		$group_ids = '';
 
-        try {
+	    if (!empty($code)) {
+		    $db = $this->getDbo();
+		    $query = 'select fabrik_admission_group_id from #__emundus_setup_programmes where code like '.$db->Quote($code);
 
-            if (!empty($code)) {
-                $db->setQuery($query);
-                return $db->loadResult();
-            } else {
-                return null;
-            }
-        } catch(Exception $e) {
-            throw $e;
-        }
+		    try {
+			    $db->setQuery($query);
+			    $group_ids = $db->loadResult();
+		    } catch(Exception $e) {
+			    JLog::add('Failed to get admission fabrik group ID for programme '.$code.' :: '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+		    }
+	    }
+
+		return $group_ids;
     }
 
     // get string of fabrik group ID use for applicant application form

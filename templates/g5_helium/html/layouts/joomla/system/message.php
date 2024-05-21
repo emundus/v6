@@ -25,20 +25,35 @@ if (version_compare(JVERSION, 4.0, '>')) {
 
 $msgList = $displayData['msgList'];
 
+
 ?>
 <div id="system-message-container">
     <?php if (is_array($msgList) && !empty($msgList)) : ?>
     <div id="system-message">
         <?php foreach ($msgList as $type => $msgs) : ?>
+            <?php
+	        switch ($type) {
+                case 'error':
+                    $icon = 'cancel';
+                    break;
+                case 'warning':
+                    $icon = 'error';
+                    break;
+                case 'success':
+                    $icon = 'check_circle';
+                    break;
+                default:
+                    $icon = 'info';
+                    break;
+            }
+            ?>
             <div class="alert alert-<?php echo $type; ?>">
-                <?php // This requires JS so we should add it trough JS. Progressive enhancement and stuff. ?>
-                <a class="close" data-dismiss="alert">×</a>
 
                 <?php if (!empty($msgs)) : ?>
-                    <h4 class="alert-heading"><?php echo Text::_($type); ?></h4>
+                    <span class="material-icons"><?php echo $icon ?></span>
                     <div>
                         <?php foreach ($msgs as $msg) : ?>
-                            <p><?php echo $msg; ?></p>
+                            <p id="alert-message-text"><?php echo $msg; ?></p>
                         <?php endforeach; ?>
                     </div>
                 <?php endif; ?>

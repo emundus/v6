@@ -150,7 +150,12 @@ class EmundusHelperAccess {
 			if ($canAccess > 0) {
 				return true;
 			} elseif ($canAccess == 0 || $canAccess === null) {
-				$groups = JFactory::getSession()->get('emundusUser')->emGroups;
+                if (!empty($user_id)) {
+                    $groups = $m_users->getUserGroups($user_id, 'Column');
+                } else {
+                    $groups = JFactory::getSession()->get('emundusUser')->emGroups;
+                }
+
 				if (!empty($groups) && count($groups) > 0) {
 					return EmundusHelperAccess::canAccessGroup($groups, $action_id, $crud, $fnum);
 				} else {
@@ -160,7 +165,13 @@ class EmundusHelperAccess {
 				return false;
 			}
 		} else {
-			return EmundusHelperAccess::canAccessGroup(JFactory::getSession()->get('emundusUser')->emGroups, $action_id, $crud);
+            if (!empty($user_id)) {
+                $groups = $m_users->getUserGroups($user_id, 'Column');
+            } else {
+                $groups = JFactory::getSession()->get('emundusUser')->emGroups;
+            }
+
+			return EmundusHelperAccess::canAccessGroup($groups, $action_id, $crud);
 		}
 	}
 
@@ -195,13 +206,14 @@ class EmundusHelperAccess {
 			} elseif ($canAccess == 0 || $canAccess === null) {
 				// We filter the list of groups to take into account only the groups attached to the fnum's programme OR who are attached to no programme.
 				$gids = $m_users->getEffectiveGroupsForFnum($gids, $fnum);
+
 				return EmundusHelperAccess::canAccessGroup($gids, $action_id, $crud);
 			} else {
 				return false;
 			}
 		} else {
 			$groupsActions = $m_users->getGroupsAcl($gids);
-            if (count($groupsActions) > 0) {
+            if (!empty($groupsActions)) {
                 foreach ($groupsActions as $action) {
                     if ($action['action_id'] == $action_id && $action[$crud] == 1) {
                         return true;
@@ -284,6 +296,95 @@ class EmundusHelperAccess {
 		return false;
 	}
 
+    /**
+     * @param $user_id
+     * @param $fnum
+     * @return bool
+     *
+     * @since version
+     */
+    public static function isUserAllowedToAccessFnum($user_id, $fnum) {
+        $allowed = false;
+
+        if (empty($user_id)) {
+            $user_id = JFactory::getUser()->id;
+        }
+
+        if (!empty($user_id) && !empty($fnum)) {
+	        $db = JFactory::getDbo();
+	        $query = $db->getQuery(true);
+
+			// is the fnum mine ?
+			$query->select('id')
+				->from($db->quoteName('#__emundus_campaign_candidature'))
+				->where('applicant_id = '.$db->quote($user_id))
+				->andWhere('fnum LIKE '.$db->quote($fnum));
+			$db->setQuery($query);
+			$ccid = $db->loadResult();
+
+			if (!empty($ccid)) {
+				$allowed = true;
+			} else {
+				// does user is associated to the fnum directly?
+				$query->clear()
+					->select('id')
+					->from('#__emundus_users_assoc')
+					->where('user_id = '.$db->quote($user_id))
+					->andWhere('fnum LIKE '.$db->quote($fnum))
+					->andWhere('action_id = 1')
+					->andWhere('r = 1');
+				$db->setQuery($query);
+				$allowed_to_read = $db->loadResult();
+
+				if ($allowed_to_read) {
+					$allowed = true;
+				} else {
+					// does the user have common groups associated to the fnum?
+					$query->clear()
+						->select('group_id')
+						->from('#__emundus_groups')
+						->where('user_id = '.$db->quote($user_id));
+					$db->setQuery($query);
+					$user_groups = $db->loadColumn();
+
+					// first, we check groups associated manually to the file
+					$query->clear()
+						->select($db->quoteName('group_id'))
+						->from($db->quoteName('#__emundus_group_assoc'))
+						->where($db->quoteName('fnum').' LIKE '.$db->quote($fnum))
+						->andWhere($db->quoteName('action_id').' = 1')
+						->andWhere($db->quoteName('r').' = 1');
+					$db->setQuery($query);
+					$groups_assoc = $db->loadColumn();
+
+					$groups_in_both_assoc = array_intersect($user_groups,$groups_assoc);
+
+					if (!empty($groups_in_both_assoc)) {
+						$allowed = true;
+					} else {
+						// if there is none, we check files associated to the program
+						require_once (JPATH_ROOT . '/components/com_emundus/models/users.php');
+						$m_users = new EmundusModelUsers();
+						$file_groups = $m_users->getEffectiveGroupsForFnum($user_groups, $fnum, true);
+
+						$groups_in_both_program = array_intersect($user_groups, $file_groups);
+						if (!empty($groups_in_both_program)) {
+							$groups_actions = $m_users->getGroupsAcl($groups_in_both_program);
+
+							foreach ($groups_actions as $action) {
+								if ($action['action_id'] == 1 && $action['r'] == 1) {
+									$allowed = true;
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+        }
+
+        return $allowed;
+    }
 
 	/**
 	 *

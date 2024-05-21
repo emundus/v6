@@ -18,8 +18,23 @@ JHtml::_('bootstrap.tooltip');
 // Load user_profile plugin language
 $lang = JFactory::getLanguage();
 $lang->load('plg_user_profile', JPATH_ADMINISTRATOR);
+
+require_once (JPATH_SITE.'/components/com_emundus/helpers/cache.php');
+$hash = EmundusHelperCache::getCurrentGitHash();
+
 $document = JFactory::getDocument();
-$document->addStyleSheet("templates/g5_helium/html/com_users/profile/style/com_users_profile.css");
+$document->addStyleSheet("templates/g5_helium/html/com_users/profile/style/com_users_profile.css?".$hash);
+
+$user_module = JModuleHelper::getModule('mod_emundus_user_dropdown');
+$back_url = '/';
+if(!empty($user_module->id)) {
+    $params = json_decode($user_module->params);
+    $link_edit_profile = $params->link_edit_profile;
+	$menu = JFactory::getApplication()->getMenu()->getItem($link_edit_profile);
+    if(!empty($menu->id)) {
+	    $back_url = JRoute::_($menu->link . '&Itemid=' . $menu->id);
+    }
+}
 ?>
 <div class="profile-edit<?php echo $this->pageclass_sfx; ?>">
 	<?php if ($this->params->get('show_page_heading')) : ?>
@@ -48,7 +63,13 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/profile/style/com_u
 		}
 	</script>
 	<form id="member-profile" action="<?php echo JRoute::_('index.php?option=com_users&task=profile.save'); ?>" method="post" class="form-validate form-horizontal well" enctype="multipart/form-data">
-		<?php // Iterate through the form fieldsets and display each one. ?>
+        <div>
+            <a class="em-back-button em-pointer" style="justify-content: start; padding: 20px 0" href="<?php echo $back_url ?>">
+                <span class="material-icons em-mr-4">navigate_before</span>
+				<?php echo JText::_('GO_BACK'); ?>
+            </a>
+        </div>
+        <?php // Iterate through the form fieldsets and display each one. ?>
 		<?php foreach ($this->form->getFieldsets() as $group => $fieldset) : ?>
 			<?php $fields = $this->form->getFieldset($group); ?>
 			<?php if (count($fields)) : ?>
@@ -56,9 +77,9 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/profile/style/com_u
 					<?php // If the fieldset has a label set, display it as the legend. ?>
 					<?php if (isset($fieldset->label)) : ?>
                         <div class="em-heading-form">
-						<legend>
+						<h1>
 							<?php echo JText::_($fieldset->label); ?>
-						</legend>
+						</h1>
                         </div>
 					<?php endif; ?>
 					<?php if (isset($fieldset->description) && trim($fieldset->description)) : ?>
@@ -160,7 +181,7 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/profile/style/com_u
 		<?php endif; ?>
 		<div class="control-group">
 			<div class="controls">
-				<a class="btn" href="index.php" title="<?php echo JText::_('JCANCEL'); ?>">
+				<a class="btn" href="/mon-profil" title="<?php echo JText::_('JCANCEL'); ?>">
 					<?php echo JText::_('JCANCEL'); ?>
 				</a>
                 <button type="submit" class="btn btn-primary validate">

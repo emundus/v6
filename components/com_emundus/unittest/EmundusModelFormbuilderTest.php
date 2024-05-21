@@ -169,7 +169,7 @@ class EmundusModelFormbuilderTest extends TestCase
 
         if (!empty($group['group_id'])) {
             $this->assertGreaterThan(0, $group['group_id'], 'Le groupe a bien été créé.');
-            $this->m_formbuilder->updateGroupParams($group['group_id'], ['is_sample' => true]);
+            $this->m_formbuilder->updateGroupParams($group['group_id'], ['is_sample' => true, 'repeat_group_button' => 0]);
 
             $db = JFactory::getDbo();
             $query = $db->getQuery(true);
@@ -206,7 +206,7 @@ class EmundusModelFormbuilderTest extends TestCase
 
 
             $new_intro = 'Mon introduction';
-            $this->m_formbuilder->updateGroupParams($group['group_id'], ['intro' => $new_intro, 'is_sample' => true], 'fr');
+            $this->m_formbuilder->updateGroupParams($group['group_id'], ['intro' => $new_intro, 'is_sample' => true, 'repeat_group_button' => 0], 'fr');
 
             $db = JFactory::getDbo();
             $query = $db->getQuery(true);
@@ -473,5 +473,24 @@ class EmundusModelFormbuilderTest extends TestCase
 				$this->assertNotEmpty($table_exists, 'createDatabaseTableFromTemplate truly creates the new table');
 			}
 		}
+	}
+
+	public function testgetSqlDropdownOptions() {
+		$table = 'data_country';
+		$column = 'iso2';
+		$label = 'label';
+
+		$datas = $this->m_formbuilder->getSqlDropdownOptions($table, $column, $label,1);
+		$this->assertNotEmpty($datas, 'getSqlDropdownOptions returns the datas');
+
+		$datas = $this->m_formbuilder->getSqlDropdownOptions($table, $column, $label,0);
+		$this->assertEmpty($datas, 'getSqlDropdownOptions returns empty datas because data_country need to be translated');
+
+		$table = 'jos_emundus_campaign_candidature';
+		$column = 'id';
+		$label = 'fnum';
+		$datas = $this->m_formbuilder->getSqlDropdownOptions($table, $column, $label,0);
+		$this->assertEmpty($datas, 'getSqlDropdownOptions returns empty datas because we do not have rights to get tables not available in elements params');
+
 	}
 }

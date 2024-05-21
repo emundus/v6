@@ -26,4 +26,29 @@ describe('globalSettings.vue type campaign', () => {
         const cards = wrapper.findAll('.em-grid-3 .em-shadow-cards');
         expect(cards.length).toEqual(wrapper.vm.displayedMenus.length);
     });
+
+    // by default there should be 4 displayed menus
+    it('globalSettings, should display 4 menus', () => {
+        expect(wrapper.vm.displayedMenus.length).toEqual(4);
+    });
+});
+
+describe('globalSettings.vue menus', () => {
+    const wrapper = shallowMount(globalSettings, {
+        props: {
+            actualLanguage: 'fr',
+            coordinatorAccess: 1,
+            manyLanguages: 1
+        },
+        localVue
+    });
+
+    const menus = wrapper.vm.$data.menus;
+
+    it('If i change the menu, the menuHighlight should change after 200ms', () => {
+        wrapper.vm.changeMenu(menus[1]);
+        setTimeout(() => {
+            expect(wrapper.vm.menuHighlight).toEqual(menus[1].index);
+        }, 210);
+    });
 });

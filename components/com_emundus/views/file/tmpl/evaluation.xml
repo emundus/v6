@@ -91,6 +91,17 @@
 						<option value="0">JNO</option>
 						<option value="1">JYES</option>
 					</field>
+					<field name="display_tag_assoc"
+						   type="radio"
+						   label="Afficher les étiquettes associées"
+						   description=""
+						   class="btn-group btn-group-yesno"
+						   default="0"
+						   filter="integer"
+					>
+						<option value="0">JNO</option>
+						<option value="1">JYES</option>
+					</field>
 					<field name="display_filters"
 						   type="radio"
 						   label="Afficher les filtres"

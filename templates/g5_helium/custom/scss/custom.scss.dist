@@ -45,7 +45,7 @@ body {
 }
 
 h1, h2, h3{
-    color: $base-primary-color !important;
+    color: var(--em-primary-color) !important;
     margin-top: 50px;
     margin-bottom: 50px;
     font-weight: 400;
@@ -218,7 +218,7 @@ legend {
 
 
 body {
-    border-top: 5px solid $base-secondary-color !important;
+    border-top: 5px solid var(--em-secondary-color) !important;
     line-height: normal !important;
     p {
         margin: 0 !important;
@@ -230,28 +230,28 @@ body {
 
 /***************** BOUTONS *****************/
 button.btn-primary {
-    background: $base-secondary-color !important;
-    border: 1px solid $base-secondary-color !important;
+    background: var(--em-secondary-color) !important;
+    border: 1px solid var(--em-secondary-color) !important;
     border-radius: 0 !important;
     padding: 8px 12px !important;
 
     &:hover {
         background-color: transparent !important;
-        color: $base-secondary-color !important;
+        color: var(--em-secondary-color) !important;
         outline: none;
     }
 }
 
 a.btn,
 span.btn {
-    background: $base-primary-color !important;
-    border: 1px solid $base-primary-color !important;
+    background: var(--em-primary-color) !important;
+    border: 1px solid var(--em-primary-color) !important;
     border-radius: 0 !important;
     padding: 8px 12px !important;
 
     &:hover {
         background-color: transparent !important;
-        color: $base-primary-color !important;
+        color: var(--em-primary-color) !important;
         outline: none;
     }
 }
@@ -286,8 +286,8 @@ a#em-doc-zip,
 .toggle-addoption.btn,
 .candidacy-files-list a#send,
 .choice-statut-btn {
-    background: $base-secondary-color !important;
-    border: 1px solid $base-secondary-color !important;
+    background: var(--em-secondary-color) !important;
+    border: 1px solid var(--em-secondary-color) !important;
     text-shadow: none;
     text-transform: none;
 }
@@ -362,31 +362,31 @@ a#em-doc-zip:focus,
 .choice-statut-btn:active,
 .choice-statut-btn:focus {
     background-color: transparent !important;
-    color: $base-secondary-color !important;
+    color: var(--em-secondary-color) !important;
     outline: none;
 }
 
 .span4.offset1 > .btn-group > button.button {
-    background: $base-primary-color !important;
-    border: 1px solid $base-primary-color !important;
+    background: var(--em-primary-color) !important;
+    border: 1px solid var(--em-primary-color) !important;
     border-radius: 0 !important;
 
     &:hover {
         background-color: transparent !important;
-        color: $base-primary-color !important;
+        color: var(--em-primary-color) !important;
         outline: none;
     }
 
 }
 
 .trombi_download {
-    background-color: $base-secondary-color !important;
-    border: 1px solid $base-secondary-color !important;
+    background-color: var(--em-secondary-color) !important;
+    border: 1px solid var(--em-secondary-color) !important;
     text-shadow: none;
 
     &:hover {
         background-color: transparent !important;
-        color: $base-secondary-color !important;
+        color: var(--em-secondary-color) !important;
         outline: none;
     }
 }
@@ -405,22 +405,22 @@ button#back,
 .fabrikUploadDelete .btn,
 #em_select_filter #del-filter,
 .btn-toolbar .btn-group:nth-child(2) .btn {
-    background: $base-primary-color !important;
-    border: 1px solid $base-primary-color !important;
+    background: var(--em-primary-color) !important;
+    border: 1px solid var(--em-primary-color) !important;
     text-shadow: none;
     text-transform: none;
 
     &:hover,
     &:focus {
         background-color: transparent !important;
-        color: $base-primary-color !important;
+        color: var(--em-primary-color) !important;
         outline: none;
     }
 }
 
 .pull-right #em-prev-file, .pull-right #em-next-file {
     &:hover {
-        color: $base-secondary-color !important;
+        color: var(--em-secondary-color) !important;
     }
 }
 
@@ -440,7 +440,7 @@ input[type="url"]:hover,
 input[type="week"]:hover,
 input:not([type]):hover,
 textarea:hover {
-    border-color: $base-secondary-color;
+    border-color: var(--em-secondary-color);
     box-shadow: 0 0 4px rgba(62, 138, 197, 0.5);
 }
 
@@ -487,30 +487,30 @@ textarea:hover {
 #em-delete-files,
 .panel-body .content .btn-info,
 .panel-body .content .btn-sm {
-    background-color: $base-primary-color !important;
-    border: 1px solid darken($base-primary-color, 10%);
+    background-color: var(--em-primary-color) !important;
+    border: 1px solid darken(var(--em-primary-color), 10%);
 
     &:hover {
-        background-color: darken($base-primary-color, 10%) !important;
+        background-color: darken(var(--em-primary-color), 10%) !important;
         color: #fff !important;
-        border: 1px solid darken($base-primary-color, 10%) !important;
+        border: 1px solid darken(var(--em-primary-color), 10%) !important;
     }
 }
 
 .em-personalInfo > a {
-    background-color: $base-primary-color !important;
+    background-color: var(--em-primary-color) !important;
     border: none !important;
 }
 
 .g-back-office-emundus-tableau #em-hide-filters {
-    border: 0 solid $base-primary-color;
-    background-color: $base-primary-color;
+    border: 0 solid var(--em-primary-color);
+    background-color: var(--em-primary-color);
 
     &:hover,
     &:focus,
     &:active {
-        border: darken($base-primary-color, 10%);
-        background-color: darken($base-primary-color, 10%);
+        border: darken(var(--em-primary-color), 10%);
+        background-color: darken(var(--em-primary-color), 10%);
     }
 }
 
@@ -531,7 +531,7 @@ a.btn-attach:active {
     &:hover,
     &:focus,
     &:active {
-        color: $base-secondary-color !important;
+        color: var(--em-secondary-color) !important;
     }
 }
 
@@ -542,7 +542,7 @@ a.btn-attach:active {
 .btn:hover .caret,
 .btn:focus .caret,
 .btn:hover .active {
-    border-top: 4px solid $base-secondary-color !important;
+    border-top: 4px solid var(--em-secondary-color) !important;
 }
 
 .btn-info,
@@ -626,15 +626,15 @@ p.readmore .btn,
 .em-print-button a {
     text-shadow: none !important;
     padding: 8px 12px !important;
-    border: 1px solid $base-primary-color !important;
+    border: 1px solid var(--em-primary-color) !important;
     color: #fff !important;
-    background: $base-primary-color !important;
+    background: var(--em-primary-color) !important;
 
     &:hover,
     &:focus,
     &:active {
-        border: 1px solid $base-primary-color !important;
-        color: $base-primary-color !important;
+        border: 1px solid var(--em-primary-color) !important;
+        color: var(--em-primary-color) !important;
         background: transparent !important;
     }
 }
@@ -645,13 +645,13 @@ p.readmore .btn,
 
 .em-send-button a {
     margin-top: 1rem !important;
-    background: $base-secondary-color !important;
+    background: var(--em-secondary-color) !important;
     text-shadow: none !important;
     width: 100% !important;
     padding: 8px 12px !important;
     font-size: 1rem !important;
     color: #ffffff !important;
-    border: 1px solid $base-secondary-color !important;
+    border: 1px solid var(--em-secondary-color) !important;
     display: flex !important;
     justify-content: center;
 
@@ -659,8 +659,8 @@ p.readmore .btn,
     &:focus,
     &:active {
         background: transparent !important;
-        color: $base-secondary-color !important;
-        border: 1px solid $base-secondary-color !important;
+        color: var(--em-secondary-color) !important;
+        border: 1px solid var(--em-secondary-color) !important;
     }
 }
 
@@ -727,7 +727,7 @@ p.readmore .btn,
     border-radius: 1px;
     height: 5px;
     width: 32px;
-    background: $base-primary-color;
+    background: var(--em-primary-color);
     position: absolute;
     display: block;
     content: '';
@@ -738,7 +738,7 @@ p.readmore .btn,
             border-radius: 1px;
             height: 5px;
             width: 32px;
-            background: $base-primary-color;
+            background: var(--em-primary-color);
             position: absolute;
             display: block;
             content: '';
@@ -749,7 +749,7 @@ p.readmore .btn,
             border-radius: 1px;
             height: 5px;
             width: 32px;
-            background: $base-primary-color;
+            background: var(--em-primary-color);
             position: absolute;
             display: block;
             content: '';
@@ -759,8 +759,8 @@ p.readmore .btn,
 
 /* USER MENU */
 #userDropdownIcon {
-    background-color: $base-primary-color !important;
-    border: 2px solid $base-primary-color !important;
+    background-color: var(--em-primary-color) !important;
+    border: 2px solid var(--em-primary-color) !important;
     color: #ffffff !important;
     box-shadow: none !important;
 
@@ -768,7 +768,7 @@ p.readmore .btn,
     &.active,
     &:hover:active {
         background-color: transparent !important;
-        color: $base-primary-color !important;
+        color: var(--em-primary-color) !important;
     }
 }
 
@@ -776,7 +776,7 @@ p.readmore .btn,
 
     li > a:hover,
     .active > a {
-        background: $base-primary-color !important;
+        background: var(--em-primary-color) !important;
         color: #ffffff;
     }
 }
@@ -792,12 +792,12 @@ p.readmore .btn,
     li:hover a,
     li:active a,
     li:focus a {
-        color: $base-primary-color;
+        color: var(--em-primary-color);
     }
 }
 
 .active a.item {
-    //color: $base-primary-color !important;
+    //color: var(--em-primary-color) !important;
 }
 
 .g-main-nav .g-toplevel > li.g-parent .g-menu-parent-indicator::after {
@@ -810,7 +810,7 @@ p.readmore .btn,
 
 .g-main-nav .g-toplevel > li.active .g-menu-parent-indicator::after,
 .g-main-nav .g-toplevel > li:hover .g-menu-parent-indicator::after {
-    color: $base-primary-color !important;
+    color: var(--em-primary-color) !important;
 }
 
 
@@ -827,12 +827,12 @@ ul.g-dropdown.g-dropdown-right.g-fade {
     &:focus,
     &:active,
     &:focus-within {
-        color: $base-primary-color !important;
+        color: var(--em-primary-color) !important;
     }
 }
 
 .g-main-nav .g-standard .g-sublevel .current a span {
-    color: $base-primary-color;
+    color: var(--em-primary-color);
 }
 
 .navsearch-content input[type="text"]:focus,
@@ -846,14 +846,14 @@ ul.g-dropdown.g-dropdown-right.g-fade {
 }
 
 ul.nav.nav-tabs.nav-stacked span {
-    color: $base-primary-color;
+    color: var(--em-primary-color);
     cursor: pointer;
 
     &:hover,
     &:focus,
     &:active,
     &:focus-within {
-        color: $base-primary-color;
+        color: var(--em-primary-color);
         text-decoration: underline;
     }
 }
@@ -874,24 +874,24 @@ ul.nav.nav-tabs.nav-stacked span {
     justify-content: space-between;
 
     .navrowtabs #tabslist a {
-        color: $base-secondary-color;
+        color: var(--em-secondary-color);
     }
 
     .navorder a {
-        color: $base-secondary-color;
+        color: var(--em-secondary-color);
     }
 
     .navsearch .navsearch-content {
         .input-group-btn button {
             margin-left: -5px !important;
             height: 34px !important;
-            background: $base-secondary-color;
+            background: var(--em-secondary-color);
             margin-bottom: 0;
             border-top-left-radius: 0;
             border-bottom-left-radius: 0;
 
             &:hover {
-                background-color: darken($base-secondary-color, 10%);
+                background-color: darken(var(--em-secondary-color), 10%);
             }
         }
 
@@ -923,8 +923,8 @@ ul.nav.nav-tabs.nav-stacked span {
     }
 
     &.blue {
-        background: $base-secondary-color;
-        border-color: $base-secondary-color;
+        background: var(--em-secondary-color);
+        border-color: var(--em-secondary-color);
         width: 1000vw;
     }
 
@@ -945,7 +945,7 @@ ul.nav.nav-tabs.nav-stacked span {
 }
 
 ul.nav.nav-tabs.nav-stacked span {
-    color: $base-primary-color;
+    color: var(--em-primary-color);
     cursor: pointer;
 
     &::before {
@@ -958,7 +958,7 @@ ul.nav.nav-tabs.nav-stacked span {
     &:focus,
     &:active,
     &:focus-within {
-        color: $base-primary-color;
+        color: var(--em-primary-color);
         text-decoration: underline;
     }
 }
@@ -966,8 +966,8 @@ ul.nav.nav-tabs.nav-stacked span {
 
 /* MODAL INSCRIPTION*/
 .swal2-icon.swal2-question {
-    border-color: $base-primary-color !important;
-    color: $base-primary-color !important;
+    border-color: var(--em-primary-color) !important;
+    color: var(--em-primary-color) !important;
     margin: 10px !important;
 
     &::before {
@@ -1025,7 +1025,7 @@ form.fabrikForm label {
 }
 
 .view-registration .em-register-warning {
-    border: 1px solid $base-primary-color;
+    border: 1px solid var(--em-primary-color);
     border-radius: 0;
     padding: 20px;
     margin: 0 0 30px 0;
@@ -1091,13 +1091,13 @@ ul.nav.nav-tabs.nav-stacked {
     justify-content: space-evenly;
 
     a {
-        color: $base-primary-color;
+        color: var(--em-primary-color);
 
         &:hover,
         &:focus,
         &:active,
         &:focus-within {
-            color: $base-primary-color;
+            color: var(--em-primary-color);
             text-decoration: underline;
         }
     }
@@ -1178,7 +1178,7 @@ ul.nav.nav-tabs.nav-stacked {
 /*Accueil connecté*/
 .select {
     select {
-        border: 1px solid $base-primary-color;
+        border: 1px solid var(--em-primary-color);
         background-color: #eee;
         color: #666;
     }
@@ -1198,7 +1198,7 @@ div#em-panel legend {
 
 .candidacy-files-list h2,
 #em-panel h2 {
-    color: $base-primary-color;
+    color: var(--em-primary-color);
     font-weight: 600;
     padding-left: 0;
     margin-bottom: 10px !important;
@@ -1206,25 +1206,25 @@ div#em-panel legend {
 
 /* 3 Cercles Accueil Coordinateur */
 .element_home_emundus a {
-    color: $base-secondary-color;
+    color: var(--em-secondary-color);
 
     &:hover,
     &:focus,
     &:active,
     &:focus-within {
-        color: $base-secondary-color;
+        color: var(--em-secondary-color);
     }
 }
 
 i.inverted.bordered.blue.icon,
 i.inverted.circular.blue.icon {
-    background: $base-secondary-color !important;
+    background: var(--em-secondary-color) !important;
     margin: 0 0 10px 0;
 
     &:hover,
     &:focus,
     &:active {
-        background: darken($base-secondary-color, 10%) !important;
+        background: darken(var(--em-secondary-color), 10%) !important;
     }
 }
 
@@ -1233,7 +1233,7 @@ i.inverted.circular.blue.icon {
 .step.completed i.icon.attach::before,
 .step.completed i.icon.add.to.cart::before,
 .step.completed i.icon.time::before {
-    color: $base-primary-color !important;
+    color: var(--em-primary-color) !important;
     background: none !important;
 }
 
@@ -1253,7 +1253,7 @@ i.inverted.circular.blue.icon {
 .need_missing.active a::before {
     font-family: FontAwesome;
     content: "\f141";
-    color: $base-primary-color;
+    color: var(--em-primary-color);
     font-size: 20px;
     margin-right: 10px;
 }
@@ -1305,13 +1305,13 @@ i.inverted.circular.blue.icon {
 }
 
 .applicant-form .ui.attached.segment {
-    background: $base-secondary-color;
-    border: $base-secondary-color;
+    background: var(--em-secondary-color);
+    border: var(--em-secondary-color);
     color: #ffffff;
 }
 
 .ui.yellow.segment:not(.inverted) {
-    border-top: 2px solid $base-primary-color !important;
+    border-top: 2px solid var(--em-primary-color) !important;
 }
 
 .applicant-form fieldset,
@@ -1374,13 +1374,13 @@ form {
     input,
     select,
     textarea {
-        color: $base-secondary-color;
+        color: var(--em-secondary-color);
     }
 
     input,
     select,
     textarea {
-        border-color: $base-secondary-color;
+        border-color: var(--em-secondary-color);
     }
 }
 
@@ -1455,7 +1455,7 @@ form {
         float: right;
         right: unset;
         background: transparent !important;
-        color: $base-primary-color !important;
+        color: var(--em-primary-color) !important;
     }
 
     h4 {
@@ -1485,7 +1485,7 @@ form {
 }
 
 .addGroup {
-    color: $base-secondary-color;
+    color: var(--em-secondary-color);
     text-align: right;
     padding: 8px 15px 0 0;
 
@@ -1645,12 +1645,12 @@ ul.pagination.pagination-sm a {
 #em-appli-menu .panel-body .list-group-item:hover,
 #em-appli-menu .panel-body .list-group-item:active,
 #em-appli-menu .panel-body .list-group-item:focus {
-    color: $base-primary-color !important;
+    color: var(--em-primary-color) !important;
 }
 
 .g-back-office-emundus-tableau #em-hide-filters {
-    border: 0 solid $base-primary-color;
-    background-color: $base-primary-color;
+    border: 0 solid var(--em-primary-color);
+    background-color: var(--em-primary-color);
 }
 
 .glyphicon-ban-circle {
@@ -1659,7 +1659,7 @@ ul.pagination.pagination-sm a {
 
 /* Menu Actions */
 .navbar.navbar-inverse {
-    border: $base-primary-color;
+    border: var(--em-primary-color);
     border-radius: 0;
     background: #4E5B6D;
     padding: 10px;
@@ -1685,24 +1685,24 @@ button#em-close-file {
 
 div#em-appli-block {
     .panel-heading {
-        background: $base-primary-color;
+        background: var(--em-primary-color);
         padding-top: 5px;
         border-radius: 0;
     }
 
     button.btn.btn-default {
-        background-color: $base-secondary-color;
+        background-color: var(--em-secondary-color);
         border: none !important;
 
         &:hover {
-            background-color: darken($base-secondary-color, 10%);
+            background-color: darken(var(--em-secondary-color), 10%);
         }
     }
 
     span.label.label-info {
         background: #ffffff !important;
         text-shadow: none !important;
-        color: $base-primary-color !important;
+        color: var(--em-primary-color) !important;
     }
 }
 
@@ -1750,7 +1750,7 @@ div#em-modal-actions {
         &#clear-search,
         &#save-filter,
         &#add-filter {
-            background: $base-primary-color none !important;
+            background: var(--em-primary-color) none !important;
             box-shadow: none !important;
             text-shadow: none;
             color: #FFFFFF;
@@ -1760,7 +1760,7 @@ div#em-modal-actions {
             &:hover,
             &:focus,
             &:active {
-                background: darken($base-primary-color, 10%) none !important;
+                background: darken(var(--em-primary-color), 10%) none !important;
                 box-shadow: none !important;
                 text-shadow: none;
                 color: #ffffff !important;
@@ -1775,10 +1775,10 @@ div#em-modal-actions {
             align-items: center;
             margin-top: -28px !important;
             justify-content: center;
-            background-color: $base-primary-color;
+            background-color: var(--em-primary-color);
 
             &:hover {
-                background-color: darken($base-primary-color, 10%);
+                background-color: darken(var(--em-primary-color), 10%);
             }
         }
     }
@@ -1826,7 +1826,7 @@ div#em-modal-actions {
 
 .chosen-container .chosen-results li {
     &.highlighted {
-        background-color: $base-primary-color;
+        background-color: var(--em-primary-color);
         background-image: none !important;
     }
 
@@ -1936,20 +1936,20 @@ label {
 .btn-info.active,
 .open .dropdown-toggle.btn-info {
     color: #ffffff !important;
-    background-color: $base-secondary-color !important;
-    border-color: $base-secondary-color !important;
+    background-color: var(--em-secondary-color) !important;
+    border-color: var(--em-secondary-color) !important;
 }
 
 .fabrikForm .controls .btn-danger:hover,
 #em-modal-actions .modal-content .modal-header .btn-danger:hover {
-    color: $base-primary-color !important;
+    color: var(--em-primary-color) !important;
     background-color: transparent !important;
-    border-color: darken($base-primary-color, 10%) !important;
+    border-color: darken(var(--em-primary-color), 10%) !important;
 }
 
 .fabrikFilterContainer .fabrik_actions .fabrik_filter_submit {
-    background: $base-secondary-color !important;
-    border: 1px solid $base-secondary-color !important;
+    background: var(--em-secondary-color) !important;
+    border: 1px solid var(--em-secondary-color) !important;
 }
 
 
@@ -1960,15 +1960,15 @@ div:not(.header-right) > .btn-danger {
     &:active,
     &.active {
         color: #ffffff !important;
-        background-color: darken($base-primary-color, 10%) !important;
-        border-color: darken($base-primary-color, 10%) !important;
+        background-color: darken(var(--em-primary-color), 10%) !important;
+        border-color: darken(var(--em-primary-color), 10%) !important;
     }
 }
 
 .open .dropdown-toggle.btn-danger {
     color: #ffffff !important;
-    background-color: darken($base-primary-color, 10%) !important;
-    border-color: darken($base-primary-color, 10%) !important;
+    background-color: darken(var(--em-primary-color), 10%) !important;
+    border-color: darken(var(--em-primary-color), 10%) !important;
 }
 
 /* gototop */
@@ -1977,11 +1977,11 @@ div:not(.header-right) > .btn-danger {
     transform: scale(2, 1.5);
     font-size: 2em;
     font-weight: 700;
-    color: $base-primary-color;
+    color: var(--em-primary-color);
 }
 
 #gototop:hover div::after {
-    color: $base-secondary-color;
+    color: var(--em-secondary-color);
 }
 
 .label-lightpurple {
@@ -2092,7 +2092,7 @@ div:not(.header-right) > .btn-danger {
 /* Formulaire Fabrik */
 
 .applicant-form .fabrikForm legend {
-    color: $base-primary-color;
+    color: var(--em-primary-color);
     font-weight: 700;
 }
 
@@ -2122,13 +2122,13 @@ div:not(.header-right) > .btn-danger {
 
 .form-actions .row-fluid .span4 .btn-group .register {
     background-color: transparent !important;
-    color: $base-primary-color !important;
+    color: var(--em-primary-color) !important;
     outline: none;
-    border: 1px solid $base-primary-color !important;
+    border: 1px solid var(--em-primary-color) !important;
 
     &:hover {
-        background-color: $base-primary-color !important;
-        border: 1px solid $base-primary-color !important;
+        background-color: var(--em-primary-color) !important;
+        border: 1px solid var(--em-primary-color) !important;
         text-shadow: none;
         color: white !important;
     }
@@ -2145,13 +2145,13 @@ div:not(.header-right) > .btn-danger {
 
 .applicant-form .form-horizontal .controls .em-deleteFile, .applicant-form .row-fluid .plg-emundus_fileupload .em-deleteFile {
     background-image: none;
-    color: $base-primary-color !important;
-    border: 1px solid $base-primary-color !important;
+    color: var(--em-primary-color) !important;
+    border: 1px solid var(--em-primary-color) !important;
 
     &:hover {
-        background: $base-primary-color;
-        background-color: $base-primary-color !important;
-        border: 1px solid $base-primary-color !important;
+        background: var(--em-primary-color);
+        background-color: var(--em-primary-color) !important;
+        border: 1px solid var(--em-primary-color) !important;
         color: white !important;
     }
 }
@@ -2162,10 +2162,10 @@ div:not(.header-right) > .btn-danger {
 
 .applicant-form .fabrikElement button.calendarbutton {
     width: 41px !important;
-    background-color: $base-primary-color;
+    background-color: var(--em-primary-color);
 
     &:hover {
-        background-color: darken($base-primary-color, 10%);
+        background-color: darken(var(--em-primary-color), 10%);
     }
 }
 
@@ -2262,7 +2262,7 @@ div:not(.header-right) > .btn-danger {
     color: #37828e !important;
 
     &:hover {
-        color: darken($base-primary-color, 10%) !important;
+        color: darken(var(--em-primary-color), 10%) !important;
     }
 }
 
@@ -3396,13 +3396,13 @@ form.fabrikForm label.fabrikTip, form.fabrikForm label.checkbox, form.fabrikForm
     input[type='radio'] {
         margin-top: 0;
         -webkit-appearance: none;
-        border: 2px solid $base-secondary-color;
+        border: 2px solid var(--em-secondary-color);
         border-radius: 50%;
         width: 10px;
         height: 10px;
 
         &:checked {
-            box-shadow: inset 0 0 0 3px $base-secondary-color;
+            box-shadow: inset 0 0 0 3px var(--em-secondary-color);
             height: 12px;
             width: 12px;
         }
@@ -3484,7 +3484,7 @@ footer#g-footer {
         align-items: flex-start;
         align-self: baseline;
         p{
-            color:$base-primary-color;
+            color:var(--em-primary-color);
         }
         .street{
             text-align:left;
@@ -3492,7 +3492,7 @@ footer#g-footer {
     }
     .credits-emundus{
         p,a{
-            color:$base-primary-color;
+            color:var(--em-primary-color);
             text-decoration:none!important;
         }
     }

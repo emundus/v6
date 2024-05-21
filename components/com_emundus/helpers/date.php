@@ -29,7 +29,23 @@ use Joomla\CMS\HTML\HTMLHelper;
 class EmundusHelperDate {
 
     /**
-     * Return date formatted
+     * Return actual date formatted in UTC timezone
+     * @param $timezone
+     *
+     * @return string
+     *
+     * @throws Exception
+     * @since version 1.36.7
+     */
+    static function getNow($timezone = 'UTC') {
+        $now = new DateTime();
+        $now = $now->setTimezone(new DateTimeZone($timezone));
+
+        return $now->format('Y-m-d H:i:s');
+    }
+
+    /**
+     * Return a saved date formatted to the current timezone
      * @param $date
      * @param $format
      * @param $local
@@ -47,8 +63,13 @@ class EmundusHelperDate {
                 $config = JFactory::getConfig();
                 $offset = $config->get('offset');
 
-                $date_time = new DateTime($date, new DateTimeZone($offset));
-                $date_time->setTimezone(new DateTimeZone('UTC'));
+                $timezone = date_default_timezone_get();
+                if (in_array($offset, timezone_identifiers_list())) {
+                    $timezone = $offset;
+                }
+
+                $date_time = new DateTime($date, new DateTimeZone($timezone));
+	            $date_time->setTimezone(new DateTimeZone('UTC'));
             } else {
                 $date_time = new DateTime($date);
             }

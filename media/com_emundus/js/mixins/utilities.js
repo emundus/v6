@@ -1,12 +1,20 @@
 function addLoader(container = 'body') {
-    if(document.getElementById('em-dimmer') === null) {
-        $(container).after('<div class="em-page-loader" id="em-dimmer"></div>');
+    if(window.document.getElementById('em-dimmer') === null) {
+        let loaderElement = window.document.createElement('div');
+        loaderElement.id = 'em-dimmer';
+        loaderElement.classList.add('em-page-loader');
+
+        let containerElement = window.document.querySelector(container);
+        if(containerElement) {
+            containerElement.insertAdjacentElement('afterend', loaderElement);
+        }
     }
 }
 
 function removeLoader() {
-    if(document.getElementById('em-dimmer') !== null) {
-        $('#em-dimmer').remove();
+    const loader = document.getElementById('em-dimmer');
+    if (loader!== null) {
+       loader.remove();
     }
 }
 

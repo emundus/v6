@@ -55,7 +55,7 @@ if(!empty($this->options['display'])) {
 				$fields_type = $this->options['new_address_type'];
 			}
 ?>
-				<p class="em-h5"><?php echo JText::_($label); ?></p>
+				<h5><?php echo JText::_($label); ?></h5>
 <?php
 		} else {
 			$fields_type = @$this->edit_address->address_type;
@@ -181,7 +181,7 @@ if(!empty($this->options['display'])) {
 ?>
 
 			<fieldset class="hika_address_field hikashop_checkout_billing_address_block">
-				<p class="em-h5"><?php echo JText::_('HIKASHOP_BILLING_ADDRESS'); ?></p>
+				<h5><?php echo JText::_('HIKASHOP_BILLING_ADDRESS'); ?></h5>
 <?php
 		if(!empty($this->options['read_only'])) {
 			if(!empty($cart->cart_billing_address_id))

@@ -16,10 +16,13 @@
           :classes="'vue-notification-custom'"
       />
       <header class="em-flex-row em-flex-space-between">
-        <div class="right-actions">
-          <span id="go-back" class="material-icons-outlined em-p-12-16 em-pointer" onclick="history.go(-1)">
+        <div class="right-actions em-p-12-16 em-flex-row em-pointer"
+             @click="clickGoBack">
+          <span id="go-back"
+                class="material-icons-outlined">
             navigate_before
           </span>
+          <span class="em-ml-8 em-text-neutral-900" >{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
         </div>
           <span
             class="em-font-size-14  em-font-weight-600 editable-data"
@@ -49,7 +52,7 @@
             </div>
           </div>
           <div class="tab-content em-flex-start">
-            <form-builder-elements v-if="leftPanelActiveTab === 'Elements'" @element-created="onElementCreated">
+            <form-builder-elements v-if="leftPanelActiveTab === 'Elements'" @element-created="onElementCreated" :form="currentPage">
             </form-builder-elements>
             <form-builder-document-formats
                 v-else-if="leftPanelActiveTab === 'Documents'"
@@ -67,6 +70,7 @@
               :key="currentPage.id"
               :profile_id="parseInt(profile_id)"
               :page="currentPage"
+              :mode="mode"
               @open-element-properties="onOpenElementProperties"
               @open-section-properties="onOpenSectionProperties"
               @open-create-model="onOpenCreateModel"
@@ -203,7 +207,7 @@ export default {
 				]
 	    },
       showInRightPanel: 'hierarchy',
-      createDocumentMandatory: true,
+      createDocumentMandatory: '1',
       lastSave: null,
       leftPanel: {
         tabs: [
@@ -224,7 +228,7 @@ export default {
             icon: 'translate',
             active: false,
             displayed: true,
-            url: '/parametres-globaux'
+            url: '/parametres-globaux?layout=translation&default_menu=2&object=emundus_setup_profiles'
           },
         ],
       },
@@ -240,7 +244,11 @@ export default {
 	  this.profile_id = data.prid.value;
 	  this.campaign_id = data.cid.value;
 
-		if (data && data.mode && data.mode.value) {
+	  if (data && data.settingsmenualias && data.settingsmenualias.value) {
+		  this.leftPanel.tabs[2].url = '/' + data.settingsmenualias.value + '?layout=translation&default_menu=2&object=emundus_setup_profiles';
+	  }
+
+	  if (data && data.mode && data.mode.value) {
 			this.mode = data.mode.value;
 
 			if (this.mode === 'eval' || this.mode == 'models') {
@@ -251,7 +259,11 @@ export default {
 			}
 		}
 
-    this.getFormTitle();
+	  if (this.profile_id > 0) {
+		  this.leftPanel.tabs[2].url += '&data=' + this.profile_id;
+	  }
+
+	  this.getFormTitle();
     this.getPages();
   },
   mounted() {
@@ -430,6 +442,13 @@ export default {
       } else {
         window.location.href = baseUrl + url;
       }
+    },
+    clickGoBack() {
+      if (this.principalContainer === 'create-page') {
+        this.onCloseCreatePage({reload: false});
+      } else {
+        window.history.go(-1);
+      }
     }
   },
   computed: {
@@ -459,6 +478,10 @@ export default {
 <style lang="scss">
 #formBuilder {
   background: white;
+
+  ul {
+    list-style-position: inside;
+  }
 
   header {
     box-shadow: inset 0px -1px 0px #E3E5E8;

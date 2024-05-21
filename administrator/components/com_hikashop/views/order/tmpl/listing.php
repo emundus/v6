@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	4.7.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -37,7 +37,7 @@ if ((!empty($this->extrafilters)) && (count($this->extrafilters))) {
 <?php
 	if(!is_numeric($this->pageInfo->filter->filter_start) && !empty($this->pageInfo->filter->filter_start)) $this->pageInfo->filter->filter_start = strtotime($this->pageInfo->filter->filter_start);
 	echo '<span class="hikafilter_span">'.JText::_('FROM').'</span> ';
-	echo JHTML::_('calendar', hikashop_getDate((@$this->pageInfo->filter->filter_start?@$this->pageInfo->filter->filter_start:''),'%Y-%m-%d'), 'filter_start','period_start',hikashop_getDateFormat('%d %B %Y'),array('size'=>'10','onchange'=>'document.adminForm.submit();', 'onChange'=>'document.adminForm.submit();'));
+	echo JHTML::_('calendar', hikashop_getDate((@$this->pageInfo->filter->filter_start?@$this->pageInfo->filter->filter_start:''),'%Y-%m-%d'), 'filter_start','period_start',hikashop_getDateFormat('%d %B %Y'),array('size'=>'10','onchange'=>'this.form.task=\'\';document.adminForm.submit();', 'onChange'=>'this.form.task=\'\';document.adminForm.submit();'));
 	if (isset($filter_partner))
 		echo $filter_partner;
 ?>		
@@ -46,7 +46,7 @@ if ((!empty($this->extrafilters)) && (count($this->extrafilters))) {
 <?php
 	if(!is_numeric($this->pageInfo->filter->filter_end) && !empty($this->pageInfo->filter->filter_end)) $this->pageInfo->filter->filter_end = strtotime($this->pageInfo->filter->filter_end);
 	echo ' <span class="hikafilter_span">'.JText::_('TO').'</span> ';
-	echo JHTML::_('calendar', hikashop_getDate((@$this->pageInfo->filter->filter_end?@$this->pageInfo->filter->filter_end:''),'%Y-%m-%d'), 'filter_end','period_end',hikashop_getDateFormat('%d %B %Y'),array('size'=>'10','onchange'=>'document.adminForm.submit();', 'onChange'=>'document.adminForm.submit();'));
+	echo JHTML::_('calendar', hikashop_getDate((@$this->pageInfo->filter->filter_end?@$this->pageInfo->filter->filter_end:''),'%Y-%m-%d'), 'filter_end','period_end',hikashop_getDateFormat('%d %B %Y'),array('size'=>'10','onchange'=>'this.form.task=\'\';document.adminForm.submit();', 'onChange'=>'this.form.task=\'\';document.adminForm.submit();'));
 	echo $this->payment->display("filter_payment",$this->pageInfo->filter->filter_payment,false);
 	$this->category->multiple = true;
 ?>
@@ -95,6 +95,9 @@ if ((!empty($this->extrafilters)) && (count($this->extrafilters))) {
 				</th>
 				<th class="hikashop_order_total_number_of_products_title title default" data-alias="number_of_products">
 					<?php echo JText::_('NUMBER_OF_PRODUCTS'); ?>
+				</th>
+				<th class="hikashop_order_products_title title default" data-alias="products">
+					<?php echo JText::_('PRODUCTS'); ?>
 				</th>
 				<th class="hikashop_order_billing_address_title title default" data-alias="billing_address">
 					<?php echo JText::_('HIKASHOP_BILLING_ADDRESS'); ?>
@@ -168,6 +171,17 @@ if ((!empty($this->extrafilters)) && (count($this->extrafilters))) {
 				$k = 0;
 				for($i = 0,$a = count($this->rows);$i<$a;$i++){
 					$row =& $this->rows[$i];
+
+					$products = '<ul>';
+					if(!empty($row->products)) {
+						foreach($row->products as $p) {
+							if(empty($p->order_product_quantity) || !empty($p->order_product_option_parent_id))
+								continue;
+							$products .= '<li>'.$p->order_product_name.' (x'.$p->order_product_quantity.')</li>';
+						}
+					}
+					$products .= '</ul>';
+
 					$attributes = '';
 					if(!empty($this->orderStatuses[$row->order_status]->orderstatus_color))
 						$attributes .= ' style="background-color:'.$this->orderStatuses[$row->order_status]->orderstatus_color.';"';
@@ -219,17 +233,13 @@ if ((!empty($this->extrafilters)) && (count($this->extrafilters))) {
 						?>
 					</td>
 					<td class="hikashop_order_total_number_of_products_value">
-						<?php 
-							$products = '<ul>';
-							if(!empty($row->products)) {
-								foreach($row->products as $p) {
-									if(empty($p->order_product_quantity) || !empty($p->order_product_option_parent_id))
-										continue;
-									$products .= '<li>'.$p->order_product_name.' (x'.$p->order_product_quantity.')</li>';
-								}
-							}
-							$products .= '</ul>';
+						<?php
 							echo hikashop_hktooltip($products, '', (int)$row->total_number_of_products);
+						?>
+					</td>
+					<td class="hikashop_order_products_value">
+						<?php 
+							echo $products;
 						?>
 					</td>
 					<td class="hikashop_order_billing_address_value">

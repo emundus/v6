@@ -9,10 +9,12 @@
  */
 
 // No direct access
-
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport('joomla.application.component.controller');
+
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 
 /**
  * campaign Controller
@@ -168,7 +170,7 @@ class EmundusControllerTranslations extends JControllerLegacy {
         $user = JFactory::getUser();
 
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            die(JText::_("ACCESS_DENIED"));
+            die(JText::_('ACCESS_DENIED'));
         }
 
         $jinput = JFactory::getApplication()->input;
@@ -181,12 +183,16 @@ class EmundusControllerTranslations extends JControllerLegacy {
 
         foreach ($references_table as $reference_table) {
             if(!empty($reference_table['join_table']) && !empty($reference_table['join_column']) && !empty($reference_table['reference_column'])){
-                $reference_id = $this->model->getJoinReferenceId($reference_table['table'],$reference_table['reference_column'],$reference_table['join_table'],$reference_table['join_column'],$reference_id);
+                $join_reference_id = $this->model->getJoinReferenceId($reference_table['table'],$reference_table['reference_column'],$reference_table['join_table'],$reference_table['join_column'],$reference_id);
+
+				if (!empty($join_reference_id)) {
+					$reference_id = $join_reference_id;
+				}
 			}
             $results = $this->model->getTranslations('override', '*', '', '', $reference_table['table'], $reference_id, $reference_table['fields']);
 
             foreach ($results as $result) {
-                if (in_array($result->tag, array_keys($translations[$result->reference_id]))) {
+	            if (!empty($translations[$result->reference_id]) && in_array($result->tag, array_keys($translations[$result->reference_id]))) {
                     if ($result->lang_code == $default_lang) {
                         $translations[$result->reference_id][$result->tag]->default_lang = $result->override;
                     } elseif ($result->lang_code == $lang_to) {
@@ -272,24 +278,28 @@ class EmundusControllerTranslations extends JControllerLegacy {
     }
 
     public function updatefalangtranslation(){
-        $user = JFactory::getUser();
+	    $response = ['status' => false, 'message' => Text::_('ACCESS_DENIED')];
+	    $user = Factory::getApplication()->getIdentity();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            die(JText::_("ACCESS_DENIED"));
-        }
+	    if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+		    $value           = $this->input->getString('value', null);
+		    $lang_to         = $this->input->getString('lang_to', null);
+		    $reference_table = $this->input->getString('reference_table', null);
+		    $reference_id    = $this->input->getInt('reference_id', 0);
+		    $field           = $this->input->getString('field', null);
 
-        $jinput = JFactory::getApplication()->input;
+		    $updated = $this->model->updateFalangTranslation($value, $lang_to, $reference_table, $reference_id, $field, $user->id);
 
-        $value = $jinput->getString('value', null);
-        $lang_to = $jinput->getString('lang_to', null);
-        $reference_table = $jinput->getString('reference_table', null);
-        $reference_id = $jinput->getInt('reference_id', 0);
-        $field = $jinput->getString('field', null);
+		    if ($updated) {
+			    $response['status'] = true;
+			    $response['message'] = Text::_('COM_EMUNDUS_TRANSLATION_UPDATED');
+		    } else {
+			    $response['message'] = Text::_('COM_EMUNDUS_TRANSLATION_NOT_UPDATED');
+		    }
+	    }
 
-        $result = $this->model->updateFalangTranslation($value,$lang_to,$reference_table,$reference_id,$field);
-
-        echo json_encode($result);
-        exit;
+	    echo json_encode($response);
+	    exit;
     }
 
     public function getorphelins(){
@@ -327,4 +337,114 @@ class EmundusControllerTranslations extends JControllerLegacy {
         echo json_encode($result);
         exit;
     }
+
+	public function export() {
+		$user = JFactory::getUser();
+
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+			die(JText::_("ACCESS_DENIED"));
+		}
+
+		$jinput = JFactory::getApplication()->input;
+		$profile = $jinput->getString('profile', null);
+
+		$reference_ids = [];
+		if(!empty($profile))
+		{
+			$forms_ids = [];
+			$groups_ids = [];
+			$elts_id = [];
+			$forms = $this->model->getChildrens('fabrik_forms',$profile,'label');
+			foreach ($forms as $form)
+			{
+				$forms_ids[] = $form->id;
+			}
+			foreach ($forms_ids as $form_id)
+			{
+				$groups = $this->model->getJoinReferenceId('fabrik_groups','group_id','fabrik_formgroup','form_id',$form_id);
+				foreach ($groups as $group)
+				{
+					$groups_ids[] = $group;
+
+					$elements = $this->model->getJoinReferenceId('fabrik_elements','id','fabrik_elements','group_id',$group);
+
+					foreach ($elements as $element)
+					{
+						$elts_id[] = $element;
+					}
+
+				}
+			}
+
+			$reference_ids = array_merge($forms_ids,$groups_ids,$elts_id);
+		}
+
+		$tables_to_export = array(
+			'fabrik_elements',
+			'fabrik_groups',
+			'fabrik_forms',
+		);
+		$results = array();
+		foreach ($tables_to_export as $table)
+		{
+			$results = array_merge($this->model->getTranslations('override', '*', '', '',$table),$results);
+		}
+
+		$languages = $this->model->getPlatformLanguages();
+
+		$results_to_export = array();
+		foreach ($results as $result)
+		{
+			if(empty($result->reference_id) || !empty($reference_ids) && !in_array($result->reference_id,$reference_ids))
+			{
+				continue;
+			}
+
+			$results_to_export[$result->tag][0] = $result->tag;
+			$results_to_export[$result->tag][$result->lang_code] =$result->override;
+			foreach ($languages as $language)
+			{
+				if(!isset($results_to_export[$result->tag][$language]))
+				{
+					$results_to_export[$result->tag][$language] = '';
+				}
+			}
+			ksort($results_to_export[$result->tag]);
+		}
+
+		$filename = 'export_translation_'.date('Y-m-d H:i').'.csv';
+		$path = JPATH_SITE.'/tmp/'.$filename;
+		$f = fopen($path, 'w');
+
+		// Manage UTF-8 in Excel
+		fputs($f, $bom = (chr(0xEF) . chr(0xBB) . chr(0xBF)));
+
+		$header = array(JText::_('COM_EMUNDUS_ONBOARD_TRANSLATION_TAG_EXPORT'));
+		foreach ($languages as $language)
+		{
+			$header[] = $language;
+		}
+		fputcsv($f, $header, ';');
+
+		foreach ($results_to_export as $line) {
+			// generate csv lines from the inner arrays
+			fputcsv($f, (array) $line, ';');
+		}
+		// reset the file pointer to the start of the file
+		fseek($f, 0);
+
+		header('Content-type: text/csv');
+		header('Content-Disposition: attachment; filename='.$filename);
+		header('Last-Modified: '.gmdate('D, d M Y H:i:s') . ' GMT');
+		header('Cache-Control: no-store, no-cache, must-revalidate');
+		header('Cache-Control: pre-check=0, post-check=0, max-age=0');
+		header('Pragma: anytextexeptno-cache', true);
+		header('Cache-control: private');
+		header('Expires: 0');
+
+		ob_clean();
+		ob_end_flush();
+		readfile($path);
+		exit;
+	}
 }

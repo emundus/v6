@@ -13,8 +13,6 @@ use Psr\Http\Message\ResponseInterface;
  */
 abstract class AbstractRestParser extends AbstractParser
 {
-    use PayloadParserTrait;
-
     /**
      * Parses a payload from a response.
      *
@@ -74,13 +72,7 @@ abstract class AbstractRestParser extends AbstractParser
     ) {
         $member = $output->getMember($payload);
 
-        if (!empty($member['eventstream'])) {
-            $result[$payload] = new EventParsingIterator(
-                $response->getBody(),
-                $member,
-                $this
-            );
-        } else if ($member instanceof StructureShape) {
+        if ($member instanceof StructureShape) {
             // Structure members parse top-level data into a specific key.
             $result[$payload] = [];
             $this->payload($response, $member, $result[$payload]);
@@ -117,30 +109,11 @@ abstract class AbstractRestParser extends AbstractParser
                 break;
             case 'timestamp':
                 try {
-                    $value = DateTimeResult::fromTimestamp(
-                        $value,
-                        !empty($shape['timestampFormat']) ? $shape['timestampFormat'] : null
-                    );
+                    $value = new DateTimeResult($value);
                     break;
                 } catch (\Exception $e) {
                     // If the value cannot be parsed, then do not add it to the
                     // output structure.
-                    return;
-                }
-            case 'string':
-                try {
-                    if ($shape['jsonvalue']) {
-                        $value = $this->parseJson(base64_decode($value), $response);
-                    }
-
-                    // If value is not set, do not add to output structure.
-                    if (!isset($value)) {
-                        return;
-                    }
-                    break;
-                } catch (\Exception $e) {
-                    //If the value cannot be parsed, then do not add it to the
-                    //output structure.
                     return;
                 }
         }

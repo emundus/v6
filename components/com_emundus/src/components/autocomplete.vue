@@ -91,7 +91,7 @@ export default {
       }
     },
     onEnter() {
-      this.search = this.results[this.arrowCounter];
+      this.search = this.results[this.arrowCounter] ? this.results[this.arrowCounter] : this.search;
       this.isOpen = false;
       this.arrowCounter = -1;
       this.onSearching();
@@ -115,11 +115,8 @@ export default {
 <style scoped>
 .autocomplete {
   position: relative;
-  min-height: 50px;
   width: 100%;
   display: block;
-  height: 50px;
-  margin-bottom: 10px;
   font-size: 14px;
   line-height: 1.428571429;
   color: #333333;

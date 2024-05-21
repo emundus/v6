@@ -569,7 +569,6 @@ class EmundusModelStats extends JModelLegacy {
 	    try {
 		    return $db->loadResult();
 	    } catch(Exception $e) {
-            var_dump($e->getMessage());
 		    JLog::add('Error getting stats on number of relations at m/stats in query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 	    }
     }
@@ -605,7 +604,6 @@ class EmundusModelStats extends JModelLegacy {
 	    try {
 		    return $db->loadAssocList();
 	    } catch(Exception $e) {
-            var_dump($e->getMessage());
 		    JLog::add('Error getting stats on number of relations at m/stats in query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 	    }
     }
@@ -621,10 +619,9 @@ class EmundusModelStats extends JModelLegacy {
         $db->setQuery($query);
 
         try {
-        return $db->loadAssocList();
+            return $db->loadAssocList();
         } catch(Exception $e) {
-                var_dump($e->getMessage());
-        JLog::add('Error getting stats on ages at m/stats in query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+            JLog::add('Error getting stats on ages at m/stats in query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
         }
     }
 
@@ -641,7 +638,6 @@ class EmundusModelStats extends JModelLegacy {
 	    try {
 		    return $db->loadAssocList();
 	    } catch(Exception $e) {
-            var_dump($e->getMessage());
 		    JLog::add('Error getting stats on number of relations at m/stats in query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
         }
     }

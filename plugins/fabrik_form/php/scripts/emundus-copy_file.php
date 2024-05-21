@@ -45,6 +45,8 @@ $copy_attachment 	    = $formModel->getElementData('jos_emundus_campaign_candida
 $copy_tag 	            = $formModel->getElementData('jos_emundus_campaign_candidature___copy_tag', 0);
 $move_hikashop_command 	= $formModel->getElementData('jos_emundus_campaign_candidature___move_hikashop_command', 0);
 $delete_from_file 	    = $formModel->getElementData('jos_emundus_campaign_candidature___delete_from_file', 0);
+$copyUsersAssoc 	    = $formModel->getElementData('jos_emundus_campaign_candidature___copy_users_assoc', 0);
+$copyGroupsAssoc  	    = $formModel->getElementData('jos_emundus_campaign_candidature___copy_groups_assoc', 0);
 
 foreach ($fnums_from as $fnum_from) {
     $fnum_infos = $m_files->getFnumInfos($fnum_from);
@@ -88,7 +90,7 @@ foreach ($fnums_from as $fnum_from) {
 
             //$pid = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
 
-            $result = $m_application->copyApplication($fnum_from, $fnum_to, null, $copy_attachment, $fnumInfos['campaign_id'], $copy_tag, $move_hikashop_command, $delete_from_file);
+            $result = $m_application->copyApplication($fnum_from, $fnum_to, null, $copy_attachment, $fnumInfos['campaign_id'], $copy_tag, $move_hikashop_command, $delete_from_file,array(),$copyUsersAssoc,$copyGroupsAssoc);
 
             // 4. Duplicate attachments for new fnum
             /*if ($result) {
@@ -131,6 +133,6 @@ foreach ($fnums_from as $fnum_from) {
 echo "<script>
       window.parent.$('html, body').animate({scrollTop : 0}, 300);  
       window.setTimeout(function() {
-		parent.$('#em-modal-actions').modal('hide');
+        parent.document.getElementsByClassName('em-modal-actions')[0].hide();
 	}, 1800);</script>";
 die('<div style="text-align: center"><img src="'.JURI::base().'images/emundus/animations/checked.gif" width="200" height="200" align="middle" /></div>');

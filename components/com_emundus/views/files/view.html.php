@@ -22,9 +22,27 @@ class EmundusViewFiles extends JViewLegacy
 {
 	protected $itemId;
 	protected $actions;
+	protected $use_module_for_filters;
 
 	public function __construct($config = array())
 	{
+		$menu = JFactory::getApplication()->getMenu();
+		$current_menu = $menu->getActive();
+		$menu_params = $menu->getParams(@$current_menu->id);
+		$session = JFactory::getSession();
+
+		if (!empty($menu_params)) {
+			$this->use_module_for_filters = boolval($menu_params->get('em_use_module_for_filters', 0));
+		} else {
+			$this->use_module_for_filters = false;
+		}
+
+		if ($this->use_module_for_filters) {
+			$session->set('last-filters-use-adavanced', true);
+		} else {
+			$session->set('last-filters-use-adavanced', false);
+		}
+
 		parent::__construct($config);
 	}
 
@@ -34,10 +52,6 @@ class EmundusViewFiles extends JViewLegacy
 		if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
 			die( JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS') );
 		}
-
-    	// translation to load in javacript file ; /media/com_emundus/em_files.js
-    	// put it in com_emundus/emundus.php
-		//JHTML::stylesheet("media/jui/css/chosen.min.css");
 
 		$app = JFactory::getApplication();
 
@@ -51,11 +65,6 @@ class EmundusViewFiles extends JViewLegacy
 		$this->assignRef('actions', $actions);
 		$pagination = $this->get('Pagination');
 		$this->assignRef('pagination', $pagination);
-
-		//$submitForm = EmundusHelperJavascript::onSubmitForm();
-		//$delayAct = EmundusHelperJavascript::delayAct();
-		//$this->assignRef('delayAct', $delayAct);
-		//$this->assignRef('submitForm', $submitForm);
 
 		parent::display($tpl);
 	}

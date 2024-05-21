@@ -43,6 +43,23 @@
 					   description="MOD_EMUNDUS_APPLICATIONS_DESCRIPTION_DESC">
 				</field>
 
+				<field name="override_default_content"
+					   type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
+					   default=""
+					   label="MOD_EMUNDUS_APPLICATIONS_OVERRIDE_EMPTY_APPLICATION"
+					   description="MOD_EMUNDUS_APPLICATIONS_OVERRIDE_EMPTY_APPLICATION_DESC">
+				</field>
+
+				<field name="mod_em_campaign_display_svg" type="radio" default="1" label="MOD_EM_CAMPAIGN_DISPLAY_SVG" description="MOD_EM_CAMPAIGN_DISPLAY_SVG_DESC" class="btn-group btn-group-yesno">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+
+				<field name="mod_em_campaign_display_hover_offset" type="radio" default="1" label="MOD_EM_CAMPAIGN_DISPLAY_HOVER_OFFSET" description="MOD_EM_CAMPAIGN_DISPLAY_HOVER_OFFSET_DESC" class="btn-group btn-group-yesno" >
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+
 				<field name="show_add_application"
 					   type="radio"
 					   default="0"
@@ -111,6 +128,7 @@
 				<field name="order_applications" type="list" default="esc.end_date" label="MOD_EMUNDUS_ORDER_APPLICATIONS" description="MOD_EMUNDUS_ORDER_APPLICATIONS_DESC">
 					<option value="esc.end_date">CAMPAIGN_END_DATE</option>
 					<option value="ecc.date_time">REGISTER_DATE</option>
+					<option value="ecc.updated">LAST_MODIFICATION_DATE</option>
 				</field>
 
 				<field name="order_applications_asc_des" type="list" default="DESC" label="MOD_EMUNDUS_ORDER_APPLICATIONS_ASC_DES" description="MOD_EMUNDUS_ORDER_APPLICATIONS_ASC_DES_DESC">
@@ -132,7 +150,33 @@
 					   description="MOD_EMUNDUS_SHOW_STATUS_DESC"
 				/>
 
-				<field showon="layout:_:tchooz"
+				<field name="selected_campaigns"
+					   type="sql"
+					   label="MOD_EMUNDUS_SELECTED_CAMPAIGNS"
+					   description="MOD_EMUNDUS_SELECTED_CAMPAIGNS_DESC"
+					   query="SELECT id, CONCAT(label, ' ', year) as label FROM jos_emundus_setup_campaigns WHERE published = 1 ORDER BY label ASC"
+					   key_field="id"
+					   value_field="label"
+					   multiple="true"
+					   default="0"
+				/>
+
+				<field name="selected_campaigns_exclusion"
+					   type="list"
+					   label="MOD_EMUNDUS_SELECTED_CAMPAIGNS_EXCLUSION"
+					   description="MOD_EMUNDUS_SELECTED_CAMPAIGNS_EXCLUSION_DESC"
+					   default="0"
+				>
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+
+				<field showon="layout:_:tchooz" name="mod_em_applications_show_tabs" type="radio" default="1" label="MOD_EMUNDUS_APPLICATIONS_SHOW_TABS" description="MOD_EMUNDUS_APPLICATIONS_SHOW_TABS_DESC">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+
+				<field showon="layout:_:tchooz[AND]mod_em_applications_show_tabs:0"
 					   name="mod_em_application_group"
 					   type="subform"
 					   label="MOD_EM_APPLICATION_GROUP"
@@ -173,11 +217,6 @@
 				</field>
 
 				<field showon="layout:_:tchooz" name="mod_em_applications_show_hello_text" type="radio" default="1" label="MOD_EMUNDUS_APPLICATIONS_SHOW_HELLO_TEXT" description="MOD_EMUNDUS_APPLICATIONS_SHOW_HELLO_TEXT_DESC">
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-				</field>
-
-				<field showon="layout:_:tchooz" name="mod_em_applications_show_tabs" type="radio" default="1" label="MOD_EMUNDUS_APPLICATIONS_SHOW_TABS" description="MOD_EMUNDUS_APPLICATIONS_SHOW_TABS_DESC">
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>
 				</field>
@@ -227,8 +266,7 @@
 				</field>
 
 				<!-- PROGRESS CIRCLES -->
-				<field showon="layout!:_:tchooz"
-					   name="show_progress"
+				<field name="show_progress"
 					   type="radio"
 					   default="1"
 					   label="MOD_EMUNDUS_SHOW_PROGRESS"
@@ -339,8 +377,14 @@
 								default=''
 								key_field="step"
 								value_field="value"
-								label="MOD_EM_APPLICATION_CUSTOM_ACTION_STATUS"
-								description="MOD_EM_APPLICATION_CUSTOM_ACTION_STATUS_DESC"
+								label="MOD_EM_APPLICATION_CUSTOM_ACTION_INPUT_STATUS"
+								description="MOD_EM_APPLICATION_CUSTOM_ACTION_INPUT_STATUS_DESC"
+						/>
+						<field
+							name="display_condition"
+							type="textarea"
+							label="MOD_EM_APPLICATION_CUSTOM_ACTION_DISPLAY_CONDITION"
+							description="MOD_EM_APPLICATION_CUSTOM_ACTION_DISPLAY_CONDITION_DESC"
 						/>
 						<field
 								name="mod_em_application_custom_action_icon"
@@ -357,8 +401,8 @@
 						<field
 								name="mod_em_application_custom_action_type"
 								type="list"
-								label="MOD_EM_APPLICATION_CUSTOM_ACTION_LINK"
-								description="MOD_EM_APPLICATION_CUSTOM_ACTION_LINK_DESC"
+								label="MOD_EM_APPLICATION_CUSTOM_ACTION_TYPE"
+								description="MOD_EM_APPLICATION_CUSTOM_ACTION_TYPE_DESC"
 								default="1"
 						>
 							<option value="1">Lien</option>
@@ -390,8 +434,8 @@
 							   default=''
 							   key_field="step"
 							   value_field="value"
-							   label="MOD_EM_APPLICATION_CUSTOM_ACTION_STATUS"
-							   description="MOD_EM_APPLICATION_CUSTOM_ACTION_STATUS_DESC"
+							   label="MOD_EM_APPLICATION_CUSTOM_ACTION_OUTPUT_STATUS"
+							   description="MOD_EM_APPLICATION_CUSTOM_ACTION_OUTPUT_STATUS_DESC"
 						>
 						</field>
 						<field showon="mod_em_application_custom_action_type:2"

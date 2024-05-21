@@ -9,9 +9,11 @@
 // no direct access
 defined('_JEXEC') or die;
 
+require_once (JPATH_SITE.'/components/com_emundus/helpers/cache.php');
+$hash = EmundusHelperCache::getCurrentGitHash();
+
 $document = JFactory::getDocument();
-$document->addStyleSheet("modules/mod_emundus_help/style/mod_emundus_help.css" );
-$document->addStyleSheet('https://fonts.googleapis.com/icon?family=Material+Icons' );
+$document->addStyleSheet("modules/mod_emundus_help/style/mod_emundus_help.css?".$hash );
 
 // Get release version
 $xmlDoc = new DOMDocument();

@@ -129,22 +129,18 @@ class EmundusViewDecision extends JViewLegacy
                 $this->assignRef('fnum_assoc', $m_decision->fnum_assoc);
 
 				// reset filter
-				/*echo '<pre>'; var_dump(JFactory::getSession()->get('filt_params')); echo '</pre>';
-				$filters = @EmundusHelperFiles::resetFilter();
+				/*$filters = @EmundusHelperFiles::resetFilter();
 				$this->assignRef('filters', $filters);*/
 
 				// Do not display photos unless specified in params
 				$displayPhoto = false;
 
-				// get applications files
-				$users = $m_decision->getUsers($cfnum);
-
-			    // get evaluation form ID
-			    $formid = $m_decision->getDecisionFormByProgramme();
-			    $this->assignRef('formid', $formid);
-			    $form_url_view = 'index.php?option=com_fabrik&c=form&view=details&formid='.$formid.'&tmpl=component&iframe=1&rowid=';
-			    $form_url_edit = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&tmpl=component&iframe=1&rowid=';
-			    $this->assignRef('form_url_edit', $form_url_edit);
+                if(!empty($m_decision->fnum_assoc) || !empty($m_decision->code)) {
+                    // get applications files
+                    $users = $m_decision->getUsers($cfnum);
+                } else {
+                    $users = array();
+                }
 
 				if (!empty($users)) {
 					$taggedFile = $m_decision->getTaggedFile();
@@ -213,6 +209,13 @@ class EmundusViewDecision extends JViewLegacy
 						$fnumArray[] = $user['fnum'];
 						$line = array('check' => $usObj);
 
+                        // Get decision formid
+                        $training = $m_files->getFnumInfos($user['fnum'])['training'];
+                        $formid = $m_decision->getDecisionFormByProgramme($training);
+                        $this->assignRef('formid', $formid);
+                        $form_url_view = 'index.php?option=com_fabrik&c=form&view=details&formid='.$formid.'&tmpl=component&iframe=1&rowid=';
+                        $form_url_edit = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&tmpl=component&iframe=1&rowid=';
+
 						if (array_key_exists($user['fnum'], $taggedFile)) {
 
 							$class = $taggedFile[$user['fnum']]['class'];
@@ -243,12 +246,19 @@ class EmundusViewDecision extends JViewLegacy
 							}
 
 							elseif ($key == 'evaluator') {
-								if ($evaluators_can_see_other_eval || EmundusHelperAccess::asAccessAction(29,'r',$this->_user->id)) {
-									$userObj->val = !empty($value) ? '<a href="' . $form_url_view.$user['evaluation_id'] . '"  target="_blank" data-remote="'.$form_url_view.$user['evaluation_id'].'" id="em_form_eval_'.$i.'-'.$user['evaluation_id'].'">
-											<span class="glyphicon icon-eye-open" title="'.JText::_('COM_EMUNDUS_DETAILS').'">  </span>
-										</a>'.$value : '';
-                                }
-								else {
+								if(!empty($value)) {
+									if ($evaluators_can_see_other_eval || EmundusHelperAccess::asAccessAction(29, 'r', $this->_user->id)) {
+										$link_view = '<a href="' . $form_url_view . $user['evaluation_id'] . '"  target="_blank" data-remote="' . $form_url_view . $user['evaluation_id'] . '" id="em_form_eval_' . $i . '-' . $user['evaluation_id'] . '">
+											<span class="glyphicon icon-eye-open" title="' . JText::_('COM_EMUNDUS_DETAILS') . '">  </span>
+										</a>';
+									}
+
+									if (EmundusHelperAccess::asAccessAction(29, 'u', $this->_user->id)) {
+										$link_edit = '<a href="' . $form_url_edit . $user['evaluation_id'] . '" target="_blank"><span class="glyphicon icon-edit" title="' . JText::_('COM_EMUNDUS_ACTIONS_EDIT') . '"> </span></a>';
+									}
+
+									$userObj->val = $link_view.' '.$link_edit.' '.$value;
+								} else {
 									$userObj->val = $value;
 								}
 
@@ -313,14 +323,22 @@ class EmundusViewDecision extends JViewLegacy
 			    }
 
 				/* Get the values from the state object that were inserted in the model's construct function */
-			    $lists['order_dir'] = JFactory::getSession()->get( 'filter_order_Dir' );
-				$lists['order']     = JFactory::getSession()->get( 'filter_order' );
+			    $lists['order_dir'] = JFactory::getSession()->get('filter_order_Dir');
+				$lists['order']     = JFactory::getSession()->get('filter_order');
 			    $this->assignRef('lists', $lists);
 			    $pagination = $this->get('Pagination');
 			    $this->assignRef('pagination', $pagination);
                 $pageNavigation = $this->get('PageNavigation');
                 $this->assignRef('pageNavigation', $pageNavigation);
+
+				if (!isset($objAccess)) {
+					$objAccess = [];
+				}
 				$this->assignRef('accessObj', $objAccess);
+
+				if (!isset($colsSup)) {
+					$colsSup = [];
+				}
 				$this->assignRef('colsSup', $colsSup);
 				$this->assignRef('users', $users);
 				$this->assignRef('datas', $data);

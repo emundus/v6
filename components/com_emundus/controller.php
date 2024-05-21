@@ -80,64 +80,85 @@ class EmundusController extends JControllerLegacy {
         $m_profile = new EmundusModelProfile();
         $m_campaign = new EmundusModelCampaign();
 
-        $options = array(
-          'aemail',
-          'afnum',
-          'adoc-print',
-          'aapp-sent',
-        );
+	    $can_access = false;
+	    if (EmundusHelperAccess::asAccessAction(8, 'c', $user->id, $fnum)) {
+		    $can_access = true;
+	    } else {
+		    $afnums = $m_profile->getApplicantFnums($user->id);
+		    if(!empty($afnums)) {
+			    $afnums = array_keys($afnums);
+		    }
 
-        $infos 		= $m_profile->getFnumDetails($fnum);
-        $workflow_infos = $m_campaign->getCurrentCampaignWorkflow($fnum);
+		    if(in_array($fnum, $afnums)) {
+			    $can_access = true;
+		    }
+	    }
 
-        if($profile == null) {
-            $profile 	= !empty($infos['profile']) ? $infos['profile'] : $infos['profile_id'];
-        }
 
-        if($workflow_infos->profile !== null)  {
-            $profile = $workflow_infos->profile;
-        }
+		if($can_access) {
+			$options = array(
+				'aemail',
+				'afnum',
+				'adoc-print',
+				'aapp-sent',
+			);
 
-        $h_menu = new EmundusHelperMenu;
-        $getformids = $h_menu->getUserApplicationMenu($profile);
+			$infos          = $m_profile->getFnumDetails($fnum);
+			$workflow_infos = $m_campaign->getCurrentCampaignWorkflow($fnum);
 
-	    $formid = [];
-        foreach ($getformids as $getformid) {
-            $formid[] = $getformid->form_id;
-        }
+			if ($profile == null) {
+				$profile = !empty($infos['profile']) ? $infos['profile'] : $infos['profile_id'];
+			}
 
-        if (!empty($fnum)) {
-            $candidature = $m_profile->getFnumDetails($fnum);
-            $campaign = $m_campaign->getCampaignByID($candidature['campaign_id']);
-        }
+			if ($workflow_infos->profile !== null) {
+				$profile = $workflow_infos->profile;
+			}
 
-        $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_'.$campaign['training'].'.php';
-        $file_custom = JPATH_LIBRARIES.DS.'emundus'.DS.'custom'.DS.'pdf_'.$campaign['training'].'.php';
-        if (!file_exists($file) && !file_exists($file_custom)) {
-            $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php';
-        }
-        else{
-            if (file_exists($file_custom)){
-                $file = $file_custom;
-            }
-        }
+			$h_menu     = new EmundusHelperMenu;
+			$getformids = $h_menu->getUserApplicationMenu($profile);
 
-        if (!file_exists(EMUNDUS_PATH_ABS.$student_id)) {
-            mkdir(EMUNDUS_PATH_ABS.$student_id);
-            chmod(EMUNDUS_PATH_ABS.$student_id, 0755);
-        }
+			$formid = [];
+			foreach ($getformids as $getformid) {
+				$formid[] = $getformid->form_id;
+			}
 
-        require_once($file);
+			if (!empty($fnum)) {
+				$candidature = $m_profile->getFnumDetails($fnum);
+				$campaign    = $m_campaign->getCampaignByID($candidature['campaign_id']);
+			}
 
-        if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
-            application_form_pdf(!empty($student_id)?$student_id:$user->id, $fnum, true, 1, null, $options, null, $profile,null,null);
-            exit;
-        } elseif (EmundusHelperAccess::isApplicant($user->id)) {
-            application_form_pdf($user->id, $fnum, true, 1, $formid, $options, null, $profile,null,null);
-            exit;
-        } else {
-            die(JText::_('ACCESS_DENIED'));
-        }
+			$file        = JPATH_LIBRARIES . DS . 'emundus' . DS . 'pdf_' . $campaign['training'] . '.php';
+			$file_custom = JPATH_LIBRARIES . DS . 'emundus' . DS . 'custom' . DS . 'pdf_' . $campaign['training'] . '.php';
+			if (!file_exists($file) && !file_exists($file_custom)) {
+				$file = JPATH_LIBRARIES . DS . 'emundus' . DS . 'pdf.php';
+			}
+			else {
+				if (file_exists($file_custom)) {
+					$file = $file_custom;
+				}
+			}
+
+			if (!file_exists(EMUNDUS_PATH_ABS . $student_id)) {
+				mkdir(EMUNDUS_PATH_ABS . $student_id);
+				chmod(EMUNDUS_PATH_ABS . $student_id, 0755);
+			}
+
+			require_once($file);
+
+			if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+				application_form_pdf(!empty($student_id) ? $student_id : $user->id, $fnum, true, 1, null, $options, null, $profile, null, null);
+				exit;
+			}
+			elseif (EmundusHelperAccess::isApplicant($user->id)) {
+				application_form_pdf($user->id, $fnum, true, 1, $formid, $options, null, $profile, null, null);
+				exit;
+			}
+			else {
+				die(JText::_('ACCESS_DENIED'));
+			}
+		} else {
+			die(JText::_('ACCESS_DENIED'));
+		}
     }
 
     function pdf_by_form() {
@@ -351,7 +372,8 @@ class EmundusController extends JControllerLegacy {
         if (in_array($fnum, array_keys($current_user->fnums))){
             $user = $current_user;
             $m_files->deleteFile($fnum);
-            EmundusModelLogs::log($current_user->id, (int)substr($fnum, -7), $fnum, 1, 'd', 'COM_EMUNDUS_ACCESS_FORM_DELETE');        } elseif (EmundusHelperAccess::asAccessAction(1, 'd', $current_user->id, $fnum) || EmundusHelperAccess::asAdministratorAccessLevel($current_user->id)) {
+            EmundusModelLogs::log($current_user->id, (int)substr($fnum, -7), $fnum, 1, 'd', 'COM_EMUNDUS_ACCESS_FORM_DELETE');
+        } elseif (EmundusHelperAccess::asAccessAction(1, 'd', $current_user->id, $fnum) || EmundusHelperAccess::asAdministratorAccessLevel($current_user->id)) {
             $user = $m_profile->getEmundusUser($student_id);
         } else {
             JError::raiseError(500, JText::_('ACCESS_DENIED'));
@@ -624,9 +646,8 @@ class EmundusController extends JControllerLegacy {
         Open application form from fnum  for applicant
     */
     function openfile() {
-
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
-        require_once(JPATH_COMPONENT.DS.'models'.DS.'application.php');
+	    require_once(JPATH_ROOT . '/components/com_emundus/models/profile.php');
+        require_once(JPATH_ROOT . '/components/com_emundus/models/application.php');
 
         $app = JFactory::getApplication();
         $jinput = $app->input;
@@ -665,14 +686,14 @@ class EmundusController extends JControllerLegacy {
             }
         }
 
-        # get the fnum          $fnum
+	    # get the fnum          $fnum
         # get the logged user   $aid->id
         # get FNUM INFO
-        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+        require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
         $mFile = new EmundusModelFiles();
         $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
 
-        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+        require_once(JPATH_SITE . '/components/com_emundus/models/logs.php');
         EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $fnum, 1, 'r', 'COM_EMUNDUS_ACCESS_FILE_READ');
 
         $dispatcher = JEventDispatcher::getInstance();
@@ -784,14 +805,16 @@ class EmundusController extends JControllerLegacy {
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $copy_application_form = $eMConfig->get('copy_application_form', 0);
         $can_submit_encrypted = $eMConfig->get('can_submit_encrypted', 1);
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'checklist.php');
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'checklist.php');
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
-        $m_profile = new EmundusModelProfile;
-        $h_checklist = new EmundusHelperChecklist();
-        $m_checklist = new EmundusModelChecklist;
+        require_once (JPATH_COMPONENT.'/helpers/checklist.php');
+        require_once (JPATH_COMPONENT.'/helpers/date.php');
+        require_once (JPATH_COMPONENT.'/helpers/export.php');
+        require_once (JPATH_COMPONENT.'/models/checklist.php');
+        require_once (JPATH_COMPONENT.'/models/application.php');
+        $h_checklist = new EmundusHelperChecklist;
+        $h_date = new EmundusHelperDate;
         $m_application = new EmundusModelApplication;
+        $m_checklist = new EmundusModelChecklist;
+        $m_profile = new EmundusModelProfile;
 
         $db = JFactory::getDBO();
 	    $query_updating_file = null;
@@ -899,9 +922,7 @@ class EmundusController extends JControllerLegacy {
         }
 
         foreach ($fnums as $fnum) {
-
             foreach ($files as $key => $file) {
-
 				$local_filename = $file['name'];
 
                 $pageCount = 0;
@@ -920,7 +941,7 @@ class EmundusController extends JControllerLegacy {
                 }
 
                 try {
-                    $query_ext = 'SELECT UPPER(allowed_types) as allowed_types, nbmax, min_pages_pdf, max_pages_pdf FROM #__emundus_setup_attachments WHERE id = '.(int)$attachments;
+                    $query_ext = 'SELECT UPPER(allowed_types) as allowed_types, nbmax, min_pages_pdf, max_pages_pdf, max_filesize FROM #__emundus_setup_attachments WHERE id = '.(int)$attachments;
                     $db->setQuery($query_ext);
                     $attachment = $db->loadAssoc();
 
@@ -940,6 +961,23 @@ class EmundusController extends JControllerLegacy {
 
                             continue;
                         }
+
+	                    if (!empty($attachment['max_filesize'])) {
+		                    $bytes = $attachment['max_filesize'] * 1024 * 1024;
+
+							if ($file['size'] > $bytes) {
+								$error = JText::_('COM_EMUNDUS_ATTACHMENTS_ERROR_FILE_TOO_BIG');
+
+								if ($format == "raw") {
+									echo '{"aid":"0","status":false,"message":"'.$error.'" }';
+								} else {
+									JFactory::getApplication()->enqueueMessage($error, 'error');
+									$this->setRedirect($url);
+								}
+
+								return false;
+							}
+	                    }
                     } catch (Exception $e) {
                         $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
                         JLog::add($error, JLog::ERROR, 'com_emundus');
@@ -972,6 +1010,17 @@ class EmundusController extends JControllerLegacy {
                 $file_array = explode('.', $file['name']);
                 $file_ext = end($file_array);
                 $pos = strpos($attachment['allowed_types'], strtoupper($file_ext));
+
+	            $finfo = finfo_open( FILEINFO_MIME_TYPE );
+	            $mtype = finfo_file( $finfo, $file['tmp_name'] );
+	            finfo_close( $finfo );
+
+				if(!empty($mtype)) {
+					if($file['type'] !== $mtype) {
+						$pos = false;
+					}
+				}
+
                 if ($pos === false) {
                     $error = JUri::getInstance().' :: USER ID : '.$user->id.' '.$file_ext.' -> type is not allowed, please send a doc with type : '.$attachment['allowed_types'];
                     $errorInfo = JText::_("COM_EMUNDUS_ERROR_INFO_FILETYPE");
@@ -1123,9 +1172,7 @@ class EmundusController extends JControllerLegacy {
                         $can_be_deleted = @$post['can_be_deleted_'.$attachments]!=''?$post['can_be_deleted_'.$attachments]:JRequest::getVar('can_be_deleted', 1, 'POST', 'none',0);
                         $can_be_viewed = @$post['can_be_viewed_'.$attachments]!=''?$post['can_be_viewed_'.$attachments]:JRequest::getVar('can_be_viewed', 1, 'POST', 'none',0);
 
-                        $now = new DateTime();
-                        $now->setTimezone(new DateTimeZone('UTC'));
-                        $now = $now->format('Y-m-d H:i:s');
+                        $now = $h_date->getNow();
 
                         $query .= '('.$user->id.', '.$attachments.', \''.$paths.'\', '.$db->Quote($descriptions).', '.$can_be_deleted.', '.$can_be_viewed.', '.$fnumInfos['id'].', '.$db->Quote($fnum).', '.$pageCount.', '.$db->quote($local_filename).', '.$db->quote($now).', '.$db->quote($now).', '.$db->quote($file['size']).'),';
                         $nb++;
@@ -1364,24 +1411,26 @@ class EmundusController extends JControllerLegacy {
             $this->setRedirect(JRoute::_('index.php'), JText::_('Only administrator can access this function.'), 'error');
             return;
         }
-        $attachment_id = JRequest::getVar('aid', $default=null, $hash= 'POST', $type= 'array', $mask=0);
-        $attachment_selected = JRequest::getVar('as', $default=null, $hash= 'POST', $type= 'array', $mask=0);
-        $attachment_displayed = JRequest::getVar('ad', $default=null, $hash= 'POST', $type= 'array', $mask=0);
-        $attachment_required = JRequest::getVar('ar', $default=null, $hash= 'POST', $type= 'array', $mask=0);
-        $attachment_bank_needed = JRequest::getVar('ab', $default=null, $hash= 'POST', $type= 'array', $mask=0);
-        $profile_id = JRequest::getVar('pid', $default=null, $hash= 'POST', $type= 'none', $mask=0);
-        if ($profile_id != JRequest::getVar('rowid', $default=null, $hash= 'GET', $type= 'none', $mask=0) || !is_numeric($profile_id) || floor($profile_id) != $profile_id || $profile_id <= 0) {
+        $attachment_id = $this->input->post->get('aid', array(), 'array');
+        $attachment_selected = $this->input->post->get('as', array(), 'array');
+        $attachment_displayed = $this->input->post->get('ad', array(), 'array');
+        $attachment_required = $this->input->post->get('ar', array(), 'array');
+        $attachment_bank_needed = $this->input->post->get('ab', array(), 'array');
+        $profile_id = $this->input->post->getInt('pid', 0);
+        if ($profile_id != $this->input->getInt('rowid', 0) || !is_numeric($profile_id) || floor($profile_id) != $profile_id || $profile_id <= 0) {
             $this->setRedirect('index.php', 'Error', 'error');
             return;
         }
-        if (!empty($attachment_selected)) {
-            $attachments = array();
-            $a = new stdClass();
+
+	    $attachments = array();
+	    if (!empty($attachment_selected)) {
+
             foreach ($attachment_id as $id) {
-                $a->selected = @in_array($id, $attachment_selected);
-                $a->displayed = @in_array($id, $attachment_displayed);
-                $a->required = @in_array($id, $attachment_required);
-                $a->bank_needed = @in_array($id, $attachment_bank_needed);
+	            $a = new stdClass();
+                $a->selected = in_array($id, $attachment_selected);
+                $a->displayed = in_array($id, $attachment_displayed);
+                $a->required = in_array($id, $attachment_required);
+                $a->bank_needed = in_array($id, $attachment_bank_needed);
                 $attachments[$id] = $a;
                 unset($a);
             }
@@ -1389,9 +1438,10 @@ class EmundusController extends JControllerLegacy {
         }
 
         $db = JFactory::getDBO();
-// ATTACHMENTS
+
+		// ATTACHMENTS
         $db->setQuery('DELETE FROM #__emundus_setup_attachment_profiles WHERE profile_id = '.$profile_id);
-        $db->execute() or die($db->getErrorMsg());
+        $db->execute();
         if (isset($attachments)) {
             $query = 'INSERT INTO #__emundus_setup_attachment_profiles (`profile_id`, `attachment_id`, `displayed`, `mandatory`, `bank_needed`) VALUES';
             foreach ($attachments as $id => $attachment) {
@@ -1534,7 +1584,8 @@ class EmundusController extends JControllerLegacy {
             'ods' => 'application/vnd.oasis.opendocument.spreadsheet',
         );
 
-        $ext = strtolower(array_pop(explode('.',$filename)));
+		$exploded_filename = explode('.',$filename);
+        $ext = strtolower(array_pop($exploded_filename));
         if (array_key_exists($ext, $mime_types)) {
             return $mime_types[$ext];
         }
@@ -1574,8 +1625,8 @@ class EmundusController extends JControllerLegacy {
 
         $current_user = JFactory::getSession()->get('emundusUser');
 
-        $fnum= "";
-        if($current_user->id == $uid){
+        $fnum = '';
+        if($current_user->id == $uid && !empty($current_user->fnum)) {
             $fnum = $current_user->fnum;
         }
 	    $fnums = [];
@@ -1607,6 +1658,7 @@ class EmundusController extends JControllerLegacy {
 
             $first_part_of_filename = explode('_', $file)[0];
             if (empty($fileInfo) && is_numeric($first_part_of_filename) && strlen($first_part_of_filename) === 28) {
+                $fileInfo = new stdClass();
                 $fileInfo->fnum = $first_part_of_filename;
                 $fileInfo->can_be_viewed = 1;
             }
@@ -1659,51 +1711,144 @@ class EmundusController extends JControllerLegacy {
         }
     }
 
-/*
-    function sendmail($nb_email_per_batch = null) {
-        $app = JFactory::getApplication();
-        $user = JFactory::getSession()->get('emundusUser');
-        $db = JFactory::getDBO();
-        $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
-        $keyid = JRequest::getVar('keyid', null, 'GET', 'none',0);
+    /**
+     * Check if referent can or not open PDF file
+     */
+    function getfilereferent() {
+
+        // Get the filename and user ID from the URL.
+        $jinput = JFactory::getApplication()->input;
+        $url = $jinput->get->get('u', null, 'RAW');
+
         $eMConfig = JComponentHelper::getParams('com_emundus');
+        $applicant_files_path = $eMConfig->get('applicant_files_path', 'images/emundus/files/');
+        if (strpos($url, $applicant_files_path) !== 0 && strpos($url, 'tmp/') !== 0) {
+            die (JText::_('ACCESS_DENIED'));
+        }
 
-        if (EmundusHelperAccess::isAdministrator($user->id) && EmundusHelperAccess::isCoordinator($user->id) && EmundusHelperAccess::isPartner($user->id) && EmundusHelperAccess::isEvaluator($user->id)) {
-            if ($nb_email_per_batch == null)
-                $nb_email_per_batch = $eMConfig->get('nb_email_per_batch', '30');
+        $urltab = explode('/', $url);
 
-            //Selection des mails à envoyer : table jos_emundus_emailtosend
-            $query = '  SELECT m.user_id_from, m.user_id_to, m.subject, m.message, u.email
-                        FROM #__messages m, #__users u
-                        WHERE m.user_id_to = u.id
-                        AND m.state = 1
-                        LIMIT 0,'.$nb_email_per_batch;
-            $db->setQuery( $query );
-            $db->execute();
+        // Split the URL into different parts.
+        $cpt = count($urltab);
+        $uid = (int)$urltab[$cpt-2];
+        if(empty($uid)) {
+            // Manage subdirectories
+            $uid = (int)$urltab[$cpt-3];
+        }
+        $file = $urltab[$cpt-1];
 
-            if ($db->getNumRows() == 0) {
-                $this->setRedirect('index.php?option=com_fabrik&view=table&tableid=90&Itemid='.$itemid);
+        // Check if there is an awaiting file request with this keyid and fnum from less than 6 months ago
+        $keyid = $jinput->get('keyid', null);
+        if (!empty($keyid)) {
+            $fnum =  $jinput->get->get('fnum', null);
+            if (!empty($fnum)) {
+                // Can't use helper date here because we need to get now - 6 months
+                $now = new DateTime();
+                $now = $now->setTimezone(new DateTimeZone('UTC'));
+                $deadline = $now->sub(new DateInterval('P6M'));
+                $deadline = $deadline->format('Y-m-d H:i:s');
+
+                $db = JFactory::getDBO();
+                $query = $db->getQuery(true);
+
+                $query->select($db->quoteName('id'))
+                    ->from($db->quoteName('#__emundus_files_request'))
+                    ->where($db->quoteName('keyid').' LIKE '.$db->quote($keyid))
+                    ->andWhere($db->quoteName('fnum').' LIKE '.$db->quote($fnum))
+                    ->andWhere($db->quoteName('uploaded').' = 0')
+                    ->andWhere($db->quoteName('time_date').' > '.$db->quote($deadline));
+                $db->setQuery($query);
+                $fileRequest = $db->loadResult();
             } else {
-                $mail=$db->loadObjectList();
-
-                foreach ($mail as $m) {
-                    $mail_subject = $m->subject;
-                    $emailfrom = $app->getCfg('mailfrom');
-                    $fromname = $app->getCfg('fromname');
-                    $recipient = $m->email;
-                    $body = $m->message;
-                    if (JUtility::sendMail( $emailfrom, $fromname, $recipient, $mail_subject, $body, true)) {
-                        usleep(100);
-                        $query = 'UPDATE #__messages SET state = 0 WHERE user_id_to ='.$m->user_id_to;
-                        $db->setQuery($query);
-                        $db->execute();
-                    }
-                }
-                $this->setRedirect('index.php?option=com_emundus&task=sendmail&keyid='.$keyid.'&Itemid='.$itemid);
+                die (JText::_('ACCESS_DENIED'));
             }
+        } else {
+            die (JText::_('ACCESS_DENIED'));
+        }
+
+        if (!empty($fileRequest)) {
+            // If there is an open file request, open the file
+            $file = JPATH_BASE.DS.$url;
+            if (is_file($file)) {
+                $mime_type = $this->get_mime_type($file);
+
+                if ($mime_type === 'application/pdf') {
+
+                    require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'fpdi.php');
+                    $pdf = new ConcatPdf();
+                    $pdf->setFiles([$file]);
+                    $pdf->concat();
+                    $pdf->Output();
+                    exit;
+
+                } else {
+                    header('Content-type: '.$mime_type);
+                    header('Content-Disposition: inline; filename='.basename($file));
+                    header('Last-Modified: '.gmdate('D, d M Y H:i:s') . ' GMT');
+                    header('Cache-Control: no-store, no-cache, must-revalidate');
+                    header('Cache-Control: pre-check=0, post-check=0, max-age=0');
+                    header('Pragma: anytextexeptno-cache', true);
+                    header('Cache-control: private');
+                    header('Expires: 0');
+
+                    ob_clean();
+                    ob_end_flush();
+                    readfile($file);
+                    exit;
+                }
+            } else {
+                JError::raiseWarning(500, JText::_( 'COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND' ).' '.$url);
+            }
+        } else {
+            die (JText::_('ACCESS_DENIED'));
         }
     }
-*/
+
+    /*
+        function sendmail($nb_email_per_batch = null) {
+            $app = JFactory::getApplication();
+            $user = JFactory::getSession()->get('emundusUser');
+            $db = JFactory::getDBO();
+            $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+            $keyid = JRequest::getVar('keyid', null, 'GET', 'none',0);
+            $eMConfig = JComponentHelper::getParams('com_emundus');
+
+            if (EmundusHelperAccess::isAdministrator($user->id) && EmundusHelperAccess::isCoordinator($user->id) && EmundusHelperAccess::isPartner($user->id) && EmundusHelperAccess::isEvaluator($user->id)) {
+                if ($nb_email_per_batch == null)
+                    $nb_email_per_batch = $eMConfig->get('nb_email_per_batch', '30');
+
+                //Selection des mails à envoyer : table jos_emundus_emailtosend
+                $query = '  SELECT m.user_id_from, m.user_id_to, m.subject, m.message, u.email
+                            FROM #__messages m, #__users u
+                            WHERE m.user_id_to = u.id
+                            AND m.state = 1
+                            LIMIT 0,'.$nb_email_per_batch;
+                $db->setQuery( $query );
+                $db->execute();
+
+                if ($db->getNumRows() == 0) {
+                    $this->setRedirect('index.php?option=com_fabrik&view=table&tableid=90&Itemid='.$itemid);
+                } else {
+                    $mail=$db->loadObjectList();
+
+                    foreach ($mail as $m) {
+                        $mail_subject = $m->subject;
+                        $emailfrom = $app->getCfg('mailfrom');
+                        $fromname = $app->getCfg('fromname');
+                        $recipient = $m->email;
+                        $body = $m->message;
+                        if (JUtility::sendMail( $emailfrom, $fromname, $recipient, $mail_subject, $body, true)) {
+                            usleep(100);
+                            $query = 'UPDATE #__messages SET state = 0 WHERE user_id_to ='.$m->user_id_to;
+                            $db->setQuery($query);
+                            $db->execute();
+                        }
+                    }
+                    $this->setRedirect('index.php?option=com_emundus&task=sendmail&keyid='.$keyid.'&Itemid='.$itemid);
+                }
+            }
+        }
+    */
     function sendmail_applicant() {
         $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
         $sid = JRequest::getVar('mail_to', null, 'POST', 'INT',0);

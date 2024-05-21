@@ -1,0 +1,1 @@
+define(["jquery","fab/element"],function(e,n){return window.FbEmundusColorpicker=new Class({Extends:n,initialize:function(e,n){this.setPlugin("emundus_colorpicker"),this.parent(e,n);var t=document.getElementsByClassName("js-color-swatches");if(t.length>0)for(var r=0;r<t.length;r++)new ColorSwatches(t[r])}}),window.FbEmundusColorpicker});

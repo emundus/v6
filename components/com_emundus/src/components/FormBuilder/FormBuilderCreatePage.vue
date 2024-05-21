@@ -83,9 +83,9 @@
 				</div>
 			</section>
 		</div>
-		<div class="actions em-flex-row-justify-end em-w-100">
-			<button class="em-secondary-button em-w-max-content em-white-bg" @click="close(false)">{{ translate('COM_EMUNDUS_FORM_BUILDER_CANCEL') }}</button>
-			<button class="em-primary-button em-w-max-content em-ml-8" @click="createPage">{{ translate('COM_EMUNDUS_FORM_BUILDER_PAGE_CREATE_SAVE') }}</button>
+		<div class="actions em-flex-space-between em-flex-row em-w-100">
+			<button class="em-secondary-button em-w-auto em-white-bg" @click="close(false)">{{ translate('COM_EMUNDUS_FORM_BUILDER_CANCEL') }}</button>
+			<button class="em-primary-button em-w-auto em-ml-8" @click="createPage">{{ translate('COM_EMUNDUS_FORM_BUILDER_PAGE_CREATE_SAVE') }}</button>
 		</div>
 	</div>
 </template>
@@ -223,7 +223,10 @@ export default {
 						}
 
 						return used;
-					});
+					}).catch(() => {
+            this.canUseInitialStructure = false; // if error, we can't use initial structure, in doubt
+            return true;
+          });
 				} else {
 					return used;
 				}

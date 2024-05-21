@@ -31,11 +31,12 @@ export default {
         }
     },
 
-    async getEvaluationFormByFnum(fnum) {
+    async getEvaluationFormByFnum(fnum,type) {
         try {
             const response = await client().get('index.php?option=com_emundus&controller=file&task=getevaluationformbyfnum', {
                 params: {
-                    fnum: fnum
+                    fnum: fnum,
+                    type: type,
                 }
             });
 
@@ -158,11 +159,12 @@ export default {
         }
     },
 
-    async getFile(fnum){
+    async getFile(fnum,type = 'default') {
         try {
             const response = await client().get('index.php?option=com_emundus&controller=file&task=getfile', {
                 params: {
-                    fnum: fnum
+                    fnum: fnum,
+                    type: type,
                 }
             });
 
@@ -258,12 +260,11 @@ export default {
     },
 
     async deleteComment(cid){
+        const formData = new FormData();
+        formData.append('cid', cid);
+
         try {
-            const response = await client().delete('index.php?option=com_emundus&controller=file&task=deletecomment', {
-                params: {
-                    cid: cid,
-                }
-            });
+            const response = await client().post('index.php?option=com_emundus&controller=file&task=deletecomment', formData);
 
             return response.data;
         } catch (e) {

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+		<fieldset name="plg-form-emunduscheckformsfilled" label="PLG_FABRIK_FORM_EMUNDUS_CHECKFORMSFILLED_FIELDS">
+			<field
+				type="sql"
+				name="form_to_check"
+				label="PLG_FABRIK_FORM_EMUNDUS_CHECKFORMSFILLED_FIELDS_FORMS_TO_CHECK_LABEL"
+				description="PLG_FABRIK_FORM_EMUNDUS_CHECKFORMSFILLED_FIELDS_FORMS_TO_CHECK_DESC"
+				query="SELECT id, label FROM jos_fabrik_forms WHERE published = 1"
+				key_field="id"
+				value_field="label"
+			/>
+		</fieldset>
+	</fields>
+</form>

@@ -50,14 +50,23 @@ export default {
             formData.append('fid', fid);
             formData.append('label', JSON.stringify(label));
 
-            return await client().post(
+            const response = await client().post(
                 'index.php?option=com_emundus&controller=formbuilder&task=createsimplegroup',
                 formData
             );
+
+            if (typeof response.data !== 'object') {
+                return {
+                    status: false,
+                    msg: 'COM_EMUNDUS_FORM_BUILDER_REQUEST_ERROR'
+                };
+            } else {
+                return response.data;
+            }
         } catch (e) {
             return {
                 status: false,
-                message: e.message
+                msg: e.message
             };
         }
     },
@@ -774,6 +783,35 @@ export default {
                         params: {
                             model_id: modelId,
                             profile_id: profileId
+                        }
+                    }
+                );
+
+                response = result.data;
+            } catch (e) {
+                response.msg = e.message;
+            }
+        }
+
+        return response;
+    },
+
+    async getSqlDropdownOptions(table,key,value,translate) {
+        let response = {
+            status: false,
+            msg: 'MISSING_PARAMS'
+        };
+
+        if (table && key && value) {
+            try {
+                const result = await client().get(
+                    'index.php?option=com_emundus&controller=formbuilder&task=getsqldropdownoptions',
+                    {
+                        params: {
+                            table: table,
+                            key: key,
+                            value: value,
+                            translate: translate
                         }
                     }
                 );

@@ -131,7 +131,7 @@ $timezone = new DateTimeZone($offset);
                                     <?php if ($value == 0 && $user->active != -1) :?>
                                         <td>
                                             <div class="em-cell" >
-                                                <span class="material-icons em-main-500-color" title="<?php echo JText::_('COM_EMUNDUS_USERS_ACTIVATE_ACCOUNT_SINGLE') ?>">verified</span>
+                                                <span class="material-icons" style="color:var(--main-500);" title="<?php echo JText::_('COM_EMUNDUS_USERS_ACTIVATE_ACCOUNT_SINGLE') ?>">verified</span>
                                             </div>
                                         </td>
                                     <?php elseif($user->active == -1):?>
@@ -158,6 +158,12 @@ $timezone = new DateTimeZone($offset);
                                                 <?= JText::_('COM_EMUNDUS_APPLICANT'); ?>
                                             </div>
                                         <?php endif; ?>
+                                    </td>
+                                <?php elseif ($k == 'o_profiles') : ?>
+                                    <td class="em-cell-scroll">
+                                        <div class="em-cell" >
+	                                        <?php echo $value;?>
+                                        </div>
                                     </td>
 								<?php elseif ($k == 'newsletter') :?>
 									<?php if ($value == 1) :?>

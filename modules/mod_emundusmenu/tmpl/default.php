@@ -8,9 +8,9 @@
 
 // No direct access.
 defined('_JEXEC') or die;
-
 // Note. It is important to remove spaces between elements.
 ?>
+<link rel="stylesheet" href="modules/mod_emundusmenu/style/mod_emundusmenu_applicant.css" type="text/css" />
 <ul class="<?php echo $class_sfx;?>"<?php
 	$tag = '';
 	if ($params->get('tag_id')!=NULL) {
@@ -20,6 +20,7 @@ defined('_JEXEC') or die;
 ?>>
 <?php
 foreach ($list as $i => &$item) :
+    if($item->getParams()->get('menu_show') != 0) :
 	$item->anchor_css="item";
 	$class = 'item-'.$item->id;
 	if ($item->id == $active_id) {
@@ -83,5 +84,6 @@ foreach ($list as $i => &$item) :
 	else {
 		echo '</li>';
 	}
+    endif;
 endforeach;
 ?></ul>

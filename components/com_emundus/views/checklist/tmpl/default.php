@@ -52,7 +52,6 @@ if ($can_edit_after_deadline || (!$is_app_sent && $this->is_campaign_started && 
     $block_upload = false;
 }
 
-
 function return_bytes($val) {
 	$val = trim($val);
 	$last = strtolower($val[strlen($val)-1]);
@@ -68,7 +67,6 @@ function return_bytes($val) {
 
 	return $val;
 }
-
 
 if (!empty($this->custom_title)) :?>
     <h1 class="em-checklist-title"><?= $this->custom_title; ?></h1>
@@ -104,8 +102,15 @@ if (!empty($this->custom_title)) :?>
 
 <?php if (count($this->attachments) > 0) :?>
 
-    <div id="attachment_list" class="em-attachmentList em-repeat-card">
-        <p><?= JText::_('COM_EMUNDUS_ATTACHMENTS_INFO_UPLOAD_MAX_FILESIZE') . ' = ' . ini_get("upload_max_filesize") . ' '. JText::_('COM_EMUNDUS_ATTACHMENTS_BYTES'); ?> </p>
+    <div id="attachment_list" class="em-attachmentList em-repeat-card p-6">
+        <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
+        <h2 class="after-em-border after:bg-red-800 mb-4"><?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_TITLE') ?></h2>
+        <div class="alert alert-info flex items-center gap-1 mt-1">
+            <span class="material-icons">info</span>
+            <div>
+                <p><?= JText::_('COM_EMUNDUS_ATTACHMENTS_INFO_UPLOAD_MAX_FILESIZE') . ' ' . ini_get("upload_max_filesize") . ' '. JText::_('COM_EMUNDUS_ATTACHMENTS_BYTES'); ?> </p>
+            </div>
+        </div>
     <?php if ($this->show_info_legend) :?>
         <div id="legend" class="em-mt-4">
             <div class="em-flex-row em-mb-4">
@@ -113,11 +118,11 @@ if (!empty($this->custom_title)) :?>
                 <p><?= JText::_('COM_EMUNDUS_ATTACHMENTS_MISSING_DOC'); ?></p>
             </div>
             <div class="em-flex-row em-mb-4">
-                <span class="material-icons-outlined em-main-500-color em-mr-4">check_circle</span>
+                <span class="material-icons-outlined em-green-500-color em-mr-4">check_circle</span>
                 <p><?= JText::_('COM_EMUNDUS_ATTACHMENTS_SENT_DOC'); ?></p>
             </div>
             <div class="em-flex-row em-mb-4">
-                <span class="material-icons-outlined em-yellow-500-color em-mr-4">error_outline</span>
+                <span class="material-icons-outlined em-yellow-600-color em-mr-4">error_outline</span>
                 <p><?= JText::_('COM_EMUNDUS_ATTACHMENTS_MISSING_DOC_FAC'); ?></p>
             </div>
         </div>
@@ -134,19 +139,29 @@ if (!empty($this->custom_title)) :?>
                 $class = 'need_ok';
             }
             $div = '<div id="a'.$attachment->id.'" style="position: relative;top: -65px;"></div>
-                <fieldset id="a'.$attachment->id.'" class="em-fieldset-attachment em-mt-24">
-                <div id="l'.$attachment->id.'" class="em-flex-row">';
-            if ($attachment->nb == 0) {
-                $div .= $attachment->mandatory?'<span class="material-icons-outlined em-red-500-color em-mr-4">highlight_off</span>':'<span class="material-icons-outlined em-yellow-500-color em-mr-4">error_outline</span>';
+                <fieldset id="a'.$attachment->id.'" class="em-fieldset-attachment mt-3">
+                <div id="l'.$attachment->id.'" class="flex items-center em-ml-8 em-mt-8">';
+            if ($attachment->nb == 0 ) {
+                if($this->show_info_legend)
+                {
+	                $div .= $attachment->mandatory ? '<span class="material-icons-outlined em-red-500-color em-mr-4">highlight_off</span>' : '<span class="material-icons-outlined em-yellow-600-color em-mr-4">error_outline</span>';
+                }
             } else {
-                $div .= '<span class="material-icons-outlined em-main-500-color em-mr-4">check_circle</span>';
+                $div .= '<span class="material-icons-outlined em-green-500-color em-mr-4">check_circle</span>';
             }
-            $div .= '<h4 class="em-h4 em-mt-0-important">'.$attachment->value .'</h4>';
-            $div .= '</div><p class="em-ml-8 em-mt-8">'.$attachment->description .'</p><div>';
+            $div .= '<h4 class="em-mt-0-important">'.$attachment->value .'</h4>';
+
+            $div .= '</div>';
+
+	        if(!empty($attachment->description)) {
+		        $div .= '<p class="em-ml-8 em-mt-8" style="white-space: pre-line">' . $attachment->description . '</p>';
+	        }
+
+            $div .= '<div>';
 
 	        if ($attachment->has_sample && !empty($attachment->sample_filepath)) {
-		        $div .= '<div class="em-ml-8 em-mb-8 em-flex-row">
-                            <span>'.JText::_('COM_EMUNDUS_ATTACHMENTS_SAMPLE') . '</span><a class="em-flex-row" href="'.JUri::root() . $attachment->sample_filepath.'" target="_blank"> <span class="em-ml-4"> ' . JText::_('COM_EMUNDUS_ATTACHMENTS_SAMPLE_FILE').'</span><span class="material-icons-outlined em-ml-8 em-text-neutral-900">cloud_download</span></a>
+		        $div .= '<div class="em-ml-8 em-mb-8 em-flex-row attachment_model">
+                            <span>'.JText::_('COM_EMUNDUS_ATTACHMENTS_SAMPLE') . '</span><a class="em-flex-row" href="'.JUri::root() . $attachment->sample_filepath.'" target="_blank"> <span> ' . JText::_('COM_EMUNDUS_ATTACHMENTS_SAMPLE_FILE').'</span><span class="material-icons-outlined em-ml-8 em-text-neutral-900">cloud_download</span></a>
                          </div>';
 	        }
 
@@ -156,25 +171,25 @@ if (!empty($this->custom_title)) :?>
                     $nb = $key + 1;
                     $div .= '<tr><td>';
                     if(!empty($item->local_filename)){
-                        $div .= '<strong>'.$item->local_filename.'</strong>';
+                        $div .= $item->local_filename;
                     } else {
-	                    $div .= '<strong>'.JText::_('COM_EMUNDUS_ONBOARD_TYPE_FILE') . ' ' . $nb.'</strong>';
+	                    $div .= JText::_('COM_EMUNDUS_ONBOARD_TYPE_FILE') . ' ' . $nb;
                     }
-                    $div .= ' | ' . JString::ucfirst(JHTML::Date(strtotime($item->timedate), "DATE_FORMAT_LC2"));
-                    $div .= ' | ';
+                    $div .= ' | <span style="font-size: 13px">' . JString::ucfirst(EmundusHelperDate::displayDate($item->timedate, 'DATE_FORMAT_LC2', 0)) . '</span>';
                     if ($this->show_shortdesc_input) {
+	                    $div .= ' | ';
                         $div .= empty($item->description)?JText::_('COM_EMUNDUS_ATTACHMENTS_NO_DESC'):$item->description;
                     }
                     $div .= '</td></tr>';
 	                $div .= '<tr class="em-added-files">
                     <td class="em-flex-row">';
 	                if ($item->can_be_viewed == 1) {
-		                $div .= '<a class="em-flex-row em-mr-16" href="'.$chemin.$this->user->id .'/'.$item->filename .'" target="_blank"><span class="material-icons-outlined em-mr-4 em-main-500-color">visibility</span>'.JText::_('COM_EMUNDUS_ATTACHMENTS_VIEW').'</a>';
+		                $div .= '<a class="em-flex-row em-mr-16 btn-tertiary" href="'.$chemin.$this->user->id .'/'.$item->filename .'" target="_blank"><span class="material-icons-outlined em-mr-4">visibility</span>'.JText::_('COM_EMUNDUS_ATTACHMENTS_VIEW').'</a>';
 	                } else {
 		                $div .= JText::_('COM_EMUNDUS_ATTACHMENTS_CANT_VIEW') . '</br>';
 	                }
 	                if (($item->can_be_deleted == 1 || $item->is_validated == "0") && !$block_upload) {
-		                $div .= '<a class="em-flex-row em-red-500-color" href="'.JRoute::_('index.php?option=com_emundus&task=delete&uid='.$item->id.'&aid='.$item->attachment_id.'&duplicate='.$attachment->duplicate.'&nb='.$attachment->nb.'&Itemid='.$itemid.'#a'.$attachment->id).'"><span class="material-icons-outlined em-red-500-color em-mr-4">delete_outline</span> '.JText::_('COM_EMUNDUS_ACTIONS_DELETE').'</a>';
+		                $div .= '<a class="em-flex-row em-error-button" href="'.JRoute::_('index.php?option=com_emundus&task=delete&uid='.$item->id.'&aid='.$item->attachment_id.'&duplicate='.$attachment->duplicate.'&nb='.$attachment->nb.'&Itemid='.$itemid.'#a'.$attachment->id).'"><span class="material-icons-outlined em-mr-4">delete_outline</span> '.JText::_('COM_EMUNDUS_ACTIONS_DELETE').'</a>';
 	                } else {
 		                $div .= JText::_('COM_EMUNDUS_ATTACHMENTS_CANT_DELETE') . '</br>';
 	                }
@@ -246,8 +261,8 @@ if (!empty($this->custom_title)) :?>
                         }
             
                         recorderInserted.onUploadDone = function(recorderId, streamName, streamDuration, audioCodec, videoCodec, fileType, audioOnly, location){
-                            //var args = Array.prototype.slice.call(arguments);
-                            //__log("onUploadDone("+args.join(\', \')+")");
+                            document.querySelector(".em-page-loader").style.display = "block";    
+                            __log("onUploadDone("+args.join(\', \')+")");
                             recorderInserted.save();
                         }
             
@@ -303,6 +318,7 @@ if (!empty($this->custom_title)) :?>
             
                         recorderInserted.onDesktopVideoUploadStarted = function(recorderId, filename, filetype, audioOnly){
                             //var args = Array.prototype.slice.call(arguments);
+                            document.querySelector(".em-page-loader").style.display = "block";
                             __log("'.JText::_('VIDEO_INSTR_UPLOADING').'");
                         }
             
@@ -323,6 +339,7 @@ if (!empty($this->custom_title)) :?>
                         //MOBILE EVENTS API
                         recorderInserted.onVideoUploadStarted = function(recorderId, filename, filetype, audioOnly){
                             //var args = Array.prototype.slice.call(arguments);
+                            document.querySelector(".em-page-loader").style.display = "block";
                             __log("'.JText::_('VIDEO_INSTR_RECORD_SAVED').'");
                         }
     
@@ -358,7 +375,7 @@ if (!empty($this->custom_title)) :?>
                 <input type="hidden" name="required_desc" value="'.$this->required_desc.'"/>
                 <div>';
                 if ($this->show_shortdesc_input) {
-                    $div .= '<div class="row"><div><label><span>'.JText::_('COM_EMUNDUS_ATTACHMENTS_SHORT_DESC').'</span></label><input type="text" class="em-w-100" maxlength="80" name="description" placeholder="'.(($this->required_desc != 0)?JText::_('EMUNDUS_REQUIRED_FIELD'):'').'" /></div></div>';
+                    $div .= '<div class="row"><div class="mb-2"><label><span>'.JText::_('COM_EMUNDUS_ATTACHMENTS_SHORT_DESC').'</span></label><input type="text" class="em-w-100" maxlength="80" name="description" placeholder="'.(($this->required_desc != 0)?JText::_('EMUNDUS_REQUIRED_FIELD'):'').'" /></div></div>';
                 }
                 if ($this->show_browse_button) {
                     $div .= '<div class="row" id="upload-files-'.$file_upload.'"><div class="col-sm-12"><label for="file" class="custom-file-upload"><input class="em-send-attachment" id="em-send-attachment-'.$file_upload.'" type="file" name="file" multiple onchange="processSelectedFiles(this)"/><span style="display: none;" >'.JText::_("COM_EMUNDUS_SELECT_UPLOAD_FILE").'</span></label>';
@@ -370,213 +387,206 @@ if (!empty($this->custom_title)) :?>
                 $div .= '</div>';
 
                 $div .= '<script>
-                var maxFilesize = "'.ini_get("upload_max_filesize").'";
-
-    Dropzone.options.formA'.$attachment->id.' =  {
-        maxFiles: '.$attachment->nbmax .',
-        maxFilesize: maxFilesize.substr(0, maxFilesize.length-1), // MB
-        dictDefaultMessage: "'.JText::_('COM_EMUNDUS_ATTACHMENTS_UPLOAD_DROP_FILE_OR_CLICK').'",
-        dictInvalidFileType: "'. JText::_('COM_EMUNDUS_WRONG_FORMAT').' '.$attachment->allowed_types.'",
-        url: "index.php?option=com_emundus&task=upload&duplicate='.$attachment->duplicate.'&Itemid='.$itemid.'&format=raw",
-
-        accept: function(file, done) {
-            var sFileName = file.name;
-            var sFileExtension = sFileName.split(".")[sFileName.split(".").length - 1].toLowerCase();
-
-            if (sFileExtension == "php") {
-              done("'.JText::_('COM_EMUNDUS_WRONG_FORMAT').' '.$attachment->allowed_types.'");
-            } else {
-                var allowedExtension = "'.$attachment->allowed_types.'";
-                var n = allowedExtension.indexOf(sFileExtension);
+                    var maxFilesize = "'.ini_get("upload_max_filesize").'";
+                    Dropzone.options.formA'.$attachment->id.' =  {
+                        maxFiles: '.$attachment->nbmax .',
+                        maxFilesize: maxFilesize.substr(0, maxFilesize.length-1), // MB
+                        dictDefaultMessage: "'.JText::_('COM_EMUNDUS_ATTACHMENTS_UPLOAD_DROP_FILE_OR_CLICK').'",
+                        dictInvalidFileType: "'. JText::_('COM_EMUNDUS_WRONG_FORMAT').' '.$attachment->allowed_types.'",
+                        url: "index.php?option=com_emundus&task=upload&duplicate='.$attachment->duplicate.'&Itemid='.$itemid.'&format=raw",
                 
-                var required_desc =  document.querySelector("#form-a'.$attachment->id.' input[name=\'required_desc\']").value;
-                if (document.querySelector("#form-a'.$attachment->id.' input[name=\'description\']") && required_desc == 1) {
-                    var desc =  document.querySelector("#form-a'.$attachment->id.' input[name=\'description\']").value;
-                }
+                        accept: function(file, done) {
+                            var sFileName = file.name;
+                            var sFileExtension = sFileName.split(".")[sFileName.split(".").length - 1].toLowerCase();
                 
-                if (n >= 0) {
-                    if (required_desc == 1 && desc.trim() === "") {
-                        Swal.fire({
-                            position: "top",
-                            type: "warning",
-                            title: "'.JText::_("COM_EMUNDUS_ERROR_DESCRIPTION_REQUIRED").'",
-                            confirmButtonText: "'.JText::_("COM_EMUNDUS_SWAL_OK_BUTTON").'",
-                            showCancelButton: false,
-                            customClass: {
-                              title: "em-swal-title",
-                              confirmButton: "em-swal-confirm-button",
-                              actions: "em-flex-center",
-                            },
-                        });
-                        done("'.JText::_('COM_EMUNDUS_ERROR_DESCRIPTION_REQUIRED').'");
-                        this.removeFile(file);
-                    } else {
-                        done();
-                    }
-                } else {           
-                    Swal.fire({
-                            position: "top",
-                            type: "warning",
-                            title: "'. JText::_("COM_EMUNDUS_WRONG_FORMAT").' '.$attachment->allowed_types.'",
-                            confirmButtonText: "'. JText::_("COM_EMUNDUS_SWAL_OK_BUTTON").'",
-                            showCancelButton: false,
-                            customClass: {
-                              title: "em-swal-title",
-                              confirmButton: "em-swal-confirm-button",
-                              actions: "em-flex-center",
-                            },
-                        });
-                    done("'. JText::_('COM_EMUNDUS_WRONG_FORMAT').' '.$attachment->allowed_types.'");
-                    this.removeFile(file);
-                }
-            }
-        },
-
-        init: function() {
-
-          this.on("maxfilesexceeded", function(file) {
-            this.removeFile(file);
-            alert("'. JText::_('COM_EMUNDUS_ATTACHMENTS_NO_MORE').' : '.$attachment->value .'. '.JText::_('COM_EMUNDUS_ATTACHMENTS_MAX_ALLOWED').' '.$attachment->nbmax .'");
-          });
-
-          this.on("success", function(file, responseText) {
-          var profile_attachments_not_uploaded = "'. $this->profile_attachments_not_uploaded_ids.'";
-          profile_attachments_not_uploaded = profile_attachments_not_uploaded.split(",");
-            // Handle the responseText here. For example, add the text to the preview element:
-            var response = JSON.parse(responseText);
-            var id = response["id"];
-            var attachment_id = "'.$attachment->id.'";
-                        
-            if (!response["status"]) {
-                // Remove the file preview.
-                this.removeFile(file);
-                Swal.fire({
-                    position: "top",
-                    type: "warning",
-                    title: response["message"],
-                    confirmButtonText: "'.JText::_("COM_EMUNDUS_SWAL_OK_BUTTON").'",
-                    showCancelButton: false,
-                    customClass: {
-                       title: "em-swal-title",
-                       confirmButton: "em-swal-confirm-button",
-                       actions: "em-flex-center",
-                    },
-                });
-            } else {
-                if(profile_attachments_not_uploaded.includes(attachment_id)) {
-                    Swal.fire({
-                        position: "top",
-                        type: "info",
-                        title: "' . JText::_("COM_EMUNDUS_CHECKLIST_PROFILE_ATTACHMENT_FOUND") . '",
-                        text: "' . JText::_("COM_EMUNDUS_CHECKLIST_PROFILE_ATTACHMENT_FOUND_TEXT") . '",
-                        confirmButtonText: "' . JText::_("COM_EMUNDUS_CHECKLIST_PROFILE_ATTACHMENT_FOUND_UPDATE") . '",
-                        showCancelButton: true,
-                        cancelButtonText: "' . JText::_("COM_EMUNDUS_CHECKLIST_PROFILE_ATTACHMENT_FOUND_CONTINUE_WITHOUT_UPDATE") . '",
-                        reverseButtons: true,
-                        customClass: {
-                           title: "em-swal-title",
-                           confirmButton: "em-swal-confirm-button",
-                           cancelButton: "em-swal-cancel-button",
+                            if (sFileExtension == "php") {
+                              done("'.JText::_('COM_EMUNDUS_WRONG_FORMAT').' '.$attachment->allowed_types.'");
+                            } else {
+                                var allowedExtension = "'.$attachment->allowed_types.'";
+                                var n = allowedExtension.indexOf(sFileExtension);
+                                
+                                var required_desc =  document.querySelector("#form-a'.$attachment->id.' input[name=\'required_desc\']").value;
+                                if (document.querySelector("#form-a'.$attachment->id.' input[name=\'description\']") && required_desc == 1) {
+                                    var desc =  document.querySelector("#form-a'.$attachment->id.' input[name=\'description\']").value;
+                                }
+                                
+                                if (n >= 0) {
+                                    if (required_desc == 1 && desc.trim() === "") {
+                                        Swal.fire({
+                                            position: "top",
+                                            type: "warning",
+                                            title: "'.JText::_("COM_EMUNDUS_ERROR_DESCRIPTION_REQUIRED").'",
+                                            confirmButtonText: "'.JText::_("COM_EMUNDUS_SWAL_OK_BUTTON").'",
+                                            showCancelButton: false,
+                                            customClass: {
+                                              title: "em-swal-title",
+                                              confirmButton: "em-swal-confirm-button",
+                                              actions: "em-flex-center",
+                                            },
+                                        });
+                                        done("'.JText::_('COM_EMUNDUS_ERROR_DESCRIPTION_REQUIRED').'");
+                                        this.removeFile(file);
+                                    } else {
+                                        done();
+                                    }
+                                } else {           
+                                    Swal.fire({
+                                            position: "top",
+                                            type: "warning",
+                                            title: "'. JText::_("COM_EMUNDUS_WRONG_FORMAT").' '.$attachment->allowed_types.'",
+                                            confirmButtonText: "'. JText::_("COM_EMUNDUS_SWAL_OK_BUTTON").'",
+                                            showCancelButton: false,
+                                            customClass: {
+                                              title: "em-swal-title",
+                                              confirmButton: "em-swal-confirm-button",
+                                              actions: "em-flex-center",
+                                            },
+                                        });
+                                    done("'. JText::_('COM_EMUNDUS_WRONG_FORMAT').' '.$attachment->allowed_types.'");
+                                    this.removeFile(file);
+                                }
+                            }
                         },
-                    }).then(confirm => {
-                        if (confirm.value) {
-                            uploadintoprofile(attachment_id);
-                        } else{
-                            document.location.reload(true);
+                
+                        init: function() {
+                
+                          this.on("maxfilesexceeded", function(file) {
+                            this.removeFile(file);
+                            alert("'. JText::_('COM_EMUNDUS_ATTACHMENTS_NO_MORE').' : '.$attachment->value .'. '.JText::_('COM_EMUNDUS_ATTACHMENTS_MAX_ALLOWED').' '.$attachment->nbmax .'");
+                          });
+                
+                          this.on("success", function(file, responseText) {
+                          var profile_attachments_not_uploaded = "'. $this->profile_attachments_not_uploaded_ids.'";
+                          profile_attachments_not_uploaded = profile_attachments_not_uploaded.split(",");
+                            // Handle the responseText here. For example, add the text to the preview element:
+                            var response = JSON.parse(responseText);
+                            var id = response["id"];
+                            var attachment_id = "'.$attachment->id.'";
+                                        
+                            if (!response["status"]) {
+                                // Remove the file preview.
+                                this.removeFile(file);
+                                Swal.fire({
+                                    position: "top",
+                                    type: "warning",
+                                    title: response["message"],
+                                    confirmButtonText: "'.JText::_("COM_EMUNDUS_SWAL_OK_BUTTON").'",
+                                    showCancelButton: false,
+                                    customClass: {
+                                       title: "em-swal-title",
+                                       confirmButton: "em-swal-confirm-button",
+                                       actions: "em-flex-center",
+                                    },
+                                });
+                            } else {
+                                if(profile_attachments_not_uploaded.includes(attachment_id)) {
+                                    Swal.fire({
+                                        position: "top",
+                                        type: "info",
+                                        title: "' . JText::_("COM_EMUNDUS_CHECKLIST_PROFILE_ATTACHMENT_FOUND") . '",
+                                        text: "' . JText::_("COM_EMUNDUS_CHECKLIST_PROFILE_ATTACHMENT_FOUND_TEXT") . '",
+                                        confirmButtonText: "' . JText::_("COM_EMUNDUS_CHECKLIST_PROFILE_ATTACHMENT_FOUND_UPDATE") . '",
+                                        showCancelButton: true,
+                                        cancelButtonText: "' . JText::_("COM_EMUNDUS_CHECKLIST_PROFILE_ATTACHMENT_FOUND_CONTINUE_WITHOUT_UPDATE") . '",
+                                        reverseButtons: true,
+                                        customClass: {
+                                           title: "em-swal-title",
+                                           confirmButton: "em-swal-confirm-button",
+                                           cancelButton: "em-swal-cancel-button",
+                                        },
+                                    }).then(confirm => {
+                                        if (confirm.value) {
+                                            uploadintoprofile(attachment_id);
+                                        } else{
+                                            document.location.reload(true);
+                                        }
+                                    });
+                                } else {
+                                    document.location.reload(true);
+                                }
+                    
+                                // Change icon on fieldset
+                                document.getElementById("l'.$attachment->id.'").className = "need_ok";
+                                document.getElementById("'.$attachment->id.'").className = "need_ok";
+                    
+                                // Create the remove button
+                                var removeButton = Dropzone.createElement("<button>X</button>");
+                    
+                                // Capture the Dropzone instance as closure.
+                                var _this = this;
+                    
+                                // Listen to the click event
+                                removeButton.addEventListener("click", function(e) {
+                                  // Make sure the button click does not submit the form:
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                    
+                                  // Remove the file preview.
+                                  _this.removeFile(file);
+                                  // If you want to the delete the file on the server as well,
+                                  // you can do the AJAX request here.
+                                  $.ajax({
+                                    type: "GET",
+                                    dataType: "json",
+                                    url: "index.php?option=com_emundus&task=delete&uid="+id+"&aid='.$attachment->id.'&duplicate='.$attachment->duplicate.'&nb='.$attachment->nb.'&Itemid='.$itemid.'&format=raw",
+                                    data: ({
+                                        format: "raw"
+                                    }),
+                                    success: function(result) {
+                                        if (result.status) { 
+                                            // Change icon on fieldset
+                                            document.getElementById("l'.$attachment->id.'").className = "";
+                                            document.getElementById("'.$attachment->id.'").className = "";
+                                            alert("'.JText::_('COM_EMUNDUS_ATTACHMENTS_DELETED').'");
+                                        }
+                    
+                                    },
+                                    error: function(jqXHR, textStatus, errorThrown) {
+                                        console.log(jqXHR.responseText);
+                                    }
+                                  });
+                                });
+                                // Add the button to the file preview element.
+                                file.previewElement.appendChild(removeButton);
+                            }
+                          });
+                          this.on("error", function(file, responseText) {
+                              this.removeFile(file);
+                              Swal.fire({
+                                    position: "top",
+                                    type: "warning",
+                                    text: responseText,
+                                    confirmButtonText: "'.JText::_("COM_EMUNDUS_SWAL_OK_BUTTON").'",
+                                    showCancelButton: false,
+                                    customClass: {
+                                       title: "em-swal-title",
+                                       confirmButton: "em-swal-confirm-button",
+                                       actions: "em-flex-center",
+                                    },
+                                });
+                          });
                         }
-                    });
-                } else {
-                    document.location.reload(true);
-                }
-    
-                // Change icon on fieldset
-                document.getElementById("l'.$attachment->id.'").className = "need_ok";
-                document.getElementById("'.$attachment->id.'").className = "need_ok";
-    
-                // Create the remove button
-                var removeButton = Dropzone.createElement("<button>X</button>");
-    
-                // Capture the Dropzone instance as closure.
-                var _this = this;
-    
-                // Listen to the click event
-                removeButton.addEventListener("click", function(e) {
-                  // Make sure the button click does not submit the form:
-                  e.preventDefault();
-                  e.stopPropagation();
-    
-                  // Remove the file preview.
-                  _this.removeFile(file);
-                  // If you want to the delete the file on the server as well,
-                  // you can do the AJAX request here.
-                  $.ajax({
-                    type: "GET",
-                    dataType: "json",
-                    url: "index.php?option=com_emundus&task=delete&uid="+id+"&aid='.$attachment->id.'&duplicate='.$attachment->duplicate.'&nb='.$attachment->nb.'&Itemid='.$itemid.'&format=raw",
-                    data: ({
-                        format: "raw"
-                    }),
-                    success: function(result) {
-                        if (result.status) { 
-                            // Change icon on fieldset
-                            document.getElementById("l'.$attachment->id.'").className = "";
-                            document.getElementById("'.$attachment->id.'").className = "";
-                            alert("'.JText::_('COM_EMUNDUS_ATTACHMENTS_DELETED').'");
-                        }
-    
-                    },
-                    error: function(jqXHR, textStatus, errorThrown) {
-                        console.log(jqXHR.responseText);
                     }
-                  });
-                });
-                // Add the button to the file preview element.
-                file.previewElement.appendChild(removeButton);
-            }
-          });
-          this.on("error", function(file, responseText) {
-              this.removeFile(file);
-              Swal.fire({
-                    position: "top",
-                    type: "warning",
-                    text: responseText,
-                    confirmButtonText: "'.JText::_("COM_EMUNDUS_SWAL_OK_BUTTON").'",
-                    showCancelButton: false,
-                    customClass: {
-                       title: "em-swal-title",
-                       confirmButton: "em-swal-confirm-button",
-                       actions: "em-flex-center",
-                    },
-                });
-          });
-        }
-    }
-    </script>';
+                    </script>';
                     $div .= '</form>';
                 }
-                    $div .= '</td>
+                $div .= '</td>
                 </tr>
                 <tr class="em-allowed-files">
                     <td>
                     <div class="em-ml-8">
-                    <p style="word-break: break-all;"><em>'. JText::_('COM_EMUNDUS_ATTACHMENTS_PLEASE_ONLY').' '.$attachment->allowed_types.'</em></p>
+                    <p style="word-break: break-all;" class="text-neutral-600">'. JText::_('COM_EMUNDUS_ATTACHMENTS_PLEASE_ONLY').' '.$attachment->allowed_types.'</p>
                     <div class="em-flex-row em-flex-space-between">';
                    if (!empty($this->attachments_to_upload) && in_array($attachment->id,$this->attachments_to_upload)) {
-                        $div .= '<button class="btn btn-danger btn-xs em-pointer" onclick="uploadfromprofile('."$attachment->id".')">'.JText::_('COM_EMUNDUS_USERS_MY_DOCUMENTS_LOAD').'</button>';
-                    }
+                       $div .= '<button class="btn btn-danger btn-xs em-pointer" onclick="uploadfromprofile('."$attachment->id".')">'.JText::_('COM_EMUNDUS_USERS_MY_DOCUMENTS_LOAD').'</button>';
+                   }
 
-                    $div .= '</div></div></td>';
+                   $div .= '</div></div></td>';
 
-                $div .= '</tr>';
+                   $div .= '</tr>';
                 } else {
-                    $div .= '
-                <tr class="em-no-more-files">
-                    <td>
-                    <span class="em-red-500-color">'. JText::_('COM_EMUNDUS_ATTACHMENTS_NO_MORE').'</span>
-                    </td>
-                </tr>';
 
-                $div .= '</tbody>';
+                    $div .= '</tbody>';
                 }
             } else {
                 if ($this->isLimitObtained === true) {
@@ -601,7 +611,7 @@ if (!empty($this->custom_title)) :?>
       <div class="col-md-<?= (int)(12/$this->show_nb_column); ?>">
     <?php
         if ($attachment_list_mand != '') {
-           echo '<div id="attachment_list_mand" class="em-container-attachments em-w-100"><h3 class="em-h3">'.JText::_('COM_EMUNDUS_ATTACHMENTS_MANDATORY_DOCUMENTS').'</h3>'.$attachment_list_mand.'</div>';
+           echo '<div id="attachment_list_mand" class="em-container-attachments em-w-100"><h3 class="after-em-border after:bg-neutral-500">'.JText::_('COM_EMUNDUS_ATTACHMENTS_MANDATORY_DOCUMENTS').'</h3>'.$attachment_list_mand.'</div>';
         }
     ?>
       </div>
@@ -613,12 +623,38 @@ if (!empty($this->custom_title)) :?>
       <div class="col-md-<?= (int)(12/$this->show_nb_column); ?>">
     <?php
         if ($attachment_list_opt != '') {
-           echo '<div id="attachment_list_opt" class="em-container-attachmentsOpt em-mt-16 em-w-100"><h3 class="em-h3">'.JText::_('COM_EMUNDUS_ATTACHMENTS_OPTIONAL_DOCUMENTS').'</h3>'.$attachment_list_opt.'</div>';
+           echo '<div id="attachment_list_opt" class="em-container-attachmentsOpt em-mt-16 em-w-100"><h3 class="after-em-border after:bg-neutral-500">'.JText::_('COM_EMUNDUS_ATTACHMENTS_OPTIONAL_DOCUMENTS').'</h3>'.$attachment_list_opt.'</div>';
         }
     ?>
       </div>
+
+        <div class="col-md-12">
+            <div class="flex justify-between">
+                <div>
+                    <div class="btn-group">
+                        <div class="em-goback-btn flex items-center"><span class="material-icons-outlined" style="color:var(--neutral-900);">navigate_before</span>
+                            <button type="button" class="btn goback-btn button" onclick="window.history.go(-1)" name="Goback"><?php echo JText::_('GO_BACK') ?></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="em-submit-form-button">
+                    <div class="btn-group">
+
+                        <button type="button"
+	                        <?php if (!$block_upload && $this->attachments_prog >= 100 && $this->forms_prog >= 100) :?>
+                                onclick="window.location.href='<?php echo $this->confirm_form_url; ?>'" style="opacity: 1"
+	                        <?php else: ?>
+                                style="opacity: 0.6; cursor: not-allowed"
+	                        <?php endif; ?>
+                                class="btn btn-primary save-btn sauvegarder button save_continue" name="Submit" id="fabrikSubmit_287">
+                            <?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_SEND_FILE') ?>
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <?php endif; ?>
 </div>
 
 <script>
@@ -662,27 +698,6 @@ function toggleVisu(baliseId) {
         }
     }
 }
-/*
-<?php foreach($this->attachments as $attachment) { ?>
-  document.getElementById('<?= $attachment->id; ?>').style.visibility='<?= ($attachment->mandatory && $attachment->nb==0)?'visible':'hidden'; ?>';
-  document.getElementById('<?= $attachment->id; ?>').style.display='<?= ($attachment->mandatory && $attachment->nb==0)?'block':'none'; ?>';
-<?php } ?>
-
-function OnSubmitForm() {
-    var btn = document.getElementsByName(document.pressed);
-    for(i=0 ; i<btn.length ; i++) {
-        btn[i].disabled="disabled";
-        btn[i].value="<?= JText::_('COM_EMUNDUS_ATTACHMENTS_SENDING_ATTACHMENT'); ?>";
-    }
-    switch(document.pressed) {
-        case 'sendAttachment':
-            document.checklistForm.action ="index.php?option=com_emundus&task=upload&Itemid=<?= $itemid; ?>";
-        break;
-        default: return false;
-    }
-    return true;
-}
-*/
 
 function OnSubmitForm() {
     var btn = document.getElementsByName(document.pressed);
@@ -700,13 +715,6 @@ function OnSubmitForm() {
     }
     return true;
 }
-
-
-
-/*var hash = window.location.hash;
-if (hash != '') {
-    $(hash).addClass("ui warning message");
-}*/
 
 function processSelectedFiles(fileInput) {
     var files = fileInput.files;
@@ -804,7 +812,7 @@ $(document).ready(() => {
 
 //ADDPIPE check if video is uploaded. If yes, reaload page
 function is_file_uploaded(fnum, aid, applicant_id) {
-    setInterval(function(){
+    let is_file_uploaded_timer = setInterval(function(){
 
         $.ajax({
             type: 'POST',
@@ -816,14 +824,43 @@ function is_file_uploaded(fnum, aid, applicant_id) {
                 applicant_id: applicant_id
             }),
             success: function(result) {
-                //console.log(result.status + " :: " + result.fnum + " :: " + result.aid + " :: " + result.applicant_id + " :: " + result.user_id + " :: " + result.user_fnum + " :: " + result.query);
+                //console.log(result.status + " :: " + result.fnum + " :: " + result.aid + " :: " + result.applicant_id + " :: " + result.user_id + " :: " + result.user_fnum + " :: " + result.query)
                 if (result.status) {
-                    clearInterval();
+                    document.querySelector(".em-page-loader").style.display = "none";
+
+                    clearInterval(is_file_uploaded_timer);
+
+                    Swal.fire({
+                        position: 'top',
+                        type: 'success',
+                        title: "<?= JText::_('COM_EMUNDUS_UPLOAD_SUCCESS'); ?>",
+                        showCancelButton: false,
+                        showConfirmButton: false,
+                        customClass: {
+                            title: 'em-swal-title'
+                        },
+                        timer: 3000
+                    }).then(() => {
                     window.location.reload(true);
+                    });
                 }
             },
             error: function(jqXHR) {
                 console.log("ERROR: "+jqXHR.responseText);
+
+                Swal.fire({
+                    position: 'top',
+                    type: 'error',
+                    title: "<?= JText::_('COM_EMUNDUS_ERROR_OCCURED'); ?>",
+                    showCancelButton: false,
+                    showConfirmButton: false,
+                    customClass: {
+                        title: 'em-swal-title'
+                    },
+                    timer: 3000
+                }).then(() => {
+                    window.location.reload(true);
+                });
             }
         });
     }, 500);
@@ -870,3 +907,10 @@ function uploadintoprofile(aid) {
 }
 
 </script>
+
+<?php else: ?>
+    <div id="attachment_list" class="em-attachmentList em-repeat-card em-w-100">
+        <h3><?= JText::_('COM_EMUNDUS_CHECKLIST_NO_DOCUMENTS_ASSOCIATED_TO_FORM') ?></h3>
+        <p class="em-mt-16"><?= JText::_('COM_EMUNDUS_CHECKLIST_NO_DOCUMENTS_ASSOCIATED_TO_FORM_DESC') ?></p>
+    </div>
+<?php endif; ?>

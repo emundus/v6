@@ -10,8 +10,6 @@ class ConditionalFormattingRuleExtension
     const CONDITION_EXTENSION_DATABAR = 'dataBar';
 
     /** <conditionalFormatting> attributes */
-
-    /** @var string */
     private $id;
 
     /** @var string Conditional Formatting Rule */
@@ -28,7 +26,7 @@ class ConditionalFormattingRuleExtension
     /**
      * ConditionalFormattingRuleExtension constructor.
      */
-    public function __construct(?string $id = null, string $cfRule = self::CONDITION_EXTENSION_DATABAR)
+    public function __construct($id = null, string $cfRule = self::CONDITION_EXTENSION_DATABAR)
     {
         if (null === $id) {
             $this->id = '{' . $this->generateUuid() . '}';
@@ -38,7 +36,7 @@ class ConditionalFormattingRuleExtension
         $this->cfRule = $cfRule;
     }
 
-    private function generateUuid(): string
+    private function generateUuid()
     {
         $chars = str_split('xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx');
 
@@ -53,7 +51,7 @@ class ConditionalFormattingRuleExtension
         return implode('', /** @scrutinizer ignore-type */ $chars);
     }
 
-    public static function parseExtLstXml(?SimpleXMLElement $extLstXml): array
+    public static function parseExtLstXml($extLstXml)
     {
         $conditionalFormattingRuleExtensions = [];
         $conditionalFormattingRuleExtensionXml = null;
@@ -98,9 +96,6 @@ class ConditionalFormattingRuleExtension
         SimpleXMLElement $dataBarXml
     ): void {
         $dataBarAttribute = $dataBarXml->attributes();
-        if ($dataBarAttribute === null) {
-            return;
-        }
         if ($dataBarAttribute->minLength) {
             $extDataBarObj->setMinLength((int) $dataBarAttribute->minLength);
         }
@@ -124,32 +119,20 @@ class ConditionalFormattingRuleExtension
         }
     }
 
-    /** @param array|SimpleXMLElement $ns */
     private static function parseExtDataBarElementChildrenFromXml(ConditionalDataBarExtension $extDataBarObj, SimpleXMLElement $dataBarXml, $ns): void
     {
         if ($dataBarXml->borderColor) {
-            $attributes = $dataBarXml->borderColor->attributes();
-            if ($attributes !== null) {
-                $extDataBarObj->setBorderColor((string) $attributes['rgb']);
-            }
+            $extDataBarObj->setBorderColor((string) $dataBarXml->borderColor->attributes()['rgb']);
         }
         if ($dataBarXml->negativeFillColor) {
-            $attributes = $dataBarXml->negativeFillColor->attributes();
-            if ($attributes !== null) {
-                $extDataBarObj->setNegativeFillColor((string) $attributes['rgb']);
-            }
+            $extDataBarObj->setNegativeFillColor((string) $dataBarXml->negativeFillColor->attributes()['rgb']);
         }
         if ($dataBarXml->negativeBorderColor) {
-            $attributes = $dataBarXml->negativeBorderColor->attributes();
-            if ($attributes !== null) {
-                $extDataBarObj->setNegativeBorderColor((string) $attributes['rgb']);
-            }
+            $extDataBarObj->setNegativeBorderColor((string) $dataBarXml->negativeBorderColor->attributes()['rgb']);
         }
         if ($dataBarXml->axisColor) {
             $axisColorAttr = $dataBarXml->axisColor->attributes();
-            if ($axisColorAttr !== null) {
-                $extDataBarObj->setAxisColor((string) $axisColorAttr['rgb'], (string) $axisColorAttr['theme'], (string) $axisColorAttr['tint']);
-            }
+            $extDataBarObj->setAxisColor((string) $axisColorAttr['rgb'], (string) $axisColorAttr['theme'], (string) $axisColorAttr['tint']);
         }
         $cfvoIndex = 0;
         foreach ($dataBarXml->cfvo as $cfvo) {

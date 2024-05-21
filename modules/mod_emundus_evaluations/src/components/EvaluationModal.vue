@@ -9,8 +9,8 @@
     <div class="em-modal-header em-w-100">
       <div class="em-flex-row em-pointer" id="evaluation-modal-close" @click="$emit('reload-list');$modal.hide('evaluation-modal')">
         <div class="em-w-max-content em-flex-row">
-          <span class="material-icons-outlined">arrow_back</span>
-          <span class="em-ml-8">{{ translate('MOD_EMUNDUS_EVALUATIONS_BACK') }}</span>
+          <span class="material-icons-outlined">navigate_before</span>
+          <span class="em-ml-8 em-text-neutral-900">{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
         </div>
       </div>
     </div>
@@ -23,7 +23,7 @@
         <template #left>
           <div id="modal-applicationform">
             <div class="em-p-16-0">
-              <h3 class="em-h3 em-w-100 em-flex-row em-flex-center">{{ translate('MOD_EMUNDUS_EVALUATIONS_APPLICATION_FORM')}}</h3>
+              <h3 class="em-w-100 em-flex-row em-flex-center">{{ translate('MOD_EMUNDUS_EVALUATIONS_APPLICATION_FORM')}}</h3>
               <button class="btn btn-primary em-ml-16" @click="exportFile">{{ translate('MOD_EMUNDUS_EVALUATIONS_APPLICATION_DOWNLOAD')}}</button>
             </div>
             <div class="scrollable">
@@ -59,7 +59,7 @@
         <template #right>
           <div id="modal-evaluationgrid">
             <div class="em-p-16-0">
-              <h3 class="em-h3 em-w-100 em-flex-row em-flex-center">{{ translate('MOD_EMUNDUS_EVALUATIONS_EVALUATION_GRID') }}</h3>
+              <h3 class="em-w-100 em-flex-row em-flex-center">{{ translate('MOD_EMUNDUS_EVALUATIONS_EVALUATION_GRID') }}</h3>
             </div>
             <iframe :src="url" class="iframe-evaluation" @load="loading = false;" id="iframe-evaluation" title="Evaluation form" />
             <div class="em-page-loader" v-if="loading"></div>

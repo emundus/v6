@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 class="em-h1">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_GLOBAL') }}</h1>
+    <h1>{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_GLOBAL') }}</h1>
     <div class="em-mb-24 em-flex-row em-flex-space-between">
       <div>
         <p class="em-body-16-semibold em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_DEFAULT') }}</p>
@@ -48,7 +48,7 @@
             @remove="unpublishLanguage"
             @select="publishLanguage"
         ></multiselect>
-        <a class="em-pointer em-blue-500-color em-mt-16 em-font-size-12 em-hover-blue-500" @click="purposeLanguage">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_OTHER_LANGUAGE') }}</a>
+        <a class="em-pointer em-mt-16 em-font-size-12 em-hover-blue-500 em-profile-color em-text-underline" @click="purposeLanguage">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_OTHER_LANGUAGE') }}</a>
       </div>
     </div>
 

@@ -1,8 +1,8 @@
 
 const allColor =  getComputedStyle(document.querySelector(':root'));
-const errorColor = allColor.getPropertyValue("--red-600");
-const validColor = allColor.getPropertyValue("--secondary-main-400");
-const defaultColor = allColor.getPropertyValue("--neutral-400");
+const errorColor = allColor.getPropertyValue("--em-form-error-color");
+const validColor = allColor.getPropertyValue("--em-form-success-color");
+const defaultColor = allColor.getPropertyValue("--em-form-bc");
 const unsupportedColor = allColor.getPropertyValue("--orange-400")
 
 class ValidatorJS {
@@ -76,9 +76,8 @@ class ValidatorJS {
                 // too short, meh
             }
 
-            if (format && libphonenumber.isValidNumber(format))
+            if (format && libphonenumber.isValidPhoneNumber(format))
             {
-                this.input.value = format.substring(this.renderCountryCode.value.length, format.length);
                 this.frontMessage('valid');
             }
         }
@@ -101,11 +100,7 @@ class ValidatorJS {
 
         this.frontMessage('default'); // we consider its good everytime
 
-        if(this.mustValidate) // mandatory so we validate everytime
-        {
-            this.inputValidation(props);
-        }
-        else if(this.input.value.length !== 0) // not mandatory but valid only if numbers in it
+        if (this.input.value.length !== 0) // if not empty, we validate, mandatory
         {
             this.inputValidation(props);
         }
@@ -148,10 +143,11 @@ class ValidatorJS {
         else if (this.countrySelected.country_code) {
 
             this.renderCountryCode.value = this.countrySelected.country_code;
-            this.setMaskToInput();
         }
+        this.setMaskToInput();
     }
 
+    // will remove all unnecessary 0 at the beginning of the phone number
     setMaskToInput()
     {
         if(this.mask) {

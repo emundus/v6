@@ -15,50 +15,72 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-JFactory::getSession()->set('application_layout', 'evaluation');
+use Joomla\CMS\Factory;
+
+if (version_compare(JVERSION, '4.0', '>')) {
+    Factory::getApplication()->getSession()->set('application_layout', 'evaluation');
+}
+else {
+    Factory::getSession()->set('application_layout', 'evaluation');
+}
+
 ?>
 
 <div class="row">
     <div class="panel panel-default widget em-container-evaluation">
         <div class="panel-heading em-container-evaluation-heading">
             <h3 class="panel-title">
-            <span class="glyphicon glyphicon-check"></span>
+                <span class="glyphicon glyphicon-check"></span>
                 <?= JText::_('COM_EMUNDUS_ASSESSMENT'); ?>
-                <?php if (EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $this->fnum) && !empty($this->url_form)) :?>
-                        <a class="  clean" target="_blank" href="<?= JURI::base(); ?>index.php?option=com_emundus&controller=evaluation&task=pdf&user=<?= $this->student->id; ?>&fnum=<?= $this->fnum; ?>">
-                            <button class="btn btn-default" data-title="<?= JText::_('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF'); ?>" data-toggle="tooltip" data-placement="bottom" title="<?= JText::_('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF'); ?>"><span class="material-icons">file_download</span></button>
-                        </a>
-                <?php endif;?>
+                <?php if (EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $this->fnum) && !empty($this->url_form)) : ?>
+                    <a class="  clean" target="_blank"
+                       href="<?= JURI::base(); ?>index.php?option=com_emundus&controller=evaluation&task=pdf&user=<?= $this->student->id; ?>&fnum=<?= $this->fnum; ?>">
+                        <button class="btn btn-default"
+                                data-title="<?= JText::_('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF'); ?>" data-toggle="tooltip"
+                                data-placement="bottom" title="<?= JText::_('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF'); ?>">
+                            <span class="material-icons">file_download</span></button>
+                    </a>
+                <?php endif; ?>
                 <div class="em-flex-row">
-                    <?php if (!empty($this->url_form)) :?>
-                        <a href="<?= $this->url_form; ?>" target="_blank" class="em-flex-row" title="<?= JText::_('COM_EMUNDUS_EVALUATIONS_OPEN_EVALUATION_FORM_IN_NEW_TAB_DESC'); ?>"><span class="material-icons">open_in_new</span></a>
-                    <?php endif;?>
+                    <?php if (!empty($this->url_form)) : ?>
+                        <a href="<?= $this->url_form; ?>" target="_blank" class="em-flex-row"
+                           title="<?= JText::_('COM_EMUNDUS_EVALUATIONS_OPEN_EVALUATION_FORM_IN_NEW_TAB_DESC'); ?>"><span
+                                    class="material-icons">open_in_new</span></a>
+                    <?php endif; ?>
                     <?php
                     if (EmundusHelperAccess::asAccessAction(5, 'd', $this->_user->id, $this->fnum)) :?>
-                        <div><button class="btn btn-danger btn-xs btn-attach" title="<?= JText::_('COM_EMUNDUS_EVALUATIONS_DELETE_SELECTED_EVALUATIONS'); ?>" id="em_delete_evals" name="em_delete_evals" link="index.php?option=com_emundus&controller=evaluation&task=delevaluation&applicant=<?= $this->student->id; ?>&fnum=<?= $this->fnum; ?>">
-                                <span class="material-icons">delete_outline</span></button></div>
+                        <div>
+                            <button class="btn btn-danger btn-xs btn-attach"
+                                    title="<?= JText::_('COM_EMUNDUS_EVALUATIONS_DELETE_SELECTED_EVALUATIONS'); ?>"
+                                    id="em_delete_evals" name="em_delete_evals"
+                                    link="index.php?option=com_emundus&controller=evaluation&task=delevaluation&applicant=<?= $this->student->id; ?>&fnum=<?= $this->fnum; ?>">
+                                <span class="material-icons">delete_outline</span></button>
+                        </div>
                     <?php endif; ?>
                 </div>
             </h3>
             <div class="btn-group pull-right">
-                <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_back</span></button>
-                <button id="em-next-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_forward</span></button>
+                <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_back</span>
+                </button>
+                <button id="em-next-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_forward</span>
+                </button>
             </div>
         </div>
         <div class="panel-body em-container-evaluation-body">
             <div class="content" style="display: flex; flex-direction: column;">
-                <?php if (isset($this->evaluation_select) && count($this->evaluation_select) > 0) :?>
-                    <label for="copy_evaltuations" class="em-container-evaluation-body-label"><?= JText::_('COM_EMUNDUS_EVALUATION_PICK_EVAL_TO_COPY'); ?></label>
+                <?php if (!empty($this->evaluation_select)) : ?>
+                    <label for="copy_evaltuations"
+                           class="em-container-evaluation-body-label"><?= JText::_('COM_EMUNDUS_EVALUATION_PICK_EVAL_TO_COPY'); ?></label>
                     <select id="copy_evaluations">
                         <option value="0" selected><?= JText::_('COM_EMUNDUS_EVALUATION_PICK_EVAL_TO_COPY'); ?></option>
                         <?php
-                            foreach ($this->evaluation_select as $eval) {
-                                foreach ($eval as $fnum => $evaluators) {
-                                    foreach ($evaluators as $evaluator_id => $title) {
-                                        echo "<option value='".$fnum."-".$evaluator_id."'>".$title."</option>";
-                                    }
+                        foreach ($this->evaluation_select as $eval) {
+                            foreach ($eval as $fnum => $evaluators) {
+                                foreach ($evaluators as $evaluator_id => $title) {
+                                    echo "<option value='" . $fnum . "-" . $evaluator_id . "'>" . $title . "</option>";
                                 }
                             }
+                        }
                         ?>
                     </select>
                 <?php endif; ?>
@@ -67,10 +89,13 @@ JFactory::getSession()->set('application_layout', 'evaluation');
                 </a>
                 <div id="formCopy"></div>
                 <div class="form" id="form">
-                    <?php if (!empty($this->url_form)) :?>
-                        <div class="holds-iframe"><?= JText::_('COM_EMUNDUS_LOADING'); ?></div>
-                        <iframe id="iframe" src="<?= $this->url_form; ?>" align="left" frameborder="0" height="600" width="100%" scrolling="no" marginheight="0" marginwidth="0" onload="resizeIframe(this)"></iframe>
-                    <?php else :?>
+                    <?php if (!empty($this->url_form)) : ?>
+                        <div class="em-w-100 em-flex-row" style="justify-content: center">
+                            <div class="em-loader"></div>
+                        </div>
+                        <iframe id="iframe" src="<?= $this->url_form; ?>" height="600" width="100%" onload="onLoadIframe(this)">
+                        </iframe>
+                    <?php else : ?>
                         <div class="em_no-form"><?= JText::_($this->message); ?></div>
                     <?php endif; ?>
                 </div>
@@ -80,47 +105,48 @@ JFactory::getSession()->set('application_layout', 'evaluation');
     </div>
 </div>
 <script type="text/javascript">
-
-    $('iframe').load(function() {
-        $(".holds-iframe").remove();
-    }).show();
-
-    $('#iframe').mouseleave(function() {
+    $('#iframe').mouseleave(function () {
         resizeIframe(document.getElementById('iframe'));
     });
 
-    $('#iframe').mouseover(function() {
+    $('#iframe').mouseover(function () {
         resizeIframe(document.getElementById('iframe'));
     });
 
-    function resizeIframe(obj) {
-        obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
+    function onLoadIframe(iframe) {
+        document.querySelector('.em-loader').classList.add('hidden');
+        resizeIframe(iframe);
     }
 
-    window.ScrollToTop = function() {
-      $('html,body', window.document).animate({
-        scrollTop: '0px'
-      }, 'slow');
+    function resizeIframe(obj) {
+        if (obj.contentWindow.document.body) {
+            obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
+        }
+    }
+
+    window.ScrollToTop = function () {
+        $('html,body', window.document).animate({
+            scrollTop: '0px'
+        }, 'slow');
     };
 
     var url_evaluation = '<?php echo $this->url_evaluation; ?>';
-
     if (url_evaluation != '') {
         $.ajax({
             type: "GET",
             url: url_evaluation,
             dataType: 'html',
-            success: function(data) {
+            success: function (data) {
                 $("#evaluations").empty();
                 $("#evaluations").append(data);
             },
-            error: function(jqXHR) {
+            error: function (jqXHR) {
                 console.log(jqXHR.responseText);
             }
         });
     }
 
-    $('#copy_evaluations').on('change', function() {
+    $('#copy_evaluations').on('change', function () {
         if (this.value != 0) {
 
             var tmp = this.value.split('-');
@@ -128,10 +154,10 @@ JFactory::getSession()->set('application_layout', 'evaluation');
             var evaluator = tmp[1];
 
             $.ajax({
-               type: 'GET',
-               url: 'index.php?option=com_emundus&controller=evaluation&task=getevalcopy&format=raw&fnum='+fnum+'&evaluator='+evaluator,
-               success: function(result) {
-                   result = JSON.parse(result);
+                type: 'GET',
+                url: 'index.php?option=com_emundus&controller=evaluation&task=getevalcopy&format=raw&fnum=' + fnum + '&evaluator=' + evaluator,
+                success: function (result) {
+                    result = JSON.parse(result);
 
                     if (result.status) {
 
@@ -141,8 +167,8 @@ JFactory::getSession()->set('application_layout', 'evaluation');
 
                     }
 
-               },
-               error: function(jqXHR) {
+                },
+                error: function (jqXHR) {
                     console.log(jqXHR.responseText);
                 }
             });
@@ -152,7 +178,7 @@ JFactory::getSession()->set('application_layout', 'evaluation');
         }
     });
 
-    $('#formCopyButton').on('click', function(e) {
+    $('#formCopyButton').on('click', function (e) {
         e.preventDefault();
 
         // ID of form we are copying from
@@ -160,7 +186,7 @@ JFactory::getSession()->set('application_layout', 'evaluation');
         // ID of form we are copying to
         var toID = $("#iframe").contents().find(".fabrikHiddenFields").find('[name="rowid"]').val(),
             fnum = $("#iframe").contents().find('#jos_emundus_evaluations___fnum').val(),
-            student_id = parseInt(fnum.substr(-5),10);
+            student_id = parseInt(fnum.substr(-5), 10);
 
         $.ajax({
             type: 'POST',
@@ -171,7 +197,7 @@ JFactory::getSession()->set('application_layout', 'evaluation');
                 fnum: fnum,
                 student: student_id
             },
-            success: function(result) {
+            success: function (result) {
                 result = JSON.parse(result);
 
                 if (result.status)
@@ -179,7 +205,7 @@ JFactory::getSession()->set('application_layout', 'evaluation');
                 else
                     $('div#formCopy').before('<p style="color: red">Failed</p>');
             },
-            error: function(jqXHR) {
+            error: function (jqXHR) {
                 console.log("error");
             }
         })
@@ -187,26 +213,35 @@ JFactory::getSession()->set('application_layout', 'evaluation');
 
     function getEvalChecked() {
         var checkedInput = new Array();
-        $('#evaluations input:checked').each(function() {
+        $('#evaluations input:checked').each(function () {
             checkedInput.push($(this).data('evalid'));
         });
         return checkedInput
     }
 
-    $(document).on('click', '#em_delete_evals', function(e) {
+    $(document).on('click', '#em_delete_evals', function (e) {
+        var checked = getEvalChecked();
 
-        if (e.handle === true) {
-            e.handle = false;
-            var checked = getEvalChecked();
-
-            if (checked.length > 0) {
-                var res = confirm("<?php echo JText::_('COM_EMUNDUS_EVALUATIONS_CONFIRM_DELETE_SELETED_EVALUATIONS')?>");
-                if (res) {
+        if (checked.length > 0) {
+            Swal.fire({
+                title: "<?php echo JText::_('COM_EMUNDUS_EVALUATIONS_CONFIRM_DELETE_SELETED_EVALUATIONS')?>",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: "<?php echo JText::_('JYES') ?>",
+                cancelButtonText: "<?php echo JText::_('JNO') ?>",
+                reverseButtons: true,
+                customClass: {
+                    title: 'em-swal-title',
+                    confirmButton: 'em-swal-confirm-button',
+                    cancelButton: 'em-swal-cancel-button'
+                }
+            }).then((result) => {
+                if (result.value) {
                     var url = $(this).attr('link');
 
                     $('#em-modal-actions .modal-body').empty();
                     $('#em-modal-actions .modal-body').append('<div><img src="' + loadingLine + '" alt="' +
-                    Joomla.JText._('COM_EMUNDUS_LOADING') + '"/></div>');
+                        Joomla.JText._('COM_EMUNDUS_LOADING') + '"/></div>');
                     $('#em-modal-actions .modal-footer').hide();
                     $('#em-modal-actions .modal-dialog').addClass('modal-lg');
                     $('#em-modal-actions .modal').show();
@@ -216,31 +251,42 @@ JFactory::getSession()->set('application_layout', 'evaluation');
                         type: 'post',
                         url: url,
                         dataType: 'json',
-                        data: { ids: JSON.stringify(checked) },
+                        data: {ids: JSON.stringify(checked)},
                         success: function (result) {
                             $('#em-modal-actions').modal('hide');
                             var url = "index.php?option=com_emundus&view=application&format=raw&layout=evaluation&fnum=<?php echo $this->fnum; ?>";
                             $.ajax({
-                                type:'get',
-                                url:url,
-                                dataType:'html',
-                                success: function(result) {
+                                type: 'get',
+                                url: url,
+                                dataType: 'html',
+                                success: function (result) {
                                     $('#em-appli-block').empty();
                                     $('#em-appli-block').append(result);
                                 },
-                                error: function(jqXHR) {
+                                error: function (jqXHR) {
                                     console.log(jqXHR.responseText);
                                 }
                             });
                         },
-                        error: function(jqXHR) {
+                        error: function (jqXHR) {
                             console.log(jqXHR.responseText);
                         }
                     });
                 }
-            } else {
-                alert("<?php echo JText::_('COM_EMUNDUS_EVALUATIONS_YOU_MUST_SELECT_EVALUATIONS')?>");
-            }
+            });
+        } else {
+            Swal.fire({
+                title: "<?php echo JText::_('COM_EMUNDUS_EVALUATIONS_YOU_MUST_SELECT_EVALUATIONS')?>",
+                type: 'warning',
+                showCancelButton: false,
+                confirmButtonText: "<?php echo JText::_('CONFIRM') ?>",
+                reverseButtons: true,
+                customClass: {
+                    title: 'em-swal-title',
+                    confirmButton: 'em-swal-confirm-button',
+                    actions: 'em-swal-single-action'
+                }
+            });
         }
     });
 </script>

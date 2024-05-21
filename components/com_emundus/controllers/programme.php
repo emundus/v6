@@ -151,7 +151,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
 		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-			$programs = $this->m_programme->getAllPrograms(9999, 0, '', 'DESC', '');
+			$programs = $this->m_programme->getAllPrograms();
 
 			if (count((array)$programs) > 0) {
 				$values = [];
@@ -180,7 +180,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
             $filter = $jinput->getString('filter');
             $sort = $jinput->getString('sort');
             $recherche = $jinput->getString('recherche');
-            $lim = $jinput->getInt('lim');
+            $lim = $jinput->getInt('lim',0);
             $page = $jinput->getInt('page');
 
             $programs = $this->m_programme->getAllPrograms($lim, $page, $filter, $sort, $recherche);
@@ -197,14 +197,14 @@ class EmundusControllerProgramme extends JControllerLegacy {
 							],
 							[
 								'key' => JText::_('COM_EMUNDUS_ONBOARD_CATEGORY'),
-								'value' => $program->programmes,
+								'value' => JText::_($program->programmes),
 								'classes' => 'em-font-size-14 em-neutral-700-color',
 								'display' => 'all'
 							],
 							[
 								'key' => JText::_('COM_EMUNDUS_ONBOARD_STATE'),
 								'value' => $program->published ? JText::_('PUBLISHED') : JText::_('COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH'),
-								'classes' => $program->published ? 'label label-lightgreen em-p-5-12 em-font-weight-600' : 'label label-default em-p-5-12 em-font-weight-600',
+								'classes' => $program->published ? 'em-p-5-12 em-bg-main-100 em-text-neutral-900 em-font-size-14 em-border-radius' : 'em-p-5-12 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius',
 								'display' => 'table'
 							],
 							[
@@ -226,17 +226,17 @@ class EmundusControllerProgramme extends JControllerLegacy {
 									[
 										'key' => JText::_('COM_EMUNDUS_ONBOARD_STATE'),
 										'value' => $program->published ? JText::_('PUBLISHED') : JText::_('COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH'),
-										'classes' => $program->published ? 'label label-lightgreen em-p-5-12 em-font-weight-600' : 'label label-default em-p-5-12 em-font-weight-600',
+										'classes' => $program->published ? 'em-p-5-12 em-font-weight-600 em-bg-main-100 em-text-neutral-900 em-font-size-14 em-border-radius' : 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius',
 									],
 									[
 										'key' => JText::_('COM_EMUNDUS_ONBOARD_PROGRAM_APPLY_ONLINE'),
 										'value' => $program->apply_online ? JText::_('COM_EMUNDUS_ONBOARD_PROGRAM_APPLY_ONLINE') : JText::_(''),
-										'classes' => $program->apply_online ? 'label label-lightgreen em-p-5-12 em-font-weight-600' : 'hidden',
+										'classes' => $program->apply_online ? 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius' : 'hidden',
 									],
 									[
 										'key' => '',
 										'value' => $program->nb_campaigns > 1 ? $program->nb_campaigns . ' ' . JText::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED') : $program->nb_campaigns . ' ' . JText::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_SINGLE'),
-										'classes' => 'em-mt-8 em-mb-8 label label-default em-p-5-12 em-font-weight-600',
+										'classes' => 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius',
 									]
 								],
 								'display' => 'blocs',

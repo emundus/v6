@@ -9,6 +9,7 @@ use GuzzleHttp\Promise;
 use GuzzleHttp\Psr7;
 use GuzzleHttp\Psr7\LazyOpenStream;
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 final class Middleware
 {
@@ -231,7 +232,7 @@ final class Middleware
                 ) {
                     $request = $request->withHeader(
                         'Content-Type',
-                        Psr7\MimeType::fromFilename($uri) ?: 'application/octet-stream'
+                        Psr7\mimetype_from_filename($uri) ?: 'application/octet-stream'
                     );
                 }
 

@@ -69,12 +69,12 @@ hr{
 
 .messages__list-block{
     min-height: 50vh;
-    max-height: 85%;
     overflow-y: auto;
     overflow-x: hidden;
     -ms-overflow-style: none;
     scrollbar-width: none;
     padding: 0 15px;
+    margin-bottom: 16px;
 }
 
 .messages__list-block::-webkit-scrollbar {
@@ -163,6 +163,7 @@ hr{
 .messages__campaigns-list{
     background: #FCFCFC;
     width: 35%;
+    overflow-x: auto;
 }
 
 .messages__campaigns_title{
@@ -194,11 +195,32 @@ hr{
     padding: 0 25px;
 }
 
-.messages__send_button{
-    border-radius: 8px;
-    background: var(--night-blue);
-    padding: 8px 16px;
-    color: white;
+.messages_action_container .messages__send_button, .messages__bottom-input-actions .messages__send_button.btn-primary{
+    border-radius: 8px !important;
+    padding: 8px 12px !important;
+    color: var(--neutral-0);
+    background: var(--night-blue) !important;
+    border: 1px solid var(--night-blue);
+    font-size: 16px;
+    font-family: var(--em-default-font);
+    letter-spacing: normal;
+}
+
+.messages_action_container .messages__send_button:hover, .messages__bottom-input-actions .messages__send_button.btn-primary:hover{
+    border-radius: 8px !important;
+    padding: 8px 12px !important;
+    color: var(--night-blue);
+    background: var(--neutral-0) !important;
+    border: 1px solid var(--night-blue) !important;
+}
+
+.messages__actions_bar .material-icons-outlined {
+    font-size: 20px;
+}
+
+.messages__bottom-input, .messages__bottom-input-actions {
+    padding-left: 16px;
+    padding-right: 16px;
 }
 
 .loader {
@@ -232,6 +254,7 @@ hr{
     margin-left: 20px;
     hr {
         width: 100%;
+        z-index: 1;
     }
     p{
         padding: 0 20px;
@@ -245,20 +268,25 @@ hr{
 
 /** ATTACH DOCUMENTS **/
 .messages__attach_content {
-    padding: 40px;
+    padding: 0 16px 16px 16px;
+}
+
+.messages_action_container {
+    border-top: 1px solid;
+    border-top-color: #f8F8F8;
 }
 
 .messages__attach_actions_tabs {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: left;
     list-style-type: none;
 }
 
 .messages__attach_action {
     padding: 8px 16px;
-    margin: 0 8px;
-    border-radius: 4px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
     height: 40px;
     cursor: pointer;
 }
@@ -312,6 +340,9 @@ hr{
         .dz-image {
             width: auto;
             height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             >div {
                 width: inherit;
                 height: inherit;

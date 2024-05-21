@@ -69,7 +69,7 @@
             locale: ['OK', 'Cancel', Joomla.JText._('ALL'), 'Clear all'],  // all text that is used. don't change the index.
             up: false,                    // set true to open upside.
             showTitle: false,              // set to false to prevent title (tooltip) from appearing
-            clearAll: true,              // im multi select - clear all checked options
+            clearAll: false,              // im multi select - clear all checked options
             closeAfterClearAll: false,    // im multi select - close select after clear
             max: null,                    // Maximum number of options selected (when multiple)
             // eslint-disable-next-line no-unused-vars

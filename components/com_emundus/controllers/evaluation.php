@@ -101,6 +101,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
             }
         }
 
+        $session->set('last-filters-use-adavanced', false);
         $session->set('filt_params', $params);
         $session->set('limitstart', 0);
         echo json_encode((object)(array('status' => true)));
@@ -740,20 +741,13 @@ class EmundusControllerEvaluation extends JControllerLegacy
 
     public function getfnuminfos()
     {
-        $jinput = JFactory::getApplication()->input;
-        $fnum = $jinput->getString('fnum', null);
-        $res = false;
-        $fnumInfos = null;
+		if (!class_exists('EmundusControllerFiles'))
+			require_once(JPATH_ROOT.'/components/com_emundus/controllers/files.php');
 
-        if ($fnum != null)
-        {
-            $m_files = $this->getModel('Files');
-            $fnumInfos = $m_files->getFnumInfos($fnum);
-            if($fnum !== false)
-                $res = true;
-        }
-        JFactory::getSession()->set('application_fnum', $fnum);
-        echo json_encode((object)(array('status' => $res, 'fnumInfos' => $fnumInfos)));
+		$c_files = new EmundusControllerFiles();
+        $response = $c_files->getfnuminfos();
+
+        echo json_encode((object)$response);
         exit;
     }
 
@@ -1006,6 +1000,8 @@ class EmundusControllerEvaluation extends JControllerLegacy
         if( !EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum) )
             die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 
+		require_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
+		require_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
         $m_profile = new EmundusModelProfile();
         $m_campaign = new EmundusModelCampaign();
 
@@ -1333,7 +1329,6 @@ class EmundusControllerEvaluation extends JControllerLegacy
         $dataresult = array('start' => $start, 'limit'=>$limit, 'totalfile'=> $totalfile,'methode'=>0,'elts'=>$elts, 'objs'=> $objs, 'nbcol' => $nbcol,'file'=>$file );
         $result = array('status' => true, 'json' => $dataresult);
         echo json_encode((object) $result);
-        //var_dump($result);
         exit();
     }
 

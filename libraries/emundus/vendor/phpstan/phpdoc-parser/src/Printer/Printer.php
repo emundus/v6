@@ -28,6 +28,8 @@ use PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocTagNode;
 use PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocTagValueNode;
 use PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocTextNode;
 use PHPStan\PhpDocParser\Ast\PhpDoc\PropertyTagValueNode;
+use PHPStan\PhpDocParser\Ast\PhpDoc\RequireExtendsTagValueNode;
+use PHPStan\PhpDocParser\Ast\PhpDoc\RequireImplementsTagValueNode;
 use PHPStan\PhpDocParser\Ast\PhpDoc\ReturnTagValueNode;
 use PHPStan\PhpDocParser\Ast\PhpDoc\SelfOutTagValueNode;
 use PHPStan\PhpDocParser\Ast\PhpDoc\TemplateTagValueNode;
@@ -283,6 +285,14 @@ final class Printer
 			$type = $this->printType($node->type);
 			return trim("{$type} {$node->description}");
 		}
+		if ($node instanceof RequireExtendsTagValueNode) {
+			$type = $this->printType($node->type);
+			return trim("{$type} {$node->description}");
+		}
+		if ($node instanceof RequireImplementsTagValueNode) {
+			$type = $this->printType($node->type);
+			return trim("{$type} {$node->description}");
+		}
 		if ($node instanceof ParamOutTagValueNode) {
 			$type = $this->printType($node->type);
 			return trim("{$type} {$node->parameterName} {$node->description}");
@@ -516,7 +526,7 @@ final class Printer
 		[$isMultiline, $beforeAsteriskIndent, $afterAsteriskIndent] = $this->isMultiline($tokenIndex, $originalNodes, $originalTokens);
 
 		if ($insertStr === "\n * ") {
-			$insertStr = sprintf("\n%s*%s", $beforeAsteriskIndent, $afterAsteriskIndent);
+			$insertStr = sprintf('%s%s*%s', $originalTokens->getDetectedNewline() ?? "\n", $beforeAsteriskIndent, $afterAsteriskIndent);
 		}
 
 		foreach ($diff as $i => $diffElem) {
@@ -549,7 +559,7 @@ final class Printer
 						}
 
 						if ($insertNewline) {
-							$result .= $insertStr . sprintf("\n%s*%s", $beforeAsteriskIndent, $afterAsteriskIndent);
+							$result .= $insertStr . sprintf('%s%s*%s', $originalTokens->getDetectedNewline() ?? "\n", $beforeAsteriskIndent, $afterAsteriskIndent);
 						} else {
 							$result .= $insertStr;
 						}
@@ -593,7 +603,7 @@ final class Printer
 
 				$itemEndPos = $tokenIndex - 1;
 				if ($insertNewline) {
-					$result .= $insertStr . sprintf("\n%s*%s", $beforeAsteriskIndent, $afterAsteriskIndent);
+					$result .= $insertStr . sprintf('%s%s*%s', $originalTokens->getDetectedNewline() ?? "\n", $beforeAsteriskIndent, $afterAsteriskIndent);
 				} else {
 					$result .= $insertStr;
 				}
@@ -662,7 +672,7 @@ final class Printer
 				if (!$first) {
 					$result .= $insertStr;
 					if ($insertNewline) {
-						$result .= sprintf("\n%s*%s", $beforeAsteriskIndent, $afterAsteriskIndent);
+						$result .= sprintf('%s%s*%s', $originalTokens->getDetectedNewline() ?? "\n", $beforeAsteriskIndent, $afterAsteriskIndent);
 					}
 				}
 
@@ -793,6 +803,10 @@ final class Printer
 			$subEndPos = $origSubNode->getAttribute(Attribute::END_INDEX);
 			if ($subStartPos < 0 || $subEndPos < 0) {
 				throw new LogicException();
+			}
+
+			if ($subEndPos < $subStartPos) {
+				return $this->print($node);
 			}
 
 			if ($subNode === null) {

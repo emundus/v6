@@ -113,7 +113,7 @@
               <span v-else>{{ translate('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_MODEL_EDIT') }}</span>
               <span class="material-icons-outlined em-ml-4 em-text-neutral-900">backup</span>
             </label>
-            <input id="sample" style="display: none" name="sample" type="file" ref="sampleFileInput" @change="onSampleFileInputChange" accept=".pdf,.doc,.docx,.png,.jpg"/>
+            <input id="sample" style="display: none" name="sample" type="file" ref="sampleFileInput" @change="onSampleFileInputChange" accept=".pdf,.doc,.docx,.png,.jpg,.xls,.xlsx"/>
           </div>
           <div v-if="newSample !== ''">
             <p class="em-neutral-700-color">{{ translate('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_MODEL_FILE_UPLOADED') }} : {{ this.newSample.name}}</p>
@@ -170,7 +170,7 @@ export default {
       document: {
         id: null,
         type: {},
-        mandatory: '1',
+        mandatory: this.$props.mandatory,
         nbmax: 1,
         description: {
           fr: '',
@@ -305,11 +305,15 @@ export default {
           if(['mp4'].includes(type)) {
             this.document.selectedTypes['mp4'] = true;
           }
-        });
 
-	      this.hasImgFormat();
-	      this.hasPDFFormat();
-      }
+					if (['zip'].includes(type)) {
+						this.document.selectedTypes['zip'] = true;
+					}
+				});
+
+				this.hasImgFormat();
+				this.hasPDFFormat();
+			}
     },
 	  saveDocument()
     {
@@ -456,7 +460,7 @@ export default {
 	  onSampleFileInputChange(event) {
 		  const files = event.target.files || [];
 		  if (files.length > 0) {
-			  const allowedExtensions = ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png'];
+			  const allowedExtensions = ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png', 'xls', 'xlsx'];
 				const fileExtension = files[0].name.split('.').pop().toLowerCase();
 				if (!allowedExtensions.includes(fileExtension)) {
 					Swal.fire({

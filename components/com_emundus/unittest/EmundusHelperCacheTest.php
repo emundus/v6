@@ -31,14 +31,15 @@ class EmundusHelperCacheTest extends TestCase
 	public function __construct(?string $name = null, array $data = [], $dataName = '')
 	{
 		parent::__construct($name, $data, $dataName);
+
+		$config = JFactory::getConfig();
+		$config->set('cache_handler', 'file');
 	}
 
 	public function testFoo()
 	{
 		$foo = true;
 		$this->assertSame(true, $foo);
-		$config = JFactory::getConfig();
-		$config->set('cache_handler', 'file');
 	}
 
 	/**
@@ -117,5 +118,8 @@ class EmundusHelperCacheTest extends TestCase
 
 		$this->h_cache->clean();
 		$this->assertSame(false, $this->h_cache->get('foo'), 'clean() should remove all keys');
+
+		$cleaned = $this->h_cache->clean(true, 'NotADirectoryAtAll\$#');
+		$this->assertSame(false, $cleaned, 'clean() should return false if path is not a directory');
 	}
 }

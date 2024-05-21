@@ -7,14 +7,17 @@
  */
 
 // no direct access
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
+
 defined('_JEXEC') or die;
 $document = JFactory::getDocument();
-$document->addStyleSheet('https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined' );
 
 $user = JFactory::getSession()->get('emundusUser');
 if (!$user->just_logged) {
     return;
 }
+
+$redirect = EmundusHelperMenu::getHomepageLink();
 
 $m_profiles = new EmundusModelProfile;
 $app_prof = $m_profiles->getApplicantsProfilesArray();

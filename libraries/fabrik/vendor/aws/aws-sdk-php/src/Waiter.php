@@ -175,7 +175,7 @@ class Waiter implements PromisorInterface
     }
 
     /**
-     * @param Result $result   Result or exception.
+     * @param result $result   Result or exception.
      * @param array  $acceptor Acceptor configuration being checked.
      *
      * @return bool
@@ -188,7 +188,7 @@ class Waiter implements PromisorInterface
     }
 
     /**
-     * @param Result $result   Result or exception.
+     * @param result $result   Result or exception.
      * @param array  $acceptor Acceptor configuration being checked.
      *
      * @return bool
@@ -210,7 +210,7 @@ class Waiter implements PromisorInterface
     }
 
     /**
-     * @param Result $result   Result or exception.
+     * @param result $result   Result or exception.
      * @param array  $acceptor Acceptor configuration being checked.
      *
      * @return bool
@@ -222,11 +222,17 @@ class Waiter implements PromisorInterface
         }
 
         $actuals = $result->search($acceptor['argument']) ?: [];
-        return in_array($acceptor['expected'], $actuals);
+        foreach ($actuals as $actual) {
+            if ($actual == $acceptor['expected']) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
-     * @param Result $result   Result or exception.
+     * @param result $result   Result or exception.
      * @param array  $acceptor Acceptor configuration being checked.
      *
      * @return bool
@@ -235,17 +241,15 @@ class Waiter implements PromisorInterface
     {
         if ($result instanceof ResultInterface) {
             return $acceptor['expected'] == $result['@metadata']['statusCode'];
-        }
-
-        if ($result instanceof AwsException && $response = $result->getResponse()) {
+        } elseif ($result instanceof AwsException && $response = $result->getResponse()) {
             return $acceptor['expected'] == $response->getStatusCode();
+        } else {
+            return false;
         }
-
-        return false;
     }
 
     /**
-     * @param Result $result   Result or exception.
+     * @param result $result   Result or exception.
      * @param array  $acceptor Acceptor configuration being checked.
      *
      * @return bool

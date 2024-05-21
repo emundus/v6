@@ -19,11 +19,9 @@ JText::script('COM_EMUNDUS_MESSENGER_WRITE_MESSAGE');
 
 $user = JFactory::getUser()->id;
 
-$xmlDoc = new DOMDocument();
-if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
-    $release_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
-}
+require_once (JPATH_COMPONENT.DS.'helpers'.DS.'cache.php');
+$hash = EmundusHelperCache::getCurrentGitHash();
 ?>
 <div id="em-component-vue" component="messages" user="<?= $user ?>" modal="false"></div>
 
-<script src="media/com_emundus_vue/app_emundus.js?<?php echo $release_version ?>"></script>
+<script src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>

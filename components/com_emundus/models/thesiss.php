@@ -256,7 +256,6 @@ class EmundusModelThesiss extends JModelList
 		$orderDirn = $this->state->get('list.direction');
 		if ($orderCol && $orderDirn && ($orderCol!='step' && $user->guest))
 			$query->order($db->escape($orderCol . ' ' . $orderDirn));
-		//echo $query->dump();
 		return $query;
 	}
 
