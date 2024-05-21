@@ -1047,25 +1047,79 @@ die("<script>
         return $formattedValue;
     }
 
-	static function decryptDatas($value, $plugin) {
+	static function encryptDatas($value, $plugin, $encryption_key = null) {
+		$result = $value;
+
+		//Define cipher
+		$cipher = "aes-128-cbc";
+
+		//Generate a 256-bit encryption key
+		if(empty($encryption_key))
+		{
+			$encryption_key = Factory::getConfig()->get('secret', '');
+		}
+
+		if(!empty($encryption_key))
+		{
+			//Data to encrypt
+			if ($plugin == 'checkbox')
+			{
+				$contents = json_decode($value);
+				foreach ($contents as $key => $content)
+				{
+					$encrypted_data = openssl_encrypt($content, $cipher, $encryption_key, 0);
+					if ($encrypted_data !== false)
+					{
+						$contents[$key] = $encrypted_data;
+					}
+				}
+				$result = json_encode($contents);
+			}
+			else
+			{
+				$val            = $value;
+				$encrypted_data = openssl_encrypt($val, $cipher, $encryption_key, 0);
+				if ($encrypted_data !== false)
+				{
+					$result = $encrypted_data;
+				}
+			}
+		}
+
+		return $result;
+	}
+
+	static function decryptDatas($value, $plugin, $encryption_key = null) {
 		$result = $value;
 		$cipher = "aes-128-cbc";
 
-		$encryption_key = Factory::getConfig()->get('secret');
+		if(empty($encryption_key))
+		{
+			$encryption_key = Factory::getConfig()->get('secret', '');
+		}
 
-		if($plugin == 'checkbox'){
-			$contents = json_decode($value);
-			foreach ($contents as $key => $content){
-				$decrypted_data = openssl_decrypt($content, $cipher, $encryption_key, 0);
-				if ($decrypted_data !== false) {
-					$contents[$key] = $decrypted_data;
+		if(!empty($encryption_key))
+		{
+			if ($plugin == 'checkbox')
+			{
+				$contents = json_decode($value);
+				foreach ($contents as $key => $content)
+				{
+					$decrypted_data = openssl_decrypt($content, $cipher, $encryption_key, 0);
+					if ($decrypted_data !== false)
+					{
+						$contents[$key] = $decrypted_data;
+					}
 				}
+				$result = json_encode($contents);
 			}
-			$result = json_encode($contents);
-		} else {
-			$decrypted_data = openssl_decrypt($value, $cipher, $encryption_key, 0);
-			if ($decrypted_data !== false) {
-				$result = $decrypted_data;
+			else
+			{
+				$decrypted_data = openssl_decrypt($value, $cipher, $encryption_key, 0);
+				if ($decrypted_data !== false)
+				{
+					$result = $decrypted_data;
+				}
 			}
 		}
 
