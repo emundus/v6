@@ -27,11 +27,6 @@
         <span class="material-icons-outlined em-mr-4">lock</span>
         {{ translate('COM_EMUNDUS_CLASSEMENT_ASK_LOCK_RANKING') }}
       </button>
-      <button v-if="!ismyRankingLocked && rankings.myRanking.length > 0" id="lock-ranking"
-              class="em-primary-button em-ml-4 w-fit cursor-pointer" @click="lockRanking">
-        <span class="material-icons-outlined em-mr-4">check_circle_outline</span>
-        {{ translate('COM_EMUNDUS_CLASSEMENT_LOCK_RANKING') }}
-      </button>
     </div>
     <p class="w-full alert mb-2" v-if="ordering.orderBy !== 'default'">
       {{ translate('COM_EMUNDUS_RANKING_CANNOT_DRAG_AND_DROP') }}</p>
