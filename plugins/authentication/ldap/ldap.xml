@@ -145,11 +145,11 @@
                 />
 
                 <field
-                        name="ldap_firstname"
+                        name="ldap_fullname"
                         type="text"
                         label="PLG_LDAP_FIELD_FULLNAME_LABEL"
                         description="PLG_LDAP_FIELD_FULLNAME_DESC"
-                        default="firstName"
+                        default="fullName"
                         size="20"
                 />
 
