@@ -893,6 +893,32 @@ class EmundusModelRanking extends JModelList
         return $rankings;
     }
 
+
+    /**
+     * @param $ids array of hierarchy ids, if empty, it will return all the hierarchies
+     */
+    public function getHierarchies($ids = []) {
+        $hierarchies = [];
+
+        $query = $this->db->getQuery(true);
+        $query->clear()
+            ->select('*')
+            ->from($this->db->quoteName('#__emundus_ranking_hierarchy'));
+
+        if (!empty($ids)) {
+            $query->where($this->db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
+        }
+
+        try {
+            $this->db->setQuery($query);
+            $hierarchies = $this->db->loadAssocList();
+        } catch (Exception $e) {
+            JLog::add('getHierarchies ' . $e->getMessage(), JLog::ERROR, 'com_emundus.ranking.php');
+        }
+
+        return $hierarchies;
+    }
+
     /**
      * @param $user_id
      * @return array
