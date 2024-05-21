@@ -5,13 +5,26 @@
  * Copyright (c) 2013, salesforce.com
  */
 
+div[itemprop="articleBody"], div[itemprop="blogPost"], .single-campaign, .mod_emundus_campaign__intro {
+  * {
+    font-family: var(--em-applicant-font);
+  }
+}
+
+.ql-editor {
+  * {
+    font-family: var(--em-coordinator-font);
+  }
+}
+
+
 $selectors: "div[itemprop="articleBody"], div[itemprop="blogPost"], .ql-editor, .single-campaign, .mod_emundus_campaign__intro";
+
 .ql-container {
   box-sizing: border-box;
-  font-family: Helvetica, Arial, sans-serif;
   font-size: 13px;
   height: 100%;
-  margin: 0px;
+  margin: 0;
   position: relative;
 }
 
@@ -351,7 +364,6 @@ $selectors: "div[itemprop="articleBody"], div[itemprop="blogPost"], .ql-editor, 
   }
 
   h1 {
-    font-family: 'Inter', sans-serif;
     font-size: 32px;
     font-weight: 500;
     color: #0B0C0F;
@@ -360,7 +372,6 @@ $selectors: "div[itemprop="articleBody"], div[itemprop="blogPost"], .ql-editor, 
   }
 
   h2 {
-    font-family: 'Inter', sans-serif;
     font-size: 24px;
     font-weight: 500;
     color: #0B0C0F;
@@ -370,7 +381,6 @@ $selectors: "div[itemprop="articleBody"], div[itemprop="blogPost"], .ql-editor, 
 
   h3 {
     font-weight: 500;
-    font-family: 'Inter', sans-serif;
     font-size: 18px;
     color: #0B0C0F;
     margin: 0;
@@ -379,7 +389,6 @@ $selectors: "div[itemprop="articleBody"], div[itemprop="blogPost"], .ql-editor, 
 
   h4 {
     font-weight: 500;
-    font-family: 'Inter', sans-serif;
     color: #0B0C0F;
     font-size: 16px;
     margin: 0;
@@ -389,7 +398,6 @@ $selectors: "div[itemprop="articleBody"], div[itemprop="blogPost"], .ql-editor, 
   h5 {
     font-weight: 500;
     font-size: 14px;
-    font-family: 'Inter', sans-serif;
     color: #0B0C0F;
     margin: 0;
     line-height: 24px;
@@ -398,7 +406,6 @@ $selectors: "div[itemprop="articleBody"], div[itemprop="blogPost"], .ql-editor, 
   h5 {
     font-weight: 500;
     font-size: 12px;
-    font-family: 'Inter', sans-serif;
     color: #0B0C0F;
     margin: 0;
     line-height: 24px;
@@ -407,7 +414,6 @@ $selectors: "div[itemprop="articleBody"], div[itemprop="blogPost"], .ql-editor, 
   h6 {
     font-weight: 500;
     font-size: 10px;
-    font-family: 'Inter', sans-serif;
     color: #0B0C0F;
     margin: 0;
     line-height: 24px;
@@ -415,7 +421,6 @@ $selectors: "div[itemprop="articleBody"], div[itemprop="blogPost"], .ql-editor, 
 
   p {
     margin: 0;
-    font-family: 'Inter', sans-serif;
     line-height: 1.25rem !important;
     font-size: 16px;
     color: #0B0C0F;
@@ -474,7 +479,6 @@ $selectors: "div[itemprop="articleBody"], div[itemprop="blogPost"], .ql-editor, 
     background-color: #f0f0f0;
     border-radius: 3px;
     border: 1px solid #e0e0e5;
-    font-family: 'Inter', sans-serif;
   }
 
   code {
@@ -484,7 +488,6 @@ $selectors: "div[itemprop="articleBody"], div[itemprop="blogPost"], .ql-editor, 
     border-radius: 3px;
     white-space: nowrap;
     font-size: 14px;
-    font-family: 'Inter', sans-serif;
   }
 
   pre.ql-syntax {
@@ -800,7 +803,7 @@ $selectors: "div[itemprop="articleBody"], div[itemprop="blogPost"], .ql-editor, 
 }
 
 .ql-snow .ql-icon-picker .ql-picker-options {
-  padding: 4px 0px;
+  padding: 4px 0;
 }
 
 .ql-snow .ql-icon-picker .ql-picker-item {
@@ -819,7 +822,7 @@ $selectors: "div[itemprop="articleBody"], div[itemprop="blogPost"], .ql-editor, 
   float: left;
   height: 16px;
   margin: 2px;
-  padding: 0px;
+  padding: 0;
   width: 16px;
 }
 
@@ -1008,13 +1011,13 @@ $selectors: "div[itemprop="articleBody"], div[itemprop="blogPost"], .ql-editor, 
 }
 
 .ql-toolbar.ql-snow + .ql-container.ql-snow {
-  border-top: 0px;
+  border-top: 0;
 }
 
 .ql-snow .ql-tooltip {
   background-color: #fff;
   border: 1px solid #ccc;
-  box-shadow: 0px 0px 5px #ddd;
+  box-shadow: 0 0 5px #ddd;
   color: #444;
   padding: 5px 12px;
   white-space: nowrap;
@@ -1031,7 +1034,7 @@ $selectors: "div[itemprop="articleBody"], div[itemprop="blogPost"], .ql-editor, 
   border: 1px solid #ccc;
   font-size: 13px;
   height: 26px;
-  margin: 0px;
+  margin: 0;
   padding: 3px 5px;
   width: 170px;
 }
@@ -1070,9 +1073,9 @@ $selectors: "div[itemprop="articleBody"], div[itemprop="blogPost"], .ql-editor, 
 }
 
 .ql-snow .ql-tooltip.ql-editing a.ql-action::after {
-  border-right: 0px;
+  border-right: 0;
   content: 'Save';
-  padding-right: 0px;
+  padding-right: 0;
 }
 
 .ql-snow .ql-tooltip[data-mode=link]::before {
