@@ -15,6 +15,8 @@ use Symfony\Component\Yaml\Yaml;
 
 defined('_JEXEC') or die('Restricted access');
 
+require_once JPATH_SITE . '/components/com_emundus/helpers/fabrik.php';
+
 /**
  * Plugin element to render colour picker
  *
@@ -42,7 +44,7 @@ class PlgFabrik_ElementIban extends PlgFabrik_Element
 		$encrypt_datas = $this->getParams()->get('encrypt_datas', 1);
 		if($encrypt_datas == 1 && substr($layoutData->value, -1) === '=')
 		{
-			$layoutData->value = $this->decrypt($this->getValue($data, $repeatCounter));
+			$layoutData->value = EmundusHelperFabrik::decryptDatas($this->getValue($data, $repeatCounter),'iban');;
 		}
 
 		return $layout->render($layoutData);
@@ -114,7 +116,7 @@ class PlgFabrik_ElementIban extends PlgFabrik_Element
 		$encrypt_datas = $this->getParams()->get('encrypt_datas', 1);
 		if($encrypt_datas == 1)
 		{
-			$val = $this->encrypt($val);
+			$val = EmundusHelperFabrik::encryptDatas($val,'iban');
 		}
 
 		return $val;
@@ -164,30 +166,6 @@ class PlgFabrik_ElementIban extends PlgFabrik_Element
 		while ( strlen($x) );
 
 		return (int)$mod;
-	}
-
-	private function decrypt($val)
-	{
-		//Define cipher
-		$cipher = "aes-128-cbc";
-
-		//Generate a 256-bit encryption key
-		$encryption_key = Factory::getConfig()->get('secret');
-
-		//Data to decrypt
-		return openssl_decrypt($val, $cipher, $encryption_key, 0);
-	}
-
-	private function encrypt($val)
-	{
-		//Define cipher
-		$cipher = "aes-128-cbc";
-
-		//Generate a 256-bit encryption key
-		$encryption_key = Factory::getConfig()->get('secret');
-
-		//Data to encrypt
-		return openssl_encrypt($val, $cipher, $encryption_key, 0);
 	}
 
 	private function getBICMapping()

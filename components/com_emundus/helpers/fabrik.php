@@ -1289,11 +1289,8 @@ die("<script>
         return $formatted_value;
     }
 
-	static function encryptDatas($value, $plugin, $encryption_key = null) {
+	static function encryptDatas($value, $plugin, $encryption_key = null, $cipher = 'aes-128-cbc') {
 		$result = $value;
-
-		//Define cipher
-		$cipher = "aes-128-cbc";
 
 		//Generate a 256-bit encryption key
 		if(empty($encryption_key))
@@ -1303,16 +1300,19 @@ die("<script>
 
 		if(!empty($encryption_key))
 		{
+			$iv_length = openssl_cipher_iv_length($cipher);
+			$iv = openssl_random_pseudo_bytes($iv_length);
+
 			//Data to encrypt
 			if ($plugin == 'checkbox')
 			{
 				$contents = json_decode($value);
 				foreach ($contents as $key => $content)
 				{
-					$encrypted_data = openssl_encrypt($content, $cipher, $encryption_key, 0);
+					$encrypted_data = openssl_encrypt($content, $cipher, $encryption_key, 0 ,$iv);
 					if ($encrypted_data !== false)
 					{
-						$contents[$key] = $encrypted_data;
+						$contents[$key] = $encrypted_data.'|'.base64_encode($iv);
 					}
 				}
 				$result = json_encode($contents);
@@ -1320,10 +1320,10 @@ die("<script>
 			else
 			{
 				$val            = $value;
-				$encrypted_data = openssl_encrypt($val, $cipher, $encryption_key, 0);
+				$encrypted_data = openssl_encrypt($val, $cipher, $encryption_key, 0 ,$iv);
 				if ($encrypted_data !== false)
 				{
-					$result = $encrypted_data;
+					$result = $encrypted_data.'|'.base64_encode($iv);
 				}
 			}
 		}
@@ -1331,9 +1331,8 @@ die("<script>
 		return $result;
 	}
 
-	static function decryptDatas($value, $plugin, $encryption_key = null) {
+	static function decryptDatas($value, $plugin, $encryption_key = null, $cipher = 'aes-128-cbc') {
 		$result = $value;
-		$cipher = "aes-128-cbc";
 
 		if(empty($encryption_key))
 		{
@@ -1347,7 +1346,10 @@ die("<script>
 				$contents = json_decode($value);
 				foreach ($contents as $key => $content)
 				{
-					$decrypted_data = openssl_decrypt($content, $cipher, $encryption_key, 0);
+					$content = explode('|', $content);
+					$iv = base64_decode($content[1]);
+
+					$decrypted_data = openssl_decrypt($content[0], $cipher, $encryption_key, 0 ,$iv);
 					if ($decrypted_data !== false)
 					{
 						$contents[$key] = $decrypted_data;
@@ -1357,7 +1359,10 @@ die("<script>
 			}
 			else
 			{
-				$decrypted_data = openssl_decrypt($value, $cipher, $encryption_key, 0);
+				$value = explode('|', $value);
+				$iv = base64_decode($value[1]);
+
+				$decrypted_data = openssl_decrypt($value[0], $cipher, $encryption_key, 0 ,$iv);
 				if ($decrypted_data !== false)
 				{
 					$result = $decrypted_data;
@@ -1367,4 +1372,6 @@ die("<script>
 
 		return $result;
 	}
+
+	// TODO: Create migrate method
 }
