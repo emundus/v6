@@ -120,6 +120,7 @@ class EmundusHelperEvents {
                 $submittion_page_id = (int)explode('=', $submittion_page->link)[3];
 
 				$this->applicationUpdating($user->fnum);
+	            $this->clearFormSession($user->fnum, $params['formModel']->id);
 
                 if ($submittion_page_id != $params['formModel']->id) {
                     $this->redirect($params);
@@ -590,7 +591,6 @@ class EmundusHelperEvents {
                 }
             }
         }
-		
         return true;
     }
 
@@ -619,45 +619,28 @@ class EmundusHelperEvents {
             $application_fee = (!empty($application_fee) && !empty($mProfile->getHikashopMenu($user->profile)));
 
             //$validations = $mApplication->checkFabrikValidations($user->fnum, true, $itemid);
-            $attachments_progress = $mApplication->getAttachmentsProgress($user->fnum);
-            $forms_progress = $mApplication->getFormsProgress($user->fnum);
+            $attachments = $mApplication->getAttachmentsProgress($user->fnum);
+            $forms = $mApplication->getFormsProgress($user->fnum);
 
-	        $db    = JFactory::getDbo();
-	        $query = $db->getQuery(true);
+	        if ($attachments < 100 || $forms < 100) {
+		        $db    = JFactory::getDbo();
+		        $query = $db->getQuery(true);
 
-	        $profile_by_status = $mProfile->getProfileByStatus($user->fnum);
+		        $profile_by_status = $mProfile->getProfileByStatus($user->fnum);
 
-	        if (empty($profile_by_status['profile'])) {
-		        $query->select('esc.profile_id AS profile_id, ecc.campaign_id AS campaign_id')
-			        ->from($db->quoteName('#__emundus_setup_campaigns', 'esc'))
-			        ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('ecc.campaign_id') . ' = ' . $db->quoteName('esc.id'))
-			        ->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($user->fnum));
-		        $db->setQuery($query);
-		        $profile_by_status = $db->loadAssoc();
-	        }
+		        if (empty($profile_by_status['profile'])) {
+			        $query->select('esc.profile_id AS profile_id, ecc.campaign_id AS campaign_id')
+				        ->from($db->quoteName('#__emundus_setup_campaigns', 'esc'))
+				        ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('ecc.campaign_id') . ' = ' . $db->quoteName('esc.id'))
+				        ->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($user->fnum));
+			        $db->setQuery($query);
+			        $profile_by_status = $db->loadAssoc();
+		        }
 
-	        $profile    = !empty($profile_by_status["profile_id"]) ? $profile_by_status["profile_id"] : $profile_by_status["profile"];
-	        $profile_id = (!empty($user->fnums[$user->fnum]) && $user->profile != $profile && $user->applicant === 1) ? $user->profile : $profile;
+		        $profile    = !empty($profile_by_status["profile_id"]) ? $profile_by_status["profile_id"] : $profile_by_status["profile"];
+		        $profile_id = (!empty($user->fnums[$user->fnum]) && $user->profile != $profile && $user->applicant === 1) ? $user->profile : $profile;
 
-	        $forms    = EmundusHelperMenu::getUserApplicationMenu($profile_id);
-
-			// Check if we have qcm forms
-	        $forms_ids = array_column($forms, 'form_id');
-	        $items_ids = [];
-	        foreach($forms as $form) {
-		        $items_ids[$form->form_id] = $form->id;
-	        }
-			if(!empty($forms_ids) && !empty($items_ids))
-			{
-				$qcm_complete = $this->checkQcmCompleted($user->fnum, $forms_ids, $items_ids);
-				if ($qcm_complete['status'] === false)
-				{
-					$mainframe->enqueueMessage(JText::sprintf($qcm_complete['msg']));
-					$mainframe->redirect($qcm_complete['link']);
-				}
-			}
-
-	        if ($attachments_progress < 100 || $forms_progress < 100) {
+		        $forms    = @EmundusHelperMenu::getUserApplicationMenu($profile_id);
 
 		        foreach ($forms as $form) {
 			        $query->clear()
@@ -743,7 +726,7 @@ class EmundusHelperEvents {
                             $checkout_url = $mEmails->setTagsFabrik($checkout_url, [$user->fnum], true);
                         }
                         // If $accept_other_payments is 2 : that means we do not redirect to the payment page.
-                        if ($accept_other_payments != 2 && empty($mApplication->getHikashopOrder($fnumInfos)) && $attachments_progress >= 100 && $forms_progress >= 100) {
+                        if ($accept_other_payments != 2 && empty($mApplication->getHikashopOrder($fnumInfos)) && $attachments >= 100 && $forms >= 100) {
                             // Profile number and document ID are concatenated, this is equal to the menu corresponding to the free option (or the paid option in the case of document_id = NULL)
 	                        $checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url=' . urlencode(base64_encode($checkout_url));
                             $mainframe->redirect($checkout_url);
@@ -1125,16 +1108,8 @@ class EmundusHelperEvents {
         $redirect_message = !empty($params['plugin_options']) && !empty($params['plugin_options']->get('trigger_confirmpost_success_msg')) ? JText::_($params['plugin_options']->get('trigger_confirmpost_success_msg')) : JText::_('APPLICATION_SENT');
 
 		if(!empty($params['plugin_options'])) {
-			$go_to_next_step = false;
-			if (intval($params['plugin_options']->get('trigger_confirmpost_redirect_to_next_step_first_page_url')) === 1) {
-				$current_phase = $mCampaign->getCurrentCampaignWorkflow($student->fnum);
 
-				if (!empty($current_phase->id)) {
-					$go_to_next_step = true;
-				}
-			}
-
-			if ($go_to_next_step) {
+            if(intval($params['plugin_options']->get('trigger_confirmpost_redirect_to_next_step_first_page_url')) === 1){
                 $redirect_url = 'index.php?option=com_emundus&task=openfile&fnum='.$student->fnum;
             } else {
                 $redirect_url = !empty($params['plugin_options']->get('trigger_confirmpost_redirect_url'))  ? JText::_($params['plugin_options']->get('trigger_confirmpost_redirect_url')) : EmundusHelperMenu::getHomepageLink();
@@ -1493,5 +1468,26 @@ class EmundusHelperEvents {
 		}
 
 		return $result;
+	}
+
+	private function clearFormSession($fnum, $form_id)
+	{
+		$session_delete = false;
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		try {
+			$query->delete($db->quoteName('#__fabrik_form_sessions'))
+				->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum))
+				->where($db->quoteName('form_id') . ' = ' . $form_id);
+			$db->setQuery($query);
+			$session_delete = $db->execute();
+		}
+		catch (Exception $e) {
+			JLog::add('Error when try to clear form session: ' . __LINE__ . ' in file: ' . __FILE__ . ' with message: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+		}
+
+		return $session_delete;
 	}
 }
