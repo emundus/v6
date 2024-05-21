@@ -668,7 +668,7 @@ class FileMaker
                 if (!empty($matching_elements)) {
                     foreach ($matching_elements as $element_row) {
                         $repeat_separator = $is_portal_data_form === true ? "$$$" : ",";
-                        $value = $m_application->getValuesByElementAndFnum($fnum, $element_row->id, $row->form_id, $repeat_separator);
+                        $value = $m_application->getValuesByElementAndFnum($fnum, $element_row->id, $row->form_id,1,[],null,true, $repeat_separator);
                         if ($is_portal_data_form === true) {
                             if (intval($element_row->group_id) === intval($row->portal_data_emundus_group_id)) {
                                 if ($data->name === "recordId") {
