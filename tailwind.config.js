@@ -13,6 +13,10 @@ module.exports = {
         "./components/com_emundus/views/**/*.{html,js,php,vue}",
         "./components/com_fabrik/layouts/**/*.{html,js,php}",
         "./components/com_fabrik/views/**/*.{html,js,php}",
+        "./media/com_emundus/js/em_files.js",
+        "./media/com_emundus/js/em_user.js",
+        "./media/com_emundus/js/mixins/exports.js",
+        "./media/com_emundus/js/mixins/utilities.js",
     ],
     safelist: [
         {
