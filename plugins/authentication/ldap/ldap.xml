@@ -153,15 +153,6 @@
                         size="20"
                 />
 
-                <field
-                        name="ldap_lastname"
-                        type="text"
-                        label="PLG_LDAP_FIELD_FULLNAME_LABEL"
-                        description="PLG_LDAP_FIELD_FULLNAME_DESC"
-                        default="lastName"
-                        size="20"
-                />
-
 				<field
 						name="ldap_firstname"
 						type="text"
