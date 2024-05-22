@@ -67,11 +67,6 @@ class EmundusAdministrationModelRanking extends JModelList
                 'null' => 1,
             ],
             [
-                'name' => 'profile_id',
-                'type' => 'INT',
-                'null' => 1,
-            ],
-            [
                 'name' => 'package_by',
                 'type' => 'varchar',
                 'length' => 255,
@@ -95,14 +90,6 @@ class EmundusAdministrationModelRanking extends JModelList
         ];
         $foreign_keys = [
             [
-                'name'           => 'jos_emundus_classement_hierarchy_profiles_id_fk',
-                'from_column'    => 'profile_id',
-                'ref_table'      => 'jos_emundus_setup_profiles',
-                'ref_column'     => 'id',
-                'update_cascade' => true,
-                'delete_cascade' => true,
-            ],
-            [
                 'name'           => 'jos_emundus_classement_hierarchy_status_fk',
                 'from_column'    => 'status',
                 'ref_table'      => 'jos_emundus_setup_status',
@@ -113,6 +100,54 @@ class EmundusAdministrationModelRanking extends JModelList
         ];
 
         $response = EmundusHelperUpdate::createTable('jos_emundus_ranking_hierarchy', $columns, $foreign_keys);
+        $tasks[] = $response['status'];
+
+        if ($debug) {
+            if ($response['status']) {
+                $app->enqueueMessage('Table jos_emundus_ranking_hierarchy exists or has been created');
+            } else {
+                $app->enqueueMessage('Table jos_emundus_ranking_hierarchy not created ' .json_encode($response), 'error');
+            }
+        }
+
+        $columns = [
+            [
+                'name' => 'hierarchy_id',
+                'type' => 'INT',
+                'null' => 0,
+            ],
+            [
+                'name' => 'profile_id',
+                'type' => 'INT',
+                'null' => 0,
+            ]
+        ];
+        $foreign_keys = [
+            [
+                'name'           => 'jos_emundus_ranking_hierarchy_profiles_hierarchy_id_fk',
+                'from_column'    => 'hierarchy_id',
+                'ref_table'      => 'jos_emundus_ranking_hierarchy',
+                'ref_column'     => 'id',
+                'update_cascade' => true,
+                'delete_cascade' => true,
+            ],
+            [
+                'name'           => 'jos_emundus_ranking_hierarchy_profiles_profile_id_fk',
+                'from_column'    => 'profile_id',
+                'ref_table'      => 'jos_emundus_setup_profiles',
+                'ref_column'     => 'id',
+                'update_cascade' => true,
+                'delete_cascade' => true,
+            ],
+        ];
+        $unique_keys = [
+            [
+                'name' => 'jos_emundus_ranking_hierarchy_profiles_profile_uk',
+                'columns' => ['profile_id'],
+            ]
+        ];
+
+        $response = EmundusHelperUpdate::createTable('jos_emundus_ranking_hierarchy_profiles', $columns, $foreign_keys, 'Table de liaison entre les profils et les niveaux de hiérarchie', $unique_keys);
         $tasks[] = $response['status'];
 
         if ($debug) {
