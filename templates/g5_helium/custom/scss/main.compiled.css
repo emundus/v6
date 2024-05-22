@@ -2293,6 +2293,10 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .m-0 {
   margin: 0px;
 }
+.my-2 {
+  margin-top: var(--em-spacing-2);
+  margin-bottom: var(--em-spacing-2);
+}
 .mb-0 {
   margin-bottom: 0px;
 }
@@ -2353,6 +2357,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .mr-0 {
   margin-right: 0px;
+}
+.mr-1 {
+  margin-right: var(--em-spacing-1);
 }
 .mr-2 {
   margin-right: var(--em-spacing-2);
@@ -2492,6 +2499,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .w-1 {
   width: var(--em-spacing-1);
+}
+.w-1\/2 {
+  width: 50%;
 }
 .w-11\/12 {
   width: 91.666667%;
@@ -3407,6 +3417,10 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .border-t {
   border-top-width: 1px;
 }
+.border-gray-300 {
+  --tw-border-opacity: 1;
+  border-color: rgb(209 213 219 / var(--tw-border-opacity));
+}
 .border-neutral-300 {
   --tw-border-opacity: 1;
   border-color: rgb(212 212 212 / var(--tw-border-opacity));
@@ -3828,6 +3842,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .text-center {
   text-align: center;
+}
+.align-middle {
+  vertical-align: middle;
 }
 .\!text-6xl {
   font-size: 3.75rem !important;
@@ -4581,6 +4598,9 @@ legend {
         margin: 10px 0 20px 0;
         font-family: var(--em-coordinator-font-title);
     }
+.swal2-popup {
+        border-radius: calc(var(--em-default-br) * 2) !important;
+    }
 button.swal2-styled.swal2-confirm {
         background: var(--blue-500);
         border-radius: var(--em-coordinator-br);
@@ -4749,6 +4769,10 @@ button.swal2-cancel.goback-btn:hover,
     .has-error .radio-inline,
     .has-error .checkbox-inline {
         color: #b94a48;
+    }
+
+    .has-error .\!checkbox {
+        color: #b94a48 !important;
     }
 .has-error .form-control {
         border-color: #b94a48;
