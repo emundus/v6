@@ -120,5 +120,7 @@ class EmundusModelUsersTest extends TestCase
         $users = $this->m_users->getUserById($user_id);
         $this->assertNotEmpty($users, 'The user should be found in the database');
         $this->assertEquals($user_id, $users[0]->user_id, 'The user id should be the same');
+        $this->assertEquals('Test', $users[0]->firstname, 'The user id should be the same');
+        $this->assertEquals('USER', $users[0]->lastname, 'The user id should be the same');
     }
 }
