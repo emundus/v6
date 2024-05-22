@@ -425,7 +425,7 @@ class EmundusHelperEvents {
 
                         if ($already_cloned == 0) {
 
-                            $data_mode = $params['plugin_options']->get('trigger_confirmpost_data_mode');
+                            $data_mode = $params['plugin_options']->get('trigger_confirmpost_data_mode',2);
                             if (!empty($fnum_linked)) { // priority to the linked file
 
                                 $query->clear()
