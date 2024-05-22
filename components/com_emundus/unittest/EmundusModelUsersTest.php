@@ -116,5 +116,9 @@ class EmundusModelUsersTest extends TestCase
         $db->execute();
 
         $this->assertTrue($this->m_users->repairEmundusUser($user_id), 'Passing a user id that has a missing emundus_users line should return true as the account should be repaired');
+
+        $users = $this->m_users->getUserById($user_id);
+        $this->assertNotEmpty($users, 'The user should be found in the database');
+        $this->assertEquals($user_id, $users[0]->user_id, 'The user id should be the same');
     }
 }
