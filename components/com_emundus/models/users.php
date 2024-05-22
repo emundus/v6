@@ -3684,17 +3684,22 @@ class EmundusModelUsers extends JModelList {
 		return str_shuffle($password);
 	}
 
-    public function repairEmundusUser($user_id){
+    /**
+     * Check if user is already registered in emundus_users, if not, create it
+     * @param $user_id
+     * @return bool true if user is already registered or if we are able to create it, false otherwise
+     */
+    public function repairEmundusUser($user_id)
+    {
         $repaired = false;
 
         if (!empty($user_id)) {
-            // test if line is present in emundus_users for this account
             $db = JFactory::getDbo();
             $query = $db->getQuery(true);
 
             $query->select($db->quoteName('id'))
                 ->from($db->quoteName('#__emundus_users'))
-                ->where($db->quoteName('user_id').' = '.$db->quote($user_id));
+                ->where($db->quoteName('user_id') . ' = ' . $db->quote($user_id));
             $db->setQuery($query);
             $user = $db->loadResult();
 
@@ -3702,41 +3707,43 @@ class EmundusModelUsers extends JModelList {
                 $query->clear()
                     ->select('*')
                     ->from($db->quoteName('#__users'))
-                    ->where($db->quoteName('id').' = '.$db->quote($user_id));
+                    ->where($db->quoteName('id') . ' = ' . $db->quote($user_id));
                 $db->setQuery($query);
                 $user_details = $db->loadObject();
 
                 if (!empty($user_details)) {
-                    $name = explode(' ',$user_details->name);
-                    $firstname = $name[0];
-                    unset($name[0]);
-                    $lastname = implode(' ',$name);
+                    list($firstname, $lastname) = explode(' ', $user_details->name, 2);
 
                     $query->clear()
                         ->insert($db->quoteName('#__emundus_users'))
-                        ->set($db->quoteName('user_id').' = '.$db->quote($user_id))
-                        ->set($db->quoteName('firstname').' = '.$db->quote($firstname))
-                        ->set($db->quoteName('lastname').' = '.$db->quote($lastname))
-                        ->set($db->quoteName('profile').' = 1000')
-                        ->set($db->quoteName('schoolyear').' = '.$db->quote(''))
-                        ->set($db->quoteName('disabled').' = 0')
-                        ->set($db->quoteName('university_id').' = 0')
-                        ->set($db->quoteName('email').' = '.$db->quote($user_details->email))
-                        ->set($db->quoteName('registerDate').' = é"'.$db->quote($user_details->registerDate))
-                        ->set($db->quoteName('name').' = '.$db->quote($user_details->name));
+                        ->set($db->quoteName('user_id') . ' = ' . $db->quote($user_id))
+                        ->set($db->quoteName('firstname') . ' = ' . $db->quote($firstname))
+                        ->set($db->quoteName('lastname') . ' = ' . $db->quote($lastname))
+                        ->set($db->quoteName('profile') . ' = 1000')
+                        ->set($db->quoteName('schoolyear') . ' = ' . $db->quote(''))
+                        ->set($db->quoteName('disabled') . ' = 0')
+                        ->set($db->quoteName('university_id') . ' = 0')
+                        ->set($db->quoteName('email') . ' = ' . $db->quote($user_details->email))
+                        ->set($db->quoteName('registerDate') . ' = ' . $db->quote($user_details->registerDate))
+                        ->set($db->quoteName('name') . ' = ' . $db->quote($user_details->name));
 
                     try {
                         $db->setQuery($query);
-                        $db->execute();
-                        JLog::add('com_emundus/models/users.php | reconstruction of user '.$user_id, JLog::INFO, 'com_emundus.error');
+                        $inserted = $db->execute();
 
-                        require_once(JPATH_ROOT.'/components/com_emundus/models/profile.php');
-                        $m_profile = new EmundusModelProfile;
-                        $m_profile->initEmundusSession();
+                        if ($inserted) {
+                            JLog::add('com_emundus/models/users.php | reconstruction of user ' . $user_id, JLog::INFO, 'com_emundus.error');
 
-                        $repaired = true;
+                            require_once(JPATH_ROOT . '/components/com_emundus/models/profile.php');
+                            $m_profile = new EmundusModelProfile;
+                            $m_profile->initEmundusSession();
+
+                            $repaired = true;
+                        } else {
+                            JLog::add('com_emundus/models/users.php | failed to repair user ' . $user_id, JLog::ERROR, 'com_emundus.error');
+                        }
                     } catch (Exception $e) {
-                        JLog::add('com_emundus/models/users.php | error while trying to repair user '.$user_id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                        JLog::add('com_emundus/models/users.php | error while trying to repair user ' . $user_id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
                     }
                 }
             } else {
