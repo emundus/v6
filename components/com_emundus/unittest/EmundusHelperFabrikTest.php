@@ -1,6 +1,7 @@
 <?php
 
 
+use Joomla\CMS\Factory;
 use PHPUnit\Framework\TestCase;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Language\Text;
@@ -335,24 +336,87 @@ class EmundusHelperFabrikTest extends TestCase
 
 	public function testEncryptDatas() {
 		$raw_phonenumber = '+33 6 12 34 56 78';
-		$encrypted_phonenumber = EmundusHelperFabrik::encryptDatas($raw_phonenumber, 'emundus_phonenumber', 'gKGin8pc4BEqA8cA');
+		$encrypted_phonenumber = EmundusHelperFabrik::encryptDatas($raw_phonenumber, 'gKGin8pc4BEqA8cA');
 		$this->assertNotEmpty($encrypted_phonenumber, 'Correct phone number returns not empty string when we pass encryption key');
 		$this->assertNotSame($raw_phonenumber, $encrypted_phonenumber, 'Encrypted phone number is different from raw phone number');
 
 		$raw_checkbox = '["Valeur 1","Valeur 2"]';
-		$encrypted_checkbox = EmundusHelperFabrik::encryptDatas($raw_checkbox, 'checkbox');
+		$encrypted_checkbox = EmundusHelperFabrik::encryptDatas($raw_checkbox);
 		$this->assertNotEmpty($encrypted_checkbox, 'Correct phone number returns not empty string, encryption key use secret by default');
 		$this->assertNotSame($raw_checkbox, $encrypted_checkbox, 'Encrypted phone number is different from raw phone number');
 	}
 
 	public function testDecryptDatas() {
 		$raw_phonenumber = '+33 6 12 34 56 78';
-		$encrypted_phonenumber = EmundusHelperFabrik::encryptDatas($raw_phonenumber, 'emundus_phonenumber', 'gKGin8pc4BEqA8cA');
-		$this->assertNotSame($raw_phonenumber, EmundusHelperFabrik::decryptDatas($encrypted_phonenumber,'emundus_phonenumber', 'uMcvs401XwYPml9Q'), 'Decrypted phone number is different from raw phone number if we pass wrong key');
-		$this->assertSame($raw_phonenumber, EmundusHelperFabrik::decryptDatas($encrypted_phonenumber,'emundus_phonenumber', 'gKGin8pc4BEqA8cA'), 'Decrypted phone number is the same as raw phone number');
+		$encrypted_phonenumber = EmundusHelperFabrik::encryptDatas($raw_phonenumber, 'gKGin8pc4BEqA8cA');
+		$this->assertNotSame($raw_phonenumber, EmundusHelperFabrik::decryptDatas($encrypted_phonenumber, 'uMcvs401XwYPml9Q'), 'Decrypted phone number is different from raw phone number if we pass wrong key');
+		$this->assertSame($raw_phonenumber, EmundusHelperFabrik::decryptDatas($encrypted_phonenumber, 'gKGin8pc4BEqA8cA'), 'Decrypted phone number is the same as raw phone number');
 
 		$raw_checkbox = '["Valeur 1","Valeur 2"]';
-		$encrypted_checkbox = EmundusHelperFabrik::encryptDatas($raw_checkbox, 'checkbox');
-		$this->assertSame($raw_checkbox, EmundusHelperFabrik::decryptDatas($encrypted_checkbox,'checkbox'), 'Decrypted checkbox is the same as raw checkbox');
+		$encrypted_checkbox = EmundusHelperFabrik::encryptDatas($raw_checkbox);
+		$this->assertSame($raw_checkbox, EmundusHelperFabrik::decryptDatas($encrypted_checkbox), 'Decrypted checkbox is the same as raw checkbox');
+	}
+
+	public function testMigrateEncryptDatas() {
+		$cipher = "aes-128-cbc";
+		$encryption_key = Factory::getConfig()->get('secret');
+		$iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length($cipher));
+		
+		$datas = [
+			[
+				'value' => '+33 6 12 34 56 78',
+				'plugin' => 'text'
+			],
+			[
+				'value' => '["Valeur 1","Valeur 2"]',
+				'plugin' => 'checkbox'
+			],
+			[
+				'value' => 'FR973000100552C255000000002',
+				'plugin' => 'iban'
+			]
+		];
+
+		$datas_old_encrypted = [];
+		$datas_new_encrypted = [];
+
+		foreach ($datas as $data) {
+			$datas_new_encrypted[] = [
+				'plugin' => $data['plugin'],
+				'value' => EmundusHelperFabrik::encryptDatas($data['value'], $encryption_key, $cipher, $iv)
+			];
+
+			if($data['plugin'] == 'checkbox')
+			{
+				$contents = json_decode($data['value']);
+				$checkbox_encrypted = [];
+				foreach ($contents as $index => $subvalue) {
+					$checkbox_encrypted[] = openssl_encrypt($subvalue, $cipher, $encryption_key, 0);
+				}
+				$datas_old_encrypted[] = [
+					'plugin' => $data['plugin'],
+					'value' => json_encode($checkbox_encrypted)
+				];
+			}
+			// Try to not encrypt iban
+			elseif ($data['plugin'] == 'iban') {
+				$datas_old_encrypted[] = [
+					'plugin' => $data['plugin'],
+					'value' =>$data['value']
+				];
+			}
+			else
+			{
+				$datas_old_encrypted[] = [
+					'plugin' => $data['plugin'],
+					'value' => openssl_encrypt($data['value'], $cipher, $encryption_key, 0)
+				];
+			}
+		}
+
+		$this->assertNotSame($datas_new_encrypted,$datas_old_encrypted, 'Datas are correctly encrypted with different algorithm');
+
+		$migrated_datas = EmundusHelperFabrik::migrateEncryptDatas($cipher, $cipher, $encryption_key, $encryption_key, $datas_old_encrypted, $iv);
+		$this->assertSame($datas_new_encrypted,$migrated_datas, 'Datas are correctly encrypted with same encryption key and same algorithm');
 	}
 }

@@ -44,7 +44,7 @@ class PlgFabrik_ElementIban extends PlgFabrik_Element
 		$encrypt_datas = $this->getParams()->get('encrypt_datas', 1);
 		if($encrypt_datas == 1 && substr($layoutData->value, -1) === '=')
 		{
-			$layoutData->value = EmundusHelperFabrik::decryptDatas($this->getValue($data, $repeatCounter),'iban');;
+			$layoutData->value = EmundusHelperFabrik::decryptDatas($this->getValue($data, $repeatCounter));
 		}
 
 		return $layout->render($layoutData);

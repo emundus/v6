@@ -1289,7 +1289,7 @@ die("<script>
         return $formatted_value;
     }
 
-	static function encryptDatas($value, $plugin, $encryption_key = null, $cipher = 'aes-128-cbc') {
+	static function encryptDatas($value, $encryption_key = null, $cipher = 'aes-128-cbc', $iv = null) {
 		$result = $value;
 
 		//Generate a 256-bit encryption key
@@ -1300,12 +1300,14 @@ die("<script>
 
 		if(!empty($encryption_key))
 		{
-			$iv_length = openssl_cipher_iv_length($cipher);
-			$iv = openssl_random_pseudo_bytes($iv_length);
+			if(empty($iv))
+			{
+				$iv_length = openssl_cipher_iv_length($cipher);
+				$iv        = openssl_random_pseudo_bytes($iv_length);
+			}
 
 			//Data to encrypt
-			if ($plugin == 'checkbox')
-			{
+			if (is_array(json_decode($value))) {
 				$contents = json_decode($value);
 				foreach ($contents as $key => $content)
 				{
@@ -1331,7 +1333,7 @@ die("<script>
 		return $result;
 	}
 
-	static function decryptDatas($value, $plugin, $encryption_key = null, $cipher = 'aes-128-cbc') {
+	static function decryptDatas($value, $encryption_key = null, $cipher = 'aes-128-cbc') {
 		$result = $value;
 
 		if(empty($encryption_key))
@@ -1341,7 +1343,7 @@ die("<script>
 
 		if(!empty($encryption_key))
 		{
-			if ($plugin == 'checkbox')
+			if (is_array(json_decode($value)))
 			{
 				$contents = json_decode($value);
 				foreach ($contents as $key => $content)
@@ -1350,9 +1352,15 @@ die("<script>
 					$iv = base64_decode($content[1]);
 
 					$decrypted_data = openssl_decrypt($content[0], $cipher, $encryption_key, 0 ,$iv);
-					if ($decrypted_data !== false)
-					{
+					if ($decrypted_data !== false) {
 						$contents[$key] = $decrypted_data;
+					}
+					else {
+						$decrypted_data = self::oldDecryptDatas($content[0],$encryption_key);
+						if ($decrypted_data !== false)
+						{
+							$contents[$key] = $decrypted_data;
+						}
 					}
 				}
 				$result = json_encode($contents);
@@ -1363,6 +1371,50 @@ die("<script>
 				$iv = base64_decode($value[1]);
 
 				$decrypted_data = openssl_decrypt($value[0], $cipher, $encryption_key, 0 ,$iv);
+				if ($decrypted_data !== false) {
+					$result = $decrypted_data;
+				}
+				else {
+					$decrypted_data = self::oldDecryptDatas($value[0],$encryption_key);
+					if ($decrypted_data !== false)
+					{
+						$result = $decrypted_data;
+					}
+				}
+			}
+		}
+
+		return $result;
+	}
+
+	public static function oldDecryptDatas($value,$encryption_key = null)
+	{
+		$cipher = 'aes-128-cbc';
+		$result = $value;
+
+		if(empty($encryption_key))
+		{
+			$encryption_key = Factory::getConfig()->get('secret', '');
+		}
+
+		if(!empty($encryption_key))
+		{
+			if (is_array(json_decode($value)))
+			{
+				$contents = json_decode($value);
+				foreach ($contents as $key => $content)
+				{
+					$decrypted_data = openssl_decrypt($content, $cipher, $encryption_key, 0);
+					if ($decrypted_data !== false)
+					{
+						$contents[$key] = $decrypted_data;
+					}
+				}
+				$result = json_encode($contents);
+			}
+			else
+			{
+				$decrypted_data = openssl_decrypt($value, $cipher, $encryption_key, 0);
 				if ($decrypted_data !== false)
 				{
 					$result = $decrypted_data;
@@ -1373,5 +1425,32 @@ die("<script>
 		return $result;
 	}
 
-	// TODO: Create migrate method
+	public static function migrateEncryptDatas($old_cipher, $new_cipher, $old_key, $new_key, $datas, $iv = null) {
+		foreach ($datas as $key => $data) {
+			if(is_array(json_decode($data['value'])))
+			{
+				$contents = json_decode($data['value']);
+				$decrypted_contents = [];
+				foreach ($contents as $index => $content)
+				{
+					$decrypted_contents[$index] = openssl_decrypt($content, $old_cipher, $old_key, 0);
+					if ($decrypted_contents[$index] === false)
+					{
+						$decrypted_contents[$index] = $content;
+					}
+				}
+				$decrypted_data = json_encode($decrypted_contents);
+			} else {
+				$decrypted_data = openssl_decrypt($data['value'], $old_cipher, $old_key, 0);
+				if ($decrypted_data === false)
+				{
+					$decrypted_data = $data['value'];
+				}
+			}
+
+			$datas[$key]['value'] = self::encryptDatas($decrypted_data,$new_key,$new_cipher,$iv);
+		}
+
+		return $datas;
+	}
 }

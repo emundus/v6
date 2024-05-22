@@ -1792,13 +1792,13 @@ class EmundusControllerFiles extends JControllerLegacy
 
 													$repeat_values_decrypted = [];
 													foreach ($v as $repeat_value) {
-														$repeat_values_decrypted[] = EmundusHelperFabrik::decryptDatas($repeat_value, 'iban');
+														$repeat_values_decrypted[] = EmundusHelperFabrik::decryptDatas($repeat_value);
 													}
 
 													$v = implode(',', $repeat_values_decrypted);
 												}
 												else {
-													$v = EmundusHelperFabrik::decryptDatas($v, 'iban');
+													$v = EmundusHelperFabrik::decryptDatas($v);
 												}
 											}
 											$line .= preg_replace("/\r|\n|\t/", "", $v)."\t";
