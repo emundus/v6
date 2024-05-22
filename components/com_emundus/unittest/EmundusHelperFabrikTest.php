@@ -391,7 +391,9 @@ class EmundusHelperFabrikTest extends TestCase
 				$contents = json_decode($data['value']);
 				$checkbox_encrypted = [];
 				foreach ($contents as $index => $subvalue) {
+					error_reporting(0);
 					$checkbox_encrypted[] = openssl_encrypt($subvalue, $cipher, $encryption_key, 0);
+					error_reporting(E_ALL);
 				}
 				$datas_old_encrypted[] = [
 					'plugin' => $data['plugin'],
@@ -407,10 +409,12 @@ class EmundusHelperFabrikTest extends TestCase
 			}
 			else
 			{
+				error_reporting(0);
 				$datas_old_encrypted[] = [
 					'plugin' => $data['plugin'],
 					'value' => openssl_encrypt($data['value'], $cipher, $encryption_key, 0)
 				];
+				error_reporting(E_ALL);
 			}
 		}
 
