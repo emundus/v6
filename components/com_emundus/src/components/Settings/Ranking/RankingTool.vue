@@ -47,10 +47,12 @@
             <h3>{{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_RANKING_HIERARCHIES') }}</h3>
             <div id="hierarchies" class="mt-4">
               <div v-for="hierarchy in hierarchies" :key="hierarchy.id" class="p-4 border-1 shadow gap-2 rounded mt-8">
-                <div class="flex flex-row justify-between items-center">
-                  <label :for="'hierarchy_label' + hierarchy.id" > {{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_RANKING_HIERARCHY_LABEL') }} </label>
-                  <input :id="'hierarchy_label' + hierarchy.id" name="hierarchy_label" type="text"
+                <div class="flex flex-row justify-between items-start">
+                  <div>
+                    <label :for="'hierarchy_label' + hierarchy.id" > {{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_RANKING_HIERARCHY_LABEL') }} </label>
+                    <input :id="'hierarchy_label' + hierarchy.id" name="hierarchy_label" type="text"
                          v-model="hierarchy.label"/>
+                  </div>
                   <span class="material-icons-outlined cursor-pointer"
                         :alt="translate('COM_EMUNDUS_ONBOARD_SETTINGS_RANKING_DELETE_HIERARCHY')"
                         @click="deleteHierarchy(hierarchy.id)">delete</span>
