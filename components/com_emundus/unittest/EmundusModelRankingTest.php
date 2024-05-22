@@ -40,14 +40,14 @@ class EmundusModelRankingTest extends TestCase
     }
 
     public function testCreateHierarchy() {
-        $sys_hierarchy = $this->m_ranking->createHierarchy('Hiérarchie Admin', 0, 1);
+        $sys_hierarchy = $this->m_ranking->createHierarchy('Hiérarchie Admin', 0, [1]);
         $this->assertIsInt($sys_hierarchy);
 
-        $coord_hierarchy = $this->m_ranking->createHierarchy('Hiérarchie coord', 0, 2, $sys_hierarchy);
+        $coord_hierarchy = $this->m_ranking->createHierarchy('Hiérarchie coord', 0, [2], $sys_hierarchy);
         $this->assertIsInt($coord_hierarchy);
 
         $this->expectException(Exception::class); // i should not be able to create on false profile
-        $hierarchy = $this->m_ranking->createHierarchy('Hiérarchie sur profil inexistant', 1, 9999);
+        $hierarchy = $this->m_ranking->createHierarchy('Hiérarchie sur profil inexistant', 1, [9999]);
     }
 
     public function testGetUserHierarchy() {
