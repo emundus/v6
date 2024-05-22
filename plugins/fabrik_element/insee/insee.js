@@ -107,7 +107,7 @@ define(['jquery', 'fab/element'],
                 const divError = this.element.parentNode.parentNode.getElementsByClassName('fabrikErrorMessage')[0];
                 divError.innerHTML = '';
 
-                fetch(this.options.baseUrl + '/entreprises/sirene/V3/' + this.options.propertyToCheck + '/' + value, {
+                fetch(this.options.baseUrl + '/entreprises/sirene/' + this.options.propertyToCheck + '/' + value, {
                     method: 'GET',
                     headers: {
                         'Accept': 'application/json',
