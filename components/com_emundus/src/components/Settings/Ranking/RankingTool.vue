@@ -227,7 +227,7 @@ export default {
       });
     },
     getProfiles() {
-      return userService.getNonApplicantProfiles().then(response => {
+      return userService.getProfiles().then(response => {
         this.profiles = response.data;
       });
     },

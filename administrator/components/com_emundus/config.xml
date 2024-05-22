@@ -631,6 +631,50 @@
 
 		<field name="spacer8" type="spacer" hr="true"/>
 
+		<field name="file_maker_api_title" type="note" label="COM_EMUNDUS_API_FILE_MAKER_TITLE"/>
+		<field name="file_maker_campaign" label="COM_EMUNDUS_API_FILE_MAKER_CAMPAIGN"
+			   type="sql"
+			   query="SELECT id, label FROM jos_emundus_setup_campaigns WHERE published = 1"
+			   key_field="id"
+			   value_field="label"
+			   multiple="false"
+			   default=""
+		/>
+		<field name="file_maker_api_base_url" type="text" label="COM_EMUNDUS_API_FILE_MAKER_BASE_URL" description="COM_EMUNDUS_API_FILE_MAKER_BASE_URL_DESC" />
+		<field name="file_maker_api_basic_auth_token" type="text" label="COM_EMUNDUS_API_FILE_MAKER_BASIC_AUTH_TOKEN" description="COM_EMUNDUS_API_FILE_MAKER_BASIC_AUTH_TOKEN_DESC" />
+		<field name="file_maker_name_attribute" type="text" label="COM_EMUNDUS_API_FILE_MAKER_NAME_ATTRIBUTE" />
+		<field name="file_maker_email_attribute" type="text" label="COM_EMUNDUS_API_FILE_MAKER_EMAIL_ATTRIBUTE" />
+		<field name="file_maker_emundus_forms_mapping_table_name" type="text" label="COM_EMUNDUS_API_FILE_MAKER_EMUNDUS_FORMS_MAPPING_TABLE_NAME" description="COM_EMUNDUS_API_FILE_MAKER_EMUNDUS_FORMS_MAPPING_TABLE_NAME_DESC" />
+		<field name="file_maker_emundus_attribute_mapping_table_name" type="text" label="COM_EMUNDUS_API_FILE_MAKER_EMUNDUS_ATTRIBUTE_MAPPING_TABLE_NAME" description="COM_EMUNDUS_API_FILE_MAKER_EMUNDUS_ATTRIBUTE_MAPPING_TABLE_NAME_DESC" />
+		<field
+				name="file_maker_steps"
+				type="subform"
+				label="COM_EMUNDUS_API_FILE_MAKER_STEPS"
+				description=""
+				layout="joomla.form.field.subform.repeatable-table"
+				icon="list"
+				multiple="true"
+		>
+			<form name="list_steps" repeat="true">
+				<field name="step" type="text" label="COM_EMUNDUS_API_FILE_MAKER_STEPS_STEP" />
+				<field name="status" type="sql"
+					   query="SELECT step, value FROM jos_emundus_setup_status"
+					   key_field="step"
+					   value_field="value"
+					   multiple="false"
+					   default="" label="COM_EMUNDUS_API_FILE_MAKER_STEPS_EMUNDUS_STATUS" />
+				<field name="email" type="text" label="COM_EMUNDUS_API_FILE_MAKER_STEPS_FILE_MAKER_EMAIL" />
+				<field name="open_status" type="sql"
+					   query="SELECT step, value FROM jos_emundus_setup_status"
+					   key_field="step"
+					   value_field="value"
+					   multiple="true"
+					   default="" label="COM_EMUNDUS_API_FILE_MAKER_STEPS_FILE_MAKER_OPEN_STATUS" />
+			</form>
+		</field>
+
+		<field name="spacer12" type="spacer" hr="true"/>
+
 		<field name="external_storage_title" type="note" label="COM_EMUNDUS_EXTERNAL_STORAGE_TITLE"/>
 
 		<field name="external_storage_ged_alfresco" type="note" label="COM_EMUNDUS_EXTERNAL_STORAGE_GED_ALFRESCO_TITLE"/>

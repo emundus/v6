@@ -20,6 +20,8 @@ use Joomla\CMS\Router\Route;
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
 
+include_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
+
 /**
  * Emundus Component Events Helper
  *
@@ -1439,7 +1441,7 @@ class EmundusHelperEvents {
                                 }
 
                                 $old_value = $m_application->getValuesByElementAndFnum($fnum, $element->id, $form_data['formid']);
-                                $new_value = $m_application->formatElementValue($element, $new_value, $element->db_table_name, $applicant_id);
+                                $new_value = EmundusHelperFabrik::formatElementValue($element->name, $new_value, $element->group_id, $applicant_id);
 
                                 if ($old_value != $new_value) {
                                     $log_params = [

@@ -66,9 +66,9 @@ export default {
             };
         }
     },
-    async getNonApplicantProfiles() {
+    async getProfiles() {
         try {
-            const response = await client().get('index.php?option=com_emundus&controller=users&task=getnonapplicantprofiles');
+            const response = await client().get('index.php?option=com_emundus&controller=users&task=getprofiles');
             return response.data;
         } catch (e) {
             return {

@@ -9,6 +9,11 @@
 
 // No direct access
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+
+require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php');
+
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport('joomla.application.component.controller');
@@ -1294,6 +1299,106 @@ class EmundusControllerUsers extends JControllerLegacy {
 		exit;
 	}
 
+    /**
+     * @return void
+     *
+     * @description Export users' selected data. Extracted data are also selected by the user.
+     *
+     * @throws Exception
+     */
+    public function exportusers()
+    {
+		$current_user = Factory::getUser();
+        if (!EmundusHelperAccess::asAccessAction(12, 'r',$current_user->id)) {
+            $this->setRedirect('index.php', JText::_('ACCESS_DENIED'), 'error');
+            return;
+        }
+
+        $m_users = new EmundusModelUsers();
+
+        // Retrieve the users' data to extract (indicated by the checkboxes checked)
+        $checkboxes = $this->input->getString('checkboxes');
+        $users = $this->input->getString('users', null);
+
+        $checkboxes = (array)json_decode(stripslashes($checkboxes));
+
+        // If 'all' is choosed, it's necessary to retrieve the ids
+        if ($users === 'all') {
+            $all_users = $m_users->getUsers(0, 0);
+            $user_ids = array();
+            foreach ($all_users as $user) {
+                $user_ids[] = $user->id;
+            }
+        } else {
+            $user_ids = (array)json_decode(stripslashes($users));
+        }
+
+        $user_details = array();
+        foreach ($user_ids as $uid) {
+            $user_details[] = $m_users->getUserDetails($uid);
+        }
+
+        // Fill CSV
+        $export_filename = 'export_users_'. $current_user->id .'_' . date('Y-m-d_H:i') . '.csv';
+        $path = JPATH_SITE . '/tmp/' . $export_filename;
+
+        $seen_keys = [];
+        $headers = array();
+
+        // Fill keys
+        $csv_file = fopen($path, 'w');
+
+        $seen_keys[] = 'COM_EMUNDUS_USERNAME';
+        $headers[] = Text::_('COM_EMUNDUS_USERNAME');
+
+        foreach ($user_details as $user_detail) {
+            foreach ($user_detail as $key => $value) {
+                if (!in_array($key, $seen_keys) && $checkboxes[$key]) {
+                    $seen_keys[] = $key;
+                    $headers[] = Text::_(strtoupper($key));
+                }
+            }
+        }
+        fputcsv($csv_file, $headers);
+        //
+
+        // Retrieve all the value of users' data necessary
+        foreach ($user_details as $user_detail) {
+            $userData = array();
+            foreach ($user_detail as $key => $value) {
+                if (in_array($key, $seen_keys)) {
+                    if ($key === 'COM_EMUNDUS_USERNAME') {
+                        // We force to put Username as the first column
+                        array_unshift($userData, $value);
+                    } else if ($key === 'COM_EMUNDUS_FIRSTNAME' || $key === 'COM_EMUNDUS_LASTNAME') {
+                        $userData[] = $value;
+                    }
+					else {
+						$userData[] = Text::_($value);
+					}
+                }
+            }
+            if (!empty(array_filter($userData))) {
+                fputcsv($csv_file, $userData);
+            }
+        }
+        fclose($csv_file);
+        //
+
+        // Add all the headers necessary
+        header('Content-type: text/csv');
+        header('Content-Disposition: attachment; filename=' . $export_filename);
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+        header('Cache-Control: no-store, no-cache, must-revalidate');
+        header('Cache-Control: pre-check=0, post-check=0, max-age=0');
+        header('Cache-control: private');
+        header('Expires: 0');
+
+        // Encode file's path and file's name if necessary
+        echo json_encode(['csvFilePath' => $path, 'fileName' => $export_filename]);
+        exit;
+    }
+
     function getuseraccessrights()
     {
         $response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
@@ -1310,22 +1415,14 @@ class EmundusControllerUsers extends JControllerLegacy {
         exit;
     }
 
-	function getnonapplicantprofiles() 
+	function getprofiles()
 	{
 		$response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
         $user = JFactory::getUser();
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$m_users = $this->getModel('Users');
-            $profiles = $m_users->getProfiles();
-
-			$response['data'] = [];
-			foreach($profiles as $profile) {
-				if ($profile->published == 0) {
-					$response['data'][] = $profile;
-				}
-			}
-
+            $response['data'] = array_values($m_users->getProfiles());
             $response['status'] = true;
             $response['msg'] = JText::_('COM_EMUNDUS_SUCCESS');
 		}
@@ -1333,5 +1430,4 @@ class EmundusControllerUsers extends JControllerLegacy {
 		echo json_encode((object)$response);
         exit;
 	}
-
 }
