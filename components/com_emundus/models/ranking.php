@@ -613,13 +613,16 @@ class EmundusModelRanking extends JModelList
             $query = $this->db->getQuery(true);
 
             $query->clear()
-                ->select('*')
-                ->from($this->db->quoteName('#__emundus_ranking_hierarchy'))
-                ->where($this->db->quoteName('id') . ' = ' . $this->db->quote($hierarchy_id));
+                ->select('erh.*, GROUP_CONCAT(erhp.profile_id) as profiles')
+                ->from($this->db->quoteName('#__emundus_ranking_hierarchy', 'erh'))
+                ->leftJoin($this->db->quoteName('#__emundus_ranking_hierarchy_profiles', 'erhp') . ' ON ' . $this->db->quoteName('erh.id') . ' = ' . $this->db->quoteName('erhp.hierarchy_id'))
+                ->where($this->db->quoteName('erh.id') . ' = ' . $this->db->quote($hierarchy_id))
+                ->group($this->db->quoteName('erh.id'));
 
             try {
                 $this->db->setQuery($query);
                 $hierarchy = $this->db->loadAssoc();
+                $hierarchy['profiles'] = explode(',', $hierarchy['profiles']);
             } catch (Exception $e) {
                 JLog::add('getUserHierarchyData ' . $e->getMessage(), JLog::ERROR, 'com_emundus.ranking.php');
             }
@@ -646,9 +649,10 @@ class EmundusModelRanking extends JModelList
                 $profile_id = $emundus_user->profile;
 
                 $query->clear()
-                    ->select('ech.id')
-                    ->from($this->db->quoteName('#__emundus_ranking_hierarchy', 'ech'))
-                    ->where($this->db->quoteName('ech.profile_id') . ' = ' . $this->db->quote($profile_id));
+                    ->select('erh.id')
+                    ->from($this->db->quoteName('#__emundus_ranking_hierarchy', 'erh'))
+                    ->leftJoin($this->db->quoteName('#__emundus_ranking_hierarchy_profiles', 'erhp') . ' ON ' . $this->db->quoteName('erh.id') . ' = ' . $this->db->quoteName('erhp.hierarchy_id'))
+                    ->where($this->db->quoteName('erhp.profile_id') . ' = ' . $this->db->quote($profile_id));
 
                 $this->db->setQuery($query);
                 $hierarchy = $this->db->loadResult();
@@ -656,9 +660,10 @@ class EmundusModelRanking extends JModelList
 
             if (empty($hierarchy)) {
                 $query->clear()
-                    ->select('ech.id')
-                    ->from($this->db->quoteName('#__emundus_ranking_hierarchy', 'ech'))
-                    ->leftJoin($this->db->quoteName('#__emundus_users', 'eu') . ' ON ' . $this->db->quoteName('eu.profile') . ' = ' . $this->db->quoteName('ech.profile_id'))
+                    ->select('erh.id')
+                    ->from($this->db->quoteName('#__emundus_ranking_hierarchy', 'erh'))
+                    ->leftJoin($this->db->quoteName('#__emundus_ranking_hierarchy_profiles', 'erhp') . ' ON ' . $this->db->quoteName('erh.id') . ' = ' . $this->db->quoteName('erhp.hierarchy_id'))
+                    ->leftJoin($this->db->quoteName('#__emundus_users', 'eu') . ' ON ' . $this->db->quoteName('eu.profile') . ' = ' . $this->db->quoteName('erhp.profile_id'))
                     ->where($this->db->quoteName('eu.user_id') . ' = ' . $this->db->quote($user_id));
 
                 try {
@@ -1418,18 +1423,19 @@ class EmundusModelRanking extends JModelList
 
                 if (!empty($hierarchy_infos['parent_id'])) {
                     $query->clear()
-                        ->select('profile_id')
+                        ->select('erhp.profile_id')
                         ->from($this->db->quoteName('#__emundus_ranking_hierarchy', 'erh'))
+                        ->leftJoin($this->db->quoteName('#__emundus_ranking_hierarchy_profiles', 'erhp') . ' ON ' . $this->db->quoteName('erh.id') . ' = ' . $this->db->quoteName('erhp.hierarchy_id'))
                         ->where($this->db->quoteName('erh.id') . ' = ' . $this->db->quote($hierarchy_infos['parent_id']));
                     $this->db->setQuery($query);
-                    $profile_id = $this->db->loadResult();
+                    $profile_ids = $this->db->loadColumn();
 
                     $query->clear()
                         ->select('DISTINCT u.email')
                         ->from($this->db->quoteName('#__users', 'u'))
                         ->leftJoin($this->db->quoteName('#__emundus_users', 'eu') . ' ON ' . $this->db->quoteName('u.id') . ' = ' . $this->db->quoteName('eu.user_id'))
                         ->leftJoin($this->db->quoteName('#__emundus_users_profiles', 'eup') . ' ON ' . $this->db->quoteName('eup.user_id') . ' = ' . $this->db->quoteName('eu.user_id'))
-                        ->where('(' . $this->db->quoteName('eu.profile') . ' = ' . $this->db->quote($profile_id) . ' OR ' . $this->db->quoteName('eup.profile_id') . ' = ' . $this->db->quote($profile_id) . ')')
+                        ->where('(' . $this->db->quoteName('eu.profile') . ' IN (' . implode(',' , $profile_ids) .  ') OR ' . $this->db->quoteName('eup.profile_id') . ' IN (' . implode(',' , $profile_ids) .  '))')
                         ->andWhere('u.block = 0');
 
                     $this->db->setQuery($query);
