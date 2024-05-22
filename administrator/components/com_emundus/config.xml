@@ -213,14 +213,18 @@
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
-		<field name="copy_application_form_type" showon="copy_application_form:1" menu="hide" type="list" default="0" label="COM_EMUNDUS_COPY_APPLICATION_FORM_TYPE" description="">
+		<field name="copy_application_form_or_table" showon="copy_application_form:1" menu="hide" type="list" default="0" label="COM_EMUNDUS_COPY_APPLICATION_FORM_OR_TABLE" description="COM_EMUNDUS_COPY_APPLICATION_FORM_OR_TABLE_DESC">
+			<option value="form">COM_EMUNDUS_COPY_APPLICATION_FORM_OR_TABLE_FORM</option>
+			<option value="table">COM_EMUNDUS_COPY_APPLICATION_FORM_OR_TABLE_TABLE</option>
+		</field>
+		<field name="copy_application_form_type" showon="copy_application_form:1[AND]copy_application_form_or_table:form" menu="hide" type="list" default="0" label="COM_EMUNDUS_COPY_APPLICATION_FORM_TYPE" description="">
 			<option value="0">COM_EMUNDUS_COPY_APPLICATION_FORM_TYPE_EXCLUDE</option>
 			<option value="1">COM_EMUNDUS_COPY_APPLICATION_FORM_TYPE_INCLUDE</option>
 		</field>
 		<field name="copy_include_forms"
 			   label="COM_EMUNDUS_COPY_APPLICATION_FORM_INCLUDE"
 			   description=""
-			   showon="copy_application_form:1[AND]copy_application_form_type:1"
+			   showon="copy_application_form:1[AND]copy_application_form_type:1[AND]copy_application_form_or_table:form"
 			   menu="hide"
 			   type="sql"
 			   query="SELECT id, label FROM jos_fabrik_forms WHERE published = 1"
@@ -232,12 +236,23 @@
 		<field name="copy_exclude_forms"
 			   label="COM_EMUNDUS_COPY_APPLICATION_FORM_EXCLUDE"
 			   description="COM_EMUNDUS_COPY_APPLICATION_FORM_EXCLUDE_DESC"
-			   showon="copy_application_form:1[AND]copy_application_form_type:0"
+			   showon="copy_application_form:1[AND]copy_application_form_type:0[AND]copy_application_form_or_table:form"
 			   menu="hide"
 			   type="sql"
 			   query="SELECT id, label FROM jos_fabrik_forms WHERE published = 1"
 			   key_field="id"
 			   value_field="label"
+			   multiple="true"
+			   default=""
+		/>
+		<field name="copy_include_tables"
+			   label="COM_EMUNDUS_COPY_APPLICATION_FORM_COPY_TABLES"
+			   showon="copy_application_form:1[AND]copy_application_form_or_table:table"
+			   menu="hide"
+			   type="sql"
+			   query="SELECT DISTINCT db_table_name FROM jos_fabrik_lists WHERE published = 1"
+			   key_field="db_table_name"
+			   value_field="db_table_name"
 			   multiple="true"
 			   default=""
 		/>
