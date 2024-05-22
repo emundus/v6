@@ -23,7 +23,9 @@
             </p>
           </div>
           <p class="em-font-size-14"
-             v-if="!saving && last_save != null">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE_LAST') + last_save }}
+             v-if="!saving && last_save != null">{{
+              translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE_LAST') + last_save
+            }}
           </p>
         </div>
       </div>
@@ -34,34 +36,38 @@
                class="translation-menu-item em-p-16 em-flex-row em-flex-space-between pointer"
                :class="currentMenu === menu.index ? 'em-modal-menu__current' : ''"
           >
-            <p class="em-font-size-16">{{translate(menu.title)}}</p>
+            <p class="em-font-size-16">{{ translate(menu.title) }}</p>
           </div>
         </div>
-          <div class="em-modal-component">
+        <div class="em-modal-component">
             <h2>{{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_RANKING_GENERAL') }}</h2>
 
             <hr>
 
             <h3>{{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_RANKING_HIERARCHIES') }}</h3>
             <div id="hierarchies" class="mt-4">
-              <div v-for="hierarchy in hierarchies" :key="hierarchy.id" class="p-2 border-1 shadow gap-2 rounded mt-8">
+              <div v-for="hierarchy in hierarchies" :key="hierarchy.id" class="p-4 border-1 shadow gap-2 rounded mt-8">
                 <div class="flex flex-row justify-between items-center">
-                  <input :id="'hierarchy_label' + hierarchy.id" name="hierarchy_label" type="text" v-model="hierarchy.label" />
-                  <span class="material-icons-outlined cursor-pointer" :alt="translate('COM_EMUNDUS_ONBOARD_SETTINGS_RANKING_DELETE_HIERARCHY')" @click="deleteHierarchy(hierarchy.id)">delete</span>
+                  <label :for="'hierarchy_label' + hierarchy.id" > {{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_RANKING_HIERARCHY_LABEL') }} </label>
+                  <input :id="'hierarchy_label' + hierarchy.id" name="hierarchy_label" type="text"
+                         v-model="hierarchy.label"/>
+                  <span class="material-icons-outlined cursor-pointer"
+                        :alt="translate('COM_EMUNDUS_ONBOARD_SETTINGS_RANKING_DELETE_HIERARCHY')"
+                        @click="deleteHierarchy(hierarchy.id)">delete</span>
                 </div>
                 <div>
-                  <div class="profiles mt-2">
+                  <div class="profiles mt-4">
                     <label>{{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_RANKING_HIERARCHY_PROFILES') }}</label>
                     <multiselect v-model="hierarchy.profiles" label="label" track-by="id" :options="profilesOpts"
-                        :multiple="true"
-                        :taggable="false"
-                        :placeholder="translate('COM_EMUNDUS_ONBOARD_SETTINGS_RANKING_SELECT_VALUE')"
-                        :close-on-select="true"
-                        :clear-on-select="false"
-                        :searchable="false"
-                        :allow-empty="true"></multiselect>
+                                 :multiple="true"
+                                 :taggable="false"
+                                 :placeholder="translate('COM_EMUNDUS_ONBOARD_SETTINGS_RANKING_SELECT_VALUE')"
+                                 :close-on-select="true"
+                                 :clear-on-select="false"
+                                 :searchable="false"
+                                 :allow-empty="true"></multiselect>
                   </div>
-                  <div class="status mt-2">
+                  <div class="status mt-4">
                     <label>{{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_RANKING_HIERARCHY_EDIT_STATUS') }}</label>
                     <select v-model="hierarchy.status">
                       <option v-for="state in states" :value="state.step">
@@ -69,47 +75,60 @@
                       </option>
                     </select>
                   </div>
-                  <div class="visible_status mt-2">
+                  <div class="visible_status mt-4">
                     <label>{{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_RANKING_HIERARCHY_VISIBLE_STATUS') }}</label>
                     <multiselect v-model="hierarchy.visible_status" label="value" track-by="step" :options="states"
-                        :multiple="true"
-                        :taggable="false"
-                        :placeholder="translate('COM_EMUNDUS_ONBOARD_SETTINGS_RANKING_SELECT_VALUE')"
-                        :close-on-select="true"
-                        :clear-on-select="false"
-                        :searchable="false"
-                        :allow-empty="true"
+                                 :multiple="true"
+                                 :taggable="false"
+                                 :placeholder="translate('COM_EMUNDUS_ONBOARD_SETTINGS_RANKING_SELECT_VALUE')"
+                                 :close-on-select="true"
+                                 :clear-on-select="false"
+                                 :searchable="false"
+                                 :allow-empty="true"
                     ></multiselect>
                   </div>
-                  <div class="visible_hierarchies mt-2">
+                  <div class="visible_hierarchies mt-4">
                     <label>{{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_RANKING_HIERARCHY_VISIBLE_HIERARCHIES') }}</label>
-                    <multiselect v-model="hierarchy.visible_hierarchy_ids" label="label" track-by="id" :options="hierarchiesOpts"
-                        :multiple="true"
-                        :taggable="false"
-                        :placeholder="translate('COM_EMUNDUS_ONBOARD_SETTINGS_RANKING_SELECT_VALUE')"
-                        :close-on-select="true"
-                        :clear-on-select="false"
-                        :searchable="false"
-                        :allow-empty="true"></multiselect>
+                    <multiselect v-model="hierarchy.visible_hierarchy_ids" label="label" track-by="id"
+                                 :options="hierarchiesOpts"
+                                 :multiple="true"
+                                 :taggable="false"
+                                 :placeholder="translate('COM_EMUNDUS_ONBOARD_SETTINGS_RANKING_SELECT_VALUE')"
+                                 :close-on-select="true"
+                                 :clear-on-select="false"
+                                 :searchable="false"
+                                 :allow-empty="true"></multiselect>
                   </div>
-                  <div class="published mt-2">
+                  <div class="published mt-4">
                     <label>{{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_RANKING_HIERARCHY_PUBLISHED') }}</label>
                     <div class="flex flex-row items-center gap-2">
-                      <input type="radio" :id="'hierarchy-published-' + hierarchy.id + '-yes'" :name="'hierarchy-published-' + hierarchy.id" value="1" v-model="hierarchy.published"/>
-                      <label class="!m-0" :for="'hierarchy-published-' + hierarchy.id + '-yes'">{{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_RANKING_YES') }}</label>
+                      <div class="flex flex-row items-center gap-2">
+                      <input type="radio" :id="'hierarchy-published-' + hierarchy.id + '-yes'"
+                             :name="'hierarchy-published-' + hierarchy.id" value="1" v-model="hierarchy.published"/>
+                      <label class="!m-0" :for="'hierarchy-published-' + hierarchy.id + '-yes'">{{
+                          translate('COM_EMUNDUS_ONBOARD_SETTINGS_RANKING_YES')
+                        }}</label>
                     </div>
-                    <div class="flex flex-row items-center gap-2">
-                      <input type="radio" :id="'hierarchy-published-' + hierarchy.id + '-no'" :name="'hierarchy-published-' + hierarchy.id" value="0" v-model="hierarchy.published"/>
-                      <label class="!m-0" :for="'hierarchy-published-' + hierarchy.id + '-no'">{{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_RANKING_NO') }}</label>
+                      <div class="flex flex-row items-center gap-2">
+                      <input type="radio" :id="'hierarchy-published-' + hierarchy.id + '-no'"
+                             :name="'hierarchy-published-' + hierarchy.id" value="0" v-model="hierarchy.published"/>
+                      <label class="!m-0" :for="'hierarchy-published-' + hierarchy.id + '-no'">{{
+                          translate('COM_EMUNDUS_ONBOARD_SETTINGS_RANKING_NO')
+                        }}</label>
+                    </div>
                     </div>
                   </div>
                 </div>
                 <div class="flex flex-row justify-end mt-2">
-                  <button class="em-primary-button w-fit" @click="saveHierarchy(hierarchy.id)"> {{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_RANKING_SAVE_HIERARCHY') }}</button>
+                  <button class="em-primary-button w-fit" @click="saveHierarchy(hierarchy.id)"> {{
+                      translate('COM_EMUNDUS_ONBOARD_SETTINGS_RANKING_SAVE_HIERARCHY')
+                    }}</button>
                 </div>
               </div>
               <div v-if="!newHierarchy" class="flex flex-row justify-end mt-4">
-                <button class="em-primary-button w-fit" @click="addHierarchy"> {{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_RANKING_ADD_HIERARCHY') }}</button>
+                <button class="em-primary-button w-fit" @click="addHierarchy"> {{
+                    translate('COM_EMUNDUS_ONBOARD_SETTINGS_RANKING_ADD_HIERARCHY')
+                  }}</button>
               </div>
             </div>
           </div>
@@ -227,6 +246,7 @@ export default {
         });
 
         if (hierarchyToSave) {
+          this.saving = true;
           rankingService.saveHierarchy(hierarchyToSave).then((response) => {
             if (response.status) {
               Swal.fire({
@@ -235,9 +255,11 @@ export default {
                 showConfirmButton: false,
                 timer: 1500
               });
-
+              this.last_save = new Date().toLocaleTimeString();
               this.getHierarchies();
             }
+
+            this.saving = false;
           });
         }
       }
@@ -251,9 +273,16 @@ export default {
         rankingService.deleteHierarchy(hierarchyId).then((response) => {
           if (!response.data) {
             rankingService.getHierarchies();
+          } else {
+            Swal.fire({
+              type: 'success',
+              title: this.translate('COM_EMUNDUS_ONBOARD_SETTINGS_RANKING_HIERARCHY_DELETED'),
+              showConfirmButton: false,
+              timer: 1500
+            });
           }
         });
-      } 
+      }
     },
     beforeClose() {
       this.$emit('resetMenuIndex');

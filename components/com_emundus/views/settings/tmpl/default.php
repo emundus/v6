@@ -10,7 +10,7 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
 
-require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
+require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'access.php');
 
 // GLOBAL
 JText::script('COM_EMUNDUS_ONBOARD_ADD_RETOUR');
@@ -143,6 +143,7 @@ JText::script('COM_EMUNDUS_ONBOARD_SETTINGS_RANKING_SELECT_VALUE');
 JText::script('COM_EMUNDUS_ONBOARD_SETTINGS_RANKING_YES');
 JText::script('COM_EMUNDUS_ONBOARD_SETTINGS_RANKING_NO');
 JText::script('COM_EMUNDUS_ONBOARD_SETTINGS_RANKING_HIERARCHY_SAVED');
+JText::script('COM_EMUNDUS_ONBOARD_SETTINGS_RANKING_HIERARCHY_LABEL');
 
 ## TUTORIAL ##
 JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_CAMPAIGN');
@@ -269,7 +270,7 @@ JText::script('COM_EMUNDUS_ATTACHMENT_STORAGE_DEFAULT_ASPECTS_MAPPING');
 Jtext::script('COM_EMUNDUS_ATTACHMENT_STORAGE_GED_ALFRESCO_ASPECTS_MISSING_ASPECT_FILE');
 
 $lang = JFactory::getLanguage();
-$short_lang = substr($lang->getTag(), 0 , 2);
+$short_lang = substr($lang->getTag(), 0, 2);
 $current_lang = $lang->getTag();
 $languages = JLanguageHelper::getLanguages();
 if (count($languages) > 1) {

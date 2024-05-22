@@ -152,7 +152,7 @@ export default {
         description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_RANKING_DESC",
         icon: 'leaderboard',
         index: 4,
-        access: 1,
+        access: 0,
         modalName: 'rankingTool'
       }
     ],
@@ -170,6 +170,7 @@ export default {
       this.menus[2].access = 1;
       this.menus[3].access = this.em_params.translations != undefined  ? parseInt(this.em_params.translations) : 1;
       this.menus[4].access = this.em_params.attachment_storage != undefined ? parseInt(this.em_params.attachment_storage) : 0;
+      this.menus[5].access = this.em_params.ranking != undefined ? parseInt(this.em_params.ranking) : 1;
       //
 
       this.loading = false;
