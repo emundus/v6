@@ -244,6 +244,131 @@ class EmundusControllerRanking extends JControllerLegacy
         $this->sendJSONResponse($response);
     }
 
+    public function getHierarchies()
+    {
+        $response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'data' => [], 'code' => 403];
+        $user = Factory::getUser();
+
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $ids = $this->app->input->getString('ids', '');
+            $ids = !empty($ids) ? json_decode($ids, true) : [];
+
+            try {
+                $response['data'] = $this->model->getHierarchies($ids);
+                $response['status'] = true;
+                $response['msg'] = Text::_('SUCCESS');
+                $response['code'] = 200;
+            } catch(Exception $e) {
+                $response['msg'] = $e->getMessage();
+                $response['code'] = 500;
+            }
+        }
+
+        $this->sendJSONResponse($response);
+    }
+
+    public function createHierarchy()
+    {
+        $response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'data' => [], 'code' => 403];
+        $user = Factory::getUser();
+
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $response['code'] = 500;
+            $label = $this->app->input->getString('label', '');
+            $status = $this->app->input->getInt('status', null);
+            $profiles = $this->app->input->getString('profiles', '');
+            $profiles = !empty($profiles) ? explode(',', $profiles) : [];
+
+            if (!empty($label) && isset($status) && !empty($profiles)) {
+                $published = $this->app->input->getInt('published', 0);
+                $visible_status = $this->app->input->getString('visible_status', '');
+                $visible_status = !empty($visible_status) ? explode(',', $visible_status) : [];
+                $visible_hierarchies = $this->app->input->getString('visible_hierarchies', '');
+                $visible_hierarchies = !empty($visible_hierarchies) ? explode(',', $visible_hierarchies) : [];
+                $parent_hierarchy = $this->app->input->getInt('parent_hierarchy', 0);
+
+                try {
+                    $response['data'] = $this->model->createHierarchy($label, $status, $profiles, $parent_hierarchy, $published, $visible_hierarchies, $visible_status);
+                    $response['status'] = true;
+                    $response['msg'] = Text::_('SUCCESS');
+                    $response['code'] = 200;
+                } catch(Exception $e) {
+                    $response['msg'] = $e->getMessage();
+                }
+            } else {
+                $response['msg'] = Text::_('MISSING_PARAMS');
+            }
+        }
+
+        $this->sendJSONResponse($response);
+    }
+
+    public function updateHierarchy()
+    {
+        $response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'data' => [], 'code' => 403];
+        $user = Factory::getUser();
+
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $response['code'] = 500;
+            $id = $this->app->input->getInt('id', 0);
+            $params = [
+                'label' => $this->app->input->getString('label', ''),
+                'status' => $this->app->input->getInt('status', null),
+                'profile_ids' => $this->app->input->getString('profiles', ''),
+                'published' => $this->app->input->getInt('published', 0),
+                'visible_status' => $this->app->input->getString('visible_status', ''),
+                'visible_hierarchies' => $this->app->input->getString('visible_hierarchies', ''),
+                'parent_id' => $this->app->input->getInt('parent_hierarchy', 0)
+            ];
+
+            if (!empty($id)) {
+                $params['profile_ids'] = !empty($params['profile_ids']) ? explode(',', $params['profile_ids']) : [];
+                $params['visible_status'] = !empty($params['visible_status']) ? explode(',', $params['visible_status']) : [];
+                $params['visible_hierarchies'] = !empty($params['visible_hierarchies']) ? explode(',', $params['visible_hierarchies']) : [];
+
+                try {
+                    $response['data'] = $this->model->updateHierarchy($id, $params);
+                    $response['status'] = true;
+                    $response['msg'] = Text::_('SUCCESS');
+                    $response['code'] = 200;
+                } catch(Exception $e) {
+                    $response['msg'] = $e->getMessage();
+                }
+            } else {
+                $response['msg'] = Text::_('MISSING_PARAMS');
+            }
+
+
+        }
+
+        $this->sendJSONResponse($response);
+    }
+
+    public function deleteHierarchy()
+    {
+        $response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'data' => [], 'code' => 403];
+        $user = Factory::getUser();
+
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $id = $this->app->input->getInt('hierarchyId', 0);
+            $response['code'] = 500;
+            $response['msg'] = Text::_('MISSING_PARAMS');
+
+            if (!empty($id)) {
+                try {
+                    $response['data'] = $this->model->deleteHierarchy($id);
+                    $response['status'] = true;
+                    $response['msg'] = Text::_('SUCCESS');
+                    $response['code'] = 200;
+                } catch(Exception $e) {
+                    $response['msg'] = $e->getMessage();
+                }
+            }
+        }
+
+        $this->sendJSONResponse($response);
+    }
+
     private function sendJSONResponse($response) {
         if ($response['code'] === 403) {
             header('HTTP/1.1 403 Forbidden');

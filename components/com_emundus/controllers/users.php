@@ -1310,4 +1310,28 @@ class EmundusControllerUsers extends JControllerLegacy {
         exit;
     }
 
+	function getnonapplicantprofiles() 
+	{
+		$response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
+        $user = JFactory::getUser();
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+			$m_users = $this->getModel('Users');
+            $profiles = $m_users->getProfiles();
+
+			$response['data'] = [];
+			foreach($profiles as $profile) {
+				if ($profile->published == 0) {
+					$response['data'][] = $profile;
+				}
+			}
+
+            $response['status'] = true;
+            $response['msg'] = JText::_('COM_EMUNDUS_SUCCESS');
+		}
+
+		echo json_encode((object)$response);
+        exit;
+	}
+
 }

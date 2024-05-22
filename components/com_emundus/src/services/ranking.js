@@ -135,5 +135,71 @@ export default {
                 msg: e.message
             };
         }
+    },
+    async getHierarchies() {
+        try {
+            const response = await client().get('index.php?option=com_emundus&controller=ranking&task=getHierarchies');
+
+            return response.data;
+        } catch (e) {
+            return {
+                status: false,
+                msg: e.message
+            };
+        }
+    },
+    async deleteHierarchy(hierarchyId) {
+        if (hierarchyId > 0) {
+            const Form = new FormData();
+            Form.append('hierarchyId', hierarchyId);
+
+            const response = await client().post('index.php?option=com_emundus&controller=ranking&task=deleteHierarchy', Form,
+            {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+
+            return response.data;
+        } else {
+            return {
+                status: false,
+                msg: 'Missing parameter'
+            }
+        }
+    },
+    async saveHierarchy(hierarchy) {
+        if (hierarchy) {
+            const Form = new FormData();
+            Form.append('label', hierarchy.label);
+            Form.append('profiles', hierarchy.profiles.map(profile => profile.id).join(','));
+            Form.append('status', hierarchy.status);
+            Form.append('visible_status', hierarchy.visible_status.map(status => status.step).join(','));
+            Form.append('visible_hierarchies', hierarchy.visible_hierarchy_ids.map(hierarchy => hierarchy.id).join(','));
+            Form.append('parent_hierarchy', hierarchy.parent_id);
+            Form.append('published', hierarchy.published != 0 ? 1 : 0);
+
+            if (hierarchy.id === 'tmp') {
+                const response = await client().post('/index.php?option=com_emundus&controller=ranking&task=createHierarchy', Form,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+
+                return response.data;
+            } else {
+                Form.append('id', hierarchy.id);
+
+                const response = await client().post('index.php?option=com_emundus&controller=ranking&task=updateHierarchy', Form,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+
+                return response.data;
+            }
+        }
     }
 };

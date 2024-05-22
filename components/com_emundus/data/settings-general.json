@@ -85,6 +85,22 @@
       }
     ]
   },
+  "ranking": {
+    "displayed": false,
+    "component": "emundus",
+    "label": "COM_EMUNDUS_MODULES_RANKING",
+    "param": "ranking",
+    "options": [
+      {
+        "label": "JNO",
+        "value": 0
+      },
+      {
+        "label": "JYES",
+        "value": 1
+      }
+    ]
+  },
   "external_storage_ged_alfresco_integration": {
     "displayed": false,
     "component": "emundus",

@@ -2032,6 +2032,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .float-right {
   float: right;
 }
+.\!m-0 {
+  margin: 0px !important;
+}
 .m-0 {
   margin: 0px;
 }

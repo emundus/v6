@@ -808,10 +808,10 @@ export default {
       overflow: auto;
 
       th div {
-        max-height: 2.5em;
-        overflow: hidden;
+        max-height: 5em;
+        overflow: scroll;
         text-overflow: ellipsis;
-        font-weight: bold;
+        font-weight: 700;
       }
 
       th.border-right, td.border-right {
