@@ -244,6 +244,54 @@ class EmundusControllerRanking extends JControllerLegacy
         $this->sendJSONResponse($response);
     }
 
+    public function getHierarchies()
+    {
+        $response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'data' => [], 'code' => 403];
+        $user = Factory::getUser();
+
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $ids = $this->app->input->getString('ids', '');
+            $ids = !empty($ids) ? json_decode($ids, true) : [];
+
+            try {
+                $response['data'] = $this->model->getHierarchies($ids);
+                $response['status'] = true;
+                $response['msg'] = Text::_('SUCCESS');
+                $response['code'] = 200;
+            } catch(Exception $e) {
+                $response['msg'] = $e->getMessage();
+                $response['code'] = 500;
+            }
+        }
+
+        $this->sendJSONResponse($response);
+    }
+
+    public function deleteHierarchy()
+    {
+        $response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'data' => [], 'code' => 403];
+        $user = Factory::getUser();
+
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $id = $this->app->input->getInt('hierarchyId', 0);
+            $response['code'] = 500;
+            $response['msg'] = Text::_('MISSING_PARAMS');
+
+            if (!empty($id)) {
+                try {
+                    $response['data'] = $this->model->deleteHierarchy($id);
+                    $response['status'] = true;
+                    $response['msg'] = Text::_('SUCCESS');
+                    $response['code'] = 200;
+                } catch(Exception $e) {
+                    $response['msg'] = $e->getMessage();
+                }
+            }
+        }
+
+        $this->sendJSONResponse($response);
+    }
+
     private function sendJSONResponse($response) {
         if ($response['code'] === 403) {
             header('HTTP/1.1 403 Forbidden');

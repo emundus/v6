@@ -45,6 +45,12 @@
             v-show="modal_ready"
             @resetMenuIndex="menuHighlight = 0"
         />
+
+        <RankingTool
+          v-else-if="menuHighlight === 4"
+          v-show="modal_ready"
+          @resetMenuIndex="menuHighlight = 0"
+        />
       </transition>
     </div>
 
@@ -59,6 +65,7 @@ import TranslationTool from '../components/Settings/TranslationTool/TranslationT
 import ContentTool from '../components/Settings/Content/ContentTool';
 import FilesTool from '../components/Settings/FilesTool/FilesTool';
 import StyleTool from '../components/Settings/Style/StyleTool';
+import RankingTool from '../components/Settings/Ranking/RankingTool';
 import AttachmentStorage from '../components/Settings/AttachmentStorage/AttachmentStorage';
 
 import settingsService from '../services/settings';
@@ -72,7 +79,8 @@ export default {
     ContentTool,
     TranslationTool,
     EditStatus,
-    EditTags
+    EditTags,
+    RankingTool
   },
   props: {
     actualLanguage: {
@@ -105,6 +113,7 @@ export default {
         icon: 'style',
         index: 1,
         access: 1,
+        modalName: 'styleTool'
       },
       {
         title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_CONTENT",
@@ -112,6 +121,7 @@ export default {
         icon: 'notes',
         index: 2,
         access: 1,
+        modalName: 'contentTool'
       },
       {
         title: "COM_EMUNDUS_ONBOARD_SETTINGS_FILES_TOOL",
@@ -119,6 +129,7 @@ export default {
         icon: 'source',
         index: 3,
         access: 1,
+        modalName: 'filesTool'
       },
       {
         title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_TRANSLATIONS",
@@ -126,6 +137,7 @@ export default {
         icon: 'language',
         index: 9,
         access: 1,
+        modalName: 'translationTool'
       },
       {
         title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_ATTACHMENT_STORAGE",
@@ -133,7 +145,16 @@ export default {
         icon: 'inventory_2',
         index: 5,
         access: 0,
+        modalName: 'attachmentStorage'
       },
+      {
+        title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_RANKING",
+        description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_RANKING_DESC",
+        icon: 'leaderboard',
+        index: 4,
+        access: 1,
+        modalName: 'rankingTool'
+      }
     ],
     modal_ready: false
   }),
@@ -169,36 +190,19 @@ export default {
 			return this.menus.filter((menu) => {
 				return menu.access === 1;
 			})
-		}
+		},
+    highlightedMenu() {
+      return this.menus.find(menu => menu.index === this.menuHighlight);
+    }
 	},
 
   watch: {
     menuHighlight: function(value){
       this.modal_ready = false;
       setTimeout(() => {
-        switch (value){
-          case 1:
-            this.$modal.show('styleTool');
-            this.modal_ready = true;
-            break;
-          case 2:
-            this.$modal.show('contentTool');
-            this.modal_ready = true;
-            break;
-          case 3:
-            this.$modal.show('filesTool');
-            this.modal_ready = true;
-            break;
-          case 9:
-            this.$modal.show('translationTool');
-            this.modal_ready = true;
-            break;
-          case 5:
-            this.$modal.show('attachmentStorage');
-            this.modal_ready = true;
-            break;
-          default:
-            break;
+        if (this.highlightedMenu) {
+          this.$modal.show(this.highlightedMenu.modalName);
+          this.modal_ready = true;
         }
       },500)
     }

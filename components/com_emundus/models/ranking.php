@@ -56,40 +56,41 @@ class EmundusModelRanking extends JModelList
     /**
      * @param $label
      * @param $status
-     * @param $profile_id
+     * @param $profile_ids array
      * @param $published
      * @return int
      * @throws Exception
      */
-    public function createHierarchy($label, $status, $profile_id, $parent_hierarchy = 0, $published = 1, $visible_hierarchies = [])
+    public function createHierarchy($label, $status, $profile_ids, $parent_hierarchy = 0, $published = 1, $visible_hierarchies = [])
     {
         $hierarchy_id = 0;
 
-        if (!empty($label) && is_numeric($status) && !empty($profile_id)) {
+        if (!empty($label) && is_numeric($status) && !empty($profile_ids)) {
             $query = $this->db->getQuery(true);
 
             $query->clear()
                 ->select('id')
                 ->from($this->db->quoteName('#__emundus_setup_profiles'))
-                ->where($this->db->quoteName('id') . ' = ' . $this->db->quote($profile_id));
+                ->where($this->db->quoteName('id') . ' IN (' . implode(',', $profile_ids) . ')');
 
             try {
                 $this->db->setQuery($query);
-                $profile_id = $this->db->loadResult();
+                $profile_ids = $this->db->loadColumn();
             } catch (Exception $e) {
                 JLog::add('createHierarchy ' . $e->getMessage(), JLog::ERROR, 'com_emundus.ranking.php');
                 throw new Exception(Text::_('COM_EMUNDUS_RANKING_COULD_NOT_DETERMINE_PROFILE_EXISTENCE'));
             }
 
-            if (empty($profile_id)) {
+            if (empty($profile_ids)) {
                 throw new Exception(Text::_('COM_EMUNDUS_RANKING_PROFILE_DOES_NOT_EXIST'));
             }
 
             $query->clear()
-                ->select('id')
-                ->from($this->db->quoteName('#__emundus_ranking_hierarchy'))
-                ->where($this->db->quoteName('profile_id') . ' = ' . $this->db->quote($profile_id))
-                ->andWhere($this->db->quoteName('status') . ' = ' . $this->db->quote($status));
+                ->select('erh.id')
+                ->from($this->db->quoteName('#__emundus_ranking_hierarchy', 'erh'))
+                ->leftJoin($this->db->quoteName('#__emundus_ranking_hierarchy_profiles', 'erhp') . ' ON erhp.hierarchy_id = erh.id')
+                ->where($this->db->quoteName('erhp.profile_id') . ' = ' . $this->db->quote($profile_id))
+                ->andWhere($this->db->quoteName('erh.status') . ' = ' . $this->db->quote($status));
 
             try {
                 $this->db->setQuery($query);
@@ -105,8 +106,8 @@ class EmundusModelRanking extends JModelList
 
             $query->clear()
                 ->insert($this->db->quoteName('#__emundus_ranking_hierarchy'))
-                ->columns($this->db->quoteName('label') . ', ' . $this->db->quoteName('status') . ', ' . $this->db->quoteName('profile_id') . ', ' . $this->db->quoteName('parent_id') . ', ' . $this->db->quoteName('published'))
-                ->values($this->db->quote($label) . ', ' . $this->db->quote($status) . ', ' . $this->db->quote($profile_id) . ', ' . $this->db->quote($parent_hierarchy) . ', ' . $this->db->quote($published));
+                ->columns($this->db->quoteName('label') . ', ' . $this->db->quoteName('status') . ', ' . $this->db->quoteName('parent_id') . ', ' . $this->db->quoteName('published'))
+                ->values($this->db->quote($label) . ', ' . $this->db->quote($status) . ', ' . $this->db->quote($parent_hierarchy) . ', ' . $this->db->quote($published));
 
             try {
                 $this->db->setQuery($query);
@@ -117,12 +118,12 @@ class EmundusModelRanking extends JModelList
                 throw new Exception(Text::_('COM_EMUNDUS_RANKING_COULD_NOT_CREATE_HIERARCHY'));
             }
 
-            if (!empty($visible_hierarchies) && !empty($hierarchy_id)) {
-                foreach ($visible_hierarchies as $visible_hierarchy_id) {
+            if (!empty($hierarchy_id)) {
+                foreach($profile_ids as $profile_id) {
                     $query->clear()
-                        ->insert($this->db->quoteName('#__emundus_ranking_hierarchy_view'))
-                        ->columns($this->db->quoteName('hierarchy_id') . ', ' . $this->db->quoteName('visible_hierarchy_id'))
-                        ->values($this->db->quote($hierarchy_id) . ', ' . $this->db->quote($visible_hierarchy_id));
+                        ->insert($this->db->quoteName('#__emundus_ranking_hierarchy_profiles'))
+                        ->columns($this->db->quoteName('hierarchy_id') . ', ' . $this->db->quoteName('profile_id'))
+                        ->values($this->db->quote($hierarchy_id) . ', ' . $this->db->quote($profile_id));
 
                     try {
                         $this->db->setQuery($query);
@@ -130,6 +131,24 @@ class EmundusModelRanking extends JModelList
                     } catch (Exception $e) {
                         JLog::add('createHierarchy ' . $e->getMessage(), JLog::ERROR, 'com_emundus.ranking.php');
                         continue;
+                    } 
+                }
+
+
+                if (!empty($visible_hierarchies)) {
+                    foreach ($visible_hierarchies as $visible_hierarchy_id) {
+                        $query->clear()
+                            ->insert($this->db->quoteName('#__emundus_ranking_hierarchy_view'))
+                            ->columns($this->db->quoteName('hierarchy_id') . ', ' . $this->db->quoteName('visible_hierarchy_id'))
+                            ->values($this->db->quote($hierarchy_id) . ', ' . $this->db->quote($visible_hierarchy_id));
+
+                        try {
+                            $this->db->setQuery($query);
+                            $this->db->execute();
+                        } catch (Exception $e) {
+                            JLog::add('createHierarchy ' . $e->getMessage(), JLog::ERROR, 'com_emundus.ranking.php');
+                            continue;
+                        }
                     }
                 }
             }
@@ -145,7 +164,7 @@ class EmundusModelRanking extends JModelList
         if (!empty($id) && !empty($params)) {
             $query = $this->db->getQuery(true);
 
-            $columns_allowed = ['label', 'status', 'profile_id', 'parent_id', 'published'];
+            $columns_allowed = ['label', 'status', 'parent_id', 'published'];
             $columns = array_keys($params);
 
             if (!empty(array_intersect($columns, $columns_allowed))) {
@@ -922,6 +941,26 @@ class EmundusModelRanking extends JModelList
         }
 
         return $hierarchies;
+    }
+
+    public function deleteHierarchy($id) 
+    {
+        $deleted = false;
+
+        if (!empty($id)) {
+            $query = $this->db->getQuery(true);
+            $query->delete('#__emundus_ranking_hierarchy')
+                ->where('id = ' . $id);
+
+            try {
+                $this->db->setQuery($query);
+                $deleted = $this->db->execute();
+            } catch(Exception $e) {
+                JLog::add('Delete ranking hierarchy ' . $id . ' failed ' . $e->getMessage(), JLog::ERROR, 'com_emundus.ranking.php');
+            }
+        }
+
+        return $deleted;
     }
 
     /**

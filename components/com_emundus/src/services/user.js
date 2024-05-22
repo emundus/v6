@@ -54,10 +54,21 @@ export default {
             };
         }
     },
-    async getAllAccessRights(){
+    async getAllAccessRights() {
         try {
             const response = await client().get('index.php?option=com_emundus&controller=users&task=getuseraccessrights');
 
+            return response.data;
+        } catch (e) {
+            return {
+                status: false,
+                msg: e.message
+            };
+        }
+    },
+    async getNonApplicantProfiles() {
+        try {
+            const response = await client().get('index.php?option=com_emundus&controller=users&task=getnonapplicantprofiles');
             return response.data;
         } catch (e) {
             return {

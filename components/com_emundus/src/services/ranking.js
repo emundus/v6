@@ -135,5 +135,43 @@ export default {
                 msg: e.message
             };
         }
+    },
+    async getHierarchies() {
+        try {
+            const response = await client().get('index.php?option=com_emundus&controller=ranking&task=getHierarchies');
+
+            return response.data;
+        } catch (e) {
+            return {
+                status: false,
+                msg: e.message
+            };
+        }
+    },
+    async deleteHierarchy(hierarchyId) {
+        if (hierarchyId > 0) {
+            const Form = new FormData();
+            Form.append('hierarchyId', hierarchyId);
+
+            const response = await client().post('index.php?option=com_emundus&controller=ranking&task=deleteHierarchy', Form,
+            {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+
+            return response.data;
+        } else {
+            return {
+                status: false,
+                msg: 'Missing parameter'
+            }
+        }
+    },
+    async saveHierarchy(hierarchy) {
+        if (hierarchy) {
+            const Form = new FormData();
+            
+        }
     }
 };
