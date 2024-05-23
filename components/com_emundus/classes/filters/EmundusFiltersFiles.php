@@ -339,7 +339,7 @@ class EmundusFiltersFiles extends EmundusFilters
 	{
 		$found_from_cache = false;
 
-		if ($this->h_cache->isEnabled())
+		/*if ($this->h_cache->isEnabled())
 		{
 			$menu = JFactory::getApplication()->getMenu();
 
@@ -357,7 +357,7 @@ class EmundusFiltersFiles extends EmundusFilters
 					}
 				}
 			}
-		}
+		}*/
 
 		if (!$found_from_cache)
 		{

@@ -473,6 +473,11 @@ a.em-blue-400-color:hover {
     display: grid;
     grid-gap: 0;
     grid-template-columns: 64% 30%;
+    align-items: start;
+
+    aside {
+        align-self: start;
+    }
 }
 
 @media (max-width: 479px) {
