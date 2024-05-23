@@ -2,7 +2,7 @@
 /**
  * @package         Regular Labs Library
  * @version         22.4.18687
- * 
+ *
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
  * @copyright       Copyright © 2022 Regular Labs All Rights Reserved

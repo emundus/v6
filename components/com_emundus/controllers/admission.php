@@ -585,23 +585,14 @@ class EmundusControllerAdmission extends JControllerLegacy {
     }
 
     public function getfnuminfos() {
-        $jinput = JFactory::getApplication()->input;
-        $fnum   = $jinput->getString('fnum', null);
+	    if (!class_exists('EmundusControllerFiles'))
+		    require_once(JPATH_ROOT.'/components/com_emundus/controllers/files.php');
 
-        $res        = false;
-        $fnumInfos  = null;
+	    $c_files = new EmundusControllerFiles();
+	    $response = $c_files->getfnuminfos();
 
-        if ($fnum != null) {
-            $m_files    = $this->getModel('Files');
-            $fnumInfos  = $m_files->getFnumInfos($fnum);
-
-            if ($fnum !== false)
-                $res = true;
-        }
-
-        JFactory::getSession()->set('application_fnum', $fnum);
-        echo json_encode((object)(array('status' => $res, 'fnumInfos' => $fnumInfos)));
-        exit;
+	    echo json_encode((object)$response);
+	    exit;
     }
 
     public function deletefile() {

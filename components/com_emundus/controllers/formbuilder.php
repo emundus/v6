@@ -471,6 +471,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
 
             $fid = $jinput->getInt('fid');
+            $mode = $jinput->getString('mode');
             if($jinput->getRaw('label')){
                 $label=$jinput->getRaw('label');
             } else{
@@ -480,7 +481,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
                 );
             }
 
-            $group = $this->m_formbuilder->createGroup($label,$fid);
+            $group = $this->m_formbuilder->createGroup($label,$fid,1,$mode);
 
             if (!empty($group['group_id'])) {
                 $response = $group;
