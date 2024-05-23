@@ -130,7 +130,7 @@ export default {
         formBuilderService.createSimpleGroup(this.page.id, {
           fr: 'Nouvelle section',
           en: 'New section'
-        }).then(response => {
+        },this.mode).then(response => {
           if (response.status) {
             this.getSections();
             this.updateLastSave();

@@ -1205,13 +1205,40 @@ class EmundusHelperEvents {
 
 		try
 		{
+			$db    = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
 			$code = $params['data']['jos_emundus_setup_programmes___code_raw'];
+			$evaluation_form = $params['data']['jos_emundus_setup_programmes___evaluation_form_raw'];
+
+			if(is_array($evaluation_form)) {
+				$evaluation_form = $evaluation_form[0];
+			}
+
+			if(!empty($evaluation_form)) {
+				require_once (JPATH_SITE.'/components/com_emundus/models/form.php');
+				$m_form = new EmundusModelForm();
+
+				$programs = $m_form->getProgramsByForm($evaluation_form);
+				$codes = array_map(function($program) {
+					return $program['code'];
+				}, $programs);
+
+				$codes[] = $code;
+				$codes = array_unique($codes);
+
+				$m_form->associateFabrikGroupsToProgram($evaluation_form,$codes);
+			} else {
+				$query->clear()
+					->update($db->quoteName('#__emundus_setup_programmes'))
+					->set($db->quoteName('fabrik_group_id') . ' = ' . $db->quote(''))
+					->where($db->quoteName('code') . ' LIKE ' . $db->quote($code));
+				$db->setQuery($query);
+				$db->execute();
+			}
 
 			if(!empty($code))
 			{
-				$db    = JFactory::getDbo();
-				$query = $db->getQuery(true);
-
 				$eMConfig            = JComponentHelper::getParams('com_emundus');
 				$all_rights_group_id = $eMConfig->get('all_rights_group', 1);
 
