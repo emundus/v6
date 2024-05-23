@@ -59,7 +59,7 @@
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
-		<field name="alert_editing_time" type="number" label="DISPLAY_OTHER_USER_EDITING_TIME" default="2"></field>
+		<field name="alert_editing_time" type="number" label="DISPLAY_OTHER_USER_EDITING_TIME" default="2"/>
 
 		<field name="block_user" label="BLOCK_USER" type="radio" default="1" description="BLOCK_USER_DESC">
 			<option value="0">JNO</option>
@@ -116,19 +116,19 @@
 				hr="true"
 		/>
 
-		<field name="login_links" label="COM_EMUNDUS_LOGIN_LINKS" type="note" default="0" description=""></field>
+		<field name="login_links" label="COM_EMUNDUS_LOGIN_LINKS" type="note" default="0" description=""/>
 
 		<field name="display_registration_link" type="radio" default="1" label="COM_EMUNDUS_LOGIN_DISPLAY_REGISTRATION_LINK">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
-		<field name="registration_link" type="text" default="" label="COM_EMUNDUS_LOGIN_REGISTRATION_LINK"></field>
+		<field name="registration_link" type="text" default="" label="COM_EMUNDUS_LOGIN_REGISTRATION_LINK"/>
 
 		<field name="display_forgotten_password_link" type="radio" default="1" label="COM_EMUNDUS_LOGIN_DISPLAY_FORGOTTEN_PASSWORD_LINK">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
-		<field name="forgotten_password_link" type="text" default="" label="COM_EMUNDUS_LOGIN_FORGOTTEN_PASSWORD_LINK"></field>
+		<field name="forgotten_password_link" type="text" default="" label="COM_EMUNDUS_LOGIN_FORGOTTEN_PASSWORD_LINK"/>
 	</fieldset>
 	<fieldset label="COM_EMUNDUS_EVALUATORS" name="evaluators" description="COM_EMUNDUS_EVALUATORS_DESC">
 		<field name="multi_eval" type="radio" default="0" label="ALLOW_MULTIPLE_EVALUATIONS" description="ALLOW_MULTIPLE_EVALUATIONS_DESC">
@@ -272,8 +272,7 @@
 				key_field="id"
 				value_field="title"
 				multiple="true"
-				default="[93,102,103,104,168,170]"
-		></field>
+				default="[93,102,103,104,168,170]"/>
 	</fieldset>
 	<fieldset label="COM_EMUNDUS_PAYMENT" name="payment" description="COM_EMUNDUS_PAYMENT_DESC">
 		<field name="application_fee" menu="hide" type="list" default="0" label="COM_EMUNDUS_APPLICATION_FEES" description="COM_EMUNDUS_APPLICATION_FEES_DESC">
@@ -357,7 +356,7 @@
 				hr="true"
 		/>
 
-		<field name="generate_params" label="COM_EMUNDUS_GENERATE_LETTERS_PARAMETERS" type="note" default="0" description=""></field>
+		<field name="generate_params" label="COM_EMUNDUS_GENERATE_LETTERS_PARAMETERS" type="note" default="0" description=""/>
 
 		<field name="export_replace_doc" type="radio" default="0" label="COM_EMUNDUS_EXPORT_REPLACE_DOC" description="COM_EMUNDUS_EXPORT_REPLACE_DOC_DESC">
 			<option value="0">JNO</option>
@@ -646,7 +645,7 @@
 				label="COM_EMUNDUS_PAYMENT_FLYWIRE"
 		/>
 		<fieldset label="COM_EMUNDUS_PAYMENT_FLYWIRE">
-			<field name="flywire_recipient" label="COM_EMUNDUS_PAYMENT_FLYWIRE_RECIPIENT_LABEL" type="text"></field>
+			<field name="flywire_recipient" label="COM_EMUNDUS_PAYMENT_FLYWIRE_RECIPIENT_LABEL" type="text"/>
 			<field name="flywire_mode" label="COM_EMUNDUS_PAYMENT_FLYWIRE_MODE_LABEL" type="list">
 				<option value="demo">Démo</option>
 				<option value="production">Production</option>
@@ -664,8 +663,8 @@
 			<field name="axepta_merchant_id" label="COM_EMUNDUS_PAYMENT_AXEPTA_MERCHANT_ID" type="text"/>
 			<field name="axepta_hmac_key" label="COM_EMUNDUS_PAYMENT_AXEPTA_HMAC_KEY" type="text"/>
 			<field name="axepta_blowfish_key" label="COM_EMUNDUS_PAYMENT_AXEPTA_BLOWFISH_KEY" type="text"/>
-			<field name="axepta_success_mail" label="MOD_EMUNDUS_AXEPTA_SUCCESS_MAIL" type="text" default=""></field>
-			<field name="axepta_failed_mail" label="MOD_EMUNDUS_AXEPTA_FAILED_MAIL" type="text" default=""></field>
+			<field name="axepta_success_mail" label="MOD_EMUNDUS_AXEPTA_SUCCESS_MAIL" type="text" default=""/>
+			<field name="axepta_failed_mail" label="MOD_EMUNDUS_AXEPTA_FAILED_MAIL" type="text" default=""/>
 		</fieldset>
 
 
@@ -673,7 +672,7 @@
 		<field name="spacer10" type="spacer" hr="true"/>
 		<field name="saml_integration" type="note" label="COM_EMUNDUS_SAML_INTEGRATION"/>
 		<fieldset label="COM_EMUNDUS_SAML_INTEGRATION">
-			<field name="saml_default_profile" label="COM_EMUNDUS_SAML_INTEGRATION_DEFAULT_PROFILE" type="text"></field>
+			<field name="saml_default_profile" label="COM_EMUNDUS_SAML_INTEGRATION_DEFAULT_PROFILE" type="text"/>
 		</fieldset>
 
 
