@@ -412,7 +412,10 @@ class EmundusHelperEvents {
 
                     $elements = array();
                     foreach ($table_elements as $element) {
-                        $elements[] = $element->value;
+	                    if($element->value !== $table->db_table_name.'.parent_id')
+	                    {
+		                    $elements[] = $element->value;
+	                    }
                     }
 
                     // check if data stored for current user
