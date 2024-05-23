@@ -23,4 +23,4 @@ dist-ssr
 *.sw?
 
 # Vite
-.env*
+.env
