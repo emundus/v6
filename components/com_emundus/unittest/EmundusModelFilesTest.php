@@ -100,7 +100,7 @@ class EmundusModelFilesTest extends TestCase{
 
         $user_id = $this->h_sample->createSampleUser(9, 'unit-test-candidat-' . rand(0, 1000) . '@emundus.test.fr');
         $program = $this->h_sample->createSampleProgram();
-	    $campaign_id = $this->h_sample->createSampleCampaign($program);
+	    $campaign_id = $this->h_sample->createSampleCampaign($program, true);
         $fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
 
 	    $session = JFactory::getSession();
