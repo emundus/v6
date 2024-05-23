@@ -5094,8 +5094,11 @@ class EmundusModelFiles extends JModelLegacy
             $emundus_config = ComponentHelper::getParams('com_emundus');
             $can_edit_back_attachments = $emundus_config->get('can_edit_back_attachments', 0);
             if ($can_edit_back_attachments) {
-                $attachment_to_keep_non_deletable = explode(',', $emundus_config->get('attachment_to_keep_non_deletable', '0'));
-                $status_for_send = explode(',', $emundus_config->get('status_for_send', '0'));
+                $attachment_to_keep_non_deletable = $emundus_config->get('attachment_to_keep_non_deletable', []);
+
+                $status_for_send = $emundus_config->get('status_for_send', '0');
+                $status_for_send = explode(',', $status_for_send);
+
                 $edit_status = array_unique(array_merge(['0'], $status_for_send));
                 $m_profile = new EmundusModelProfile();
 
