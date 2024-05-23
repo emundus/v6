@@ -1122,7 +1122,7 @@ class EmundusModelProfile extends JModelList {
             }
         } else {
             $emundusSession->profile                = $profile["profile"];
-            $emundusSession->profile_label          = $profile["profile_label"];
+            $emundusSession->profile_label          = !empty($profile["label"]) ? $profile["label"] : '';
             $emundusSession->menutype               = $profile["menutype"];
             $emundusSession->university_id          = $profile["university_id"];
             $emundusSession->applicant              = 0;
