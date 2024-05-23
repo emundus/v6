@@ -3712,6 +3712,8 @@ class EmundusModelUsers extends JModelList {
                 $user_details = $db->loadObject();
 
                 if (!empty($user_details)) {
+                    error_log('not empty user details ' . json_encode($user_details));
+
                     list($firstname, $lastname) = !empty($user_details->name) ? explode(' ', $user_details->name, 2) : ['',''];
 
                     $no_profile = null;
@@ -3754,16 +3756,19 @@ class EmundusModelUsers extends JModelList {
 
                         if ($inserted) {
                             JLog::add('com_emundus/models/users.php | reconstruction of user ' . $user_id, JLog::INFO, 'com_emundus.error');
+                            $repaired = true;
+
+                            error_log('User ' . $user_id . ' repaired');
 
                             require_once(JPATH_ROOT . '/components/com_emundus/models/profile.php');
                             $m_profile = new EmundusModelProfile;
                             $m_profile->initEmundusSession();
-
-                            $repaired = true;
                         } else {
+                            error_log('Failed to repair user ' . $user_id);
                             JLog::add('com_emundus/models/users.php | failed to repair user ' . $user_id, JLog::ERROR, 'com_emundus.error');
                         }
                     } catch (Exception $e) {
+                        error_log('Failed to repair user ' . $user_id . ' -> ' . $e->getMessage());
                         JLog::add('com_emundus/models/users.php | error while trying to repair user ' . $user_id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
                     }
                 }
