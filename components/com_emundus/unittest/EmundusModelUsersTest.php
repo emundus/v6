@@ -103,7 +103,6 @@ class EmundusModelUsersTest extends TestCase
         $this->assertEmpty($this->m_users->repairEmundusUser(999999), 'Passing an incorrect user id should return false');
 
         $user_id = $this->h_sample->createSampleUser(2, 'userthatwillbebroken' . rand(0, 99999) . '@emundus.test.fr');
-        error_log('User id: ' . $user_id);
         $this->assertNotEmpty($user_id, 'A user should be created');
         $this->assertTrue($this->m_users->repairEmundusUser($user_id), 'Passing a user id that has an emundus_users line should return true as the function should still be executed correctly');
 
