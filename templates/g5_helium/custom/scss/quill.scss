@@ -62,7 +62,7 @@ $selectors: "div[itemprop="articleBody"], div[itemprop="blogPost"], .ql-editor, 
 
 #{$selectors}{
   box-sizing: border-box;
-  line-height: 1.42;
+  line-height: 1.5em;
   height: 100%;
   outline: none;
   overflow-y: auto;
@@ -94,7 +94,7 @@ $selectors: "div[itemprop="articleBody"], div[itemprop="blogPost"], .ql-editor, 
   }
   ol > li,
   ul > li {
-    line-height: normal;
+    line-height: 1.5em;
   }
 
   li {
@@ -368,7 +368,7 @@ $selectors: "div[itemprop="articleBody"], div[itemprop="blogPost"], .ql-editor, 
     font-weight: 500;
     color: #0B0C0F;
     margin: 0;
-    line-height: 28.8px;
+    line-height: 1.2em;
   }
 
   h2 {
@@ -376,7 +376,7 @@ $selectors: "div[itemprop="articleBody"], div[itemprop="blogPost"], .ql-editor, 
     font-weight: 500;
     color: #0B0C0F;
     margin: 0;
-    line-height: 24px;
+    line-height: 1.2em;
   }
 
   h3 {
@@ -384,7 +384,7 @@ $selectors: "div[itemprop="articleBody"], div[itemprop="blogPost"], .ql-editor, 
     font-size: 18px;
     color: #0B0C0F;
     margin: 0;
-    line-height: 24px;
+    line-height: 1.2rem;
   }
 
   h4 {
@@ -392,7 +392,7 @@ $selectors: "div[itemprop="articleBody"], div[itemprop="blogPost"], .ql-editor, 
     color: #0B0C0F;
     font-size: 16px;
     margin: 0;
-    line-height: 24px;
+    line-height: 1.2em;
   }
 
   h5 {
@@ -400,7 +400,7 @@ $selectors: "div[itemprop="articleBody"], div[itemprop="blogPost"], .ql-editor, 
     font-size: 14px;
     color: #0B0C0F;
     margin: 0;
-    line-height: 24px;
+    line-height: 1.2em;
   }
 
   h5 {
@@ -408,7 +408,7 @@ $selectors: "div[itemprop="articleBody"], div[itemprop="blogPost"], .ql-editor, 
     font-size: 12px;
     color: #0B0C0F;
     margin: 0;
-    line-height: 24px;
+    line-height: 1.2em;
   }
 
   h6 {
@@ -416,12 +416,12 @@ $selectors: "div[itemprop="articleBody"], div[itemprop="blogPost"], .ql-editor, 
     font-size: 10px;
     color: #0B0C0F;
     margin: 0;
-    line-height: 24px;
+    line-height: 1.2em;
   }
 
   p {
     margin: 0;
-    line-height: 1.25rem !important;
+    line-height: 1.5em !important;
     font-size: 16px;
     color: #0B0C0F;
     font-weight: 400;

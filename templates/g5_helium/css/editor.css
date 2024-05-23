@@ -6,7 +6,7 @@
 body {
 	background: #fff;
 	font-family: 'Inter', sans-serif;
-	line-height: 24px;
+	line-height: 1.5em;
 	font-size: 15px;
 	color: #0B0C0F;
 }
@@ -17,7 +17,7 @@ h1 {
 	font-weight: 500;
 	color: #0B0C0F;
 	margin: 0;
-	line-height: 28.8px;
+	line-height: 1.2em;
 }
 
 h2 {
@@ -26,7 +26,7 @@ h2 {
 	font-weight: 500;
 	color: #0B0C0F;
 	margin: 0;
-	line-height: 24px;
+	line-height: 1.2em;
 }
 
 h3 {
@@ -35,7 +35,7 @@ h3 {
 	font-size: 18px;
 	color: #0B0C0F;
 	margin: 0;
-	line-height: 24px;
+	line-height: 1.2em;
 }
 
 h4 {
@@ -44,7 +44,7 @@ h4 {
 	color: #0B0C0F;
 	font-size: 16px;
 	margin: 0;
-	line-height: 24px;
+	line-height: 1.2em;
 }
 
 h5 {
@@ -53,7 +53,7 @@ h5 {
 	font-family: 'Inter', sans-serif;
 	color: #0B0C0F;
 	margin: 0;
-	line-height: 24px;
+	line-height: 1.2em;
 }
 
 h5 {
@@ -62,7 +62,7 @@ h5 {
 	font-family: 'Inter', sans-serif;
 	color: #0B0C0F;
 	margin: 0;
-	line-height: 24px;
+	line-height: 1.2em;
 }
 
 h6 {
@@ -71,14 +71,14 @@ h6 {
 	font-family: 'Inter', sans-serif;
 	color: #0B0C0F;
 	margin: 0;
-	line-height: 24px;
+	line-height: 1.2em;
 }
 
 
 p {
 	margin: 0;
 	font-family: 'Inter', sans-serif;
-	line-height: 1.25rem;
+	line-height: 1.5em;
 	font-size: 16px;
 	color: #0B0C0F;
 	font-weight: 400;
@@ -138,7 +138,7 @@ ul ul, ol ol {
 }
 
 li {
-	line-height: normal;
+	line-height: 1.5em;
 }
 
 
