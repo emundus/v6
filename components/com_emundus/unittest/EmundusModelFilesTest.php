@@ -630,12 +630,6 @@ class EmundusModelFilesTest extends TestCase{
         $can_edit_back_attachments = $emundus_config->get('can_edit_back_attachments', 0);
         if ($can_edit_back_attachments != 1) {
             $emundus_config->set('can_edit_back_attachments', 1);
-
-            // Save the parameters
-            $componentid = JComponentHelper::getComponent('com_content')->id;
-            $table = JTable::getInstance('extension');
-            $table->load($componentid);
-            $table->bind(array('params' => $emundus_config->toString()));
         }
 
         $user_id = $this->h_sample->createSampleUser(9, 'unit-test-candidat-' . rand(0, 1000) . '@emundus.test.fr');
