@@ -4381,9 +4381,71 @@ if(in_array($applicant,$exceptions)){
 						}
 					}
 				}
+
+				$query->clear()
+					->select('extension_id,params')
+					->from($db->quoteName('#__extensions'))
+					->where($db->quoteName('name') . ' LIKE ' . $db->quote('plg_system_logrotation'));
+				$db->setQuery($query);
+				$logrotation = $db->loadObject();
+
+				if(!empty($logrotation->extension_id))
+				{
+					$params = json_decode($logrotation->params, true);
+
+					$params['cachetimeout'] = 7;
+					$params['logstokeep'] = 4;
+
+					$query->clear()
+						->update($db->quoteName('#__extensions'))
+						->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+						->where($db->quoteName('extension_id') . ' = ' . $logrotation->extension_id);
+					$db->setQuery($query);
+					$db->execute();
+				}
+				EmundusHelperUpdate::installExtension('plg_cron_logspurge','emunduslogsandmessagespurge','{"name":"plg_cron_logspurge","type":"plugin","creationDate":"May 2024","author":"eMundus","copyright":"Copyright (C) 2024 emundus.fr - All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"www.emundus.fr","version":"1.39.0","description":"PLG_CRON_LOGSPURGE_DESC","group":"","filename":"emunduslogsandmessagespurge"}','plugin',1,'fabrik_cron', '{"amount_time":"1","unit_time":"year","export_zip":"1", "amount_time_tmp":"1","unit_time_tmp":"week"}');
+
+				$query->clear()
+					->select($db->quoteName('id'))
+					->from($db->quoteName('jos_fabrik_cron'))
+					->where($db->quoteName('plugin') . ' = ' . $db->quote('emunduslogsandmessagespurge'));
+
+				$db->setQuery($query);
+				$existing_cron = $db->loadResult();
+
+				if ($existing_cron !== null)
+				{
+					echo "Plugin cron already created.";
+				}
+				else
+				{
+					$current_hour = date('G');
+					if ($current_hour < 4)
+					{
+						$last_four_hour = date('Y-m-d 04:00:00', strtotime('yesterday'));
+					}
+					else
+					{
+						$last_four_hour = date('Y-m-d 04:00:00');
+					}
+
+					$inserted = [
+						'label' => 'Logs and messages purge',
+						'frequency' => 1,
+						'unit' => 'day',
+						'created' => date('0000-00-00 00:00:00'),
+						'modified' => date('0000-00-00 00:00:00'),
+						'checked_out_time' => date('0000-00-00 00:00:00'),
+						'plugin' => 'emunduslogsandmessagespurge',
+						'published' => 1,
+						'lastrun' => date($last_four_hour),
+						'params' => '{"connection":"1","table":"","cron_row_limit":"100","log":"0","log_email":"","require_qs":"0","require_qs_secret":"","cron_rungate":"1","cron_reschedule_manual":"0","amount_time":"1","unit_time":"year","export_zip":"1", "amount_time_tmp":"1","unit_time_tmp":"week"}'
+					];
+					$inserted = (object) $inserted;
+					$db->insertObject('jos_fabrik_cron', $inserted);
+				}
 			}
 		}
-
 		return $succeed;
 	}
 
@@ -4489,6 +4551,13 @@ if(in_array($applicant,$exceptions)){
 		$query->clear()
 			->delete($db->quoteName('#__emundus_setup_dashboard'))
 			->where($db->quoteName('user') . ' IN (62,95)');
+		$db->setQuery($query);
+		$db->execute();
+
+		// Clear external_login logs
+		$query->clear()
+			->delete($db->quoteName('#__externallogin_logs'))
+			->where("from_unixtime(round(`date`)) < DATE_SUB(DATE(now()), INTERVAL 15 DAY)");
 		$db->setQuery($query);
 		$db->execute();
 
