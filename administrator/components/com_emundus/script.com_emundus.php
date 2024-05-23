@@ -4304,6 +4304,8 @@ if(in_array($applicant,$exceptions)){
 				$group_program_detail = $db->loadResult();
 
 				if(!empty($group_program_detail)){
+					EmundusHelperUpdate::addColumn('jos_emundus_setup_programmes', 'evaluation_form', 'INT',11,1);
+
 					EmundusHelperUpdate::insertTranslationsTag('ELEMENT_PROGRAM_FORM_EVALUATION', 'Formulaire d\'évaluation');
 					EmundusHelperUpdate::insertTranslationsTag('ELEMENT_PROGRAM_FORM_EVALUATION', 'Evaluation form', 'override', null, null, null, 'en-GB');
 

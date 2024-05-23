@@ -5757,11 +5757,7 @@ fieldset[disabled] .multiselect {
 }
 
 .multiselect__tags-wrap {
-  gap: 4px;
-  overflow: auto;
-  display: flex;
-  flex-wrap: wrap;
-  height: 25px;
+  display: inline;
 }
 
 .multiselect__tags {

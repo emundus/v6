@@ -137,13 +137,6 @@ class EmundusModelForm extends JModelList {
 							$label[$language->sef] = $formbuilder->getTranslation($form->label,$language->lang_code) ?: $form->label;
 						}
 						$data['datas'][$key]->label = $label;
-
-						$query->clear()
-							->select('COUNT(id)')
-							->from($db->quoteName('#__emundus_setup_campaigns'))
-							->where($db->quoteName('profile_id') . ' = ' . $db->quote($form->id));
-						$db->setQuery($query);
-						$data['datas'][$key]->campaigns_count = $db->loadResult();
 					}
 				}
 			}
