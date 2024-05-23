@@ -4348,6 +4348,37 @@ if(in_array($applicant,$exceptions)){
 							->where($db->quoteName('name') . ' = ' . $db->quote('fabrik_group_id'));
 						$db->setQuery($query);
 						$db->execute();
+
+						$query->clear()
+							->select('id,fabrik_group_id')
+							->from($db->quoteName('#__emundus_setup_programmes'))
+							->where($db->quoteName('fabrik_group_id') . ' IS NOT NULL');
+						$db->setQuery($query);
+						$programs = $db->loadAssocList();
+
+						foreach ($programs as $program) {
+							if(!empty($program['fabrik_group_id']))
+							{
+								$fabrik_groups = explode(',', $program['fabrik_group_id']);
+
+								$query->clear()
+									->select('form_id')
+									->from($db->quoteName('#__fabrik_formgroup'))
+									->where($db->quoteName('group_id') . ' IN (' . implode(',',$db->quote($fabrik_groups)) .')');
+								$db->setQuery($query);
+								$evaluation_form_id = $db->loadResult();
+
+								if(!empty($evaluation_form_id))
+								{
+									$query->clear()
+										->update($db->quoteName('#__emundus_setup_programmes'))
+										->set($db->quoteName('evaluation_form') . ' = ' . $db->quote($evaluation_form_id))
+										->where($db->quoteName('id') . ' = ' . $db->quote($program['id']));
+									$db->setQuery($query);
+									$db->execute();
+								}
+							}
+						}
 					}
 				}
 			}

@@ -2371,21 +2371,6 @@ class EmundusModelForm extends JModelList {
 
 					foreach ($programs as $program) {
 						$query->clear()
-							->select($column)
-							->from($db->quoteName('#__emundus_setup_programmes'))
-							->where($db->quoteName('code') . ' LIKE ' . $db->quote($program));
-						$db->setQuery($query);
-						$program_fabrik_groups = $db->loadResult();
-
-						if(!empty($program_fabrik_groups))
-						{
-							$program_fabrik_groups = explode(',', $program_fabrik_groups);
-
-							$fabrik_groups = array_merge($program_fabrik_groups, $fabrik_groups);
-							$fabrik_groups = array_unique($fabrik_groups);
-						}
-
-						$query->clear()
 							->update($db->quoteName('#__emundus_setup_programmes'))
 							->set($db->quoteName($column) . ' = ' . $db->quote(implode(',', $fabrik_groups)))
 							->set($db->quoteName('evaluation_form') . ' = ' . $db->quote($form_id))
