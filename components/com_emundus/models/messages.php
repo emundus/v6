@@ -1446,7 +1446,9 @@ class EmundusModelMessages extends JModelList {
 			$query = $db->getQuery(true);
 
 			$query->delete($db->quoteName('#__messages'))
-				->where($db->quoteName('date_time') . ' < ' . $db->quote($date->format('Y-m-d H:i:s')));
+				->where($db->quoteName('date_time') . ' < ' . $db->quote($date->format('Y-m-d H:i:s')))
+				->where($db->quoteName('folder_id') . ' <> 2')
+				->where($db->quoteName('page') . ' IS NULL');
 
 			try
 			{
@@ -1484,7 +1486,9 @@ class EmundusModelMessages extends JModelList {
 
 			$query->select('*')
 				->from($db->quoteName('#__messages'))
-				->where($db->quoteName('date_time') . ' < ' . $db->quote($date->format('Y-m-d H:i:s')));
+				->where($db->quoteName('date_time') . ' < ' . $db->quote($date->format('Y-m-d H:i:s')))
+				->where($db->quoteName('folder_id') . ' <> 2')
+				->where($db->quoteName('page') . ' IS NULL');
 
 			try
 			{

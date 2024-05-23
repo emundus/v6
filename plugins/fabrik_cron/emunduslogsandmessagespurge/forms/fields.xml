@@ -4,7 +4,7 @@
 		<fieldset name="plg-cron-emunduslogsandmessagespurge" label="COM_FABRIK_OPTIONS">
 			<field name="amount_time"
 				   type="number"
-				   description="PLG_CRON_LOGSPURGE_CHOOSE_NUMBER"
+				   description="PLG_CRON_LOGSPURGE_DATING_FROM_DESC"
 				   label="PLG_CRON_LOGSPURGE_DATING_FROM"
 				   size="30"
 				   default="1"
@@ -23,9 +23,15 @@
 				<option value="year">PLG_CRON_LOGSPURGE_YEAR</option>
 			</field>
 
+			<field name="export_zip"
+				   type="checkbox"
+				   label="PLG_CRON_LOGSPURGE_ZIP"
+				   description="PLG_CRON_LOGSPURGE_CHOOSE_EXPORT"
+				   checked="checked"/>
+
 			<field name="amount_time_tmp"
 				   type="number"
-				   description="PLG_CRON_LOGSPURGE_CHOOSE_NUMBER"
+				   description="PLG_CRON_LOGSPURGE_DATING_FROM_TMP_DESC"
 				   label="PLG_CRON_LOGSPURGE_DATING_FROM_TMP"
 				   size="30"
 				   default="1"
@@ -43,12 +49,6 @@
 				<option value="month">PLG_CRON_LOGSPURGE_MONTH</option>
 				<option value="year">PLG_CRON_LOGSPURGE_YEAR</option>
 			</field>
-
-			<field name="export_zip"
-				   type="checkbox"
-				   label="PLG_CRON_LOGSPURGE_ZIP"
-				   description="PLG_CRON_LOGSPURGE_CHOOSE_EXPORT"
-				   checked="checked"/>
 
 
 		</fieldset>
