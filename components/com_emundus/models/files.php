@@ -21,6 +21,7 @@ jimport('joomla.application.component.model');
 require_once(JPATH_SITE.'/components/com_emundus/helpers/date.php');
 require_once(JPATH_SITE.'/components/com_emundus/helpers/files.php');
 require_once(JPATH_SITE.'/components/com_emundus/helpers/list.php');
+require_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
 require_once(JPATH_SITE.'/components/com_emundus/models/logs.php');
 require_once(JPATH_SITE.'/components/com_emundus/models/users.php');
 
@@ -1622,6 +1623,8 @@ class EmundusModelFiles extends JModelLegacy
                         $db->execute();
                     }
                 }
+
+                $this->makeAttachmentsEditableByApplicant($fnums, $state);
             } catch (Exception $e) {
                 echo $e->getMessage();
                 JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
@@ -5075,5 +5078,82 @@ class EmundusModelFiles extends JModelLegacy
         }
 
         return $nom;
+    }
+
+    /**
+     * @param $fnums
+     * @param $state
+     * @return bool|mixed
+     */
+    public function makeAttachmentsEditableByApplicant($fnums, $state)
+    {
+        $updated = false;
+
+        if (!empty($fnums) && isset($state)) {
+            $fnums = is_array($fnums) ? $fnums : [$fnums];
+            $emundus_config = ComponentHelper::getParams('com_emundus');
+            $can_edit_back_attachments = $emundus_config->get('can_edit_back_attachments', 0);
+            if ($can_edit_back_attachments) {
+                $attachment_to_keep_non_deletable = $emundus_config->get('attachment_to_keep_non_deletable', []);
+
+                $status_for_send = $emundus_config->get('status_for_send', '0');
+                $status_for_send = explode(',', $status_for_send);
+
+                $edit_status = array_unique(array_merge(['0'], $status_for_send));
+                $m_profile = new EmundusModelProfile();
+
+                $tasks = [];
+                foreach ($fnums as $fnum) {
+                    $current_profile = $m_profile->getProfileByStatus($fnum);
+
+                    if (empty($current_profile)) {
+                        continue;
+                    }
+
+                    if (empty($current_profile['workflow_id'])) {
+                        if (!in_array($state, $edit_status)) {
+                            continue;
+                        }
+                    }
+
+                    $fnumInfos = $this->getFnumInfos($fnum);
+
+                    $db = $this->getDbo();
+                    $query = $db->getQuery(true);
+
+                    $query->select('attachment_id')
+                        ->from('#__emundus_setup_attachment_profiles')
+                        ->where('profile_id = ' . $db->quote($current_profile['profile']));
+
+                    if (!empty($attachment_to_keep_non_deletable)) {
+                        $query->andWhere('attachment_id NOT IN (' . implode(',', $db->quote($attachment_to_keep_non_deletable)) . ')');
+                    }
+
+                    $db->setQuery($query);
+                    $attachments = $db->loadColumn();
+
+                    if (!empty($attachments)) {
+                        try {
+                            $query->clear()
+                                ->update('#__emundus_uploads')
+                                ->set('can_be_deleted = 1')
+                                ->where('fnum LIKE ' . $db->quote($fnum))
+                                ->andWhere('attachment_id IN (' . implode(',', $attachments) . ')')
+                                ->andWhere('user_id = ' . $fnumInfos['applicant_id']);
+                            $db->setQuery($query);
+                            $tasks[] = $db->execute();
+                        } catch (Exception $e) {
+                            JLog::add('Error making attachments editable by applicant for fnum: ' . $fnum . ' and profile: ' . $current_profile['profile'] . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+                        }
+                    } else {
+                        $tasks[] = true;
+                    }
+                }
+
+                $updated = !in_array(false, $tasks, true);
+            }
+        }
+
+        return $updated;
     }
 }
