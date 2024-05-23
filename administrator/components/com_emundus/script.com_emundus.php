@@ -4353,7 +4353,7 @@ if(in_array($applicant,$exceptions)){
 						'plugin' => 'emunduslogsandmessagespurge',
 						'published' => 1,
 						'lastrun' => date($last_four_hour),
-						'params' => '{"connection":"1","table":"","cron_row_limit":"100","log":"0","log_email":"","require_qs":"0","require_qs_secret":"","cron_rungate":"1","cron_reschedule_manual":"0","reminder_mail_id":"79","amount_time":"1","unit_time":"year","export_zip":"1", "amount_time_tmp":"1","unit_time_tmp":"week"}'
+						'params' => '{"connection":"1","table":"","cron_row_limit":"100","log":"0","log_email":"","require_qs":"0","require_qs_secret":"","cron_rungate":"1","cron_reschedule_manual":"0","amount_time":"1","unit_time":"year","export_zip":"1", "amount_time_tmp":"1","unit_time_tmp":"week"}'
 					];
 					$inserted = (object) $inserted;
 					$db->insertObject('jos_fabrik_cron', $inserted);
@@ -4470,7 +4470,8 @@ if(in_array($applicant,$exceptions)){
 
 		// Clear external_login logs
 		$query->clear()
-			->delete($db->quoteName('#__externallogin_logs'));
+			->delete($db->quoteName('#__externallogin_logs'))
+			->where("from_unixtime(round(`date`)) < DATE_SUB(DATE(now()), INTERVAL 15 DAY)");
 		$db->setQuery($query);
 		$db->execute();
 
