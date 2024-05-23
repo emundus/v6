@@ -3712,7 +3712,7 @@ class EmundusModelUsers extends JModelList {
                 $user_details = $db->loadObject();
 
                 if (!empty($user_details)) {
-                    list($firstname, $lastname) = explode(' ', $user_details->name, 2);
+                    list($firstname, $lastname) = !empty($user_details->name) ? explode(' ', $user_details->name, 2) : ['',''];
 
                     $query->clear()
                         ->insert($db->quoteName('#__emundus_users'))
@@ -3740,11 +3740,15 @@ class EmundusModelUsers extends JModelList {
 
                             $repaired = true;
                         } else {
+                            error_log('com_emundus/models/users.php | failed to repair user ' . $user_id);
                             JLog::add('com_emundus/models/users.php | failed to repair user ' . $user_id, JLog::ERROR, 'com_emundus.error');
                         }
                     } catch (Exception $e) {
+                        error_log($e->getMessage());
                         JLog::add('com_emundus/models/users.php | error while trying to repair user ' . $user_id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
                     }
+                } else {
+                    error_log('com_emundus/models/users.php | user ' . $user_id . ' does not exist in #__users');
                 }
             } else {
                 $repaired = true;
