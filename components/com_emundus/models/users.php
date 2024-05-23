@@ -3714,12 +3714,33 @@ class EmundusModelUsers extends JModelList {
                 if (!empty($user_details)) {
                     list($firstname, $lastname) = !empty($user_details->name) ? explode(' ', $user_details->name, 2) : ['',''];
 
+                    $no_profile = null;
+
+                    $query->clear()
+                        ->select('id')
+                        ->from('#__emundus_setup_profiles')
+                        ->where('label like ' . $db->quote('noprofile'));
+
+                    $db->setQuery($query);
+                    $no_profile = $db->loadResult();
+
+                    if (empty($no_profile)) {
+                        // select first applicant profile
+                        $query->clear()
+                            ->select('id')
+                            ->from('#__emundus_setup_profiles')
+                            ->where('published = 1');
+
+                        $db->setQuery($query);
+                        $no_profile = $db->loadResult();
+                    }
+
                     $query->clear()
                         ->insert($db->quoteName('#__emundus_users'))
                         ->set($db->quoteName('user_id') . ' = ' . $db->quote($user_id))
                         ->set($db->quoteName('firstname') . ' = ' . $db->quote($firstname))
                         ->set($db->quoteName('lastname') . ' = ' . $db->quote($lastname))
-                        ->set($db->quoteName('profile') . ' = 1000')
+                        ->set($db->quoteName('profile') . ' = ' . $no_profile)
                         ->set($db->quoteName('schoolyear') . ' = ' . $db->quote(''))
                         ->set($db->quoteName('disabled') . ' = 0')
                         ->set($db->quoteName('university_id') . ' = 0')
@@ -3740,15 +3761,11 @@ class EmundusModelUsers extends JModelList {
 
                             $repaired = true;
                         } else {
-                            error_log('com_emundus/models/users.php | failed to repair user ' . $user_id);
                             JLog::add('com_emundus/models/users.php | failed to repair user ' . $user_id, JLog::ERROR, 'com_emundus.error');
                         }
                     } catch (Exception $e) {
-                        error_log($e->getMessage());
                         JLog::add('com_emundus/models/users.php | error while trying to repair user ' . $user_id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
                     }
-                } else {
-                    error_log('com_emundus/models/users.php | user ' . $user_id . ' does not exist in #__users');
                 }
             } else {
                 $repaired = true;
