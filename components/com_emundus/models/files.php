@@ -5106,6 +5106,10 @@ class EmundusModelFiles extends JModelLegacy
                 foreach ($fnums as $fnum) {
                     $current_profile = $m_profile->getProfileByStatus($fnum);
 
+                    if (empty($current_profile)) {
+                        continue;
+                    }
+
                     if (empty($current_profile['workflow_id'])) {
                         if (!in_array($state, $edit_status)) {
                             continue;
