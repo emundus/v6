@@ -4468,6 +4468,12 @@ if(in_array($applicant,$exceptions)){
 		$db->setQuery($query);
 		$db->execute();
 
+		// Clear external_login logs
+		$query->clear()
+			->delete($db->quoteName('#__externallogin_logs'));
+		$db->setQuery($query);
+		$db->execute();
+
 		EmundusHelperUpdate::checkHealth();
 
 		EmundusHelperUpdate::checkPageClass();
