@@ -10,6 +10,9 @@
  */
 
 // No direct access
+use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
+
 defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
@@ -1422,4 +1425,95 @@ class EmundusModelMessages extends JModelList {
             return false;       /// no fnum or no email template, cannot add tag
         }
     }
+
+	/**
+	 * @param $date   DateTime  Date to delete messages before
+	 * @description             Deletes messages before a given date.
+	 * @return int
+	 */
+	public function deleteMessagesBeforeADate($date)
+	{
+		$deleted_messages = 0;
+
+		if (!empty($date))
+		{
+			if(version_compare(JVERSION, '4.0', '>=')) {
+				$db = Factory::getContainer()->get('DatabaseDriver');
+			} else {
+				$db = Factory::getDbo();
+			}
+
+			$query = $db->getQuery(true);
+
+			$query->delete($db->quoteName('#__messages'))
+				->where($db->quoteName('date_time') . ' < ' . $db->quote($date->format('Y-m-d H:i:s')))
+				->where($db->quoteName('folder_id') . ' <> 2')
+				->where($db->quoteName('page') . ' IS NULL');
+
+			try
+			{
+				$db->setQuery($query);
+				$db->execute();
+				$deleted_messages = $db->getAffectedRows();
+			}
+			catch (Exception $e)
+			{
+				Log::add('Could not delete messages from jos_messages table in model messages at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+			}
+		}
+
+		return $deleted_messages;
+	}
+
+	/**
+	 * @param $date   DateTime  Date to export messages before
+	 * @description             Exports messages before a given date.
+	 * @return string
+	 */
+	public function exportMessagesBeforeADate($date)
+	{
+		$csv_filename = null;
+
+		if (!(empty($date)))
+		{
+			if(version_compare(JVERSION, '4.0', '>=')) {
+				$db = Factory::getContainer()->get('DatabaseDriver');
+			} else {
+				$db = Factory::getDbo();
+			}
+
+			$query = $db->getQuery(true);
+
+			$query->select('*')
+				->from($db->quoteName('#__messages'))
+				->where($db->quoteName('date_time') . ' < ' . $db->quote($date->format('Y-m-d H:i:s')))
+				->where($db->quoteName('folder_id') . ' <> 2')
+				->where($db->quoteName('page') . ' IS NULL');
+
+			try
+			{
+				$db->setQuery($query);
+				$messages = $db->loadAssocList();
+			}
+			catch (Exception $e)
+			{
+				Log::add('Could not fetch messages from jos_messages table in model messages at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+			}
+
+			if (!empty($messages))
+			{
+				$csv_filename = JPATH_SITE . '/tmp/backup_messages_' . date('Y-m-d_H-i-s') . '.csv';
+				$csv_file     = fopen($csv_filename, 'w');
+				fputcsv($csv_file, array_keys($messages[0]));
+				foreach ($messages as $message)
+				{
+					fputcsv($csv_file, $message);
+				}
+
+				fclose($csv_file);
+			}
+		}
+
+		return $csv_filename;
+	}
 }
