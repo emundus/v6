@@ -1,0 +1,47 @@
+{
+    "packages": [
+        {
+            "name": "queueit/knownuserv3",
+            "version": "3.7.1",
+            "version_normalized": "3.7.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/queueit/KnownUser.V3.PHP.git",
+                "reference": "7aa77ab374f72122b012774a3cd1eb06c7e47d81"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/queueit/KnownUser.V3.PHP/zipball/7aa77ab374f72122b012774a3cd1eb06c7e47d81",
+                "reference": "7aa77ab374f72122b012774a3cd1eb06c7e47d81",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "time": "2022-09-30T06:53:52+00:00",
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "classmap": [
+                    "./"
+                ],
+                "exclude-from-classmap": [
+                    "**/Tests/**",
+                    "**/tests/**"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0"
+            ],
+            "description": "The Queue-it Security Framework is used to ensure that end users cannot bypass the queue by adding a server-side integration to your server.",
+            "support": {
+                "issues": "https://github.com/queueit/KnownUser.V3.PHP/issues",
+                "source": "https://github.com/queueit/KnownUser.V3.PHP/tree/3.7.1"
+            },
+            "install-path": "../queueit/knownuserv3"
+        }
+    ],
+    "dev": false,
+    "dev-package-names": []
+}

@@ -1645,6 +1645,7 @@ class EmundusHelperUpdate
                     'path' => $params['path'] ?: $alias,
                     'type' => $params['type'] ?: 'url',
                     'link' => $params['link'] ?: '#',
+					'note' => $params['note'] ?: '',
                     'access' => $params['access'] ?: 1,
                     'component_id' => $params['component_id'] ?: 0,
                     'template_style_id' => $params['template_style_id'] ?: 22,
@@ -2211,7 +2212,7 @@ class EmundusHelperUpdate
         return $result;
     }
 
-    public static function addFabrikElement($datas,$params = [], $notempty = true) {
+    public static function addFabrikElement($datas,$params = [],$required = true) {
         $result = ['status' => false, 'message' => ''];
 
         if(empty($datas['name'])){
@@ -2240,7 +2241,7 @@ class EmundusHelperUpdate
         if(!$is_existing) {
             require_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
 
-            $default_params = EmundusHelperFabrik::prepareElementParameters($datas['plugin'], $notempty);
+            $default_params = EmundusHelperFabrik::prepareElementParameters($datas['plugin'],$required);
             $params = array_merge($default_params, $params);
 
             try {
@@ -2739,7 +2740,10 @@ class EmundusHelperUpdate
 				}
 				$db->setQuery($query);
 				$result['status'] = $db->execute();
-			}
+			} else {
+                $result['message'] = 'CREATE TABLE : Table already exists.';
+                $result['status'] = true;
+            }
 		} catch (Exception $e) {
 			$result['message'] = 'ADDING TABLE : Error : ' . $e->getMessage();
 		}
@@ -3648,7 +3652,7 @@ class EmundusHelperUpdate
 			$storage_value['actions_failed_login'] = 1;
 			$storage_value['email_on_admin_login'] = 0;
 			$storage_value['forbid_admin_frontend_login'] = 0;
-			$storage_value['forbid_new_admins'] = 1;
+			$storage_value['forbid_new_admins'] = 0;
 
 			// Upload scanner
 			$storage_value['upload_scanner_enabled'] = 1;

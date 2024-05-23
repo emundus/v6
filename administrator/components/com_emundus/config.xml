@@ -105,6 +105,11 @@
 			<option value="">Please select your option</option>
 		</field>
 
+		<field name="fix_file_header" label="COM_EMUNDUS_FIX_FILE_HEADER" type="list" default="0" description="">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+
 		<field
 				name="spacer0"
 				type="spacer"
@@ -208,14 +213,18 @@
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
-		<field name="copy_application_form_type" showon="copy_application_form:1" menu="hide" type="list" default="0" label="COM_EMUNDUS_COPY_APPLICATION_FORM_TYPE" description="">
+		<field name="copy_application_form_or_table" showon="copy_application_form:1" menu="hide" type="list" default="0" label="COM_EMUNDUS_COPY_APPLICATION_FORM_OR_TABLE" description="COM_EMUNDUS_COPY_APPLICATION_FORM_OR_TABLE_DESC">
+			<option value="form">COM_EMUNDUS_COPY_APPLICATION_FORM_OR_TABLE_FORM</option>
+			<option value="table">COM_EMUNDUS_COPY_APPLICATION_FORM_OR_TABLE_TABLE</option>
+		</field>
+		<field name="copy_application_form_type" showon="copy_application_form:1[AND]copy_application_form_or_table:form" menu="hide" type="list" default="0" label="COM_EMUNDUS_COPY_APPLICATION_FORM_TYPE" description="">
 			<option value="0">COM_EMUNDUS_COPY_APPLICATION_FORM_TYPE_EXCLUDE</option>
 			<option value="1">COM_EMUNDUS_COPY_APPLICATION_FORM_TYPE_INCLUDE</option>
 		</field>
 		<field name="copy_include_forms"
 			   label="COM_EMUNDUS_COPY_APPLICATION_FORM_INCLUDE"
 			   description=""
-			   showon="copy_application_form:1[AND]copy_application_form_type:1"
+			   showon="copy_application_form:1[AND]copy_application_form_type:1[AND]copy_application_form_or_table:form"
 			   menu="hide"
 			   type="sql"
 			   query="SELECT id, label FROM jos_fabrik_forms WHERE published = 1"
@@ -227,12 +236,23 @@
 		<field name="copy_exclude_forms"
 			   label="COM_EMUNDUS_COPY_APPLICATION_FORM_EXCLUDE"
 			   description="COM_EMUNDUS_COPY_APPLICATION_FORM_EXCLUDE_DESC"
-			   showon="copy_application_form:1[AND]copy_application_form_type:0"
+			   showon="copy_application_form:1[AND]copy_application_form_type:0[AND]copy_application_form_or_table:form"
 			   menu="hide"
 			   type="sql"
 			   query="SELECT id, label FROM jos_fabrik_forms WHERE published = 1"
 			   key_field="id"
 			   value_field="label"
+			   multiple="true"
+			   default=""
+		/>
+		<field name="copy_include_tables"
+			   label="COM_EMUNDUS_COPY_APPLICATION_FORM_COPY_TABLES"
+			   showon="copy_application_form:1[AND]copy_application_form_or_table:table"
+			   menu="hide"
+			   type="sql"
+			   query="SELECT DISTINCT db_table_name FROM jos_fabrik_lists WHERE published = 1"
+			   key_field="db_table_name"
+			   value_field="db_table_name"
 			   multiple="true"
 			   default=""
 		/>
@@ -325,13 +345,21 @@
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
+		<field name="check_eval" type="radio" default="0" label="COM_EMUNDUS_CHECK_EVAL" description="COM_EMUNDUS_CHECK_EVAL_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+		<field name="check_decision" type="radio" default="0" label="COM_EMUNDUS_CHECK_DECISION" description="COM_EMUNDUS_CHECK_DECISION_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
 
 		<field name="export_application_pdf_title_color" type="text" default="#000000" label="COM_EMUNDUS_EXPORT_APPLICATION_TITLE_COLOR" description="COM_EMUNDUS_EXPORT_APPLICATION_TITLE_COLOR_DESC"/>
 
-		<filed name="show_empty_fields" type="radio" default="1" label="COM_EMUNDUS_SHOW_EMPTY_FIELDS" description="COM_EMUNDUS_SHOW_EMPTY_FIELDS_DESC"/>
 		<field name="export_path" type="text" size="6" label="COM_EMUNDUS_EXPORT_PATH" description="COM_EMUNDUS_EXPORT_PATH_DESC"/>
 		<field name="application_form_order" type="text" size="6" label="COM_EMUNDUS_APPLICATION_FORM_ORDER" description="COM_EMUNDUS_APPLICATION_FORM_ORDER_DESC"/>
 		<field name="attachment_order" type="text" size="6" label="COM_EMUNDUS_CANDIDACY_FORM_ORDER" description="COM_EMUNDUS_CANDIDACY_FORM_ORDER_DESC"/>
+		<field name="export_concat_separator" type="text" size="6" default=", " label="COM_EMUNDUS_EXPORT_APPLICATION_SEPARATOR" description="COM_EMUNDUS_EXPORT_APPLICATION_SEPARATOR_DESC"/>
 
 		<field
 				name="spacer1"
@@ -407,6 +435,10 @@
 		<field name="expert_fabrikformid" type="text" default="110" label="COM_EMUNDUS_EXPERT_FIELD" description="COM_EMUNDUS_EXPERT_FIELD_DESC" />
 		<field name="expert_document_id" type="text" default="36" label="COM_EMUNDUS_EXPERT_DOCUMENT_FIELD" description="COM_EMUNDUS_EXPERT_DOCUMENT_FIELD_DESC" />
 		<field name="default_email_tmpl" type="text" default="expert" label="COM_EMUNDUS_EXPERT_DEFAULT_EMAIL_TMPL_FIELD" description="COM_EMUNDUS_EXPERT_DEFAULT_EMAIL_TMPL_FIELD_DESC" />
+		<field name="email_check_dns" menu="hide" type="list" default="1" label="COM_EMUNDUS_EMAIL_CHECK_DNS" description="COM_EMUNDUS_EMAIL_CHECK_DNS_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
 	</fieldset>
 	<fieldset label="COM_EMUNDUS_IMPORTS" name="imports" description="COM_EMUNDUS_IMPORTS_DESC">
 		<field name="ldapFiltersImport" type="text" required="false" label="COM_EMUNDUS_LDAP_FILTERS_IMPORT_LABEL" description="COM_EMUNDUS_LDAP_FILTERS_IMPORT_DESC" />
@@ -598,7 +630,55 @@
 		<field name="zoom_jwt_title" type="note" label="COM_EMUNDUS_API_ZOOM_TITLE"/>
 		<field name="zoom_jwt" type="text" label="COM_EMUNDUS_API_ZOOM_JWT" description="COM_EMUNDUS_API_ZOOM_JWT_DESC" />
 
+		<field name="zoom_account_id" type="text" label="COM_EMUNDUS_API_ZOOM_ACCOUNT_ID" description="COM_EMUNDUS_API_ZOOM_ACCOUNT_ID_DESC"/>
+		<field name="zoom_client_id" type="text" label="COM_EMUNDUS_API_ZOOM_CLIENT_ID" description="COM_EMUNDUS_API_ZOOM_CLIENT_ID_DESC"/>
+		<field name="zoom_client_secret" type="password" label="COM_EMUNDUS_API_ZOOM_CLIENT_SECRET" description="COM_EMUNDUS_API_ZOOM_CLIENT_SECRET_DESC"/>
+
 		<field name="spacer8" type="spacer" hr="true"/>
+
+		<field name="file_maker_api_title" type="note" label="COM_EMUNDUS_API_FILE_MAKER_TITLE"/>
+		<field name="file_maker_campaign" label="COM_EMUNDUS_API_FILE_MAKER_CAMPAIGN"
+			   type="sql"
+			   query="SELECT id, label FROM jos_emundus_setup_campaigns WHERE published = 1"
+			   key_field="id"
+			   value_field="label"
+			   multiple="false"
+			   default=""
+		/>
+		<field name="file_maker_api_base_url" type="text" label="COM_EMUNDUS_API_FILE_MAKER_BASE_URL" description="COM_EMUNDUS_API_FILE_MAKER_BASE_URL_DESC" />
+		<field name="file_maker_api_basic_auth_token" type="text" label="COM_EMUNDUS_API_FILE_MAKER_BASIC_AUTH_TOKEN" description="COM_EMUNDUS_API_FILE_MAKER_BASIC_AUTH_TOKEN_DESC" />
+		<field name="file_maker_name_attribute" type="text" label="COM_EMUNDUS_API_FILE_MAKER_NAME_ATTRIBUTE" />
+		<field name="file_maker_email_attribute" type="text" label="COM_EMUNDUS_API_FILE_MAKER_EMAIL_ATTRIBUTE" />
+		<field name="file_maker_emundus_forms_mapping_table_name" type="text" label="COM_EMUNDUS_API_FILE_MAKER_EMUNDUS_FORMS_MAPPING_TABLE_NAME" description="COM_EMUNDUS_API_FILE_MAKER_EMUNDUS_FORMS_MAPPING_TABLE_NAME_DESC" />
+		<field name="file_maker_emundus_attribute_mapping_table_name" type="text" label="COM_EMUNDUS_API_FILE_MAKER_EMUNDUS_ATTRIBUTE_MAPPING_TABLE_NAME" description="COM_EMUNDUS_API_FILE_MAKER_EMUNDUS_ATTRIBUTE_MAPPING_TABLE_NAME_DESC" />
+		<field
+				name="file_maker_steps"
+				type="subform"
+				label="COM_EMUNDUS_API_FILE_MAKER_STEPS"
+				description=""
+				layout="joomla.form.field.subform.repeatable-table"
+				icon="list"
+				multiple="true"
+		>
+			<form name="list_steps" repeat="true">
+				<field name="step" type="text" label="COM_EMUNDUS_API_FILE_MAKER_STEPS_STEP" />
+				<field name="status" type="sql"
+					   query="SELECT step, value FROM jos_emundus_setup_status"
+					   key_field="step"
+					   value_field="value"
+					   multiple="false"
+					   default="" label="COM_EMUNDUS_API_FILE_MAKER_STEPS_EMUNDUS_STATUS" />
+				<field name="email" type="text" label="COM_EMUNDUS_API_FILE_MAKER_STEPS_FILE_MAKER_EMAIL" />
+				<field name="open_status" type="sql"
+					   query="SELECT step, value FROM jos_emundus_setup_status"
+					   key_field="step"
+					   value_field="value"
+					   multiple="true"
+					   default="" label="COM_EMUNDUS_API_FILE_MAKER_STEPS_FILE_MAKER_OPEN_STATUS" />
+			</form>
+		</field>
+
+		<field name="spacer12" type="spacer" hr="true"/>
 
 		<field name="external_storage_title" type="note" label="COM_EMUNDUS_EXTERNAL_STORAGE_TITLE"/>
 
@@ -681,7 +761,7 @@
 			<field name="glpi_api_user_token" type="text" label="COM_EMUNDUS_GLPI_USER_TOKEN"/>
 		</fieldset>
 
-		<field name="spacer13" type="spacer" hr="true"/>
+		<field name="spacer14" type="spacer" hr="true"/>
 		<field name="insee" type="note" label="COM_EMUNDUS_INSEE_API"/>
 		<fieldset label="COM_EMUNDUS_INSEE_API">
 			<field name="insee_api_base_url" type="text" label="COM_EMUNDUS_INSEE_BASE_URL" default="https://api.insee.fr"/>
@@ -689,7 +769,15 @@
 			<field name="insee_api_consumer_secret" type="text" label="COM_EMUNDUS_INSEE_CONSUMER_SECRET"/>
 		</fieldset>
 
+		<field name="spacer15" type="spacer" hr="true"/>
+		<field name="ixparapheur" type="note" label="COM_EMUNDUS_IXPARAPHEUR_API"/>
+		<fieldset label="COM_EMUNDUS_IXPARAPHEUR_API">
+			<field name="ixparapheur_api_base_url" type="text" label="COM_EMUNDUS_IXPARAPHEUR_BASE_URL"/>
+			<field name="ixparapheur_api_app_token" type="text" label="COM_EMUNDUS_IXPARAPHEUR_APP_TOKEN"/>
+		</fieldset>
+
 	</fieldset>
+
 	<fieldset
 			name="permissions"
 			description="JCONFIG_PERMISSIONS_DESC"
@@ -701,6 +789,7 @@
 				label="JCONFIG_PERMISSIONS_LABEL"
 				section="component" />
 	</fieldset>
+
 	<fieldset label="COM_EMUNDUS_MESSENGER" name="messenger" description="COM_EMUNDUS_MESSENGER_DESC">
 		<field name="messenger_anonymous_coordinator" type="list" default="0" label="COM_EMUNDUS_MESSENGER_ANONYMOUS" description="COM_EMUNDUS_MESSENGER_ANONYMOUS_DESC">
 			<option value="0">JNO</option>
@@ -718,6 +807,7 @@
 		<field name="messenger_notify_groups" type="textarea" default="" label="COM_EMUNDUS_MESSENGER_NOTIFY_GROUPS" description="COM_EMUNDUS_MESSENGER_NOTIFY_GROUPS_DESC"/>
 		<field name="messenger_notify_users" type="textarea" default="" label="COM_EMUNDUS_MESSENGER_NOTIFY_USERS" description="COM_EMUNDUS_MESSENGER_NOTIFY_USERS_DESC"/>
 	</fieldset>
+
 	<fieldset label="COM_EMUNDUS_MODULES" name="modules" description="COM_EMUNDUS_MODULES_DESC">
 		<field name="style" label="COM_EMUNDUS_MODULES_STYLE" type="radio" default="1" description="COM_EMUNDUS_MODULES_STYLE_DESC">
 			<option value="0">JNO</option>

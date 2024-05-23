@@ -173,6 +173,10 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     margin: 10px 0;
 }
 
+.view-reset .g-system-messages #system-message-container {
+    margin: 0 auto;
+    padding: 20px 0 0;
+}
 
 @media all and (max-width: 980px) {
     form#user-registration.form-validate.form-horizontal.well,
