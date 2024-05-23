@@ -67,7 +67,8 @@
 
         <div class="em-pt-16" v-if="element.params">
           <label for="element-alias">{{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_ALIAS') }}</label>
-          <input id="element-alias" name="element-alias" type="text" v-model="element.params.alias" />
+          <input id="element-alias" name="element-alias" type="text" v-model="element.params.alias" @keyup="formatAlias" />
+          <label class="mt-2" style="font-size: small;">{{translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_ALIAS_HELPTEXT')}}</label>
         </div>
 
       </div>
@@ -215,6 +216,11 @@ export default {
         this.tabs[0].active = true;
         this.tabs[1].published = false;
       }
+    },
+    formatAlias(){
+      this.element.params.alias = this.element.params.alias.toLowerCase().replace(/ /g, '_');
+      this.element.params.alias = this.element.params.alias.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      this.element.params.alias = this.element.params.alias.replace(/[^a-z0-9_]/g, '');
     }
   },
   computed: {
