@@ -69,7 +69,7 @@ class EmundusModelMessagesTest extends TestCase
 		for ($i = 0; $i < 10; $i++)
 		{
 			$message_text = 'test' . rand(0, 1000);
-			$message      = $this->m_messages->sendMessage($user_to, $message_text, $user_from);
+			$message      = $this->m_messages->sendMessage($user_to, $message_text, $user_from,true);
 			$this->assertTrue($message, 'Message should be created if all minimum information are given');
 
 			$query = $db->getQuery(true);
@@ -90,7 +90,7 @@ class EmundusModelMessagesTest extends TestCase
 
 		// Create a single message different from the others (date_time change)
 		$message_text = 'test' . rand(0, 1000);
-		$message      = $this->m_messages->sendMessage($user_to, $message_text, $user_from);
+		$message      = $this->m_messages->sendMessage($user_to, $message_text, $user_from,true);
 		$this->assertTrue($message, 'Message should be created if all minimum information are given');
 
 		$query = $db->getQuery(true);
@@ -136,7 +136,7 @@ class EmundusModelMessagesTest extends TestCase
 		$reference_date = '2000-01-01 12:00:00';
 
 		$message_text = 'test' . rand(0, 1000);
-		$message      = $this->m_messages->sendMessage($user_to, $message_text, $user_from);
+		$message      = $this->m_messages->sendMessage($user_to, $message_text, $user_from,true);
 		$this->assertTrue($message, 'Message should be created if all minimum information are given');
 
 		$query = $db->getQuery(true);
