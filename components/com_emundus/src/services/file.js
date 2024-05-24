@@ -54,5 +54,22 @@ export default {
                 message: e.message
             };
         }
+    },
+    async renderEmundusTags(string, fnum) {
+        try {
+            const response = await client().get('index.php?option=com_emundus&controller=files&task=renderemundustags', {
+                params: {
+                    string: string,
+                    fnum: fnum
+                }
+            });
+
+            return response.data;
+        } catch (e) {
+            return {
+                status: false,
+                message: e.message
+            };
+        }
     }
 }

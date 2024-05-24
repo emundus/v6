@@ -31,21 +31,31 @@ export default {
     this.loading = true;
     this.url = this.url.replace('{fnum}', this.fnum);
 
-    if (this.url.includes('{applicant_id}') && this.url.includes('{campaign_id}')) {
-      this.replacePatterns();
-    } else {
-      this.finishedUrl = this.url;
-    }
+    this.replacePatterns();
 
     let topWrapper = document.getElementById('iframe-tabs');
     topWrapper.style.height = 'calc(100vh - ' + topWrapper.getBoundingClientRect().top + 'px)';
   },
   methods: {
     replacePatterns() {
+      let url = this.url;
+
       fileService.getFnumInfos(this.fnum).then((response) => {
         this.applicant_id = response.fnumInfos.applicant_id;
         this.campaign_id = response.fnumInfos.campaign_id;
-        this.finishedUrl = this.url.replace('{applicant_id}', this.applicant_id).replace('{campaign_id}', this.campaign_id);
+        url = this.url.replace('{applicant_id}', this.applicant_id).replace('{campaign_id}', this.campaign_id);
+
+        if (url.includes('[') && url.includes(']')) {
+          fileService.renderEmundusTags(url, this.fnum).then((response) => {
+            if (response.status) {
+              this.finishedUrl = response.data;
+            } else {
+              this.finishedUrl = url;
+            }
+          });
+        } else {
+          this.finishedUrl = url;
+        }
       });
     }
   }
