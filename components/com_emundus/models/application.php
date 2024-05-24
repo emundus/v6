@@ -38,6 +38,7 @@ class EmundusModelApplication extends JModelList
         global $option;
         require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'logs.php');
         require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'menu.php');
+        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'fabrik.php');
         require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
         require_once (JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'date.php');
 
@@ -1587,6 +1588,7 @@ class EmundusModelApplication extends JModelList
                     $groupes = $this->_db->loadObjectList();
 
                     /*-- Liste des groupes -- */
+                    $hidden_group_param_values = [0, '-1', '-2'];
                     foreach ($groupes as $itemg) {
                         $g_params = json_decode($itemg->params);
 
@@ -1607,7 +1609,7 @@ class EmundusModelApplication extends JModelList
 	                    }
 
 	                    if (count($elements) > 0) {
-	                        if (($allowed_groups !== true && !in_array($itemg->group_id, $allowed_groups)) || !EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, (int)$g_params->access)) {
+                            if ((($allowed_groups !== true && !in_array($itemg->group_id, $allowed_groups)) || !EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, (int)$g_params->access)) && !in_array($g_params->repeat_group_show_first, $hidden_group_param_values)) {
 	                            $forms .= '<fieldset class="em-personalDetail">
 												<h6 class="em-font-weight-400">' . JText::_($itemg->label) . '</h6>
 												<table class="em-restricted-group mt-4 mb-4">
@@ -1872,7 +1874,17 @@ class EmundusModelApplication extends JModelList
 	                                                    }
                                                     } elseif ($elements[$j]->plugin == 'emundus_phonenumber') {
                                                         $elt = substr($r_elt, 2, strlen($r_elt));
-                                                    } else {
+                                                    } 
+													elseif ($elements[$j]->plugin == 'iban') {
+														$elt = $r_elt;
+
+														if($params->encrypt_datas == 1) {
+															$elt = EmundusHelperFabrik::decryptDatas($r_elt);
+														}
+
+														$elt = chunk_split($elt, 4, ' ');
+                                                    }
+													else {
                                                         $elt = $r_elt;
                                                     }
 
@@ -1893,7 +1905,7 @@ class EmundusModelApplication extends JModelList
 							{
                                 $check_not_empty_group = $this->checkEmptyGroups($elements ,$itemt->db_table_name, $fnum);
 
-                                if($check_not_empty_group && $g_params->repeat_group_show_first != -1) {
+                                if($check_not_empty_group && !in_array($g_params->repeat_group_show_first, $hidden_group_param_values)) {
                                     $forms .= '<table class="em-mt-8 em-mb-16 em-personalDetail-table-inline"><h6 class="em-font-weight-400">' . JText::_($itemg->label) . '</h6>';
 
                                     $modulo = 0;
@@ -1944,25 +1956,7 @@ class EmundusModelApplication extends JModelList
 
                                             // Decrypt datas encoded
                                             if($form_params->note == 'encrypted'){
-                                                $cipher = "aes-128-cbc";
-
-                                                $encryption_key = JFactory::getConfig()->get('secret');
-
-                                                if($element->plugin == 'checkbox'){
-                                                    $contents = json_decode($element->content);
-                                                    foreach ($contents as $key => $content){
-                                                        $decrypted_data = openssl_decrypt($content, $cipher, $encryption_key, 0);
-                                                        if ($decrypted_data !== false) {
-                                                            $contents[$key] = $decrypted_data;
-                                                        }
-                                                    }
-                                                    $element->content = json_encode($contents);
-                                                } else {
-                                                    $decrypted_data = openssl_decrypt($element->content, $cipher, $encryption_key, 0);
-                                                    if ($decrypted_data !== false) {
-                                                        $element->content = $decrypted_data;
-                                                    }
-                                                }
+	                                            $element->content = EmundusHelperFabrik::decryptDatas($element->content);
                                             }
                                             //
 
@@ -2152,6 +2146,16 @@ class EmundusModelApplication extends JModelList
                                                     $elt = nl2br($element->content);
                                                 }
                                             }
+											elseif ($element->plugin == 'iban') {
+												$elt = $element->content;
+												$params = json_decode($element->params);
+
+	                                            if($params->encrypt_datas == 1) {
+		                                            $elt = EmundusHelperFabrik::decryptDatas($element->content);
+	                                            }
+
+												$elt = chunk_split($elt, 4, ' ');
+											}
 											else
 											{
                                                 $elt = $element->content;
@@ -2469,7 +2473,17 @@ class EmundusModelApplication extends JModelList
                                                     $elt = ($r_elt == 1) ? JText::_("JYES") : JText::_("JNO");
                                                 } elseif($elements[$j]->plugin == 'emundus_phonenumber'){
                                                     $elt = substr($r_elt, 2, strlen($r_elt));
-                                                } else {
+                                                }
+												elseif ($elements[$j]->plugin == 'iban') {
+	                                                $elt = $r_elt;
+
+	                                                if($params->encrypt_datas == 1) {
+		                                                $elt = EmundusHelperFabrik::decryptDatas($r_elt);
+	                                                }
+
+	                                                $elt = chunk_split($elt, 4, ' ');
+                                                }
+												else {
                                                     $elt = JText::_($r_elt);
                                                 }
 
@@ -2658,7 +2672,17 @@ class EmundusModelApplication extends JModelList
 	                                                if ($stripped != $elt) {
 		                                                $elt = strip_tags($elt, ['p', 'a', 'div', 'ul', 'li', 'br']);
 	                                                }
-                                                } else {
+                                                }
+                                                elseif ($elements[$j]->plugin == 'iban') {
+	                                                $elt = $r_elt;
+
+	                                                if($params->encrypt_datas == 1) {
+		                                                $elt = EmundusHelperFabrik::decryptDatas($r_elt);
+	                                                }
+
+	                                                $elt = chunk_split($elt, 4, ' ');
+                                                }
+												else {
                                                     $elt = JText::_($r_elt);
                                                 }
 
@@ -2729,25 +2753,7 @@ class EmundusModelApplication extends JModelList
 
                                     // Decrypt datas encoded
                                     if($form_params->note == 'encrypted'){
-                                        $cipher = "aes-128-cbc";
-
-                                        $encryption_key = JFactory::getConfig()->get('secret');
-
-                                        if($element->plugin == 'checkbox'){
-                                            $contents = json_decode($element->content);
-                                            foreach ($contents as $key => $content){
-                                                $decrypted_data = openssl_decrypt($content, $cipher, $encryption_key, 0);
-                                                if ($decrypted_data !== false) {
-                                                    $contents[$key] = $decrypted_data;
-                                                }
-                                            }
-                                            $element->content = json_encode($contents);
-                                        } else {
-                                            $decrypted_data = openssl_decrypt($element->content, $cipher, $encryption_key, 0);
-                                            if ($decrypted_data !== false) {
-                                                $element->content = $decrypted_data;
-                                            }
-                                        }
+	                                    $element->content = EmundusHelperFabrik::decryptDatas($element->content);
                                     }
                                     //
 
@@ -2879,7 +2885,18 @@ class EmundusModelApplication extends JModelList
 	                                            if ($stripped != $elt) {
 		                                            $elt = strip_tags($elt, ['p', 'a', 'div', 'ul', 'li', 'br']);
 	                                            }
-                                            } else {
+                                            }
+											elseif ($element->plugin == 'iban') {
+												$params = json_decode($element->params);
+	                                            $elt = $element->content;
+
+	                                            if($params->encrypt_datas == 1) {
+		                                            $elt = EmundusHelperFabrik::decryptDatas($element->content);
+	                                            }
+
+	                                            $elt = chunk_split($elt, 4, ' ');
+                                            }
+											else {
                                                 $elt = JText::_($element->content);
                                             }
 
@@ -3775,6 +3792,11 @@ class EmundusModelApplication extends JModelList
     public function getHikashopOrder($fnumInfos, $cancelled = false, $confirmed = true) {
         $eMConfig = JComponentHelper::getParams('com_emundus');
 
+        require_once(JPATH_SITE.'/components/com_emundus/models/campaign.php');
+        $m_campaign = new EmundusModelCampaign;
+
+        $prog_id = $m_campaign->getProgrammeByTraining($fnumInfos['training'])->id;
+
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -3782,8 +3804,8 @@ class EmundusModelApplication extends JModelList
         $query
             ->select('hp.id')
             ->from($db->quoteName('#__emundus_hikashop_programs', 'hp'))
-            ->leftJoin($db->quoteName('jos_emundus_hikashop_programs_repeat_code_prog','hpr').' ON '.$db->quoteName('hpr.parent_id').' = '.$db->quoteName('hp.id'))
-            ->where($db->quoteName('hpr.code_prog') . ' = ' .$db->quote($fnumInfos['training']));
+            ->leftJoin($db->quoteName('jos_emundus_hikashop_programs_repeat_id_prog','hpr').' ON '.$db->quoteName('hpr.parent_id').' = '.$db->quoteName('hp.id'))
+            ->where($db->quoteName('hpr.id_prog') . ' = ' .$db->quote($prog_id));
         $db->setQuery($query);
         $rule = $db->loadResult();
 
@@ -3859,8 +3881,8 @@ class EmundusModelApplication extends JModelList
                 /* By using the parent_id from the emundus_hikashop_programs table, we can get the list of the other programs that use the same settings */
                 /* We check only those with a payment_type of 2, for the others it's one payment by file */
                 $hika_query = $db->getQuery(true);
-                $hika_query->select('hpr.code_prog')
-                    ->from($db->quoteName('#__emundus_hikashop_programs_repeat_code_prog', 'hpr'))
+                $hika_query->select('hpr.id_prog')
+                    ->from($db->quoteName('#__emundus_hikashop_programs_repeat_id_prog', 'hpr'))
                     ->leftJoin($db->quoteName('#__emundus_hikashop_programs','hp').' ON '.$db->quoteName('hpr.parent_id').' = '.$db->quoteName('hp.id'))
                     ->where($db->quoteName('hpr.parent_id').' = '.$db->quote($rule))
                     ->andWhere($db->quoteName('hp.payment_type').' = '.$db->quote(2));
@@ -3874,9 +3896,10 @@ class EmundusModelApplication extends JModelList
                     $fnum_query->select('cc.fnum')
                         ->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
                         ->leftJoin($db->quoteName('#__emundus_setup_campaigns','sc').' ON '.$db->quoteName('sc.id').' = '.$db->quoteName('cc.campaign_id'))
-                        ->where($db->quoteName('sc.training') . ' IN (' .implode(',',$db->quote($progs_to_check)) . ')')
-                        ->andWhere($db->quoteName('sc.year') . ' = ' .$db->quote($fnumInfos['year']))
-                        ->andWhere($db->quoteName('cc.applicant_id') . ' = ' .$db->quote($fnumInfos['applicant_id']));
+                        ->leftJoin($db->quoteName('#__emundus_setup_programmes','sp').' ON '.$db->quoteName('sc.training').' = '.$db->quoteName('sp.code'))
+                        ->where($db->quoteName('sp.id').' IN ('.implode(',',$db->quote($progs_to_check)) . ')')
+                        ->andWhere($db->quoteName('sc.year').' = ' .$db->quote($fnumInfos['year']))
+                        ->andWhere($db->quoteName('cc.applicant_id').' = ' .$db->quote($fnumInfos['applicant_id']));
                     $db->setQuery($fnum_query);
                     $program_year_fnum = $db->loadColumn();
                 }
@@ -5155,8 +5178,33 @@ class EmundusModelApplication extends JModelList
                 $preview['content'] = '<div class="wrapper" style="max-width: 100%;margin: 5px;padding: 20px;background-color: white;"><pre style="white-space: break-spaces;">' . $content . '</pre></div>';
             } else if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif'])) {
                 $mimeType = mime_content_type($extension);
-                $content = base64_encode(file_get_contents(JPATH_SITE . DS . $filePath));
-                $preview['content'] = '<div class="wrapper" style="height: 100%;display: flex;justify-content: center;align-items: center;"><img src="data:'. $mimeType .';base64,' . $content . '" style="display: block;max-width:100%;max-height:100%;width: auto;height: auto;" /></div>';
+
+                if (empty($mimeType)) {
+                    switch ($extension) {
+                        case 'jpeg':
+                        case 'jpg':
+                            $mimeType = 'image/jpeg';
+                            break;
+                        case 'png':
+                            $mimeType = 'image/png';
+                            break;
+                        case 'gif':
+                            $mimeType = 'image/gif';
+                            break;
+                        default:
+                            $mimeType = 'text/plain';
+                            break;
+                    }
+                }
+
+                $base64_images_preview = JComponentHelper::getParams('com_emundus')->get('base64_images_preview', 1);
+
+                if ($base64_images_preview) {
+                    $content = base64_encode(file_get_contents(JPATH_SITE . DS . $filePath));
+                    $preview['content'] = '<div class="wrapper" style="height: 100%;display: flex;justify-content: center;align-items: center;"><img src="data:'. $mimeType .';base64,' . $content . '" style="display: block;max-width:100%;max-height:100%;width: auto;height: auto;" /></div>';
+                } else {
+                    $preview['content'] = '<div class="wrapper" style="height: 100%;display: flex;justify-content: center;align-items: center;"><img src="' . JURI::base() . $filePath . '" style="display: block;max-width:100%;max-height:100%;width: auto;height: auto;" /></div>';
+                }
             } else if (in_array($extension, ['doc', 'docx', 'odt', 'rtf'])) {
                 require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 

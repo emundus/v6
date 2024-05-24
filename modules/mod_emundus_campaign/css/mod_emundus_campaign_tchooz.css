@@ -166,6 +166,9 @@
 
 .mod_emundus_campaign__list_content_resume * {
     color: var(--neutral-600) !important;
+    display: inline;
+}
+.mod_emundus_campaign__list_content_resume p {
     display: block;
 }
 
@@ -580,6 +583,11 @@ p[id*="mod_emundus_campaign__tchoozy_tab_desc"] {
     display: grid;
     grid-gap: 0;
     grid-template-columns: 64% 30%;
+    align-items: start;
+
+    aside {
+        align-self: start;
+    }
 }
 
 @media (max-width: 479px) {

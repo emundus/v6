@@ -1360,37 +1360,40 @@ class EmundusModelDecision extends JModelList
     }
 
     /*
-* 	Get Decision form ID By programme code
-*	@param code 		code of the programme
-* 	@return int
-*/
-    function getDecisionFormByProgramme($code=null) {
-        if ($code === NULL) {
-            $session = JFactory::getSession();
-            if ($session->has('filt_params'))
-            {
-                $filt_params = $session->get('filt_params');
-                if (count(@$filt_params['programme'])>0) {
-                    $code = $filt_params['programme'][0];
-                }
-            }
-        }
-        try {
-            $query = 'SELECT ff.form_id
-					FROM #__fabrik_formgroup ff
-					WHERE ff.group_id IN (SELECT fabrik_decision_group_id FROM #__emundus_setup_programmes WHERE code like ' .
-                $this->_db->Quote($code) . ')';
-//die(str_replace('#_', 'jos', $query));
-            $this->_db->setQuery($query);
+	* 	Get Decision form ID By programme code
+	*	@param code 		code of the programme
+	* 	@return int
+	*/
+	function getDecisionFormByProgramme($code = null)
+	{
+		$decision_form = 0;
 
-            return $this->_db->loadResult();
-        }
-        catch(Exception $e)
-        {
-            echo $e->getMessage();
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-        }
-    }
+		if ($code === NULL) {
+			$session = JFactory::getSession();
+			if ($session->has('filt_params')) {
+				$filt_params = $session->get('filt_params');
+				if (!empty($filt_params['programme'])) {
+					$code = $filt_params['programme'][0];
+				}
+			}
+		}
+
+		if (!empty($code)) {
+			try {
+				$query = 'SELECT ff.form_id
+                    FROM #__fabrik_formgroup ff
+                    WHERE ff.group_id IN (SELECT fabrik_decision_group_id FROM #__emundus_setup_programmes WHERE code like ' .
+					$this->_db->Quote($code) . ') AND ff.group_id <> \'\'';
+
+				$this->_db->setQuery($query);
+				$decision_form = $this->_db->loadResult();
+			} catch (Exception $e) {
+				JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		return $decision_form;
+	}
 
 	public function getDecisionUrl($fnum, $formid, $rowid = 0, $student_id = 0, $redirect = 0, $view = 'form') {
 		$url = 'index.php';

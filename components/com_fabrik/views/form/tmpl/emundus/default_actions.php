@@ -30,7 +30,7 @@ if ( $form->prevButton || $form->nextButton ) {
 if ($this->hasActions) : ?>
 <div class="fabrikActions form-actions p-0 m-0">
 	<div
-        <?php if ($form->id != 307) : ?>
+        <?php if (!($form->db_table_name == 'jos_emundus_users' && JFactory::getUser()->guest == 1)) : ?>
             class="flex <?php if($countActions > 1) : ?>justify-between<?php else : ?>justify-end<?php endif; ?>"
         <?php endif; ?>
     >

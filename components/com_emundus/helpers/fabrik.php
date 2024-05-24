@@ -704,6 +704,10 @@ die("<script>
             $params['store_in_db'] = 0;
         }
 
+	    if($plugin == 'iban') {
+		    $params['encrypt_datas'] = '1';
+	    }
+
         return $params;
     }
 
@@ -904,38 +908,51 @@ die("<script>
                 $db->setQuery($query);
                 $assignations = $db->loadResult();
 
-                if (empty($assignations)) {
-                    $js = null;
-                    $params = array(
-                        'js_e_event' => '',
-                        'js_e_trigger' => '',
-                        'js_e_condition' => '',
-                        'js_e_value' => '',
-                        'js_published' => '1',
-                    );
-                    if ($action == 'nom') {
-                        $js = "this.set(this.get('value').toUpperCase());";
-                    }
-                    if ($action == 'prenom') {
-                        $js = "const mySentence = this.get(&#039;value&#039;);const words = mySentence.split(&quot; &quot;);for (let i = 0; i &lt; words.length; i++) {words[i] = words[i][0].toUpperCase() + words[i].substr(1);};this.set(words.join(&quot; &quot;));";
-                    }
+				if (empty($assignations)) {
+					$js = null;
+					$params = array(
+						'js_e_event' => '',
+						'js_e_trigger' => '',
+						'js_e_condition' => '',
+						'js_e_value' => '',
+						'js_published' => '1',
+					);
 
-                    if (!empty($js) && !empty($params)) {
-                        $query->clear()
-                            ->insert($db->quoteName('#__fabrik_jsactions'))
-                            ->set($db->quoteName('element_id') . ' = ' . $db->quote($eid))
-                            ->set($db->quoteName('action') . ' = ' . $db->quote('keyup'))
-                            ->set($db->quoteName('code') . ' = ' . $db->quote($js))
-                            ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)));
-                        $db->setQuery($query);
-                        $added = $db->execute();
-                    }
-                }
-            } catch (Exception $e) {
-                JLog::add('component/com_emundus/helpers/fabrik | Cannot create JS Action for element ' . $eid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
-                $added = false;
-            }
-        }
+					$event = 'change';
+					if(is_string($action))
+					{
+						if ($action == 'nom')
+						{
+							$js    = "this.set(this.get('value').toUpperCase());";
+							$event = 'keyup';
+						}
+						if ($action == 'prenom')
+						{
+							$js    = "const mySentence = this.get(&#039;value&#039;);const words = mySentence.split(&quot; &quot;);for (let i = 0; i &lt; words.length; i++) {words[i] = words[i][0].toUpperCase() + words[i].substr(1);};this.set(words.join(&quot; &quot;));";
+							$event = 'keyup';
+						}
+					}
+					elseif (is_array($action)) {
+						$js = $action['code'];
+						$event = $action['event'];
+					}
+
+					if(!empty($js) && !empty($params)) {
+						$query->clear()
+							->insert($db->quoteName('#__fabrik_jsactions'))
+							->set($db->quoteName('element_id') . ' = ' . $db->quote($eid))
+							->set($db->quoteName('action') . ' = ' . $db->quote($event))
+							->set($db->quoteName('code') . ' = ' . $db->quote($js))
+							->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)));
+						$db->setQuery($query);
+						$added = $db->execute();
+					}
+				}
+			} catch (Exception $e) {
+				JLog::add('component/com_emundus/helpers/fabrik | Cannot create JS Action for element ' . $eid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+				$added = false;
+			}
+		}
 
         return $added;
     }
@@ -1271,4 +1288,179 @@ die("<script>
 
         return $formatted_value;
     }
+
+	static function encryptDatas($value, $encryption_key = null, $cipher = 'aes-128-cbc', $iv = null) {
+		$result = $value;
+
+		//Generate a 256-bit encryption key
+		if(empty($encryption_key))
+		{
+			$encryption_key = Factory::getConfig()->get('secret', '');
+		}
+
+		if(!empty($encryption_key))
+		{
+			if(empty($iv))
+			{
+				$iv_length = openssl_cipher_iv_length($cipher);
+				$iv        = openssl_random_pseudo_bytes($iv_length);
+			}
+
+			//Data to encrypt
+			if (is_array(json_decode($value))) {
+				$contents = json_decode($value);
+				foreach ($contents as $key => $content)
+				{
+					$encrypted_data = openssl_encrypt($content, $cipher, $encryption_key, 0 ,$iv);
+					if ($encrypted_data !== false)
+					{
+						$contents[$key] = $encrypted_data.'|'.base64_encode($iv);
+					}
+				}
+				$result = json_encode($contents);
+			}
+			else
+			{
+				$val            = $value;
+				$encrypted_data = openssl_encrypt($val, $cipher, $encryption_key, 0 ,$iv);
+				if ($encrypted_data !== false)
+				{
+					$result = $encrypted_data.'|'.base64_encode($iv);
+				}
+			}
+		}
+
+		return $result;
+	}
+
+	static function decryptDatas($value, $encryption_key = null, $cipher = 'aes-128-cbc') {
+		$result = $value;
+
+		if (empty($encryption_key))
+		{
+			$encryption_key = Factory::getConfig()->get('secret', '');
+		}
+
+		if (!empty($encryption_key))
+		{
+			if (is_array(json_decode($value)))
+			{
+				$contents = json_decode($value);
+				foreach ($contents as $key => $content)
+				{
+					$content = explode('|', $content);
+					$iv = base64_decode($content[1]);
+
+					try {
+                        $decrypted_data = openssl_decrypt($content[0], $cipher, $encryption_key, 0, $iv);
+                    } catch (Exception $e) {
+                        $decrypted_data = false;
+                    }
+
+                    if ($decrypted_data !== false) {
+						$contents[$key] = $decrypted_data;
+					}
+					else {
+						$decrypted_data = self::oldDecryptDatas($content[0],$encryption_key);
+						if ($decrypted_data !== false)
+						{
+							$contents[$key] = $decrypted_data;
+						}
+					}
+				}
+				$result = json_encode($contents);
+			}
+			else
+			{
+                list($encrypted_value, $encoded_iv) = explode('|', $value);
+				$iv = base64_decode($encoded_iv);
+
+                try {
+                    $decrypted_data = openssl_decrypt($encrypted_value, $cipher, $encryption_key, 0, $iv);
+                } catch (Exception $e) {
+                    $decrypted_data = false;
+                }
+
+                if ($decrypted_data !== false) {
+					$result = $decrypted_data;
+				}
+				else {
+					$decrypted_data = self::oldDecryptDatas($value[0],$encryption_key);
+					if ($decrypted_data !== false)
+					{
+						$result = $decrypted_data;
+					}
+				}
+			}
+		}
+
+		return $result;
+	}
+
+	public static function oldDecryptDatas($value,$encryption_key = null)
+	{
+		$cipher = 'aes-128-cbc';
+		$result = $value;
+
+		if(empty($encryption_key))
+		{
+			$encryption_key = Factory::getConfig()->get('secret', '');
+		}
+
+		if(!empty($encryption_key))
+		{
+			if (is_array(json_decode($value)))
+			{
+				$contents = json_decode($value);
+				foreach ($contents as $key => $content)
+				{
+					$decrypted_data = openssl_decrypt($content, $cipher, $encryption_key, 0);
+					if ($decrypted_data !== false)
+					{
+						$contents[$key] = $decrypted_data;
+					}
+				}
+				$result = json_encode($contents);
+			}
+			else
+			{
+				$decrypted_data = openssl_decrypt($value, $cipher, $encryption_key, 0);
+				if ($decrypted_data !== false)
+				{
+					$result = $decrypted_data;
+				}
+			}
+		}
+
+		return $result;
+	}
+
+	public static function migrateEncryptDatas($old_cipher, $new_cipher, $old_key, $new_key, $datas, $iv = null) {
+		foreach ($datas as $key => $data) {
+			if(is_array(json_decode($data['value'])))
+			{
+				$contents = json_decode($data['value']);
+				$decrypted_contents = [];
+				foreach ($contents as $index => $content)
+				{
+					$decrypted_contents[$index] = openssl_decrypt($content, $old_cipher, $old_key, 0);
+					if ($decrypted_contents[$index] === false)
+					{
+						$decrypted_contents[$index] = $content;
+					}
+				}
+				$decrypted_data = json_encode($decrypted_contents);
+			} else {
+				$decrypted_data = openssl_decrypt($data['value'], $old_cipher, $old_key, 0);
+				if ($decrypted_data === false)
+				{
+					$decrypted_data = $data['value'];
+				}
+			}
+
+			$datas[$key]['value'] = self::encryptDatas($decrypted_data,$new_key,$new_cipher,$iv);
+		}
+
+		return $datas;
+	}
 }

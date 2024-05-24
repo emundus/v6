@@ -160,8 +160,8 @@ if (!empty($this->custom_title)) :?>
             $div .= '<div>';
 
 	        if ($attachment->has_sample && !empty($attachment->sample_filepath)) {
-		        $div .= '<div class="em-ml-8 em-mb-8 em-flex-row attachment_model">
-                            <span>'.JText::_('COM_EMUNDUS_ATTACHMENTS_SAMPLE') . '</span><a class="em-flex-row" href="'.JUri::root() . $attachment->sample_filepath.'" target="_blank"> <span> ' . JText::_('COM_EMUNDUS_ATTACHMENTS_SAMPLE_FILE').'</span><span class="material-icons-outlined em-ml-8 em-text-neutral-900">cloud_download</span></a>
+		        $div .= '<div class="em-ml-8 em-mb-8 flex items-center gap-1 attachment_model">
+                            <span>'.JText::_('COM_EMUNDUS_ATTACHMENTS_SAMPLE') . '</span><a class="flex items-center" href="'.JUri::root() . $attachment->sample_filepath.'" target="_blank"> <span> ' . JText::_('COM_EMUNDUS_ATTACHMENTS_SAMPLE_FILE').'</span><span class="material-icons-outlined em-ml-8 em-text-neutral-900">cloud_download</span></a>
                          </div>';
 	        }
 
@@ -575,7 +575,7 @@ if (!empty($this->custom_title)) :?>
                 <tr class="em-allowed-files">
                     <td>
                     <div class="em-ml-8">
-                    <p style="word-break: break-all;" class="text-neutral-600">'. JText::_('COM_EMUNDUS_ATTACHMENTS_PLEASE_ONLY').' '.$attachment->allowed_types.'</p>
+                    <p style="word-break: break-all;" class="text-neutral-600">'. JText::_('COM_EMUNDUS_ATTACHMENTS_PLEASE_ONLY').' '.$attachment->allowed_types.' | '.JText::sprintf('COM_EMUNDUS_ATTACHMENTS_MAXNB_TIP', $attachment->nbmax).'</p>
                     <div class="em-flex-row em-flex-space-between">';
                    if (!empty($this->attachments_to_upload) && in_array($attachment->id,$this->attachments_to_upload)) {
                        $div .= '<button class="btn btn-danger btn-xs em-pointer" onclick="uploadfromprofile('."$attachment->id".')">'.JText::_('COM_EMUNDUS_USERS_MY_DOCUMENTS_LOAD').'</button>';
@@ -666,6 +666,12 @@ $(document).on('change', '.btn-file :file', function() {
 });
 
 $(document).ready(function() {
+    // Set sidebar sticky depends on height of header
+    const headerNav = document.getElementById('g-navigation');
+    const sidebar = document.querySelector('.view-checklist #g-sidebar');
+    if (headerNav && sidebar) {
+        sidebar.style.top = headerNav.offsetHeight + 8 + 'px';
+    }
     $('.em_send_uploaded_file').attr("disabled", "disabled");
 
     $('.btn-file :file').on('fileselect', function(event, numFiles, label) {

@@ -171,6 +171,13 @@ JHtml::_('bootstrap.tooltip');
                                         class="btn btn-primary login-button"><?php echo JText::_('JLOGIN'); ?></button>
                             </div>
                         </div>
+                        <div class="control-group em-float-right">
+                            <div class="control-label">
+                                <a class="em-text-underline" href="<?php echo JRoute::_($forgottenLink); ?>">
+				                    <?php echo JText::_('COM_USERS_LOGIN_RESET'); ?>
+                                </a>
+                            </div>
+                        </div>
                         <?php
                         $usersConfig = JComponentHelper::getParams('com_users'); ?>
 
