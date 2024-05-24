@@ -1336,12 +1336,12 @@ die("<script>
 	static function decryptDatas($value, $encryption_key = null, $cipher = 'aes-128-cbc') {
 		$result = $value;
 
-		if(empty($encryption_key))
+		if (empty($encryption_key))
 		{
 			$encryption_key = Factory::getConfig()->get('secret', '');
 		}
 
-		if(!empty($encryption_key))
+		if (!empty($encryption_key))
 		{
 			if (is_array(json_decode($value)))
 			{
@@ -1376,7 +1376,7 @@ die("<script>
 				$iv = base64_decode($encoded_iv);
 
                 try {
-                    $decrypted_data = openssl_decrypt($encrypted_value, $cipher, $encryption_key, 0, $iv, 16);
+                    $decrypted_data = openssl_decrypt($encrypted_value, $cipher, $encryption_key, 0, $iv);
                 } catch (Exception $e) {
                     $decrypted_data = false;
                 }

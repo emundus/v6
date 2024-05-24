@@ -348,13 +348,20 @@ class EmundusHelperFabrikTest extends TestCase
 
 	public function testDecryptDatas() {
 		$raw_phonenumber = '+33 6 12 34 56 78';
-		$encrypted_phonenumber = EmundusHelperFabrik::encryptDatas($raw_phonenumber, 'gKGin8pc4BEqA8cA');
+        $custom_encryption_key = 'gKGin8pc4BEqA8cA';
+
+		$encrypted_phonenumber = EmundusHelperFabrik::encryptDatas($raw_phonenumber, $custom_encryption_key);
 		$this->assertNotSame($raw_phonenumber, EmundusHelperFabrik::decryptDatas($encrypted_phonenumber, 'uMcvs401XwYPml9Q'), 'Decrypted phone number is different from raw phone number if we pass wrong key');
-		$this->assertSame($raw_phonenumber, EmundusHelperFabrik::decryptDatas($encrypted_phonenumber, 'gKGin8pc4BEqA8cA'), 'Decrypted phone number is the same as raw phone number');
+		$this->assertSame($raw_phonenumber, EmundusHelperFabrik::decryptDatas($encrypted_phonenumber, $custom_encryption_key), 'Decrypted phone number is the same as raw phone number');
 
 		$raw_checkbox = '["Valeur 1","Valeur 2"]';
 		$encrypted_checkbox = EmundusHelperFabrik::encryptDatas($raw_checkbox);
 		$this->assertSame($raw_checkbox, EmundusHelperFabrik::decryptDatas($encrypted_checkbox), 'Decrypted checkbox is the same as raw checkbox');
+
+        $raw_checkbox = '["Valeur 1","Valeur 2"]';
+        $encrypted_checkbox = EmundusHelperFabrik::encryptDatas($raw_checkbox, $custom_encryption_key);
+        $this->assertNotSame($raw_checkbox, EmundusHelperFabrik::decryptDatas($encrypted_checkbox, 'uMcvs401XwYPml9Q'), 'Decrypted checkbox is different from raw checkbox if we pass wrong key');
+        $this->assertSame($raw_checkbox, EmundusHelperFabrik::decryptDatas($encrypted_checkbox, $custom_encryption_key), 'Decrypted checkbox is the same as raw checkbox');
 	}
 
 	public function testMigrateEncryptDatas() {
