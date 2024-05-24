@@ -141,7 +141,7 @@
         </div>
       </div>
     </div>
-    <p v-else id="empty-comments" class="text-center">{{ translate('COM_EMUNDUS_COMMENTS_NO_COMMENTS') }}</p>
+    <p v-else id="empty-comments" class="text-center m-4">{{ translate('COM_EMUNDUS_COMMENTS_NO_COMMENTS') }}</p>
 
     <div id="add-comment-container">
       <textarea @keyup.enter="addComment" v-model="newCommentText" class="p-2"
