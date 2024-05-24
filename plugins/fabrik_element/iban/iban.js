@@ -63,7 +63,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
             var input = this.element.get('value');
 
             var CODE_LENGTHS = {
-                AD: 24, AE: 23, AT: 20, AZ: 28, BA: 20, BE: 16, BG: 22, BH: 22, BR: 29,
+                AD: 24, AE: 23, AT: 20, AZ: 28, BA: 20, BE: 16, BG: 22, BH: 22, BJ: 28, BR: 29,
                 CH: 21, CR: 21, CY: 28, CZ: 24, DE: 22, DK: 18, DO: 28, EE: 20, ES: 24,
                 FI: 18, FO: 18, FR: 27, GB: 22, GI: 23, GL: 18, GR: 27, GT: 28, HR: 21,
                 HU: 28, IE: 22, IL: 23, IS: 26, IT: 27, JO: 30, KW: 30, KZ: 20, LB: 28,
@@ -149,6 +149,12 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                     startsWith: 'BG',
                     lazy: false,
                     country: Joomla.JText._('PLG_ELEMENT_IBAN_BULGARIA')
+                },
+                {
+                    mask: 'aa00 **** **** **** **** **** ****',
+                    startsWith: 'BJ',
+                    lazy: false,
+                    country: Joomla.JText._('PLG_ELEMENT_IBAN_BENIN')
                 },
                 {
                     mask: 'aa00 **** **** **** **** *',
