@@ -11,7 +11,6 @@ defined('_JEXEC') or die('Restricted access');
 JFactory::getSession()->set('application_layout', 'comment');
 $current_lang = JFactory::getLanguage();
 $short_lang = substr($current_lang->getTag(), 0 , 2);
-
 $coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id);
 $sysadmin_access = EmundusHelperAccess::isAdministrator($this->_user->id);
 $xmlDoc = new DOMDocument();
@@ -30,6 +29,15 @@ if (count($languages) > 1) {
     $default_lang = $current_lang;
 }
 
+require_once(JPATH_ROOT . '/components/com_emundus/models/users.php');
+$m_users = new EmundusModelUsers();
+$emundus_user = JFactory::getSession()->get('emundusUser');
+$applicant_profiles = $m_users->getApplicantProfiles();
+$applicant_profile_ids = array_map(function($profile) {
+    return $profile->id;
+}, $applicant_profiles);
+
+$is_applicant = in_array($emundus_user->profile, $applicant_profile_ids);
 
 $user_comment_access = [
     'c' => EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $fnum),
@@ -59,7 +67,7 @@ $user_comment_access = [
      user="<?= $this->_user->id ?>"
      ccid="<?= $this->ccid ?>"
      access='<?= json_encode($user_comment_access); ?>'
-     is_applicant="<?= 0 ?>"
+     is_applicant="<?= $is_applicant; ?>"
      current_form="<?= 0 ?>"
      currentLanguage="<?= $current_lang->getTag() ?>"
      shortLang="<?= $short_lang ?>"
