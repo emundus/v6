@@ -1351,8 +1351,13 @@ die("<script>
 					$content = explode('|', $content);
 					$iv = base64_decode($content[1]);
 
-					$decrypted_data = openssl_decrypt($content[0], $cipher, $encryption_key, 0 ,$iv);
-					if ($decrypted_data !== false) {
+					try {
+                        $decrypted_data = openssl_decrypt($content[0], $cipher, $encryption_key, 0, $iv);
+                    } catch (Exception $e) {
+                        $decrypted_data = false;
+                    }
+
+                    if ($decrypted_data !== false) {
 						$contents[$key] = $decrypted_data;
 					}
 					else {
@@ -1367,11 +1372,16 @@ die("<script>
 			}
 			else
 			{
-				$value = explode('|', $value);
-				$iv = base64_decode($value[1]);
+                list($encrypted_value, $encoded_iv) = explode('|', $value);
+				$iv = base64_decode($encoded_iv);
 
-				$decrypted_data = openssl_decrypt($value[0], $cipher, $encryption_key, 0 ,$iv);
-				if ($decrypted_data !== false) {
+                try {
+                    $decrypted_data = openssl_decrypt($encrypted_value, $cipher, $encryption_key, 0, $iv, 16);
+                } catch (Exception $e) {
+                    $decrypted_data = false;
+                }
+
+                if ($decrypted_data !== false) {
 					$result = $decrypted_data;
 				}
 				else {
