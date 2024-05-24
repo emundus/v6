@@ -17,7 +17,7 @@
 function hideFabrikElt(elements, clearElements = false) {
     if (!Array.isArray(elements)) elements = [elements];
 
-    elements.forEach((element,index) => {
+    elements.forEach((element, index) => {
         if (element) {
             if (clearElements && element.plugin !== '') {
                 element.clear();
@@ -42,7 +42,7 @@ function hideFabrikElt(elements, clearElements = false) {
 function showFabrikElt(elements) {
     if (!Array.isArray(elements)) elements = [elements];
 
-    elements.forEach((element,index) => {
+    elements.forEach((element, index) => {
         if (element) {
             element.show();
         } else {
@@ -68,17 +68,17 @@ function hideFabrikGroupByElt(elements, clearElements = false) {
 
     let form = null;
 
-    elements.forEach((element,index) => {
+    elements.forEach((element, index) => {
         if (element) {
             document.getElementById(`group${element.groupid}`).classList.add('fabrikHide');
 
             if (clearElements) {
 
-                if(form === null){
+                if (form === null) {
                     form = Fabrik.getBlock(element.form.block);
                 }
 
-                if(form) {
+                if (form) {
                     Object.values(form.elements).map((all_element) => {
                         if (all_element.groupid === element.groupid && all_element.plugin !== '') {
                             all_element.clear();
@@ -105,7 +105,7 @@ function hideFabrikGroupByElt(elements, clearElements = false) {
 function showFabrikGroupByElt(elements) {
     if (!Array.isArray(elements)) elements = [elements];
 
-    elements.forEach((element,index) => {
+    elements.forEach((element, index) => {
         if (element) {
             document.getElementById(`group${element.groupid}`).classList.remove('fabrikHide');
         } else {
@@ -127,7 +127,7 @@ function showFabrikGroupByElt(elements) {
 function hideFabrikGroup(groups, clearElements = false) {
     if (!Array.isArray(groups)) groups = [groups];
 
-    groups.forEach((group,index) => {
+    groups.forEach((group, index) => {
         if (group) {
             let selector = document.getElementById(`group${group}`);
             if (selector) selector.classList.add('fabrikHide');
@@ -158,10 +158,10 @@ function hideFabrikGroup(groups, clearElements = false) {
 function showFabrikGroup(groups) {
     if (!Array.isArray(groups)) groups = [groups];
 
-    groups.forEach((group,index) => {
+    groups.forEach((group, index) => {
         if (group) {
             document.getElementById(`group${group}`).classList.remove('fabrikHide');
-        }  else {
+        } else {
             console.log(`showFabrikGroup: Group at index ${index} is undefined`);
         }
     });
@@ -180,15 +180,14 @@ function showFabrikGroup(groups) {
 function defineCheckboxLimit(element, max) {
     var allCheck = element.subElements;
 
-    if(element.get('value').length >= max){
-        Object.values(allCheck).forEach((option) =>{
-            if(!element.get('value').includes(option.value)){
+    if (element.get('value').length >= max) {
+        Object.values(allCheck).forEach((option) => {
+            if (!element.get('value').includes(option.value)) {
                 option.disabled = true;
             }
         });
-    }
-    else {
-        Object.values(allCheck).forEach((option) =>{
+    } else {
+        Object.values(allCheck).forEach((option) => {
             option.disabled = false;
         });
     }
@@ -208,8 +207,8 @@ function firstLetterToUppercase(element) {
     }
 }
 
-function numberOfDaysBetweenDates(date1,date2 = null) {
-    if(date2 === null) {
+function numberOfDaysBetweenDates(date1, date2 = null) {
+    if (date2 === null) {
         date2 = new Date();
     }
 
@@ -217,21 +216,18 @@ function numberOfDaysBetweenDates(date1,date2 = null) {
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 }
 
-function submit(title = 'Dossier en cours d\'envoi...',timer = 3000) {
+function submit(title = 'Dossier en cours d\'envoi...', timer = 3000) {
     let fabrikForm = document.querySelector('form.fabrikForm');
-    if(fabrikForm)
-    {
+    if (fabrikForm) {
         fabrikForm.style.opacity = 0;
     }
     let fabrikHeader = document.querySelector('.page-header');
-    if(fabrikHeader)
-    {
+    if (fabrikHeader) {
         fabrikHeader.style.opacity = 0;
     }
 
     let emundusForm = document.querySelector('.emundus-form');
-    if(emundusForm)
-    {
+    if (emundusForm) {
         emundusForm.classList.add('skeleton');
     }
 
@@ -246,13 +242,13 @@ function submit(title = 'Dossier en cours d\'envoi...',timer = 3000) {
         },
         timer: timer
     }).then(() => {
-        if(fabrikForm)
-        {
+        if (fabrikForm) {
             fabrikForm.submit();
         }
     });
 }
-function purcentage(elements){
+
+function purcentage(elements) {
 
     const value = elements.get('value');
 
@@ -289,8 +285,8 @@ function purcentage(elements){
  * @returns {Date}
  */
 function birthDateValidation(element, minAge = 0, maxAge = 0, minMessage = 'Vous devez être plus agé que %s ans', maxMessage = 'Vous devez être plus jeune que %s ans') {
-    const errorElement = document.querySelector('.fb_el_'+element.baseElementId + ' .fabrikErrorMessage');
-    if(errorElement) {
+    const errorElement = document.querySelector('.fb_el_' + element.baseElementId + ' .fabrikErrorMessage');
+    if (errorElement) {
         errorElement.innerHTML = '';
     }
 
@@ -302,21 +298,16 @@ function birthDateValidation(element, minAge = 0, maxAge = 0, minMessage = 'Vous
     const userBirthDate = new Date(value.replace(regex, "$3-$2-$1"));
     let todayYear = (new Date()).getFullYear();
 
-    if (!regexTest || isNaN(userBirthDate))
-    {
+    if (!regexTest || isNaN(userBirthDate)) {
         error = 'Veuillez saisir une date de naissance valide';
-    }
-    else if(minAge !== 0)
-    {
+    } else if (minAge !== 0) {
         let cutOffMin = new Date();
         cutOffMin.setFullYear(todayYear - minAge);
 
         if (userBirthDate > cutOffMin) {
             error = minMessage.replace('%s', minAge.toString());
         }
-    }
-    else if(maxAge !== 0)
-    {
+    } else if (maxAge !== 0) {
         let cutOffMax = new Date();
         cutOffMax.setFullYear(todayYear - maxAge);
 
@@ -325,9 +316,8 @@ function birthDateValidation(element, minAge = 0, maxAge = 0, minMessage = 'Vous
         }
     }
 
-    if(error !== '')
-    {
-        if(errorElement) {
+    if (error !== '') {
+        if (errorElement) {
             errorElement.innerHTML = error;
         }
     }
@@ -340,7 +330,7 @@ function birthDateValidation(element, minAge = 0, maxAge = 0, minMessage = 'Vous
  */
 function submitNewFile() {
     let campaign = document.getElementById('jos_emundus_campaign_candidature___campaign_id');
-    for (let i = 0; i < campaign.length; i++){
+    for (let i = 0; i < campaign.length; i++) {
         if (campaign.options[i].value == -1) {
             campaign.options[i].disabled = true;
             campaign.options[i].style.backgroundColor = "#efefef";
@@ -349,7 +339,7 @@ function submitNewFile() {
     }
 
     var cid = document.querySelector('#jos_emundus_campaign_candidature___campaign_id option:checked').value;
-    if(cid !== "") {
+    if (cid !== "") {
         document.querySelector('#form_102').style.visibility = 'hidden';
         Swal.fire({
                 title: Joomla.JText._('COM_EMUNDUS_FABRIK_NEW_FILE'),
@@ -371,7 +361,9 @@ function checkPasswordSymbols(element) {
 
     var index = 0;
 
-    if(site_url.match(site_url_lang_regexp) === null) { index = 1; }
+    if (site_url.match(site_url_lang_regexp) === null) {
+        index = 1;
+    }
 
     var regex = /[#$\{\};<> ]/;
     var password_value = element.get('value');
@@ -393,11 +385,17 @@ function checkPasswordSymbols(element) {
     }
 }
 
-function cleanNumberInput(element, maxDecimals) {
-    let value = element.get('value');
+function cleanNumberInput(element, maxDecimals = 0,noGreaterThan = null,authorizeNegativeNumber = false) {
+    var value = element.get('value');
     const input = document.getElementById(element.strElement);
+    var nonDigitExceptCommaDot = '';
 
-    const nonDigitExceptCommaDot = /[^0-9.,]/;
+    if(authorizeNegativeNumber){
+        nonDigitExceptCommaDot = /[^-0-9.,]/;
+    }
+    else{
+        nonDigitExceptCommaDot = /[^0-9.,]/;
+    }
 
     const moreThanOneCommaDot = /[.,].*[.,]/;
 
@@ -424,21 +422,36 @@ function cleanNumberInput(element, maxDecimals) {
             value = value.substring(0, caretPosition - 1) + value.substring(caretPosition);
         }
     }
-
     if (maxDecimals === 0 && value.indexOf(".") !== -1) {
         value = value.replace(".", "");
     }
 
-    if (maxDecimals > 0) {
-        // remove all characters after dot + maxdecimals
-        const dotIndex = value.indexOf(".");
-        if (dotIndex !== -1) {
-            value = value.substring(0, dotIndex + maxDecimals + 1);
-        }
+    if(value > noGreaterThan){
+        value = '';
     }
 
-    // remove all non numeric characters
-    value = value.replace(/[^0-9.,]/g, '');
 
     return value;
+}
+
+
+function prefillBic(element, bic_element) {
+    let table_name = element.form.options.primaryKey.split('___')[0];
+    var fab = element.form.elements;
+    if(element.options.inRepeatGroup) {
+        var bic = fab.get(table_name+'_'+element.groupid+'_repeat___'+bic_element+'_'+element.getRepeatNum());
+    } else {
+        var bic = fab.get(table_name + '___' + bic_element);
+    }
+
+    var value = element.get('value')
+
+    if (bic && value != '') {
+        value = value.replace(/\s/g, "");
+        var bank_code = value.substring(4, 9);
+
+        if(element.options.bicMapping[bank_code]) {
+            bic.set(element.options.bicMapping[bank_code]);
+        }
+    }
 }

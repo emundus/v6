@@ -368,6 +368,19 @@ class EmundusModelFormbuilder extends JModelList {
             $db->setQuery($query);
             $menu_parent = $db->loadObject();
 
+            /**
+             * Case of old platforms. deprecated
+             */
+            if (empty($menu_parent) || empty($menu_parent->id)) {
+                $query->clear()
+                    ->select('*')
+                    ->from('#__menu')
+                    ->where($db->quoteName('menutype') . ' = ' . $db->quote($menutype))
+                    ->andWhere($db->quoteName('type') . ' = ' . $db->quote('url'));
+                $db->setQuery($query);
+                $menu_parent = $db->loadObject();
+            }
+
             $query->clear()
                 ->select('rgt')
                 ->from($db->quoteName('#__menu'))
@@ -976,7 +989,7 @@ class EmundusModelFormbuilder extends JModelList {
         }
     }*/
 
-    function createGroup($label, $fid, $repeat_group_show_first = 1) {
+    function createGroup($label, $fid, $repeat_group_show_first = 1, $mode = 'form') {
         $group = [];
 
         if (!empty($fid)) {
@@ -1108,6 +1121,18 @@ class EmundusModelFormbuilder extends JModelList {
                         'ordering' => $order,
                         'formid' => $fid
                     );
+
+					if($mode === 'eval') {
+						require_once (JPATH_SITE . '/components/com_emundus/models/form.php');
+						$m_form = new EmundusModelForm();
+
+						$programs = $m_form->getProgramsByForm($fid, $mode);
+						$codes = array_map(function($program) {
+							return $program['code'];
+						}, $programs);
+
+						$m_form->associateFabrikGroupsToProgram($fid,$codes,$mode);
+					}
                 }
             } catch(Exception $e){
 				error_log($e->getMessage());

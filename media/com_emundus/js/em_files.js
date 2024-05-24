@@ -2278,13 +2278,20 @@ $(document).ready(function() {
                             // TODO: fix upper-case options
                             // '<div class="em-flex-row em-mb-4"><input class="em-ex-check0" type="checkbox" value="upper-case" name="upper-case" id="upper-case" style="max-height: 20px;"/>' +
                             // '<label for="upper-case" class="em-mb-0-important">'+Joomla.JText._('COM_EMUNDUS_TO_UPPER_CASE')+'</label></div>' +
+                            // TODO: use GROUP CONCAT method by default, change wording and order of methods
+
+                            let defaultMethod = 0;
+                            if ($('#view').val() == 'evaluation') {
+                                defaultMethod = 1;
+                            }
+
                             $('#data').append( '<div id="methode" style="display: none" class="em-grid-2 em-mt-16">'+
                                 '<div><p>' +Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_OPTION')+ '</p>' +
                                 '<div id="exp" class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 em-mt-16">'+
                                 '<div id="exp1"><form style="margin-left:15px; margin-bottom:6px">'+
-                                '<input type="radio" name="em-export-methode" id="em-export-methode" value="0" checked>' +Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_AGGREGATE_DISTINCT')+
-                                '<br/><input type="radio" name="em-export-methode" id="em-export-methode" value="2">' +Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_AGGREGATE')+
-                                '<br/><input type="radio" name="em-export-methode" id="em-export-methode" value="1">' +Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_LEFTJOIN')+ '<br>'+
+                                '<input type="radio" name="em-export-methode" id="em-export-methode" value="0"' + (defaultMethod === 0 ? ' checked'  : '') +'>' +Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_AGGREGATE_DISTINCT')+
+                                '<br/><input type="radio" name="em-export-methode" id="em-export-methode" value="2"' + (defaultMethod === 2 ? ' checked'  : '') +'>' +Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_AGGREGATE')+
+                                '<br/><input type="radio" name="em-export-methode" id="em-export-methode" value="1"' + (defaultMethod === 1 ? ' checked'  : '') +'>' +Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_LEFTJOIN')+ '<br>'+
                                 '</form></div></div></div>'+
                                 '<div><p>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_OTHER_OPTION')+'</p>' +
                                 '<div id="forms" class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 em-mt-16">'+

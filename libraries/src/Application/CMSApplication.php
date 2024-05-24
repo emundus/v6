@@ -210,6 +210,7 @@ class CMSApplication extends WebApplication
 		);
 
 		// Unset invalid system variables
+
 		foreach ($invalidInputVariables as $systemVariable)
 		{
 			$input->set($systemVariable, null);
@@ -227,13 +228,16 @@ class CMSApplication extends WebApplication
 		// If we have an application document object, render it.
 		if ($this->document instanceof \JDocument)
 		{
+
 			// Render the application output.
 			$this->render();
 		}
 
 		// If gzip compression is enabled in configuration and the server is compliant, compress the output.
+
 		if ($this->get('gzip') && !ini_get('zlib.output_compression') && ini_get('output_handler') !== 'ob_gzhandler')
 		{
+
 			$this->compress();
 
 			// Trigger the onAfterCompress event.
@@ -241,6 +245,7 @@ class CMSApplication extends WebApplication
 		}
 
 		// Send the application response.
+
 		$this->respond();
 
 		// Trigger the onAfterRespond event.
@@ -1086,16 +1091,22 @@ class CMSApplication extends WebApplication
 
 		if ($this->get('themes.base'))
 		{
+
 			$this->docOptions['directory'] = $this->get('themes.base');
 		}
 		// Fall back to constants.
 		else
 		{
+
 			$this->docOptions['directory'] = defined('JPATH_THEMES') ? JPATH_THEMES : (defined('JPATH_BASE') ? JPATH_BASE : __DIR__) . '/themes';
+
 		}
 
+
+
 		// Parse the document.
-		$this->document->parse($this->docOptions);
+        $this->document->parse($this->docOptions);
+
 
 		// Trigger the onBeforeRender event.
 		\JPluginHelper::importPlugin('system');

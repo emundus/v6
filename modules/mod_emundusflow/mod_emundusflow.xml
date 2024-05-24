@@ -122,6 +122,12 @@
 				<field showon="layout!:_:tchooz" name="add_to_cart_icon" type="text" label="MOD_EMUNDUSFLOW_ALT_ADDTOCART_CLASS" description="MOD_EMUNDUSFLOW_ALT_ADDTOCART_CLASS_DESC" default="large add to cart icon"></field>
 				<field showon="layout!:_:tchooz" name="scholarship_icon" type="text" label="MOD_EMUNDUSFLOW_ALT_SCHOLARSHIP_CLASS" description="MOD_EMUNDUSFLOW_ALT_SCHOLARSHIP_CLASS_DESC" default="large student icon"></field>
 
+				<field name="title_override"
+					   type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
+					   default=""
+					   label="MOD_EMUNDUS_TITLE_OVERRIDE_FLOW"
+					   description="MOD_EMUNDUS_TITLE_OVERRIDE_DESC">
+				</field>
 				<field name="tags"
 					   type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
 					   default=""

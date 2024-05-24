@@ -1,0 +1,293 @@
+/**
+ * @copyright	(C) 2005 Open Source Matters, Inc. <https://www.joomla.org>
+ * @license		GNU General Public License version 2 or later; see LICENSE.txt
+ */
+
+body {
+	background: #fff;
+	font-family: 'Inter', sans-serif;
+	line-height: 1.5em;
+	font-size: 15px;
+	color: #0B0C0F;
+}
+
+h1 {
+	font-family: 'Inter', sans-serif;
+	font-size: 32px;
+	font-weight: 500;
+	color: #0B0C0F;
+	margin: 0;
+	line-height: 1.2em;
+}
+
+h2 {
+	font-family: 'Inter', sans-serif;
+	font-size: 24px;
+	font-weight: 500;
+	color: #0B0C0F;
+	margin: 0;
+	line-height: 1.2em;
+}
+
+h3 {
+	font-weight: 500;
+	font-family: 'Inter', sans-serif;
+	font-size: 18px;
+	color: #0B0C0F;
+	margin: 0;
+	line-height: 1.2em;
+}
+
+h4 {
+	font-weight: 500;
+	font-family: 'Inter', sans-serif;
+	color: #0B0C0F;
+	font-size: 16px;
+	margin: 0;
+	line-height: 1.2em;
+}
+
+h5 {
+	font-weight: 500;
+	font-size: 14px;
+	font-family: 'Inter', sans-serif;
+	color: #0B0C0F;
+	margin: 0;
+	line-height: 1.2em;
+}
+
+h6 {
+	font-weight: 500;
+	font-size: 12px;
+	font-family: 'Inter', sans-serif;
+	color: #0B0C0F;
+	margin: 0;
+	line-height: 1.2em;
+}
+
+
+p {
+	margin: 0;
+	font-family: 'Inter', sans-serif;
+	line-height: 1.5em;
+	font-size: 16px;
+	color: #0B0C0F;
+	font-weight: 400;
+}
+
+pre {
+	padding: 5px 10px;
+	background-color: #f0f0f0;
+	white-space: pre-wrap;
+	margin-bottom: 5px;
+	margin-top: 5px;
+	border-radius: 3px;
+	border: 1px solid #e0e0e5;
+	font-family: 'Inter', sans-serif;
+}
+
+code {
+	border: 1px solid #e0e0e5;
+	background: #f0f0f0;
+	border-radius: 3px;
+	white-space: nowrap;
+	padding: 2px 4px;
+	font-size: 14px;
+	font-family: 'Inter', sans-serif;
+}
+
+blockquote {
+	border-left: 4px solid #ccc;
+	margin-bottom: 5px;
+	margin-top: 5px;
+	padding-left: 16px;
+	margin-left: 0;
+}
+
+blockquote p {
+	font-size: 18px;
+}
+
+a {
+	text-decoration: underline;
+	color: #1B57B1;
+}
+
+a:hover {
+	color: #1B57B1;
+	text-decoration: none;
+	font-weight: normal;
+}
+
+ul, ol {
+	padding-left: 24px;
+	margin: 0;
+}
+
+ul ul, ol ol {
+	padding-left: 24px;
+}
+
+li {
+	line-height: 1.5em;
+}
+
+
+ol li:not(.ql-direction-rtl) {
+	padding-left: 0;
+}
+
+ol li.ql-direction-rtl {
+	padding-right: 1.5em;
+}
+
+ol li {
+	counter-reset: list-1 list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9;
+	counter-increment: list-0;
+}
+
+ol li::marker {
+	content: counter(list-0, decimal) '. ';
+}
+
+ol li.ql-indent-1 {
+	counter-increment: list-1;
+}
+
+ol li.ql-indent-1::marker {
+	content: counter(list-1, decimal) '. ';
+}
+
+ol li.ql-indent-1 {
+	counter-reset: list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9;
+}
+
+ol li.ql-indent-2 {
+	counter-increment: list-2;
+}
+
+ol li.ql-indent-2::marker {
+	content: counter(list-2, decimal) '. ';
+}
+
+ol li.ql-indent-2 {
+	counter-reset: list-3 list-4 list-5 list-6 list-7 list-8 list-9;
+}
+
+ol li.ql-indent-3 {
+	counter-increment: list-3;
+}
+
+ol li.ql-indent-3::marker {
+	content: counter(list-3, decimal) '. ';
+}
+
+ol li.ql-indent-3 {
+	counter-reset: list-4 list-5 list-6 list-7 list-8 list-9;
+}
+
+ol li.ql-indent-4 {
+	counter-increment: list-4;
+}
+
+ol li.ql-indent-4::marker {
+	content: counter(list-4, decimal) '. ';
+}
+
+ol li.ql-indent-4 {
+	counter-reset: list-5 list-6 list-7 list-8 list-9;
+}
+
+ol li.ql-indent-5 {
+	counter-increment: list-5;
+}
+
+ol li.ql-indent-5::marker {
+	content: counter(list-5, decimal) '. ';
+}
+
+ol li.ql-indent-5 {
+	counter-reset: list-6 list-7 list-8 list-9;
+}
+
+ol li.ql-indent-6 {
+	counter-increment: list-6;
+}
+
+ol li.ql-indent-6::marker {
+	content: counter(list-6, decimal) '. ';
+}
+
+ol li.ql-indent-6 {
+	counter-reset: list-7 list-8 list-9;
+}
+
+ol li.ql-indent-7 {
+	counter-increment: list-7;
+}
+
+ol li.ql-indent-7::marker {
+	content: counter(list-7, decimal) '. ';
+}
+
+ol li.ql-indent-7 {
+	counter-reset: list-8 list-9;
+}
+
+ol li.ql-indent-8 {
+	counter-increment: list-8;
+}
+
+ol li.ql-indent-8::marker {
+	content: counter(list-8, decimal) '. ';
+}
+
+ol li.ql-indent-8 {
+	counter-reset: list-9;
+}
+
+li.ql-indent-1 {
+	margin-left: 24px;
+}
+
+li.ql-indent-2 {
+	margin-left: 48px;
+}
+
+li.ql-indent-3 {
+	margin-left: 72px;
+}
+
+li.ql-indent-4 {
+	margin-left: 96px;
+}
+
+li.ql-indent-5 {
+	margin-left: 120px;
+}
+
+li.ql-indent-6 {
+	margin-left: 144px;
+}
+
+li.ql-indent-7 {
+	margin-left: 168px;
+}
+
+li.ql-indent-8 {
+	margin-left: 192px;
+}
+
+hr {
+	margin: 16px 0;
+	border-bottom: 1px solid #e0e0e5;
+}
+
+div.caption       { padding: 0 10px 0 10px; }
+div.caption img   { border: 1px solid #CCC; }
+div.caption p     { font-size: .90em; color: #666; text-align: center; }
+
+/* STYLES FOR JOOMLA! EDITOR */
+hr#system-readmore  { border: #FF0000FF dashed 1px; color: #FF0000FF; }
+hr.system-pagebreak { border: #808080FF dashed 1px; color: #808080FF; }
+
