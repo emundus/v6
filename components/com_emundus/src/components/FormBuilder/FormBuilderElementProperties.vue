@@ -65,10 +65,33 @@
           </div>
         </div>
 
-        <div class="em-pt-16" v-if="element.params">
-          <label for="element-alias">{{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_ALIAS') }}</label>
-          <input id="element-alias" name="element-alias" type="text" v-model="element.params.alias" @keyup="formatAlias" />
-          <label class="mt-2" style="font-size: small;">{{translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_ALIAS_HELPTEXT')}}</label>
+        <div class="flex items-center gap-2 cursor-pointer mt-4 mb-3" @click="advancedSettings = !advancedSettings">
+          <span class="font-medium">
+            {{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_ADVANCED_SETTINGS') }}
+          </span>
+          <span class="material-icons-outlined font-medium" :class="[advancedSettings ? 'rotate-90' : '']">chevron_right</span>
+        </div>
+
+        <div v-show="advancedSettings" class="flex flex-col gap-3">
+          <div class="em-flex-row em-flex-space-between em-w-100" v-if="sysadmin">
+            <span>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_HIDDEN") }}</span>
+            <div class="em-toggle">
+              <input type="checkbox" class="em-toggle-check" v-model="isHidden" @click="toggleHidden">
+              <strong class="b em-toggle-switch"></strong>
+              <strong class="b em-toggle-track"></strong>
+            </div>
+          </div>
+
+          <div v-if="element.params">
+            <label for="element-alias">{{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_ALIAS') }}</label>
+            <input id="element-alias" name="element-alias" type="text" v-model="element.params.alias" @keyup="formatAlias" />
+<!--            <span class="mt-2" style="font-size: small;">{{translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_ALIAS_HELPTEXT')}}</span>-->
+          </div>
+
+          <div v-if="element.params">
+            <label for="element-rollover">{{ translate('COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT') }}</label>
+            <input id="element-rollover" name="element-alias" type="text" v-model="element.params.rollover" />
+          </div>
         </div>
 
       </div>
@@ -137,6 +160,7 @@ export default {
       ],
 
       advancedFormatting: false,
+      advancedSettings: false,
 
       loading: false,
     };
