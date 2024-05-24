@@ -385,11 +385,17 @@ function checkPasswordSymbols(element) {
     }
 }
 
-function cleanNumberInput(element, maxDecimals) {
-    let value = element.get('value');
+function cleanNumberInput(element, maxDecimals = 0,noGreaterThan = null,authorizeNegativeNumber = false) {
+    var value = element.get('value');
     const input = document.getElementById(element.strElement);
+    var nonDigitExceptCommaDot = '';
 
-    const nonDigitExceptCommaDot = /[^0-9.,]/;
+    if(authorizeNegativeNumber){
+        nonDigitExceptCommaDot = /[^-0-9.,]/;
+    }
+    else{
+        nonDigitExceptCommaDot = /[^0-9.,]/;
+    }
 
     const moreThanOneCommaDot = /[.,].*[.,]/;
 
@@ -416,21 +422,14 @@ function cleanNumberInput(element, maxDecimals) {
             value = value.substring(0, caretPosition - 1) + value.substring(caretPosition);
         }
     }
-
     if (maxDecimals === 0 && value.indexOf(".") !== -1) {
         value = value.replace(".", "");
     }
 
-    if (maxDecimals > 0) {
-        // remove all characters after dot + maxdecimals
-        const dotIndex = value.indexOf(".");
-        if (dotIndex !== -1) {
-            value = value.substring(0, dotIndex + maxDecimals + 1);
-        }
+    if(value > noGreaterThan){
+        value = '';
     }
 
-    // remove all non numeric characters
-    value = value.replace(/[^0-9.,]/g, '');
 
     return value;
 }

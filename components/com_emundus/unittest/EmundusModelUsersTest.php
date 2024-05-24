@@ -120,6 +120,31 @@ class EmundusModelUsersTest extends TestCase
 		}
 	}
 
+    public function testrepairEmundusUser() {
+        $this->assertEmpty($this->m_users->repairEmundusUser(0), 'Passing an empty user id should return false');
+        $this->assertEmpty($this->m_users->repairEmundusUser(999999), 'Passing an incorrect user id should return false');
+
+        $user_id = $this->h_sample->createSampleUser(2, 'userthatwillbebroken' . rand(0, 99999) . '@emundus.test.fr');
+        $this->assertNotEmpty($user_id, 'A user should be created');
+        $this->assertTrue($this->m_users->repairEmundusUser($user_id), 'Passing a user id that has an emundus_users line should return true as the function should still be executed correctly');
+
+        // Delete the emundus_users line
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->clear()
+            ->delete($db->quoteName('#__emundus_users'))
+            ->where($db->quoteName('user_id') . ' = ' . $db->quote($user_id));
+        $db->setQuery($query);
+        $db->execute();
+
+        $this->assertTrue($this->m_users->repairEmundusUser($user_id), 'Passing a user id that has a missing emundus_users line should return true as the account should be repaired');
+
+        $users = $this->m_users->getUserById($user_id);
+        $this->assertNotEmpty($users, 'The user should be found in the database');
+        $this->assertEquals($user_id, $users[0]->user_id, 'The user id should be the same');
+        $this->assertEquals('Test', $users[0]->firstname, 'The user id should be the same');
+        $this->assertEquals('USER', $users[0]->lastname, 'The user id should be the same');
+    }
 
 	/**
      * @covers EmundusModelUsers::getColumnsFromProfileForm

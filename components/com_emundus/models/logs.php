@@ -276,7 +276,7 @@ class EmundusModelLogs extends JModelList {
                 ->from($db->quoteName('#__emundus_logs', 'lg'))
                 ->leftJoin($db->quoteName('#__emundus_users', 'us').' ON '.$db->QuoteName('us.user_id').' = '.$db->QuoteName('lg.user_id_from'))
                 ->where($where)
-                ->order($db->quoteName('lg.timestamp') . ' ' . $showTimeOrder);
+                ->order($db->quoteName('lg.timestamp').' '.$showTimeOrder.', '.$db->quoteName('lg.id').' '.$showTimeOrder);
 
             if(!is_null($offset)) {
                 $query->setLimit($limit, $offset);

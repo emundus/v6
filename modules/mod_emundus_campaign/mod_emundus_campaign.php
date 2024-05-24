@@ -235,7 +235,7 @@ if($user->guest || in_array($e_user->profile,$app_prof))
             $condition .= ' ORDER BY ' . $order;
             break;
         case 'program':
-            $condition .= ' ORDER BY training, ' . $order;
+            $condition .= ' ORDER BY programme_ordering, training, ' . $order;
             break;
         case 'ordering':
             $condition .= ' ORDER BY ordering, ' . $order;
