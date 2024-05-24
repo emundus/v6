@@ -111,5 +111,12 @@
     "icon": "file_upload",
     "name": "COM_EMUNDUS_ONBOARD_TYPE_FILE",
     "published": false
+  },
+  {
+    "value": "iban",
+    "icon": "account_balance",
+    "name": "COM_EMUNDUS_ONBOARD_TYPE_IBAN",
+    "description": "COM_EMUNDUS_ONBOARD_TYPE_IBAN_DESC",
+    "published": true
   }
 ]
