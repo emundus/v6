@@ -1188,6 +1188,7 @@
         input[type="text"] {
           outline: none;
           height: 18px;
+          min-width: 254px;
         }
       }
     }
