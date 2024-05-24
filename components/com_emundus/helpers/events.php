@@ -239,11 +239,11 @@ class EmundusHelperEvents {
 
             $is_dead_line_passed = strtotime(date($now)) > strtotime($current_end_date);
 
-            $edit_status = array();
             if (!empty($current_phase) && !empty($current_phase->entry_status)) {
-                $edit_status = array_merge($edit_status, $current_phase->entry_status);
+                $edit_status = $current_phase->entry_status;
             } else {
-                $edit_status[] = 0;
+				$status_for_send = explode(',',$eMConfig->get('status_for_send', '0'));
+                $edit_status = array_unique(array_merge(['0'], $status_for_send));
             }
 
             $is_app_sent = !in_array(@$user->status, $edit_status);
@@ -265,7 +265,12 @@ class EmundusHelperEvents {
                 if ($fnum == @$user->fnum) {
                     //try to access edit view
                     if ($view == 'form') {
-                        if ((!$is_dead_line_passed && $isLimitObtained !== true) || in_array($user->id, $applicants) || ($is_app_sent && !$is_dead_line_passed && $can_edit_until_deadline && $isLimitObtained !== true) || ($is_dead_line_passed && $can_edit_after_deadline && $isLimitObtained !== true) || $can_edit) {
+                        if (
+							(!$is_app_sent && !$is_dead_line_passed && $isLimitObtained !== true)
+							|| in_array($user->id, $applicants)
+							|| ($is_app_sent && !$is_dead_line_passed && $can_edit_until_deadline)
+							|| ($is_dead_line_passed && $can_edit_after_deadline && ((!$is_app_sent && $isLimitObtained !== true) || $is_app_sent))
+							|| $can_edit) {
                             $reload_url = false;
                         }
                     }
@@ -676,18 +681,6 @@ class EmundusHelperEvents {
 	        }
 
             if ($application_fee) {
-                if($params->get('hikashop_session', 0)) {
-                    // check if there is not another cart open
-                    $hikashop_user = JFactory::getSession()->get('emundusPayment');
-                    if (!empty($hikashop_user->fnum) && $hikashop_user->fnum != $user->fnum) {
-                        $user->fnum = $hikashop_user->fnum;
-                        JFactory::getSession()->set('emundusUser', $user);
-
-                        $mainframe->enqueueMessage(JText::_('ANOTHER_HIKASHOP_SESSION_OPENED'), 'error');
-                        $mainframe->redirect('/');
-                    }
-                }
-
                 $fnumInfos = $mFiles->getFnumInfos($user->fnum);
 
                 // If students with a scholarship have a different fee.
@@ -719,6 +712,17 @@ class EmundusHelperEvents {
                     } else if (!empty($pay_scholarship)  && empty($mApplication->getHikashopOrder($fnumInfos))) {
                         $scholarship_product = $params->get('scholarship_product', 0);
                         if (!empty($scholarship_product)) {
+                            if($params->get('hikashop_session', 0)) {
+                                // check if there is not another cart open
+                                $hikashop_user = JFactory::getSession()->get('emundusPayment');
+                                if (!empty($hikashop_user->fnum) && $hikashop_user->fnum != $user->fnum) {
+                                    $user->fnum = $hikashop_user->fnum;
+                                    JFactory::getSession()->set('emundusUser', $user);
+
+                                    $mainframe->enqueueMessage(JText::_('ANOTHER_HIKASHOP_SESSION_OPENED'), 'error');
+                                    $mainframe->redirect('/');
+                                }
+                            }
                             $return_url = $mApplication->getHikashopCheckoutUrl($user->profile);
                             $return_url = preg_replace('/&product_id=[0-9]+/', "&product_id=$scholarship_product", $return_url);
 	                        $checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url=' . urlencode(base64_encode($return_url));
@@ -733,6 +737,17 @@ class EmundusHelperEvents {
                 if (count($fnumInfos) > 0) {
                     $checkout_cart_url = $mApplication->getHikashopCartUrl($user->profile);
                     if (!empty($checkout_cart_url)) {
+                        if($params->get('hikashop_session', 0)) {
+                            // check if there is not another cart open
+                            $hikashop_user = JFactory::getSession()->get('emundusPayment');
+                            if (!empty($hikashop_user->fnum) && $hikashop_user->fnum != $user->fnum) {
+                                $user->fnum = $hikashop_user->fnum;
+                                JFactory::getSession()->set('emundusUser', $user);
+
+                                $mainframe->enqueueMessage(JText::_('ANOTHER_HIKASHOP_SESSION_OPENED'), 'error');
+                                $mainframe->redirect('/');
+                            }
+                        }
                         JPluginHelper::importPlugin('emundus','custom_event_handler');
                         \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onBeforeEmundusRedirectToHikashopCart', ['url' => $checkout_cart_url, 'fnum' => $user->fnum, 'user' => $user]]);
                         $mainframe->redirect($checkout_cart_url);
@@ -743,7 +758,18 @@ class EmundusHelperEvents {
                             $checkout_url = $mEmails->setTagsFabrik($checkout_url, [$user->fnum], true);
                         }
                         // If $accept_other_payments is 2 : that means we do not redirect to the payment page.
-                        if ($accept_other_payments != 2 && empty($mApplication->getHikashopOrder($fnumInfos)) && $attachments_progress >= 100 && $forms_progress >= 100) {
+                        if ($accept_other_payments != 2 && empty($mApplication->getHikashopOrder($fnumInfos)) && $attachments >= 100 && $forms >= 100) {
+                            if($params->get('hikashop_session', 0)) {
+                                // check if there is not another cart open
+                                $hikashop_user = JFactory::getSession()->get('emundusPayment');
+                                if (!empty($hikashop_user->fnum) && $hikashop_user->fnum != $user->fnum) {
+                                    $user->fnum = $hikashop_user->fnum;
+                                    JFactory::getSession()->set('emundusUser', $user);
+
+                                    $mainframe->enqueueMessage(JText::_('ANOTHER_HIKASHOP_SESSION_OPENED'), 'error');
+                                    $mainframe->redirect('/');
+                                }
+                            }
                             // Profile number and document ID are concatenated, this is equal to the menu corresponding to the free option (or the paid option in the case of document_id = NULL)
 	                        $checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url=' . urlencode(base64_encode($checkout_url));
                             $mainframe->redirect($checkout_url);
@@ -930,7 +956,7 @@ class EmundusHelperEvents {
         $export_pdf                 = $eMConfig->get('export_application_pdf', 0);
         $export_path                = $eMConfig->get('export_path', null);
         $id_applicants              = explode(',',$eMConfig->get('id_applicants', '0'));
-        $new_status                 = 1;
+        $new_status                 = $eMConfig->get('default_send_status', 1);
 
 
         $offset = $app->get('offset', 'UTC');
@@ -1407,83 +1433,94 @@ class EmundusHelperEvents {
 			$db = JFactory::getDbo();
 			$query = $db->getQuery(true);
 
-			$query->clear()
-				->select('distinct sq.id,sq.form_id,sq.group_id')
-				->from($db->quoteName('#__emundus_setup_qcm','sq'))
-				->where($db->quoteName('sq.form_id') . ' IN (' . implode(',',$db->quote($forms_ids)) . ')');
-			$db->setQuery($query);
-			$qcms = $db->loadObjectList();
-			$qcms_ids = array_column($qcms, 'id');
+			$db->setQuery('show tables');
+			$existingTables = $db->loadColumn();
+			if (in_array('jos_emundus_setup_qcm', $existingTables))
+			{
 
-			if(!empty($qcms)) {
 				$query->clear()
-					->select('count(id)')
-					->from($db->quoteName('#__emundus_qcm_applicants','qa'))
-					->where($db->quoteName('qa.fnum') . ' LIKE ' . $db->quote($fnum))
-					->where($db->quoteName('qa.qcmid') . ' IN (' . implode(',',$db->quote($qcms_ids)) . ')');
+					->select('distinct sq.id,sq.form_id,sq.group_id')
+					->from($db->quoteName('#__emundus_setup_qcm', 'sq'))
+					->where($db->quoteName('sq.form_id') . ' IN (' . implode(',', $db->quote($forms_ids)) . ')');
 				$db->setQuery($query);
-				$applicants_qcms = $db->loadResult();
+				$qcms     = $db->loadObjectList();
+				$qcms_ids = array_column($qcms, 'id');
 
-				if(sizeof($qcms) == $applicants_qcms)
+				if (!empty($qcms))
 				{
-					foreach ($qcms as $qcm)
+					$query->clear()
+						->select('count(id)')
+						->from($db->quoteName('#__emundus_qcm_applicants', 'qa'))
+						->where($db->quoteName('qa.fnum') . ' LIKE ' . $db->quote($fnum))
+						->where($db->quoteName('qa.qcmid') . ' IN (' . implode(',', $db->quote($qcms_ids)) . ')');
+					$db->setQuery($query);
+					$applicants_qcms = $db->loadResult();
+
+					if (sizeof($qcms) == $applicants_qcms)
 					{
-						$query->clear()
-							->select('questions')
-							->from($db->quoteName('#__emundus_qcm_applicants'))
-							->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum))
-							->andWhere($db->quoteName('qcmid') . ' = ' . $db->quote($qcm->id));
-						$db->setQuery($query);
-						$q_numbers = sizeof(explode(',', $db->loadResult()));
-
-						$query->clear()
-							->select('db_table_name')
-							->from($db->quoteName('#__fabrik_lists'))
-							->where($db->quoteName('form_id') . ' = ' . $db->quote($qcm->form_id));
-						$db->setQuery($query);
-						$table = $db->loadResult();
-
-						$query->clear()
-							->select('table_join')
-							->from($db->quoteName('#__fabrik_joins'))
-							->where($db->quoteName('group_id') . ' = ' . $db->quote($qcm->group_id))
-							->where($db->quoteName('join_from_table') . ' = ' . $db->quote($table))
-							->where($db->quoteName('table_join_key') . ' = ' . $db->quote('parent_id'));
-						$db->setQuery($query);
-						$repeat_table = $db->loadResult();
-
-						if(!empty($repeat_table))
+						foreach ($qcms as $qcm)
 						{
 							$query->clear()
-								->select('count(rt.id) as answers')
-								->from($db->quoteName($repeat_table, 'rt'))
-								->leftJoin($db->quoteName($table, 't') . ' ON ' . $db->quoteName('t.id') . ' = ' . $db->quoteName('rt.parent_id'))
-								->where($db->quoteName('t.fnum') . ' LIKE ' . $db->quote($fnum));
+								->select('questions')
+								->from($db->quoteName('#__emundus_qcm_applicants'))
+								->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum))
+								->andWhere($db->quoteName('qcmid') . ' = ' . $db->quote($qcm->id));
 							$db->setQuery($query);
-							$answers_given = $db->loadResult();
+							$q_numbers = sizeof(explode(',', $db->loadResult()));
 
-							if ((int) $answers_given != $q_numbers)
+							$query->clear()
+								->select('db_table_name')
+								->from($db->quoteName('#__fabrik_lists'))
+								->where($db->quoteName('form_id') . ' = ' . $db->quote($qcm->form_id));
+							$db->setQuery($query);
+							$table = $db->loadResult();
+
+							$query->clear()
+								->select('table_join')
+								->from($db->quoteName('#__fabrik_joins'))
+								->where($db->quoteName('group_id') . ' = ' . $db->quote($qcm->group_id))
+								->where($db->quoteName('join_from_table') . ' = ' . $db->quote($table))
+								->where($db->quoteName('table_join_key') . ' = ' . $db->quote('parent_id'));
+							$db->setQuery($query);
+							$repeat_table = $db->loadResult();
+
+							if (!empty($repeat_table))
+							{
+								$query->clear()
+									->select('count(rt.id) as answers')
+									->from($db->quoteName($repeat_table, 'rt'))
+									->leftJoin($db->quoteName($table, 't') . ' ON ' . $db->quoteName('t.id') . ' = ' . $db->quoteName('rt.parent_id'))
+									->where($db->quoteName('t.fnum') . ' LIKE ' . $db->quote($fnum));
+								$db->setQuery($query);
+								$answers_given = $db->loadResult();
+
+								if ((int) $answers_given != $q_numbers)
+								{
+									$result['status'] = false;
+									$result['msg']    = 'PLEASE_COMPLETE_QCM_BEFORE_SEND';
+									$result['link']   = "index.php?option=com_fabrik&view=form&formid=" . $qcm->form_id . "&Itemid=" . $items_ids[$qcm->form_id] . "&usekey=fnum&rowid=" . $fnum . "&r=1";
+
+									// We break the loop because we have found a qcm that is not completed
+									return $result;
+								}
+							}
+							else
 							{
 								$result['status'] = false;
 								$result['msg']    = 'PLEASE_COMPLETE_QCM_BEFORE_SEND';
 								$result['link']   = "index.php?option=com_fabrik&view=form&formid=" . $qcm->form_id . "&Itemid=" . $items_ids[$qcm->form_id] . "&usekey=fnum&rowid=" . $fnum . "&r=1";
-
-								// We break the loop because we have found a qcm that is not completed
-								return $result;
 							}
-						} else {
-							$result['status'] = false;
-							$result['msg'] = 'PLEASE_COMPLETE_QCM_BEFORE_SEND';
-							$result['link'] = "index.php?option=com_fabrik&view=form&formid=" . $qcm->form_id . "&Itemid=" . $items_ids[$qcm->form_id] . "&usekey=fnum&rowid=" . $fnum . "&r=1";
 						}
 					}
-				} else {
-					$result['status'] = false;
-					$result['msg'] = 'PLEASE_COMPLETE_QCM_BEFORE_SEND';
-					$result['link'] = "index.php?option=com_fabrik&view=form&formid=" . $qcms[0]->form_id . "&Itemid=" . $items_ids[$qcms[0]->form_id] . "&usekey=fnum&rowid=" . $fnum . "&r=1";
+					else
+					{
+						$result['status'] = false;
+						$result['msg']    = 'PLEASE_COMPLETE_QCM_BEFORE_SEND';
+						$result['link']   = "index.php?option=com_fabrik&view=form&formid=" . $qcms[0]->form_id . "&Itemid=" . $items_ids[$qcms[0]->form_id] . "&usekey=fnum&rowid=" . $fnum . "&r=1";
 
-					// We break the loop because we have found a qcm that is not completed
-					return $result;
+						// We break the loop because we have found a qcm that is not completed
+						return $result;
+					}
 				}
 			}
 		}

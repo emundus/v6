@@ -2062,9 +2062,9 @@ class EmundusHelperFiles
             $fnum = $tag['fnum'];
 			$class = str_replace('label-','',$tag['class']);
             if (!isset($tagsList[$fnum])) {
-                $tagsList[$fnum] = '<div class="flex items-center gap-2 sticker label-'.$class.'" title="' . $tag['label'] . '"><span class="circle"></span><span class="text-white truncate font-semibold max-w-[150px] text-sm">'.$tag['label'].'</span></div>';
+                $tagsList[$fnum] = '<div class="flex items-center gap-2 sticker label-'.$class.'" title="' . $tag['label'] . '"><span class="circle"></span><span class="text-white truncate font-semibold w-[150px] text-sm">'.$tag['label'].'</span></div>';
             } else {
-                $tagsList[$fnum] .= '<div class="flex items-center gap-2 sticker label-'.$class.'" title="' . $tag['label'] . '"><span class="circle"></span><span class="text-white truncate font-semibold max-w-[150px] text-sm">'.$tag['label'].'</span></div>';
+                $tagsList[$fnum] .= '<div class="flex items-center gap-2 sticker label-'.$class.'" title="' . $tag['label'] . '"><span class="circle"></span><span class="text-white truncate font-semibold w-[150px] text-sm">'.$tag['label'].'</span></div>';
             }
         }
         return $tagsList;
@@ -3656,6 +3656,10 @@ class EmundusHelperFiles
 			$where['q'] .= ' AND (' . $programme_where_cond . $fnum_assoc_where_cond . ') ';
 		}
 
+        if ($caller == 'files') {
+            $where['q'] .= ' AND esc.published > 0';
+        }
+
 	    $menu = JFactory::getApplication()->getMenu();
 		if (!empty($menu)) {
 			$active = $menu->getActive();
@@ -3712,7 +3716,7 @@ class EmundusHelperFiles
 
 			    $at_least_one = false;
 
-			    $scopes = ['jecc.applicant_id', 'jecc.fnum', 'u.username', 'eu.firstname', 'eu.lastname', 'u.email', 'u.username'];
+			    $scopes = ['jecc.applicant_id', 'jecc.fnum', 'u.username', 'eu.firstname', 'eu.lastname', 'u.email'];
 			    foreach ($quick_search_filters as $index => $filter) {
 				    if (!empty($filter['scope'])) {
 					    if ($filter['scope'] === 'everywhere') {

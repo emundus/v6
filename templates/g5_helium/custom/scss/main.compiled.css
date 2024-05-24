@@ -920,16 +920,17 @@ video {
   justify-content: center;
   align-items: center;
 }
-.com_fabrik #g-sidebar {
-      position: sticky;
-    }
+.view-form #g-sidebar, .view-checklist #g-sidebar {
+    position: sticky;
+  }
 @media all and (max-width: 480px) {
-    .com_fabrik #g-sidebar {
-        position: static;
-        padding-top: 0;
-        padding-bottom: 24px
+
+  .view-form #g-sidebar, .view-checklist #g-sidebar {
+      position: static;
+      padding-top: 0;
+      padding-bottom: 24px
+  }
     }
-      }
 .com_fabrik .popover:not(.clockpicker-popover) {
       display: none !important;
     }
@@ -1078,6 +1079,11 @@ form.fabrikForm .check
     {
       opacity: 0;
       position: absolute;
+    }
+form.fabrikForm .\!check
+    {
+      opacity: 0 !important;
+      position: absolute !important;
     }
 form.fabrikForm .fabrikEmundusPhoneNumber .chzn-container{
       width: auto !important;
@@ -2276,6 +2282,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .top-px {
   top: 1px;
 }
+.isolate {
+  isolation: isolate;
+}
 .float-right {
   float: right;
 }
@@ -2351,6 +2360,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .mr-4 {
   margin-right: var(--em-spacing-4);
+}
+.mt-0 {
+  margin-top: 0px;
 }
 .mt-1 {
   margin-top: var(--em-spacing-1);
@@ -2433,6 +2445,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .inline-block {
   display: inline-block;
 }
+.\!inline {
+  display: inline !important;
+}
 .inline {
   display: inline;
 }
@@ -2469,6 +2484,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .h-10 {
   height: var(--em-spacing-10);
 }
+.h-full {
+  height: 100%;
+}
 .h-max {
   height: -moz-max-content;
   height: max-content;
@@ -2479,6 +2497,12 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .w-11\/12 {
   width: 91.666667%;
 }
+.w-\[150px\] {
+  width: 150px;
+}
+.w-\[200px\] {
+  width: 200px;
+}
 .w-auto {
   width: auto;
 }
@@ -2488,12 +2512,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .w-full {
   width: 100%;
-}
-.max-w-\[150px\] {
-  max-width: 150px;
-}
-.max-w-\[200px\] {
-  max-width: 200px;
 }
 .shrink {
   flex-shrink: 1;
@@ -3362,6 +3380,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .text-ellipsis {
   text-overflow: ellipsis;
 }
+.whitespace-pre-line {
+  white-space: pre-line;
+}
 .rounded {
   border-radius: 0.25rem;
 }
@@ -3370,6 +3391,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .border {
   border-width: 1px;
+}
+.border-0 {
+  border-width: 0px;
 }
 .border-t {
   border-top-width: 1px;
@@ -3789,6 +3813,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .pt-6 {
   padding-top: var(--em-spacing-6);
+}
+.\!text-center {
+  text-align: center !important;
 }
 .text-center {
   text-align: center;
@@ -4263,6 +4290,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .duration-300 {
   transition-duration: 300ms;
+}
+.ease-in {
+  transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
 }
 .ease-in-out {
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);

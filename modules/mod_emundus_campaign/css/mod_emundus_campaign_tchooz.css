@@ -170,6 +170,9 @@
 
 .mod_emundus_campaign__list_content_resume * {
     color: var(--neutral-600) !important;
+    display: inline;
+}
+.mod_emundus_campaign__list_content_resume p {
     display: block;
 }
 
@@ -470,6 +473,11 @@ a.em-blue-400-color:hover {
     display: grid;
     grid-gap: 0;
     grid-template-columns: 64% 30%;
+    align-items: start;
+
+    aside {
+        align-self: start;
+    }
 }
 
 @media (max-width: 479px) {

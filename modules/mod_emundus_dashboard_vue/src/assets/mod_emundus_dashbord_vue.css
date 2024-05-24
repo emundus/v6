@@ -276,3 +276,24 @@
   }
 }
 
+/* Widget to show PDF files with documentation */
+.tchooz-widget.widget-documentation {
+  height:auto;
+
+  > div {
+    background:unset;
+    box-shadow:unset;
+    border:unset;
+
+    > div {
+      display:flex;
+      justify-content:center;
+    }
+  }
+}
+
+/* Widget to show a scrollable table */
+.tchooz-widget .widget-table .widget-table-scrollable {
+  overflow-y: scroll;
+  height: 300px;
+}

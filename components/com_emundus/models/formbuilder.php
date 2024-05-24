@@ -368,6 +368,19 @@ class EmundusModelFormbuilder extends JModelList {
             $db->setQuery($query);
             $menu_parent = $db->loadObject();
 
+            /**
+             * Case of old platforms. deprecated
+             */
+            if (empty($menu_parent) || empty($menu_parent->id)) {
+                $query->clear()
+                    ->select('*')
+                    ->from('#__menu')
+                    ->where($db->quoteName('menutype') . ' = ' . $db->quote($menutype))
+                    ->andWhere($db->quoteName('type') . ' = ' . $db->quote('url'));
+                $db->setQuery($query);
+                $menu_parent = $db->loadObject();
+            }
+
             $query->clear()
                 ->select('rgt')
                 ->from($db->quoteName('#__menu'))
