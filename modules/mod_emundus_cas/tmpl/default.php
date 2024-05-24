@@ -32,7 +32,7 @@ JHtml::_('bootstrap.tooltip');
                     <?php if (empty($mod_emundus_cas_logo)) :?>
                         <div class="btn-cas">
 
-                            <a href="<?= $mod_emundus_cas_url1; ?>" target="_blank" class="btn btn-primary rounded">
+                            <a href="<?= $mod_emundus_cas_url1; ?>" class="btn btn-primary rounded">
                             <?= $mod_emundus_cas_btn1; ?>
                            </a>
                         </div>
