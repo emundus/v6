@@ -423,7 +423,8 @@ class EmundusAdministrationModelRanking extends JModelList
 
         EmundusHelperUpdate::addCustomEvents([
             ['label' => 'onAfterUpdateFileRanking', 'category' => 'Classement'],
-            ['label' => 'onGetFilesUserCanRank', 'category' => 'Classement']
+            ['label' => 'onGetFilesUserCanRank', 'category' => 'Classement'],
+            ['label' => 'onBeforeExportRanking', 'category' => 'Classement']
         ]);
 
         if (!in_array(false, $tasks)) {

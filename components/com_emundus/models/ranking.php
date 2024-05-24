@@ -1718,6 +1718,30 @@ class EmundusModelRanking extends JModelList
                 $m_files = new EmundusModelFiles();
                 $states = $m_files->getAllStatus($user_id, 'step');
 
+                $ordered_columns = [
+                    ['key' => 'id', 'label' => Text::_('COM_EMUNDUS_RANKING_EXPORT_FILE_ID')],
+                    ['key' => 'fnum', 'label' =>  Text::_('COM_EMUNDUS_RANKING_EXPORT_FILE_FNUM')]
+                ];
+
+                if (in_array('applicant', $columns)) {
+                    $ordered_columns[] = ['key' => 'applicant', 'label' => Text::_('COM_EMUNDUS_RANKING_EXPORT_APPLICANT')];
+                }
+
+                $ordered_columns[] = ['key' => 'rank', 'label' =>  Text::_('COM_EMUNDUS_RANKING_EXPORT_RANKING')];
+                $ordered_columns[] = ['key' => 'package', 'label' => Text::_('COM_EMUNDUS_RANKING_EXPORT_PACKAGE')];
+
+                if (in_array('status', $columns)) {
+                    $ordered_columns[] = ['key' => 'status', 'label' => Text::_('COM_EMUNDUS_RANKING_EXPORT_STATUS')];
+                }
+
+                if (in_array('ranker', $columns)) {
+                    $ordered_columns[] = ['key' => 'ranker', 'label' => Text::_('COM_EMUNDUS_RANKING_EXPORT_RANKER')];
+                }
+
+                $ordered_columns_keys = array_map(function($column) {
+                    return $column['key'];
+                }, $ordered_columns);
+
                 foreach ($files_by_package as $package_id => $files) {
                     $package_label = '';
                     foreach ($user_packages as $user_package) {
@@ -1728,28 +1752,32 @@ class EmundusModelRanking extends JModelList
                     }
 
                     if (!empty($files)) {
-
                         $other_rankings_values = [];
                         if (!empty($hierachy_ids)) {
                             $other_rankings_values = $this->getOtherRankingsRankerCanSee($user_id, $hierachy_ids, $package_id);
                         }
 
                         foreach ($files as $file) {
-                            $file_data = [
-                                0 => $file['id'],
-                                1 => $file['fnum'],
-                                2 => $file['rank'],
-                                3 => $package_label
-                            ];
+                            $file_data = [];
 
-                            if (in_array('applicant', $columns)) {
-                                $file_data[] = $file['applicant'];
-                            }
-                            if (in_array('status', $columns)) {
-                                $file_data[] = $states[$file['status']]['value'];
-                            }
-                            if (in_array('ranker', $columns)) {
-                                $file_data[] = $user_id;
+                            foreach($ordered_columns_keys as $column) {
+                                switch($column) {
+                                    case 'status':
+                                        $file_data[] = $states[$file['status']]['value'];
+                                        break;
+                                    case 'package':
+                                        $file_data[] = $package_label;
+                                        break;
+                                    case 'ranker':
+                                        $file_data[] = $user_id;
+                                        break;
+                                    case 'rank':
+                                        $file_data[] = empty($file[$column]) || $file[$column] == -1 ? Text::_('COM_EMUNDUS_RANKING_NOT_RANKED') : $file[$column];
+                                        break;
+                                    default:
+                                        $file_data[] = $file[$column];
+                                        break;
+                                }
                             }
 
                             if (!empty($hierachy_ids)) {
@@ -1759,10 +1787,10 @@ class EmundusModelRanking extends JModelList
                                     }, $other_ranking['files']));
 
                                     if ($other_ranking_index !== false) {
-                                        $file_data[] = $other_ranking['files'][$other_ranking_index]['rank'];
+                                        $file_data[] = empty($other_ranking['files'][$other_ranking_index]['rank']) || $other_ranking['files'][$other_ranking_index]['rank'] == -1 ? Text::_('COM_EMUNDUS_RANKING_NOT_RANKED') : $other_ranking['files'][$other_ranking_index]['rank'];
                                         $file_data[] = $other_ranking['rankers'][$other_ranking['files'][$other_ranking_index]['ranker_id']]['name'];
                                     } else {
-                                        $file_data[] = '';
+                                        $file_data[] = Text::_('COM_EMUNDUS_RANKING_NOT_RANKED');
                                         $file_data[] = '';
                                     }
                                 }
@@ -1784,30 +1812,23 @@ class EmundusModelRanking extends JModelList
                     } else {
                         fprintf($csv_file, chr(0xEF).chr(0xBB).chr(0xBF));
 
-                        $header = ['ID', 'Numéro de dossier', 'Classement', 'Campagne'];
-                        if (in_array('applicant', $columns)) {
-                            $header[] = 'Candidat';
-                        }
-                        if (in_array('status', $columns)) {
-                            $header[] = 'Statut';
-                        }
-                        if (in_array('ranker', $columns)) {
-                            $header[] = 'Responsable';
-                        }
+                        $header = array_map(function($column) {
+                            return $column['label'];
+                        }, $ordered_columns);
 
                         foreach($hierachy_ids as $hierachy_id) {
                             $hierarchy_label = $this->getHierarchyData($hierachy_id)['label'];
 
-                            $header[] = 'Classement ' . $hierarchy_label;
-                            $header[] = 'Responsable - ' . $hierarchy_label;
+                            $header[] = Text::_('COM_EMUNDUS_RANKING_EXPORT_RANKING') . ' ' . $hierarchy_label;
+                            $header[] = Text::_('COM_EMUNDUS_RANKING_EXPORT_STATUS') . ' - ' . $hierarchy_label;
                         }
 
-                        fputcsv($csv_file, $header, ';');
+                        $this->dispatchEvent('onBeforeExportRanking', ['header' => &$header, 'lines' => &$export_array]);
 
+                        fputcsv($csv_file, $header, ';');
                         foreach ($export_array as $line) {
                             fputcsv($csv_file, $line, ';');
                         }
-
                         fclose($csv_file);
                         $export_link = JUri::root() . 'tmp/' . $name;
                     }

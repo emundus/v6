@@ -67,11 +67,11 @@ export default {
       hierarchies: [],
       selectedHierarchies: [],
       columns: [
-        {id: 'name', label: 'COM_EMUNDUS_RANKING_EXPORT_COLUMN_NAME'},
+        {id: 'applicant', label: 'COM_EMUNDUS_RANKING_EXPORT_COLUMN_NAME'},
         {id: 'status', label: 'COM_EMUNDUS_RANKING_EXPORT_COLUMN_STATUS'},
         {id: 'ranker', label: 'COM_EMUNDUS_RANKING_EXPORT_COLUMN_RANKER'},
       ],
-      selectedColumns: ['fnum', 'name', 'status', 'rank', 'ranker'],
+      selectedColumns: ['fnum', 'applicant', 'status', 'rank', 'ranker'],
       downloadLink: null
     }
   },
