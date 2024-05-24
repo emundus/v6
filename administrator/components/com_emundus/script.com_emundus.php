@@ -4296,10 +4296,156 @@ if(in_array($applicant,$exceptions)){
                 $m_admin_campaign = new EmundusModelAdministratorCampaign();
                 $succeed['install_campaign_more'] = $m_admin_campaign->installCampaignMore();
 
-				EmundusHelperUpdate::installExtension('plg_fabrik_element_iban','iban','{"name":"plg_fabrik_element_iban","type":"plugin","creationDate":"March 2024","author":"Media A-Team, Inc.","copyright":"Copyright (C) 2005-2024 Media A-Team, Inc. - All rights reserved.","authorEmail":"brice.hubinet@emundus.fr","authorUrl":"www.emundus.fr","version":"4.0Zeta","description":"PLG_ELEMENT_IBAN_DESCRIPTION","group":"","filename":"iban"}','plugin',1,'fabrik_element');
+				$query->clear()
+					->select('id')
+					->from($db->quoteName('#__fabrik_groups'))
+					->where($db->quoteName('name') . ' LIKE ' . $db->quote('GROUP_PROGRAM_DETAIL'));
+				$db->setQuery($query);
+				$group_program_detail = $db->loadResult();
+
+				if(!empty($group_program_detail)){
+					EmundusHelperUpdate::addColumn('jos_emundus_setup_programmes', 'evaluation_form', 'INT',11,1);
+
+					EmundusHelperUpdate::insertTranslationsTag('ELEMENT_PROGRAM_FORM_EVALUATION', 'Formulaire d\'évaluation');
+					EmundusHelperUpdate::insertTranslationsTag('ELEMENT_PROGRAM_FORM_EVALUATION', 'Evaluation form', 'override', null, null, null, 'en-GB');
+
+					$datas = [
+						'name' => 'evaluation_form',
+						'group_id' => $group_program_detail,
+						'plugin' => 'databasejoin',
+						'label' => 'ELEMENT_PROGRAM_FORM_EVALUATION',
+					];
+					$params = [
+						'join_db_name' => 'jos_fabrik_lists',
+						'join_key_column' => 'form_id',
+						'join_val_column' => "label",
+						'join_val_column_concat' => "{thistable}.label",
+						'database_join_where_sql' => "WHERE {thistable}.db_table_name = 'jos_emundus_evaluations'"
+					];
+					$eid = EmundusHelperUpdate::addFabrikElement($datas,$params,false)['id'];
+
+					if(!empty($eid))
+					{
+						$datas = [
+							'element_id' => $eid,
+							'join_from_table' => '',
+							'table_join' => 'jos_fabrik_lists',
+							'table_key' => 'evaluation_form',
+							'table_join_key' => 'form_id',
+							'join_type' => 'left',
+							'group_id' => $group_program_detail
+						];
+						$params = [
+							'join-label' => 'label',
+							'type' => 'element',
+							'pk' => "`jos_fabrik_lists`.`id`"
+						];
+						EmundusHelperUpdate::addFabrikJoin($datas,$params);
+
+						$query->clear()
+							->update($db->quoteName('#__fabrik_elements'))
+							->set($db->quoteName('hidden') . ' = 1')
+							->where($db->quoteName('name') . ' = ' . $db->quote('fabrik_group_id'));
+						$db->setQuery($query);
+						$db->execute();
+
+						$query->clear()
+							->select('id,fabrik_group_id')
+							->from($db->quoteName('#__emundus_setup_programmes'))
+							->where($db->quoteName('fabrik_group_id') . ' IS NOT NULL');
+						$db->setQuery($query);
+						$programs = $db->loadAssocList();
+
+						foreach ($programs as $program) {
+							if(!empty($program['fabrik_group_id']))
+							{
+								$fabrik_groups = explode(',', $program['fabrik_group_id']);
+
+								$query->clear()
+									->select('form_id')
+									->from($db->quoteName('#__fabrik_formgroup'))
+									->where($db->quoteName('group_id') . ' IN (' . implode(',',$db->quote($fabrik_groups)) .')');
+								$db->setQuery($query);
+								$evaluation_form_id = $db->loadResult();
+
+								if(!empty($evaluation_form_id))
+								{
+									$query->clear()
+										->update($db->quoteName('#__emundus_setup_programmes'))
+										->set($db->quoteName('evaluation_form') . ' = ' . $db->quote($evaluation_form_id))
+										->where($db->quoteName('id') . ' = ' . $db->quote($program['id']));
+									$db->setQuery($query);
+									$db->execute();
+								}
+							}
+						}
+					}
+				}
+
+				$query->clear()
+					->select('extension_id,params')
+					->from($db->quoteName('#__extensions'))
+					->where($db->quoteName('name') . ' LIKE ' . $db->quote('plg_system_logrotation'));
+				$db->setQuery($query);
+				$logrotation = $db->loadObject();
+
+				if(!empty($logrotation->extension_id))
+				{
+					$params = json_decode($logrotation->params, true);
+
+					$params['cachetimeout'] = 7;
+					$params['logstokeep'] = 4;
+
+					$query->clear()
+						->update($db->quoteName('#__extensions'))
+						->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+						->where($db->quoteName('extension_id') . ' = ' . $logrotation->extension_id);
+					$db->setQuery($query);
+					$db->execute();
+				}
+				EmundusHelperUpdate::installExtension('plg_cron_logspurge','emunduslogsandmessagespurge','{"name":"plg_cron_logspurge","type":"plugin","creationDate":"May 2024","author":"eMundus","copyright":"Copyright (C) 2024 emundus.fr - All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"www.emundus.fr","version":"1.39.0","description":"PLG_CRON_LOGSPURGE_DESC","group":"","filename":"emunduslogsandmessagespurge"}','plugin',1,'fabrik_cron', '{"amount_time":"1","unit_time":"year","export_zip":"1", "amount_time_tmp":"1","unit_time_tmp":"week"}');
+
+				$query->clear()
+					->select($db->quoteName('id'))
+					->from($db->quoteName('jos_fabrik_cron'))
+					->where($db->quoteName('plugin') . ' = ' . $db->quote('emunduslogsandmessagespurge'));
+
+				$db->setQuery($query);
+				$existing_cron = $db->loadResult();
+
+				if ($existing_cron !== null)
+				{
+					echo "Plugin cron already created.";
+				}
+				else
+				{
+					$current_hour = date('G');
+					if ($current_hour < 4)
+					{
+						$last_four_hour = date('Y-m-d 04:00:00', strtotime('yesterday'));
+					}
+					else
+					{
+						$last_four_hour = date('Y-m-d 04:00:00');
+					}
+
+					$inserted = [
+						'label' => 'Logs and messages purge',
+						'frequency' => 1,
+						'unit' => 'day',
+						'created' => date('0000-00-00 00:00:00'),
+						'modified' => date('0000-00-00 00:00:00'),
+						'checked_out_time' => date('0000-00-00 00:00:00'),
+						'plugin' => 'emunduslogsandmessagespurge',
+						'published' => 1,
+						'lastrun' => date($last_four_hour),
+						'params' => '{"connection":"1","table":"","cron_row_limit":"100","log":"0","log_email":"","require_qs":"0","require_qs_secret":"","cron_rungate":"1","cron_reschedule_manual":"0","amount_time":"1","unit_time":"year","export_zip":"1", "amount_time_tmp":"1","unit_time_tmp":"week"}'
+					];
+					$inserted = (object) $inserted;
+					$db->insertObject('jos_fabrik_cron', $inserted);
+				}
 			}
 		}
-
 		return $succeed;
 	}
 
@@ -4405,6 +4551,13 @@ if(in_array($applicant,$exceptions)){
 		$query->clear()
 			->delete($db->quoteName('#__emundus_setup_dashboard'))
 			->where($db->quoteName('user') . ' IN (62,95)');
+		$db->setQuery($query);
+		$db->execute();
+
+		// Clear external_login logs
+		$query->clear()
+			->delete($db->quoteName('#__externallogin_logs'))
+			->where("from_unixtime(round(`date`)) < DATE_SUB(DATE(now()), INTERVAL 15 DAY)");
 		$db->setQuery($query);
 		$db->execute();
 
