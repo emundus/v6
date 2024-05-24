@@ -13,7 +13,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 $rowStarted      = false;
-$layout          = FabrikHelperHTML::getLayout('form.fabrik-control-group');
+$layout          = FabrikHelperHTML::getLayout('form.fabrik-control-group', [JPATH_SITE . '/components/com_fabrik/views/form/tmpl/emundus/layouts/']);
 $gridStartLayout = FabrikHelperHTML::getLayout('grid.fabrik-grid-start');
 $gridEndLayout   = FabrikHelperHTML::getLayout('grid.fabrik-grid-end');
 $model     = $this->getModel();
@@ -43,7 +43,9 @@ foreach ($this->elements as $element) :
 	$displayData = array(
 		'class' => $element->containerClass,
 		'style' => $style,
-		'span' => $span
+		'span' => $span,
+        'element' => $element,
+        'display_comments' => $this->display_comments,
 	);
 
 	$labelsAbove = $element->labels;
@@ -66,18 +68,7 @@ foreach ($this->elements as $element) :
 		$displayData['row'] = $this->loadTemplate('group_labels_above');
 	}
 
-     if ($this->display_comments) {
-        ?>
-        <div class="fabrik-element-emundus-container flex flex-row justify-items-start items-start">
-            <div <?= $style ?>>
-                <span class="material-icons-outlined cursor-pointer comment-icon" data-target-type="elements" data-target-id="<?= $element->element_fabrik_id ?>">comment</span>
-            </div>
-            <?= $layout->render((object) $displayData); ?>
-        </div>
-        <?php
-    } else {
-       echo $layout->render((object) $displayData);
-    }
+    echo $layout->render((object) $displayData);
     ?>
     <?php
 	if ($element->endRow) :

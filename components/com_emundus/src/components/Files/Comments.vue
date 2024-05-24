@@ -1,7 +1,6 @@
 <template>
   <div id="comments" class="p-4 w-full">
-    <!--<h2 class="mb-2">{{ translate('COM_EMUNDUS_COMMENTS') }}</h2>-->
-    <div v-if="comments.length > 0" id="filter-comments" class="flex flex-row">
+    <div v-if="comments.length > 0" id="filter-comments" class="flex flex-row flex-wrap gap-2">
       <input type="text" class="em-input mr-2" :placeholder="translate('COM_EMUNDUS_COMMENTS_SEARCH')" v-model="search" @keyup="onSearchChange">
       <select v-model="filterOpenedState" class="mr-2">
         <option value="all">{{ translate('COM_EMUNDUS_COMMENTS_ALL_THREAD') }}</option>
@@ -142,7 +141,7 @@
         </div>
       </div>
     </div>
-    <p v-else id="empty-comments" class="text-center">{{ translate('COM_EMUNDUS_COMMENTS_NO_COMMENTS') }}</p>
+    <p v-else id="empty-comments" class="text-center m-4">{{ translate('COM_EMUNDUS_COMMENTS_NO_COMMENTS') }}</p>
 
     <div id="add-comment-container">
       <textarea @keyup.enter="addComment" v-model="newCommentText" class="p-2"
@@ -215,7 +214,7 @@
 <script>
 import commentsService from 'com_emundus/src/services/comments';
 import mixins from '../../mixins/mixin';
-import errors from '../../mixins/errors';
+import alerts from '../../mixins/alerts';
 
 export default {
   name: 'Comments',
@@ -246,7 +245,7 @@ export default {
       default: 0
     }
   },
-  mixins: [mixins, errors],
+  mixins: [mixins, alerts],
   data: () => ({
     comments: [],
     newCommentText: '',
@@ -424,15 +423,20 @@ export default {
       }
     },
     deleteComment(commentId) {
-      if (commentId > 0 && this.access.d) {
-        this.comments = this.comments.filter((comment) => comment.id !== commentId);
+      const comment = this.comments.find((comment) => comment.id === commentId);
+      if (commentId > 0 && this.access.d && comment.user_id === this.user) {
+        this.alertConfirm('COM_EMUNDUS_COMMENTS_CONFIRM_DELETE').then((response) => {
+          if (response.value) {
+            this.comments = this.comments.filter((comment) => comment.id !== commentId);
 
-        commentsService.deleteComment(commentId).then((response) => {
-          if (!response.status) {
-            // TODO: handle error
+            commentsService.deleteComment(commentId).then((response) => {
+              if (!response.status) {
+                // TODO: handle error
+              }
+            }).catch((error) => {
+              this.handleError(error);
+            });
           }
-        }).catch((error) => {
-          this.handleError(error);
         });
       }
     },
@@ -490,6 +494,9 @@ export default {
     },
     onSearchChange() {
       this.highlight(this.search, ['.comment-body', '.comment-target-label']);
+    },
+    handleError(error) {
+      this.alertError(error);
     }
   },
   computed: {

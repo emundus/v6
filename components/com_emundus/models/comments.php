@@ -253,10 +253,13 @@ class EmundusModelComments extends JModelLegacy
         $comments = [];
 
         if (!empty($file_id) && !empty($current_user)) {
+            // deprecated to use fnum but in order to keep old platforms working, we need to keep it
+            $fnum = EmundusHelperFiles::getFnumFromId($file_id);
+
             $query = $this->db->getQuery(true);
             $query->select('ec.*')
                 ->from($this->db->quoteName('#__emundus_comments', 'ec'))
-                ->where('ec.ccid = ' . $this->db->quote($file_id));
+                ->where('ec.ccid = ' . $this->db->quote($file_id) . ' OR ec.fnum = ' . $this->db->quote($fnum));
 
             if ($is_applicant) {
                 $query->where('ec.visible_to_applicant = 1');
