@@ -1,7 +1,7 @@
 <template>
 	<div id="onboarding_list" class="w-full">
 		<skeleton v-if="loading.lists" height="40px" width="100%" class="mb-4 mt-4 rounded-lg"></skeleton>
-		<div v-else class="head flex justify-between mb-4 mt-4">
+		<div v-else class="head em-flex-row justify-between">
 			<h2>{{ translate(currentList.title) }}</h2>
 			<a v-if="addAction" id="add-action-btn" class="em-primary-button em-w-auto cursor-pointer" @click="onClickAction(addAction)">{{ translate(addAction.label) }}</a>
 		</div>
@@ -93,6 +93,10 @@
 									<div v-if="column.type === 'tags'" class="flex flex-wrap em-flex-gap-8" :class="column.classes">
 										<span v-for="tag in column.values" :key="tag.key" class="mr-2 h-max" :class="tag.classes" v-html="tag.value"></span>
 									</div>
+                  <div v-else-if="column.hasOwnProperty('long_value')" >
+                    <span @click="displayLongValue(column.long_value)" class="mt-2 mb-2" :class="column.classes" v-html="column.value"></span>
+                  </div>
+
 									<span v-else class="mt-2 mb-2" :class="column.classes" v-html="column.value"></span>
 								</td>
 								<div>
@@ -597,7 +601,18 @@ export default {
 			}
 
 			return show;
-		}
+		},
+    displayLongValue(html) {
+      Swal.fire({
+        html: '<div style="text-align: left;">' + html + '</div>',
+        reverseButtons: true,
+        customClass: {
+          title: 'em-swal-title',
+          confirmButton: 'em-swal-confirm-button',
+          actions: 'em-swal-single-action',
+        }
+      });
+    }
 },
 	computed: {
 		currentTab() {
@@ -676,6 +691,11 @@ export default {
 </script>
 
 <style lang="scss">
+
+.head  {
+  padding: 0 0 20px 0;
+}
+
 #list-nav {
 	li {
 		transition: all .3s;

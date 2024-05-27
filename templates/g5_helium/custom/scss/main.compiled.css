@@ -920,16 +920,17 @@ video {
   justify-content: center;
   align-items: center;
 }
-.com_fabrik #g-sidebar {
-      position: sticky;
-    }
+.view-form #g-sidebar, .view-checklist #g-sidebar {
+    position: sticky;
+  }
 @media all and (max-width: 480px) {
-    .com_fabrik #g-sidebar {
-        position: static;
-        padding-top: 0;
-        padding-bottom: 24px
+
+  .view-form #g-sidebar, .view-checklist #g-sidebar {
+      position: static;
+      padding-top: 0;
+      padding-bottom: 24px
+  }
     }
-      }
 .com_fabrik .popover:not(.clockpicker-popover) {
       display: none !important;
     }
@@ -1948,6 +1949,7 @@ input[type="text"],
 .chzn-container .chzn-single li.search-field input[type="text"], .chzn-container .chzn-choices li.search-field input[type="text"], .chzn-container.chzn-container-multi .chzn-single li.search-field input[type="text"], .chzn-container.chzn-container-multi .chzn-choices li.search-field input[type="text"], .chzn-container.chzn-container-multi.chzn-container-active .chzn-single li.search-field input[type="text"], .chzn-container.chzn-container-multi.chzn-container-active .chzn-choices li.search-field input[type="text"] {
           outline: none;
           height: 18px;
+          min-width: 254px;
         }
 .chzn-container .chzn-search, .chzn-container.chzn-container-multi .chzn-search, .chzn-container.chzn-container-multi.chzn-container-active .chzn-search {
       padding: 4px 12px;
@@ -2028,6 +2030,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .right-3 {
   right: var(--em-spacing-3);
+}
+.start-2 {
+  inset-inline-start: var(--em-spacing-2);
 }
 .row-auto {
   grid-row: auto;
@@ -3768,6 +3773,12 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .w-96 {
   width: 24rem;
+}
+.w-\[150px\] {
+  width: 150px;
+}
+.w-\[200px\] {
+  width: 200px;
 }
 .w-\[50px\] {
   width: 50px;
@@ -6859,6 +6870,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .text-ellipsis {
   text-overflow: ellipsis;
 }
+.whitespace-pre-line {
+  white-space: pre-line;
+}
 .rounded {
   border-radius: 0.25rem;
 }
@@ -6871,8 +6885,15 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .border {
   border-width: 1px;
 }
+.border-0 {
+  border-width: 0px;
+}
 .border-t {
   border-top-width: 1px;
+}
+.border-gray-300 {
+  --tw-border-opacity: 1;
+  border-color: rgb(209 213 219 / var(--tw-border-opacity));
 }
 .border-neutral-300 {
   border-color: var(--neutral-300);
@@ -16530,8 +16551,14 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .pt-px {
   padding-top: 1px;
 }
+.\!text-center {
+  text-align: center !important;
+}
 .text-center {
   text-align: center;
+}
+.align-middle {
+  vertical-align: middle;
 }
 .\!text-2xl {
   font-size: 1.5rem !important;
@@ -34985,6 +35012,11 @@ hr {
     }
 ul {
         list-style: initial;
+        padding-left: 24px;
+    }
+ol {
+        list-style: auto;
+        padding-left: 24px;
     }
 legend {
         margin: 10px 0 20px 0;
@@ -35246,6 +35278,10 @@ button.swal2-cancel.goback-btn:hover,
         right: unset;
         background: transparent;
     }
+.alert-danger .close,
+    .alert-error .close {
+          color: var(--em-alert-error-color);
+    }
 .alert h4 {
         font-weight: 500;
     }
@@ -35268,6 +35304,10 @@ button.swal2-cancel.goback-btn:hover,
     .has-error .radio-inline,
     .has-error .checkbox-inline {
         color: #b94a48;
+    }
+
+    .has-error .\!checkbox {
+        color: #b94a48 !important;
     }
 .has-error .form-control {
         border-color: #b94a48;
@@ -35301,18 +35341,14 @@ button.swal2-cancel.goback-btn:hover,
         flex-basis: 8px;
         height: 8px;
         border-radius: 50%;
-        margin-right: 8px;
         flex-grow: 0;
-        margin-top: 4px;
         flex-shrink: 0;
     }
 .sticker {
-        border: solid 1px;
-        border-radius: 4px 8px 8px 4px;
+        border-radius: 20px 8px 8px 20px;
         padding: 4px 8px;
         margin: 4px 0;
         font-size: 14px;
-        max-width: 200px;
         white-space: break-spaces;
     }
 .label-default, .label-null, .label- {

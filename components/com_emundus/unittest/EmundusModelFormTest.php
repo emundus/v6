@@ -112,4 +112,39 @@ class EmundusModelFormTest extends TestCase
 			}
 		}
 	}
+
+	public function testGetProgramsByForm()
+	{
+		$form_id = $this->m_form->createFormEval();
+		$program = $this->h_sample->createSampleProgram();
+
+		$programs = $this->m_form->getProgramsByForm($form_id);
+		$this->assertEmpty($programs, 'Programs are empty');
+
+		$this->m_form->associateFabrikGroupsToProgram($form_id, [$program['programme_code']]);
+
+		$programs = $this->m_form->getProgramsByForm($form_id);
+		$this->assertNotEmpty($programs, 'Programs are not empty');
+
+		$this->assertSame($program['programme_code'], $programs[0]['code'], 'Programs are the same');
+	}
+
+	public function testAssociateFabrikGroupsToProgram()
+	{
+		$form_id = $this->m_form->createFormEval();
+		$program = $this->h_sample->createSampleProgram();
+
+		$associate = $this->m_form->associateFabrikGroupsToProgram($form_id, [$program['programme_code']]);
+		$this->assertTrue($associate, 'Associate fabrik groups to program succeeds');
+
+		$second_program = $this->h_sample->createSampleProgram('Program ' . rand(1, 10000));
+
+		// We remove the association of the first program if we associate an other without adding the first one
+		$associate = $this->m_form->associateFabrikGroupsToProgram($form_id, [$second_program['programme_code']]);
+		$this->assertTrue($associate, 'We can associate fabrik groups to another program');
+
+		$programs = $this->m_form->getProgramsByForm($form_id);
+		$this->assertNotSame($program['programme_code'], $programs[0]['code'], 'First programe are not the same');
+		$this->assertSame($second_program['programme_code'], $programs[0]['code'], 'Second program are the same');
+	}
 }

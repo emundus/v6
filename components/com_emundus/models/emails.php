@@ -105,12 +105,12 @@ class EmundusModelEmails extends JModelList {
      * @since version v6
      */
     public function getEmailTrigger($step, $code, $to_applicant = 0, $to_current_user = null, $student = null) {
-        if(!isset($step) || empty($code)){
+        if (!isset($step) || empty($code)) {
             return [];
         }
 
         $query = $this->_db->getQuery(true);
-        $query->select('eset.id as trigger_id, eset.step, ese.*, eset.to_current_user, eset.to_applicant, eserp.programme_id, esp.code, esp.label, eser.profile_id, eserg.group_id, eseru.user_id, et.Template, GROUP_CONCAT(ert.tags) as tags, GROUP_CONCAT(erca.candidate_attachment) as attachments, GROUP_CONCAT(erla.letter_attachment) as letter_attachments, GROUP_CONCAT(err1.receivers) as cc, GROUP_CONCAT(err2.receivers) as bcc')
+        $query->select('eset.id as trigger_id, eset.step, ese.*, eset.to_current_user, eset.to_applicant, eserp.programme_id, esp.code, esp.label, GROUP_CONCAT(DISTINCT eser.profile_id) as profile_id, GROUP_CONCAT(DISTINCT eserg.group_id) as group_id, GROUP_CONCAT(DISTINCT eseru.user_id) as user_id, et.Template, GROUP_CONCAT(ert.tags) as tags, GROUP_CONCAT(erca.candidate_attachment) as attachments, GROUP_CONCAT(erla.letter_attachment) as letter_attachments, GROUP_CONCAT(err1.receivers) as cc, GROUP_CONCAT(err2.receivers) as bcc')
             ->from($this->_db->quoteName('#__emundus_setup_emails_trigger', 'eset'))
             ->leftJoin($this->_db->quoteName('#__emundus_setup_emails','ese').' ON '.$this->_db->quoteName('ese.id').' = '.$this->_db->quoteName('eset.email_id'))
             ->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_programme_id','eserp').' ON '.$this->_db->quoteName('eserp.parent_id').' = '.$this->_db->quoteName('eset.id'))
@@ -126,7 +126,8 @@ class EmundusModelEmails extends JModelList {
             ->leftJoin($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers','err2').' ON '.$this->_db->quoteName('err2.parent_id').' = '.$this->_db->quoteName('eset.email_id').' AND '.$this->_db->quoteName('err2.type').' = '.$this->_db->quote('receiver_bcc_email'))
             ->where($this->_db->quoteName('eset.step').' = '.$this->_db->quote($step))
             ->andWhere($this->_db->quoteName('eset.to_applicant').' IN ('.$to_applicant .')');
-        if(!is_null($to_current_user)) {
+
+        if (!is_null($to_current_user)) {
             $query->andWhere($this->_db->quoteName('eset.to_current_user') . ' IN (' . $to_current_user . ')');
         }
         $query->andWhere($this->_db->quoteName('esp.code').' IN ('.implode(',', $this->_db->quote($code)) .')')
@@ -162,15 +163,15 @@ class EmundusModelEmails extends JModelList {
 
                 // default recipients
                 if (isset($trigger->profile_id) && !empty($trigger->profile_id)) {
-                    $emails_tmpl[$trigger->id][$trigger->code]['to']['profile'][] = $trigger->profile_id;
+                    $emails_tmpl[$trigger->id][$trigger->code]['to']['profile'] = explode(',', $trigger->profile_id);
                 }
 
                 if (isset($trigger->group_id) && !empty($trigger->group_id)) {
-                    $emails_tmpl[$trigger->id][$trigger->code]['to']['group'][] = $trigger->group_id;
+                    $emails_tmpl[$trigger->id][$trigger->code]['to']['group'] = explode(',', $trigger->group_id);
                 }
 
                 if (isset($trigger->user_id) && !empty($trigger->user_id)) {
-                    $emails_tmpl[$trigger->id][$trigger->code]['to']['user'][] = $trigger->user_id;
+                    $emails_tmpl[$trigger->id][$trigger->code]['to']['user'] = explode(',', $trigger->user_id);
                 }
 
                 $emails_tmpl[$trigger->id][$trigger->code]['to']['to_applicant'] = $trigger->to_applicant;
@@ -865,6 +866,12 @@ class EmundusModelEmails extends JModelList {
                     foreach ($fabrikValues[$elt['id']] as $fnum => $val)
                     {
 	                    $fabrikValues[$elt['id']][$fnum]['val'] = substr($val['val'], 2, strlen($val['val']));
+                    }
+                }
+                if ($elt['plugin'] == 'yesno'){
+                    foreach ($fabrikValues[$elt['id']] as $fnum => $val)
+                    {
+                        $fabrikValues[$elt['id']][$fnum]['val'] = $val['val'] ? JText::_('JYES') : JText::_('JNO');
                     }
                 }
             }
@@ -1592,23 +1599,53 @@ class EmundusModelEmails extends JModelList {
      * @return Mixed Array
      * @since v6
      */
-    public function get_messages_to_from_user($user_id) {
+    public function get_messages_to_from_user($user_id)
+    {
         $messages = [];
 
         if (!empty($user_id)) {
             $query = $this->_db->getQuery(true);
 
             try {
-                $query->select('m.*,el.fnum_to')
-                    ->from('#__messages AS m')
-                    ->leftJoin('#__emundus_logs AS el ON m.message_id = JSON_EXTRACT(el.params,'.$this->_db->quote('$.message_id'). ') AND JSON_VALID(el.params)')
-                    ->where(array('el.user_id_to = '.$this->_db->quote($user_id), 'el.action_id = 9', 'el.message = '.$this->_db->quote('COM_EMUNDUS_LOGS_EMAIL_SENT')))
-                    ->extendWhere('OR', 'm.user_id_to = '.$this->_db->quote($user_id))
-                    ->order('m.date_time DESC');
-                $this->_db->setQuery($query);
+                // First we get all messages sent to the user
+                $query->select('*')
+                    ->from($this->_db->quoteName('#__messages'))
+                    ->where($this->_db->quoteName('user_id_to') . ' = ' . $user_id . ' AND ' . $this->_db->quoteName('folder_id') . ' <> 2')
+                    ->order($this->_db->quoteName('date_time') . ' DESC');
+                $this->_db->setquery($query);
                 $messages = $this->_db->loadObjectList();
+
+                if (!empty($messages)) {
+                    // Then we get all messages from emundus_logs
+                    $query->clear()
+                        ->select('el.params,el.fnum_to')
+                        ->from($this->_db->quoteName('#__emundus_logs', 'el'))
+                        ->where($this->_db->quoteName('el.user_id_to') . ' = ' . $user_id)
+                        ->andWhere($this->_db->quoteName('el.action_id') . ' = 9')
+                        ->andWhere($this->_db->quoteName('el.message') . ' = ' . $this->_db->quote('COM_EMUNDUS_LOGS_EMAIL_SENT'));
+                    $this->_db->setQuery($query);
+                    $messages_fnums = $this->_db->loadObjectList();
+
+                    $messages_fnums_by_id = [];
+                    foreach ($messages_fnums as $message) {
+                        $params = json_decode($message->params);
+
+                        if (!empty($params) && !empty($params->message_id)) {
+                            $messages_fnums_by_id[$params->message_id] = $message->fnum_to;
+                        }
+                    }
+
+                    // Finally we filter the messages to add the fnum_to field
+                    $messages_fnums_by_id_keys = array_keys($messages_fnums_by_id);
+                    foreach ($messages as $message) {
+                        $message->fnum_to = '';
+                        if (in_array($message->message_id, $messages_fnums_by_id_keys)) {
+                            $message->fnum_to = $messages_fnums_by_id[$message->message_id];
+                        }
+                    }
+                }
             } catch (Exception $e) {
-                JLog::add('Error getting messages sent to or from user: '.$user_id.' at query: '.$query, JLog::ERROR, 'com_emundus.error');
+                JLog::add('Error getting messages sent to or from user: ' . $user_id . ' at query: ' . $query, JLog::ERROR, 'com_emundus.error');
             }
         }
 
@@ -2894,8 +2931,22 @@ class EmundusModelEmails extends JModelList {
                 }
 
                 // In case no post value is supplied
-                $post['SITE_URL'] = isset($post['SITE_URL']) ? $post['SITE_URL'] : JURI::base();
-                $post['USER_EMAIL'] = isset($post['USER_EMAIL']) ? $post['USER_EMAIL'] : $email_address;
+                // In case no post value is supplied
+                $default_post = [
+                    'SITE_URL'   => JURI::base(),
+                    'SITE_NAME' => $config->get('sitename'),
+                    'USER_EMAIL' => $email_address,
+                    'LOGO' => EmundusHelperEmails::getLogo(),
+                ];
+                if(!empty($fnum)) {
+                    $default_post['FNUM'] = $fnum;
+                }
+
+                if (!empty($post)) {
+                    $post = array_merge($default_post, $post);
+                } else {
+                    $post = $default_post;
+                }
 
                 $cc = [];
                 $keys = [];

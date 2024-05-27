@@ -1,13 +1,10 @@
 /**
- * Field Element
+ * INSEE Element
  *
  * @copyright: Copyright (C) 2005-2013, fabrikar.com - All rights reserved.
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-// Wrap in require js to ensure we always load the same version of jQuery
-// Multiple instances can be loaded an ajax pages are added and removed. However we always want
-// to get the same version as plugins are only assigned to this jQuery instance
 define(['jquery', 'fab/element'],
     function (jQuery, FbElement) {
 
@@ -110,7 +107,7 @@ define(['jquery', 'fab/element'],
                 const divError = this.element.parentNode.parentNode.getElementsByClassName('fabrikErrorMessage')[0];
                 divError.innerHTML = '';
 
-                fetch(this.options.baseUrl + '/entreprises/sirene/V3/' + this.options.propertyToCheck + '/' + value, {
+                fetch(this.options.baseUrl + '/entreprises/sirene/' + this.options.propertyToCheck + '/' + value, {
                     method: 'GET',
                     headers: {
                         'Accept': 'application/json',
@@ -236,6 +233,7 @@ define(['jquery', 'fab/element'],
                                         element_to_fill.set(tva_number);
                                     } else {
                                         element_to_fill.set(data_to_insert.join(''));
+                                        element_to_fill.element.dispatchEvent(new Event(element_to_fill.getChangeEvent()));
                                     }
                                 } else {
                                     let htmlElement = document.querySelector('#' + element_to_fill.baseElementId);

@@ -20,6 +20,7 @@
         :type="data.type"
         :user="data.user"
         :ratio="data.ratio"
+        :context="data.context || ''"
     ></ApplicationSingle>
 
     <transition v-else name="slide-right">
@@ -38,7 +39,7 @@ import fileService from "./services/file.js";
 import list_v2 from "./views/list.vue";
 import addcampaign from "./views/addCampaign"
 import addemail from "./views/addEmail"
-import addformnextcampaign from "./views/addFormNextCampaign"
+import campaignedition from "./views/CampaignEdition"
 import formbuilder from "./views/formBuilder"
 import settings from "./views/globalSettings"
 import messagescoordinator from "./components/Messages/MessagesCoordinator";
@@ -73,7 +74,7 @@ export default {
     ApplicationSingle,
 		Attachments,
     addcampaign,
-    addformnextcampaign,
+    campaignedition,
     addemail,
     formbuilder,
     settings,

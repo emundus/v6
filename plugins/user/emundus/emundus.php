@@ -232,7 +232,7 @@ class plgUserEmundus extends JPlugin
                     }
                 }
             }
-            if (JPluginHelper::getPlugin('authentication', 'externallogin') && ($option !== 'com_emundus' && $controller !== 'users' && $task !== 'adduser')) {
+            elseif (JPluginHelper::getPlugin('authentication', 'externallogin') && ($option !== 'com_emundus' && $controller !== 'users' && $task !== 'adduser')) {
                 $username = explode(' ', $user["name"]);
                 $name = '';
                 if (count($username) > 2) {
@@ -247,7 +247,7 @@ class plgUserEmundus extends JPlugin
                 $details['emundus_profile']['lastname'] = $name;
                 $details['firstname'] = $username[0];
             }
-            if (JPluginHelper::getPlugin('authentication', 'miniorangesaml') && ($option !== 'com_emundus' && $controller !== 'users' && $task !== 'adduser')) {
+            elseif (JPluginHelper::getPlugin('authentication', 'miniorangesaml') && ($option !== 'com_emundus' && $controller !== 'users' && $task !== 'adduser')) {
                 $o_user = JFactory::getUser($user['id']);
 
                 $username = explode(' ', $user["name"]);
@@ -273,6 +273,21 @@ class plgUserEmundus extends JPlugin
 
                 $eMConfig = JComponentHelper::getParams('com_emundus');
                 $profile = $eMConfig->get('saml_default_profile', 1000);
+            }
+            elseif($option !== 'com_emundus' && $controller !== 'users' && $task !== 'adduser') {
+	            $username = explode(' ', $user["name"]);
+	            $name = '';
+	            if (count($username) > 2) {
+		            for ($i = 1; $i > count($username); $i++) {
+			            $name .= ' ' . $username[$i];
+		            }
+	            } else {
+		            $name = $username[1];
+	            }
+
+	            $details['name'] = $name;
+	            $details['emundus_profile']['lastname'] = $name;
+	            $details['firstname'] = $username[0];
             }
         }
 
@@ -499,6 +514,42 @@ class plgUserEmundus extends JPlugin
                 }
 
             }
+            if($user['type'] === "LDAP"){
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+
+                $user_id = JFactory::getUser()->id;
+
+
+                if (isset($user['fullname'])) {
+                    $firstname = $user['firstname'];
+                    $lastname = $user['lastname'];
+                    $query->clear()
+                        ->update('#__emundus_users');
+
+                    if (!empty($firstname)) {
+                        $query->set($db->quoteName('firstname') . ' = ' . $db->quote($firstname));
+                    }
+                    if (!empty($lastname)) {
+                        $query->set($db->quoteName('lastname') . ' = ' . $db->quote($lastname));
+                    }
+                    $query->where($db->quoteName('user_id') . ' = ' . $db->quote($user_id));
+
+                    $db->setQuery($query);
+                    $db->execute();
+
+                    $query->clear()
+                        ->update('jos_users');
+                    if (!empty($user['fullname'])) {
+                        $query->set($db->quoteName('name') . ' = ' . $db->quote($user['fullname']));
+                        $query->where($db->quoteName('id') . ' = ' . $db->quote($user_id));
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
+
+
+                }
+            }
             if ($user['type'] == 'externallogin') {
                 try {
                     $db = JFactory::getDbo();
@@ -576,14 +627,22 @@ class plgUserEmundus extends JPlugin
 
             }
 
+
             // Init first_login parameter
-            $user = JFactory::getUser();
             $table = JTable::getInstance('user', 'JTable');
 
             $user = JFactory::getSession()->get('emundusUser');
             if(empty($user) || empty($user->id)) {
+                include_once(JPATH_SITE . '/components/com_emundus/models/users.php');
                 include_once(JPATH_SITE . '/components/com_emundus/models/profile.php');
+                $m_users = new EmundusModelUsers();
                 $m_profile = new EmundusModelProfile();
+
+                $user_repaired = $m_users->repairEmundusUser(JFactory::getUser()->id);
+                if (!$user_repaired) {
+                    return false;
+                }
+
                 $m_profile->initEmundusSession();
                 $user = JFactory::getSession()->get('emundusUser');
 

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension group="fabrik_cron" method="upgrade" type="plugin" version="30">
+	<name>eMundus - FileMaker</name>
+	<author>Merveille Gbetegan</author>
+	<creationDate>June 2023</creationDate>
+	<copyright>Copyright (C) 2023 emundus.fr - All rights reserved.</copyright>
+	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+	<authorEmail>dev@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>1.36.1</version>
+	<description>A plugin used for manage flux between filemaker and emundus.</description>
+	<files>
+		<filename plugin="emundusfilemaker">emundusfilemaker.php</filename>
+		<folder>forms</folder>
+		<filename>index.html</filename>
+		<folder>language</folder>
+	</files>
+</extension>

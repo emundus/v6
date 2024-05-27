@@ -50,6 +50,44 @@ class EmundusControllerForm extends JControllerLegacy {
 
 	        $data = $this->m_form->getAllForms($filter, $sort, $recherche, $lim, $page);
 
+            foreach ($data['datas'] as $key => $form) {
+                // find campaigns associated with form
+                $campaigns = $this->m_form->getAssociatedCampaign($form->id);
+
+                if (!empty($campaigns)) {
+                    if (count($campaigns) < 2) {
+                        $short_tags = '<a href="/index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=' . $campaigns[0]->id . '" class="mr-2 mb-2 h-max em-p-5-12 em-font-weight-600 em-bg-main-100 em-text-neutral-900 em-font-size-14 em-border-radius"> ' . $campaigns[0]->label . '</a>';
+                    } else {
+                        $tags = '<div class="flex flex-row flex-wrap">';
+                        $short_tags = $tags;
+                        foreach ($campaigns as $index => $campaign) {
+                            $tags .= '<a href="/index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=' . $campaign->id . '" class="mr-2 mb-2 h-max em-p-5-12 em-font-weight-600 em-bg-main-100 em-text-neutral-900 em-font-size-14 em-border-radius"> ' . $campaign->label . '</a>';
+                        }
+
+                        $short_tags .= '<span class="em-pointer mr-2 mb-2 h-max em-p-5-12 em-font-weight-600 em-bg-main-100 em-text-neutral-900 em-font-size-14 em-border-radius">' . count($campaigns) . JText::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED') . '</span>';
+                        $short_tags .= '</div>';
+                        $tags .= '</div>';
+                    }
+                } else {
+                    $short_tags = JText::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_NOT');
+                }
+
+                $new_column = [
+                    'key' => JText::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_TITLE'),
+                    'value' => $short_tags,
+                    'classes' => '',
+                    'display' => 'all'
+                ];
+
+                if (isset($tags)) {
+                    $new_column['long_value'] = $tags;
+                }
+
+                $form->additional_columns = [
+                    $new_column
+                ];
+            }
+
             if (!empty($data)) {
                 $tab = array('status' => true, 'msg' => JText::_('FORM_RETRIEVED'), 'data' => $data);
             } else {
@@ -75,7 +113,21 @@ class EmundusControllerForm extends JControllerLegacy {
 
             $forms = $this->m_form->getAllGrilleEval($filter, $sort, $recherche, $lim, $page);
 
-            if (count($forms) > 0) {
+	        if (count($forms) > 0)
+	        {
+		        // this data formatted is used in onboarding lists
+		        foreach ($forms['datas'] as $key => $form)
+		        {
+			        $form->additional_columns = [
+				        [
+					        'key' => JText::_('COM_EMUNDUS_FORM_ASSOCIATED_PROGRAMS'),
+					        'value' => $form->programs_count . ' ' . Text::_('COM_EMUNDUS_FORM_ASSOCIATED_PROGRAMS'),
+					        'classes' => 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius',
+					        'display' => 'blocs'
+				        ],
+			        ];
+		        }
+
                 $tab = array('status' => true, 'msg' => JText::_('FORM_RETRIEVED'), 'data' => $forms);
             } else {
                 $tab['msg'] = JText::_('ERROR_CANNOT_RETRIEVE_FORM');

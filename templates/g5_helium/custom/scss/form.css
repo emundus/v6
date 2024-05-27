@@ -116,15 +116,16 @@
     }
   }
 
-  .com_fabrik {
-    #g-sidebar {
-      position: sticky;
-      @media all and (max-width: 480px) {
-        position: static;
-        padding-top: 0;
-        padding-bottom: 24px;
-      }
+  .view-form #g-sidebar, .view-checklist #g-sidebar {
+    position: sticky;
+    @media all and (max-width: 480px) {
+      position: static;
+      padding-top: 0;
+      padding-bottom: 24px;
     }
+  }
+
+  .com_fabrik {
     .popover:not(.clockpicker-popover) {
       display: none !important;
     }
@@ -1196,6 +1197,7 @@
         input[type="text"] {
           outline: none;
           height: 18px;
+          min-width: 254px;
         }
       }
     }

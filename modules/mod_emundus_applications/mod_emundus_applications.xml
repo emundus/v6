@@ -343,6 +343,13 @@
 					<option value="1">JYES</option>
 				</field>
 
+				<field name="title_override"
+					   type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
+					   default=""
+					   label="MOD_EMUNDUS_TITLE_OVERRIDE_FLOW"
+					   description="MOD_EMUNDUS_TITLE_OVERRIDE_DESC">
+				</field>
+
 				<field name="tags"
 					   type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
 					   default=""
