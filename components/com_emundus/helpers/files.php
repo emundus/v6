@@ -4578,6 +4578,9 @@ class EmundusHelperFiles
                             case 'published':
                                 $table_column_to_count = 'jecc.published';
                                 break;
+                            case 'to_evaluate':
+                                $table_column_to_count = 'IF(ee.id IS NOT NULL, 2, 1)';
+                                break;
                         }
                     } else {
                         $fabrik_element_data = $this->getFabrikElementData($applied_filter['id']);
@@ -4707,6 +4710,10 @@ class EmundusHelperFiles
                             LEFT JOIN #__users as u on u.id = jecc.applicant_id
                             LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
                             LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jecc.fnum ';
+
+                            if ($applied_filter['uid'] == 'to_evaluate') {
+                                $query .= 'LEFT JOIN #__emundus_evaluations as ee on ee.fnum = jecc.fnum and ee.user = ' . $user->id . ' ';
+                            }
 
                             if (!empty($leftJoins)) {
                                 $query .= $leftJoins;

@@ -529,6 +529,31 @@ class EmundusFiltersFiles extends EmundusFilters
 				];
 			}
 
+            if ($config['filter_to_evaluate'])
+            {
+                $evaluated = [];
+
+                $query->clear()
+                    ->select('IF('.$db->quoteName('jee.id').' IS NOT NULL, 2, 1) AS value, IF ('.$db->quoteName('jee.id').' IS NOT NULL, ' . $db->quote(JText::_('MOD_EMUNDUS_FILTERS_VALUE_TO_EVALUATE_DONE')) . ', ' . $db->quote(JText::_('MOD_EMUNDUS_FILTERS_VALUE_TO_EVALUATE_TODO')) . ') AS label, COUNT('.$db->quoteName('jecc.id').') AS count')
+                    ->from($db->quoteName('#__emundus_campaign_candidature','jecc'))
+                    ->leftJoin($db->quoteName('#__emundus_evaluations','jee').' ON '.$db->quoteName('jee.fnum').' = '.$db->quoteName('jecc.fnum').' AND '.$db->quoteName('jee.user').' = ' . $db->quote($this->user->id))
+                    ->group('value');
+                $db->setQuery($query);
+                $evaluated = $db->loadAssocList();
+
+                $this->applied_filters[] = [
+                    'uid'       => 'to_evaluate',
+                    'id'        => 'to_evaluate',
+                    'label'     => JText::_('MOD_EMUNDUS_FILTERS_TO_EVALUATE'),
+                    'type'      => 'select',
+                    'values'    => $evaluated,
+                    'value'     => [2],
+                    'default'   => true,
+                    'available' => true,
+                    'order'     => $config['filter_to_evaluate_order']
+                ];
+            }
+
 
 			if ($config['filter_years'])
 			{
