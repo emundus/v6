@@ -3,7 +3,6 @@
 
 use Joomla\CMS\Factory;
 use PHPUnit\Framework\TestCase;
-use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Language\Text;
 
