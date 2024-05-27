@@ -446,7 +446,7 @@ if ($user != null) {
             var current_fnum = document.getElementById("profile").value;
             var redirect_url = document.getElementById("switch_profile_redirect").value;
 
-            var url = window.location.origin.toString() + '/' + redirect_url;
+            var url = window.location.origin.toString() + redirect_url;
 
             jQuery.ajax({
                 type: 'POST',
