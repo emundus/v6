@@ -4,22 +4,36 @@ const plugin = require('tailwindcss/plugin')
 module.exports = {
     content: [
         "./templates/g5_helium/html/**/*.{html,js,php}",
-        "./modules/**/src/*.{html,js,php}",
+        "./modules/**/src/**/*.{html,js,php,vue}",
         "./modules/**/tmpl/*.{html,js,php}",
         "./plugins/fabrik_element/**/*.{html,js,php}",
         "./components/com_emundus/helpers/**/*.{html,js,php,vue}",
+        "./components/com_emundus/controllers/**/*.{html,js,php,vue}",
         "./components/com_emundus/models/**/*.{html,js,php,vue}",
         "./components/com_emundus/src/**/*.{html,js,php,vue}",
         "./components/com_emundus/views/**/*.{html,js,php,vue}",
         "./components/com_fabrik/layouts/**/*.{html,js,php}",
         "./components/com_fabrik/views/**/*.{html,js,php}",
+        "./media/com_emundus/js/em_files.js",
+        "./media/com_emundus/js/em_user.js",
+        "./media/com_emundus/js/mixins/exports.js",
+        "./media/com_emundus/js/mixins/utilities.js",
     ],
     safelist: [
         {
             pattern: /label-/
         },
         {
-            pattern: /(py|px|p)-/
+            pattern: /m(l|r|t|b|x|y)-/
+        },
+        {
+            pattern: /w-/
+        },
+        {
+            pattern: /p(y|x|l|r|t|b)-/
+        },
+        {
+            pattern: /flex-/
         }
     ],
     theme: {

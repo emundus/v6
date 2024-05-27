@@ -11,6 +11,8 @@
 
 // No direct access
 
+use Joomla\CMS\Language\Text;
+
 defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.controller');
@@ -53,15 +55,16 @@ class EmundusControllerForm extends JControllerLegacy {
 
                 if (!empty($campaigns)) {
                     if (count($campaigns) < 2) {
-                        $short_tags = '<a href="/index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=' . $campaigns[0]->id . '" class="mr-2 mb-2 h-max em-p-5-12 em-font-weight-600 em-bg-main-100 em-text-neutral-900 em-font-size-14 em-border-radius"> ' . $campaigns[0]->label . '</a>';
+                        $short_tags = '<a href="/index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=' . $campaigns[0]->id . '" class="mr-2 mb-2 h-max px-3 py-1 font-semibold em-bg-main-100 em-text-neutral-900 text-sm em-border-radius"> ' . $campaigns[0]->label . '</a>';
                     } else {
                         $tags = '<div class="flex flex-row flex-wrap">';
                         $short_tags = $tags;
-                        foreach ($campaigns as $index => $campaign) {
-                            $tags .= '<a href="/index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=' . $campaign->id . '" class="mr-2 mb-2 h-max em-p-5-12 em-font-weight-600 em-bg-main-100 em-text-neutral-900 em-font-size-14 em-border-radius"> ' . $campaign->label . '</a>';
+						$tags .= '<h2 class="mb-2">'.Text::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_TITLE').'</h2>';
+                        foreach ($campaigns as $campaign) {
+                            $tags .= '<a href="/index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=' . $campaign->id . '" class="mr-2 mb-2 h-max px-3 py-1 font-semibold em-bg-main-100 em-text-neutral-900 text-sm em-border-radius"> ' . $campaign->label . '</a>';
                         }
 
-                        $short_tags .= '<span class="em-pointer mr-2 mb-2 h-max em-p-5-12 em-font-weight-600 em-bg-main-100 em-text-neutral-900 em-font-size-14 em-border-radius">' . count($campaigns) . JText::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED') . '</span>';
+                        $short_tags .= '<span class="cursor-pointer font-semibold em-profile-color flex items-center underline">' . count($campaigns) . JText::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED') . '</span>';
                         $short_tags .= '</div>';
                         $tags .= '</div>';
                     }
