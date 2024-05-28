@@ -40,6 +40,7 @@ class EmundusHelperFabrikTest extends TestCase
     {
         parent::__construct($name, $data, $dataName);
         $this->h_sample = new EmundusUnittestHelperSamples();
+        $this->h_fabrik = new EmundusHelperFabrik();
     }
 
     public function testFoo()
@@ -436,7 +437,7 @@ class EmundusHelperFabrikTest extends TestCase
 	 * @description Test the getElementByAlias() method
 	 * It should return the name and database table name storage of the element with the alias passed as parameter
 	 */
-	public function testgetElementByAlias()
+	public function testGetElementByAlias()
 	{
 		$this->assertNull($this->h_fabrik->getElementByAlias(""), 'Empty alias should return null');
 
