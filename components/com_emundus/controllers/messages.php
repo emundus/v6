@@ -583,7 +583,6 @@ class EmundusControllerMessages extends JControllerLegacy {
         // This will be filled with the email adresses of successfully sent emails, used to give feedback to front end.
         $sent = [];
         $failed = [];
-	    $failed_fnums = [];
 
         // Loading the message template is not used for getting the message text as that can be modified on the frontend by the user before sending.
         $template = $m_messages->getEmail($template_id);
@@ -773,9 +772,18 @@ class EmundusControllerMessages extends JControllerLegacy {
 
             if ($send !== true) {
                 $failed[] = $fnum->email;
-				$failed_fnums[] = $fnum->fnum;
                 JLog::add('Error sending email to email ' . $fnum->email . ' : ' . $send->__toString(), JLog::ERROR, 'com_emundus.error');
             } else {
+                // Assoc tags if email has been sent
+	            if($tags_str != null || !empty($template->tags)) {
+					$tags = array_filter(array_merge(explode(',',$tags_str),explode(',',$template->tags)));
+
+					if(!empty($tags))
+					{
+						$m_files->tagFile([$fnum->fnum], $tags, $user->id);
+					}
+				}
+
                 // Log email
                 $sent[] = $fnum->email;
                 $log = [
@@ -791,19 +799,6 @@ class EmundusControllerMessages extends JControllerLegacy {
                 }
                 $m_emails->logEmail($log, $fnum->fnum);
             }
-			//
-
-	        // Assoc tags if email has been sent
-	        if($tags_str != null || !empty($template->tags)) {
-		        $tags = array_filter(array_merge(explode(',',$tags_str),explode(',',$template->tags)));
-				// Remove fnums failed from fnums array
-				$fnums_tags = array_values(array_diff($fnums, $failed_fnums));
-
-		        if(!empty($tags) && !empty($fnums_tags))
-		        {
-			        $m_files->tagFile($fnums_tags, $tags, $user->id);
-		        }
-	        }
 
             // Due to mailtrap now limiting emails sent to fast, we add a long sleep.
             if ($config->get('smtphost') === 'smtp.mailtrap.io') {
