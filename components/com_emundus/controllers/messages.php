@@ -780,7 +780,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 
 					if(!empty($tags))
 					{
-						$m_files->tagFile([$fnum->fnum], $tags, $user->id);
+						$m_files->tagFile([$fnum->fnum], $tags, $fnum->applicant_id);
 					}
 				}
 
