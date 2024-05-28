@@ -125,7 +125,7 @@
 
 .container-module-cas  .sous-container-module-cas #inscription .container p:nth-child(1),
 .container-module-cas  .sous-container-module-cas #inscription .container p:nth-child(2) {
-    flex: 0 0 50%;
+    flex: 0 0 48%;
 }
 
 .container-module-cas  .sous-container-module-cas .invisible {
@@ -233,3 +233,39 @@
     }
 }
 
+@media all and (max-width: 767px) {
+    .container-module-cas {
+        margin-top: -30px;
+    }
+}
+
+@media screen and (max-width: 959px){
+    .container-module-cas .sous-container-module-cas #inscription .container p:nth-child(1),
+    .container-module-cas .sous-container-module-cas #inscription .container p:nth-child(2) {
+        flex: 0 0 100%;
+    }
+
+    .login .container-module-cas form {
+        padding-right: 0;
+        padding-left: 0;
+        width: 100%;
+    }
+
+    .container-module-cas .sous-container-module-cas li {
+        word-break: break-word;
+        hyphens: auto;
+    }
+}
+
+@media screen and (min-width: 960px) and (max-width: 1199px) {
+    .login .container-module-cas form {
+        padding-right: 0;
+        padding-left: 0;
+        width: 100%;
+    }
+
+    .container-module-cas .sous-container-module-cas #inscription .container p:nth-child(1),
+    .container-module-cas .sous-container-module-cas #inscription .container p:nth-child(2) {
+        flex: 0 0 100%;
+    }
+}
