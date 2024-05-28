@@ -1,36 +1,23 @@
 import './App.css'
 import "@calcom/atoms/globals.min.css";
-import {AvailabilitySettings, CalProvider} from "@calcom/atoms";
-import {useEffect, useState} from "react";
+import {AvailabilitySettings, CalProvider, Booker} from "@calcom/atoms";
 
 function Home() {
-    const [data, setData] = useState("");
-
-    useEffect(() => {
-        fetch('http://localhost:3003/v1/users/37?apiKey=cal_edcfa25c9fae2e8d476cb6c02c4dc265')
-            .then(async (res) => {
-                const result = await res.json();
-                setData(result);
-            })
-            .catch((error) => {
-                console.error('Error fetching data:', error);
-            });
-    }, []);
-
     return (
         <CalProvider
-            accessToken={'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoiYWNjZXNzX3Rva2VuIiwiY2xpZW50SWQiOiI4OTA3YTFiMDI3ZDA5YmJlMDc4MDIzNzQ3NWEwMGM3NjlkOGE5MTgyZjEzNjA5M2QxNTQ5NmVmN2RhOTA5YWIiLCJvd25lcklkIjo4NywiaWF0IjoxNzE2NTU3OTc3fQ.ybtEWWCV0EUOFF9kqWRoLB6LPAda7cIsVXps6Apl_Sw'}
-            clientId={'8907a1b027d09bbe0780237475a00c769d8a9182f136093d15496ef7da909ab'}
+            accessToken={'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoiYWNjZXNzX3Rva2VuIiwiY2xpZW50SWQiOiI3Nzc0ZWIyZTVlN2Q3YjQzODdjMmMzZWQzMWM4ODE1MTJkMDdkOTBiZDdmY2VlMjc0ZWM2YTQxMzJmMGMwZTljIiwib3duZXJJZCI6MTI2LCJpYXQiOjE3MTY4OTg1ODF9.poZjUW-3yrWp4SSbO3fLdNziAr6jOap2r4hpFNhSoiA'}
+            clientId={'7774eb2e5e7d7b4387c2c3ed31c881512d07d90bd7fcee274ec6a4132f0c0e9c'}
             options={{
                 apiUrl: "http://localhost:3004/v2",
                 refreshUrl : "http://127.0.0.1:5173/",
             }}
         >
             <AvailabilitySettings />
-            <div>
-                <h3>Résultat de la requête:</h3>
-                <pre>{JSON.stringify(data, null, 2)}</pre>
-            </div>
+            <Booker
+                username={"final-7774eb2e5e7d7b4387c2c3ed31c881512d07d90bd7fcee274ec6a4132f0c0e9c-example"}
+                eventSlug={"thirty-minutes"}
+            />
+
         </CalProvider>
     );
 }
