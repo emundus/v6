@@ -3660,6 +3660,10 @@ class EmundusHelperFiles
             $where['q'] .= ' AND esc.published > 0';
         }
 
+        if (!empty($caller_params) && $caller_params['eval']) {
+            $where['q'] .= ' AND jecc.status <> 0';
+        }
+
 	    $menu = JFactory::getApplication()->getMenu();
 		if (!empty($menu)) {
 			$active = $menu->getActive();
@@ -3968,6 +3972,11 @@ class EmundusHelperFiles
                                         $where['q'] .= ' AND ' . $this->writeQueryWithOperator($users_assoc_alias . '.user_id', $filter['value'], $filter['operator']);
                                     }
 
+                                    break;
+                                case 'to_evaluate':
+                                    $where['q'] .= ' AND ' . $this->writeQueryWithOperator('IF(jee.id IS NULL, 1, 2)', $filter['value'], $filter['operator']);
+                                    $jecc_alias = array_search('jos_emundus_campaign_candidature', $already_joined);
+                                    $where['join'] .= ' LEFT JOIN #__emundus_evaluations as jee on jee.fnum = ' . $jecc_alias . '.fnum AND jee.user = ' . $db->quote(JFactory::getUser()->id);
                                     break;
                                 default:
                                     break;
@@ -4702,6 +4711,7 @@ class EmundusHelperFiles
                             }
                         }
                         else {
+                            $where_params = [];
                             $query = 'SELECT ' . $table_column_to_count . ' as count_value, COUNT(DISTINCT jecc.fnum) as count
                             FROM #__emundus_campaign_candidature as jecc
                             LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status
@@ -4713,13 +4723,17 @@ class EmundusHelperFiles
 
                             if ($applied_filter['uid'] == 'to_evaluate') {
                                 $query .= 'LEFT JOIN #__emundus_evaluations as ee on ee.fnum = jecc.fnum and ee.user = ' . $user->id . ' ';
+                                $where_params['eval'] = true;
                             }
 
                             if (!empty($leftJoins)) {
                                 $query .= $leftJoins;
                             }
 
-                            $whereConditions = $this->_moduleBuildWhere($already_joined, 'files', ['code' => $user_programmes, 'fnum_assoc' => $user_fnums_assoc], [$applied_filter['uid']]);
+                            $where_params['code'] = $user_programmes;
+                            $where_params['fnum_assoc'] = $user_fnums_assoc;
+
+                            $whereConditions = $this->_moduleBuildWhere($already_joined, 'files', $where_params, [$applied_filter['uid']]);
 
                             $query .= $whereConditions['join'];
                             $query .= ' WHERE u.block=0 ' . $whereConditions['q'];

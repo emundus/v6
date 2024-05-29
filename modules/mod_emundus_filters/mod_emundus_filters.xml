@@ -133,7 +133,7 @@
                             description="FILTER_ORDER_DESC"
                             default="0"
                     />
-                    <field type="list" name="filter_to_evaluate" label="FILTER_ON_TO_EVALUATE">
+                    <field type="list" name="filter_to_evaluate" label="FILTER_ON_TO_EVALUATE" description="FILTER_ON_TO_EVALUATE_DESC" >
                         <option value="0">JNO</option>
                         <option value="1">JYES</option>
                     </field>
