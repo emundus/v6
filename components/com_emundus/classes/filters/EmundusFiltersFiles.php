@@ -542,7 +542,7 @@ class EmundusFiltersFiles extends EmundusFilters
                     'label'     => JText::_('MOD_EMUNDUS_FILTERS_TO_EVALUATE'),
                     'type'      => 'select',
                     'values'    => $evaluated,
-                    'value'     => [2],
+                    'value'     => [1],
                     'default'   => true,
                     'available' => true,
                     'order'     => $config['filter_to_evaluate_order']
