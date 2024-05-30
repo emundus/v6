@@ -3662,7 +3662,14 @@ class EmundusHelperFiles
 
         if (!empty($caller_params) && $caller_params['eval']) {
             $where['q'] .= ' AND jecc.status <> 0';
+            if (!empty($caller_params) && !empty($caller_params['custom_eval_users_filter'])) {
+                $where['q'] .= ' AND (jos_emundus_evaluations.user IN ('.str_replace('[CURRENT_USER]', $db->quote(JFactory::getUser()->id), $caller_params['custom_eval_users_filter']).') OR jos_emundus_evaluations.user IS NULL)';
+            } else {
+                $where['q'] .= ' AND (jos_emundus_evaluations.user = '.$db->quote(JFactory::getUser()->id).' OR jos_emundus_evaluations.user IS NULL)';
+            }
         }
+
+
 
 	    $menu = JFactory::getApplication()->getMenu();
 		if (!empty($menu)) {
@@ -4728,13 +4735,11 @@ class EmundusHelperFiles
                             LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jecc.fnum ';
 
                             if ($applied_filter['uid'] == 'to_evaluate') {
-                                if (!empty($custom_eval_users_filter)) {
-                                    $query .= 'LEFT JOIN jos_emundus_evaluations on jos_emundus_evaluations.fnum = jecc.fnum and jos_emundus_evaluations.user IN (' . str_replace('[CURRENT_USER]', $user->id, $custom_eval_users_filter) . ') ';
-                                    $where_params['custom_eval_users_filter'] = $custom_eval_users_filter;
-                                } else {
-                                    $query .= 'LEFT JOIN jos_emundus_evaluations on jos_emundus_evaluations.fnum = jecc.fnum and jos_emundus_evaluations.user = ' . $user->id . ' ';
-                                }
+                                $query .= 'LEFT JOIN jos_emundus_evaluations on jos_emundus_evaluations.fnum = jecc.fnum';
                                 $where_params['eval'] = true;
+                                if (!empty($custom_eval_users_filter)) {
+                                    $where_params['custom_eval_users_filter'] = $custom_eval_users_filter;
+                                }
                             }
 
                             if (!empty($leftJoins)) {
