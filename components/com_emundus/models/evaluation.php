@@ -34,6 +34,7 @@ class EmundusModelEvaluation extends JModelList {
     public $code;
 
     private $use_module_filters = false;
+    private $filter_module_params = '';
 
     /**
      * Constructor
@@ -62,6 +63,11 @@ class EmundusModelEvaluation extends JModelList {
 
         $menu_params = $menu->getParams($current_menu->id);
         $this->use_module_filters = boolval($menu_params->get('em_use_module_for_filters', false));
+
+        if ($this->use_module_filters) {
+            $filter_module = JModuleHelper::getModules('emundus_filters');
+            $this->filter_module_params = new JRegistry($filter_module[0]->params);
+        }
 
         $session = JFactory::getSession();
         if (!$session->has('filter_order')) {
@@ -955,12 +961,16 @@ class EmundusModelEvaluation extends JModelList {
                     LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum = jecc.fnum ';
         $q = $this->_buildWhere($already_joined_tables);
 
-        if (EmundusHelperAccess::isCoordinator($current_user->id)
-            || (EmundusHelperAccess::asEvaluatorAccessLevel($current_user->id) && $evaluators_can_see_other_eval == 1)
-            || EmundusHelperAccess::asAccessAction(5, 'r', $current_user->id)) {
-            $query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum = jecc.fnum ';
+        if (!empty($this->filter_module_params->get('filter_to_evaluate_custom_users'))) {
+            $query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum = jecc.fnum AND jos_emundus_evaluations.user IN ('.str_replace('[CURRENT_USER]', $current_user->id, $this->filter_module_params->get('filter_to_evaluate_custom_users')).')';
         } else {
-            $query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum = jecc.fnum AND (jos_emundus_evaluations.user='.$current_user->id.' OR jos_emundus_evaluations.user IS NULL)';
+            if (EmundusHelperAccess::isCoordinator($current_user->id)
+                || (EmundusHelperAccess::asEvaluatorAccessLevel($current_user->id) && $evaluators_can_see_other_eval == 1)
+                || EmundusHelperAccess::asAccessAction(5, 'r', $current_user->id)) {
+                $query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum = jecc.fnum ';
+            } else {
+                $query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum = jecc.fnum AND (jos_emundus_evaluations.user='.$current_user->id.' OR jos_emundus_evaluations.user IS NULL)';
+            }
         }
 
         if (!empty($leftJoin)) {

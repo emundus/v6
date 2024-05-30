@@ -55,6 +55,7 @@
                         label="FILTER_ORDER"
                         description="FILTER_ORDER_DESC"
                         default="0"
+                        showon="filter_status:1"
                     />
                     <field type="list" name="filter_campaign" label="FILTER_ON_CAMPAIGN">
                         <option value="0">JNO</option>
@@ -66,6 +67,7 @@
                             label="FILTER_ORDER"
                             description="FILTER_ORDER_DESC"
                             default="0"
+                            showon="filter_campaign:1"
                     />
                     <field type="list" name="filter_programs" label="FILTER_ON_PROGRAM">
                         <option value="0">JNO</option>
@@ -77,6 +79,7 @@
                             label="FILTER_ORDER"
                             description="FILTER_ORDER_DESC"
                             default="0"
+                            showon="filter_programs:1"
                     />
                     <field type="list" name="filter_years" label="FILTER_ON_YEAR">
                         <option value="0">JNO</option>
@@ -88,6 +91,7 @@
                             label="FILTER_ORDER"
                             description="FILTER_ORDER_DESC"
                             default="0"
+                            showon="filter_years:1"
                     />
                     <field type="list" name="filter_tags" label="FILTER_ON_TAGS">
                         <option value="0">JNO</option>
@@ -99,6 +103,7 @@
                             label="FILTER_ORDER"
                             description="FILTER_ORDER_DESC"
                             default="0"
+                            showon="filter_tags:1"
                     />
                     <field type="list" name="filter_published" label="FILTER_ON_PUBLISHED_STATE">
                         <option value="0">JNO</option>
@@ -110,6 +115,7 @@
                             label="FILTER_ORDER"
                             description="FILTER_ORDER_DESC"
                             default="0"
+                            showon="filter_published:1"
                     />
                     <field type="list" name="filter_groups" label="FILTER_ON_GROUPS">
                         <option value="0">JNO</option>
@@ -121,6 +127,7 @@
                             label="FILTER_ORDER"
                             description="FILTER_ORDER_DESC"
                             default="0"
+                            showon="filter_groups:1"
                     />
                     <field type="list" name="filter_users" label="FILTER_ON_USERS" default="0">
                         <option value="0">JNO</option>
@@ -132,17 +139,27 @@
                             label="FILTER_ORDER"
                             description="FILTER_ORDER_DESC"
                             default="0"
+                            showon="filter_users:1"
                     />
                     <field type="list" name="filter_to_evaluate" label="FILTER_ON_TO_EVALUATE" description="FILTER_ON_TO_EVALUATE_DESC" >
                         <option value="0">JNO</option>
                         <option value="1">JYES</option>
                     </field>
                     <field
+                            type="textarea"
+                            name="filter_to_evaluate_custom_users"
+                            label="FILTER_ON_TO_EVALUATE_CUSTOM_USERS"
+                            description="FILTER_ON_TO_EVALUATE_CUSTOM_USERS_DESC"
+                            default=""
+                            showon="filter_to_evaluate:1"
+                    />
+                    <field
                             type="text"
                             name="filter_to_evaluate_order"
                             label="FILTER_ORDER"
                             description="FILTER_ORDER_DESC"
                             default="0"
+                            showon="filter_to_evaluate:1"
                     />
                     <!-- repeatable field -->
                     <field name="more_filter_elements"

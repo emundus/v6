@@ -4064,7 +4064,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
                         require_once(JPATH_SITE . '/components/com_emundus/helpers/files.php');
                         $h_files = new EmundusHelperFiles();
-                        $data = $h_files->setFiltersValuesAvailability($applied_filters);
+                        $data = $h_files->setFiltersValuesAvailability($applied_filters, $module_params['filter_to_evaluate_custom_users']);
 
                         $response = ['status' => true, 'code' => 200, 'msg' => JText::_('SUCCESS'), 'data' => $data];
                     }

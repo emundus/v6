@@ -3974,9 +3974,15 @@ class EmundusHelperFiles
 
                                     break;
                                 case 'to_evaluate':
-                                    $where['q'] .= ' AND ' . $this->writeQueryWithOperator('IF(jee.id IS NULL, 1, 2)', $filter['value'], $filter['operator']);
+                                    $where['q'] .= ' AND ' . $this->writeQueryWithOperator('IF(jos_emundus_evaluations.id IS NULL, 1, 2)', $filter['value'], $filter['operator']);
                                     $jecc_alias = array_search('jos_emundus_campaign_candidature', $already_joined);
-                                    $where['join'] .= ' LEFT JOIN #__emundus_evaluations as jee on jee.fnum = ' . $jecc_alias . '.fnum AND jee.user = ' . $db->quote(JFactory::getUser()->id);
+                                    if (!in_array('jos_emundus_evaluations', $already_joined)) {
+                                        if (!empty($caller_params) && !empty($caller_params['custom_eval_users_filter'])) {
+                                            $where['join'] .= ' LEFT JOIN jos_emundus_evaluations on jos_emundus_evaluations.fnum = ' . $jecc_alias . '.fnum AND jos_emundus_evaluations.user IN (' . str_replace('[CURRENT_USER]', $db->quote(JFactory::getUser()->id), $caller_params['custom_eval_users_filter']) . ')';
+                                        } else {
+                                            $where['join'] .= ' LEFT JOIN jos_emundus_evaluations on jos_emundus_evaluations.fnum = ' . $jecc_alias . '.fnum AND jos_emundus_evaluations.user = ' . $db->quote(JFactory::getUser()->id);
+                                        }
+                                    }
                                     break;
                                 default:
                                     break;
@@ -4537,7 +4543,7 @@ class EmundusHelperFiles
     /*
      *
      */
-    public function setFiltersValuesAvailability($applied_filters): array
+    public function setFiltersValuesAvailability($applied_filters, $custom_eval_users_filter = ''): array
     {
         $applied_filters = empty($applied_filters) ? [] : $applied_filters;
 
@@ -4588,7 +4594,7 @@ class EmundusHelperFiles
                                 $table_column_to_count = 'jecc.published';
                                 break;
                             case 'to_evaluate':
-                                $table_column_to_count = 'IF(ee.id IS NOT NULL, 2, 1)';
+                                $table_column_to_count = 'IF(jos_emundus_evaluations.id IS NOT NULL, 2, 1)';
                                 break;
                         }
                     } else {
@@ -4722,7 +4728,12 @@ class EmundusHelperFiles
                             LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jecc.fnum ';
 
                             if ($applied_filter['uid'] == 'to_evaluate') {
-                                $query .= 'LEFT JOIN #__emundus_evaluations as ee on ee.fnum = jecc.fnum and ee.user = ' . $user->id . ' ';
+                                if (!empty($custom_eval_users_filter)) {
+                                    $query .= 'LEFT JOIN jos_emundus_evaluations on jos_emundus_evaluations.fnum = jecc.fnum and jos_emundus_evaluations.user IN (' . str_replace('[CURRENT_USER]', $user->id, $custom_eval_users_filter) . ') ';
+                                    $where_params['custom_eval_users_filter'] = $custom_eval_users_filter;
+                                } else {
+                                    $query .= 'LEFT JOIN jos_emundus_evaluations on jos_emundus_evaluations.fnum = jecc.fnum and jos_emundus_evaluations.user = ' . $user->id . ' ';
+                                }
                                 $where_params['eval'] = true;
                             }
 
