@@ -545,7 +545,8 @@ class EmundusFiltersFiles extends EmundusFilters
                     'value'     => [1],
                     'default'   => true,
                     'available' => true,
-                    'order'     => $config['filter_to_evaluate_order']
+                    'order'     => $config['filter_to_evaluate_order'],
+                    'operator'  => '='
                 ];
             }
 
@@ -675,6 +676,8 @@ class EmundusFiltersFiles extends EmundusFilters
                 ];
             }
 
+            $session = JFactory::getSession();
+
             if (!empty($config['more_filter_elements']))
 			{
 				$config['more_filter_elements'] = json_decode($config['more_filter_elements'], true);
@@ -758,7 +761,6 @@ class EmundusFiltersFiles extends EmundusFilters
 							$this->applied_filters[]     = $new_default_filter;
 
 							// add filter to adv cols
-							$session                 = JFactory::getSession();
 							$files_displayed_columns = $session->get('adv_cols');
 							if (!empty($files_displayed_columns))
 							{
@@ -773,6 +775,8 @@ class EmundusFiltersFiles extends EmundusFilters
 					}
 				}
 			}
+
+            $session->set('em-applied-filters', $this->applied_filters);
 
 			// sort applied filters array by array entry 'order'
 			usort($this->applied_filters, function ($a, $b) {
