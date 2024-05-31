@@ -296,6 +296,34 @@ class EmundusHelperAccess {
 		return false;
 	}
 
+
+    public static function isFnumMine($user_id, $fnum) {
+        $mine = false;
+
+        if (!empty($user_id) && !empty($fnum)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('id')
+                ->from($db->quoteName('#__emundus_campaign_candidature'))
+                ->where('applicant_id = ' . $db->quote($user_id))
+                ->andWhere('fnum LIKE ' . $db->quote($fnum));
+            try {
+                $db->setQuery($query);
+                $ccid = $db->loadResult();
+
+                if (!empty($ccid)) {
+                    $mine = true;
+                }
+
+            } catch (Exception $e) {
+                JLog::add('Error seeing if fnum is mine. -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+            }
+        }
+
+        return $mine;
+    }
+
     /**
      * @param $user_id
      * @param $fnum
