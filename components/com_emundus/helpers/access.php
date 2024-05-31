@@ -319,6 +319,28 @@ class EmundusHelperAccess {
             } catch (Exception $e) {
                 JLog::add('Error seeing if fnum is mine. -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
             }
+
+            if (!$mine) {
+                // maybe filed has been shared to me (collaboration)
+                $query->clear()
+                    ->select('efr.id')
+                    ->from($db->quoteName('#__emundus_files_request', 'efr'))
+                    ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ecc.id = efr.ccid')
+                    ->where('ecc.fnum LIKE ' . $db->quote($fnum))
+                    ->andWhere('efr.user_id = ' . $db->quote($user_id))
+                    ->andWhere('efr.uploaded = 1');
+
+                try {
+                    $db->setQuery($query);
+                    $collaboration_id = $db->loadResult();
+
+                    if (!empty($collaboration_id)) {
+                        $mine = true;
+                    }
+                } catch (Exception $e) {
+                    JLog::add('Error seeing if fnum is mine. -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+                }
+            }
         }
 
         return $mine;
