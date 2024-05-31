@@ -44,6 +44,7 @@
       </AdmissionForm>
       <IframeTab
           v-if="selectedTab.url"
+          :key="selectedTab.name"
           :url="selectedTab.url"
           :fnum="file.fnum"
       >
