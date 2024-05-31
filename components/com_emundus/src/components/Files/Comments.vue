@@ -398,6 +398,8 @@ export default {
         }).finally(() => {
           this.loading = false;
         });
+      } else {
+        this.loading = false;
       }
     },
     resetAddComment() {
@@ -424,7 +426,7 @@ export default {
     },
     deleteComment(commentId) {
       const comment = this.comments.find((comment) => comment.id === commentId);
-      if (commentId > 0 && this.access.d && comment.user_id === this.user) {
+      if (commentId > 0 && (this.access.d || comment.user_id === this.user)) {
         this.alertConfirm('COM_EMUNDUS_COMMENTS_CONFIRM_DELETE').then((response) => {
           if (response.value) {
             this.comments = this.comments.filter((comment) => comment.id !== commentId);
@@ -476,6 +478,8 @@ export default {
           this.editable = null;
           this.tmpComment = null;
         });
+      } else {
+        this.loading = false;
       }
     },
     updateCommentOpenedState(commentId, state) {

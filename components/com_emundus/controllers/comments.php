@@ -48,7 +48,7 @@ class EmundusControllerComments extends JControllerLegacy
             $response['code'] = 500;
             $fnum = EmundusHelperFiles::getFnumFromId($ccid);
 
-            if (EmundusHelperAccess::asAccessAction(10, 'r', $this->user->id, $fnum)) {
+            if (EmundusHelperAccess::asAccessAction(10, 'r', $this->user->id, $fnum) || EmundusHelperAccess::isFnumMine($fnum, $this->user->id)) {
                 $response['code'] = 200;
                 $model = $this->getModel('comments');
                 $response['data'] = $model->getComments($ccid, $this->user->id);
@@ -68,7 +68,8 @@ class EmundusControllerComments extends JControllerLegacy
         if (!empty($ccid) && !empty($comment)) {
             $fnum = EmundusHelperFiles::getFnumFromId($ccid);
 
-            if (EmundusHelperAccess::asAccessAction(10, 'c', $this->user->id, $fnum)) {
+
+            if (EmundusHelperAccess::asAccessAction(10, 'c', $this->user->id, $fnum) || EmundusHelperAccess::isFnumMine($fnum, $this->user->id)) {
                 $response['code'] = 500;
                 $target = $this->app->input->getString('target', '');
                 $target = !empty($target) ? json_decode($target, true) : [];
@@ -101,7 +102,7 @@ class EmundusControllerComments extends JControllerLegacy
             if (!empty($comment)) {
                 $fnum = EmundusHelperFiles::getFnumFromId($comment['ccid']);
 
-                if (EmundusHelperAccess::asAccessAction(10, 'u', $this->user->id, $fnum) && $comment['user_id'] == $this->user->id) {
+                if ((EmundusHelperAccess::asAccessAction(10, 'u', $this->user->id, $fnum) || EmundusHelperAccess::isFnumMine($fnum, $this->user->id)) && $comment['user_id'] == $this->user->id) {
                     $response['code'] = 500;
                     $new_comment = $this->app->input->getString('comment', '');
 
@@ -126,7 +127,7 @@ class EmundusControllerComments extends JControllerLegacy
             if (!empty($comment)) {
                 $fnum = EmundusHelperFiles::getFnumFromId($comment['ccid']);
 
-                if (EmundusHelperAccess::asAccessAction(10, 'u', $this->user->id, $fnum)) {
+                if (EmundusHelperAccess::asAccessAction(10, 'u', $this->user->id, $fnum) || EmundusHelperAccess::isFnumMine($fnum, $this->user->id)) {
                     $response['code'] = 500;
                     $opened = $this->app->input->getInt('opened', 0);
 
@@ -152,7 +153,7 @@ class EmundusControllerComments extends JControllerLegacy
             if (!empty($comment)) {
                 $fnum = EmundusHelperFiles::getFnumFromId($comment->ccid);
 
-                if (EmundusHelperAccess::asAccessAction(10, 'd', $this->user->id, $fnum)) {
+                if (EmundusHelperAccess::asAccessAction(10, 'd', $this->user->id, $fnum) || EmundusHelperAccess::isFnumMine($fnum, $this->user->id)) {
                     $response['code'] = 500;
                     $model = $this->getModel('comments');
                     $response['status'] = $model->deleteComment($comment_id, $this->user->id);
