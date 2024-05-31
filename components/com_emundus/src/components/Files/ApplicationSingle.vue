@@ -130,7 +130,8 @@ export default {
     access: null,
     student_id: null,
     hidden: false,
-    loading: false
+    loading: false,
+    closeSplitModal: null
   }),
 
   created() {
@@ -234,6 +235,7 @@ export default {
           this.loading = false;
         });
       }
+      this.closeSplitModal = new Event('emundus-close-split-modal');
     },
 
     getApplicationForm() {
@@ -293,6 +295,7 @@ export default {
       this.hidden = true;
       this.$modal.hide('application-modal');
       document.querySelector('body').style.overflow= 'visible';
+      window.dispatchEvent(this.closeSplitModal);
       swal.close();
     },
     openNextFnum() {

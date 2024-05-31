@@ -312,7 +312,7 @@ function refreshFilter(view) {
             }
         });
     } else {
-        reloadData($('#view').val(), false);
+        window.dispatchEvent(this.refreshModuleFiltersEvent);
     }
 }
 
@@ -6460,4 +6460,9 @@ window.addEventListener('emundus-start-apply-filters', () => {
 
 window.addEventListener('emundus-apply-filters-success', () => {
      reloadData(document.getElementById('view').getAttribute('value'), false);
+});
+
+window.addEventListener('emundus-close-split-modal', () => {
+    const controller = $('#view').val();
+    refreshFilter(controller);
 });
