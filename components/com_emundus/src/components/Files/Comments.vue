@@ -53,7 +53,7 @@
             </div>
             <div class="file-comment-header-right ease-in-out duration-300 opacity-0 group-hover:opacity-100">
               <span class="material-icons-outlined cursor-pointer" @click="replyToComment(comment.id)">reply</span>
-              <span v-if="access.d" class="material-icons-outlined cursor-pointer" @click="deleteComment(comment.id)">delete</span>
+              <span v-if="access.d || comment.user_id == user" class="material-icons-outlined cursor-pointer" @click="deleteComment(comment.id)">delete</span>
               <span v-if="access.u || (access.c && comment.user_id == user)" class="material-icons-outlined cursor-pointer" @click="makeCommentEditable(comment.id)">edit</span>
             </div>
           </div>
@@ -93,7 +93,7 @@
                   </div>
                 </div>
                 <div class="file-comment-header-left">
-                  <span v-if="access.d" class="material-icons-outlined cursor-pointer" @click="deleteComment(child.id)">delete</span>
+                  <span v-if="access.d || child.user_id == user" class="material-icons-outlined cursor-pointer" @click="deleteComment(child.id)">delete</span>
                   <span v-if="access.u || (access.c && child.user_id == user)" class="material-icons-outlined cursor-pointer" @click="makeCommentEditable(child.id)">edit</span>
                 </div>
               </div>
