@@ -134,7 +134,6 @@ export default {
   }),
 
   created() {
-    document.querySelector('body').style.overflow = 'hidden';
     var r = document.querySelector(':root');
     let ratio_array = this.$props.ratio.split('/');
     r.style.setProperty('--attachment-width', ratio_array[0] + '%');
@@ -170,6 +169,7 @@ export default {
       });
     },
     render() {
+      document.querySelector('body').style.overflow = 'hidden';
       this.loading = true;
       let fnum = '';
 
