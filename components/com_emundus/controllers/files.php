@@ -4385,7 +4385,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
             if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)) {
                 if (!empty($string)) {
-                    require_once(JPATH_SITE . '/components/com_emundus/model/emails.php');
+                    require_once(JPATH_ROOT . '/components/com_emundus/models/emails.php');
                     $m_emails = new EmundusModelEmails();
                     $tags = $m_emails->setTags($this->_user->id, null, $fnum, '', $string);
                     $string = preg_replace($tags['patterns'], $tags['replacements'], $string);
