@@ -467,7 +467,7 @@ export default {
       this.loading = true;
 
       const commentToUpdate = this.comments.find((comment) => comment.id === commentId);
-      if (this.access.u || (this.access.c && commentToUpdate.user == this.user)) {
+      if (this.access.u || commentToUpdate.user == this.user) {
         const commentContent = commentToUpdate.comment_body;
         commentsService.updateComment(commentId, commentContent).then((response) => {
           // nothing to do
