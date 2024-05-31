@@ -467,7 +467,7 @@ export default {
       this.loading = true;
 
       const commentToUpdate = this.comments.find((comment) => comment.id === commentId);
-      if (this.access.u || commentToUpdate.user == this.user) {
+      if (this.access.u || commentToUpdate.user_id == this.user) {
         const commentContent = commentToUpdate.comment_body;
         commentsService.updateComment(commentId, commentContent).then((response) => {
           // nothing to do
@@ -479,6 +479,8 @@ export default {
           this.tmpComment = null;
         });
       } else {
+        console.log('can not update comment.');
+        this.abortUpdateComment();
         this.loading = false;
       }
     },
