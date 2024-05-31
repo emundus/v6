@@ -18,6 +18,8 @@ class EmundusModelRanking extends JModelList
 
     private $can_user_rank_himself = false;
 
+    private $all_rights_profile = null;
+
     public $filters = [];
     private $h_files = null;
 
@@ -42,6 +44,8 @@ class EmundusModelRanking extends JModelList
         $this->logger = new EmundusModelLogs();
 
         $this->db = Factory::getDBO();
+
+        $this->all_rights_profile = 2;
 
         JLog::addLogger(['text_file' => 'com_emundus.ranking.php'], JLog::ALL);
     }
@@ -1191,6 +1195,8 @@ class EmundusModelRanking extends JModelList
                 throw new Exception(Text::_('COM_EMUNDUS_RANKING_UPDATE_RANKING_ERROR_RANK_OWN_FILE'));
             }
 
+            $all_mighty_user = JFactory::getSession()->get('emundusUser')->profile == $this->all_rights_profile;
+
             $this->dispatchEvent('onBeforeUpdateFileRanking', ['id' => $id, 'user_id' => $user_id, 'new_rank' => $new_rank, 'hierarchy_id' => $hierarchy_id, 'package_id' => $package_id]);
 
             $query->clear()
@@ -1200,7 +1206,7 @@ class EmundusModelRanking extends JModelList
             $file_status = $this->db->setQuery($query)->loadResult();
             $status_user_can_rank = $this->getStatusUserCanRank($user_id, $hierarchy_id);
 
-            if ($file_status == $status_user_can_rank) {
+            if ($file_status == $status_user_can_rank || $all_mighty_user) {
                 $query->clear()
                     ->select($this->db->quoteName('id') . ', ' . $this->db->quoteName('rank') . ', ' . $this->db->quoteName('locked'))
                     ->from($this->db->quoteName('#__emundus_ranking'))
@@ -1215,7 +1221,7 @@ class EmundusModelRanking extends JModelList
                 $this->db->setQuery($query);
                 $ranking = $this->db->loadAssoc();
 
-                if (!empty($ranking) && $ranking['locked'] == 1) {
+                if (!empty($ranking) && $ranking['locked'] == 1 && !$all_mighty_user) {
                     throw new Exception(Text::_('COM_EMUNDUS_RANKING_UPDATE_RANKING_ERROR_LOCKED'));
                 }
 
@@ -1245,7 +1251,7 @@ class EmundusModelRanking extends JModelList
                         $this->db->setQuery($query);
                         $same_rank_data = $this->db->loadAssoc();
 
-                        if (!empty($same_rank_data) && ($same_rank_data['locked'] == 1 || $same_rank_data['status'] != $status_user_can_rank)) {
+                        if (!empty($same_rank_data) && ($same_rank_data['locked'] == 1 || $same_rank_data['status'] != $status_user_can_rank) && !$all_mighty_user) {
                             throw new Exception(Text::_('COM_EMUNDUS_RANKING_UPDATE_RANKING_ERROR_RANK_UNREACHABLE'));
                         }
 
@@ -1281,12 +1287,12 @@ class EmundusModelRanking extends JModelList
                         $ranks = $this->db->loadAssocList();
                         $rank_to_apply = (int)$old_rank;
 
-                        $locked_rank_positions = array_filter(array_map(function ($rank) use ($status_user_can_rank) {
+                        $locked_rank_positions = $all_mighty_user ? [] : array_filter(array_map(function ($rank) use ($status_user_can_rank) {
                             return $rank['locked'] == 1 || $rank['status'] != $status_user_can_rank ? $rank['rank'] : null;
                         }, $ranks));
 
                         foreach ($ranks as $rank) {
-                            if ($rank['locked'] != 1 && $rank['status'] == $status_user_can_rank) {
+                            if (($rank['locked'] != 1 && $rank['status'] == $status_user_can_rank) || $all_mighty_user) {
                                 $re_arranged_ranking[$rank['id']] = $rank_to_apply;
                                 $rank_to_apply++;
 
@@ -1314,7 +1320,7 @@ class EmundusModelRanking extends JModelList
                         $ranks = $this->db->loadAssocList();
                         $rank_to_apply = $new_rank + 1;
 
-                        $locked_rank_positions = array_filter(array_map(function ($rank) use ($status_user_can_rank) {
+                        $locked_rank_positions = $all_mighty_user ? [] : array_filter(array_map(function ($rank) use ($status_user_can_rank) {
                             return $rank['locked'] == 1 || $rank['status'] != $status_user_can_rank ? $rank['rank'] : null;
                         }, $ranks));
 
@@ -1323,7 +1329,7 @@ class EmundusModelRanking extends JModelList
                         }
 
                         foreach ($ranks as $rank) {
-                            if ($rank['locked'] != 1 && $rank['status'] == $status_user_can_rank) {
+                            if (($rank['locked'] != 1 && $rank['status'] == $status_user_can_rank) || $all_mighty_user) {
                                 $re_arranged_ranking[$rank['id']] = $rank_to_apply;
                                 $rank_to_apply++;
 
@@ -1352,12 +1358,12 @@ class EmundusModelRanking extends JModelList
                         $ranks = $this->db->loadAssocList();
                         $rank_to_apply = (int)$old_rank;
 
-                        $locked_rank_positions = array_filter(array_map(function ($rank) use ($status_user_can_rank) {
+                        $locked_rank_positions = $all_mighty_user ? [] :  array_filter(array_map(function ($rank) use ($status_user_can_rank) {
                             return $rank['locked'] == 1 || $rank['status'] != $status_user_can_rank ? $rank['rank'] : null;
                         }, $ranks));
 
                         foreach ($ranks as $rank) {
-                            if ($rank['locked'] != 1 && $rank['status'] == $status_user_can_rank) {
+                            if (($rank['locked'] != 1 && $rank['status'] == $status_user_can_rank) || $all_mighty_user) {
                                 $re_arranged_ranking[$rank['id']] = $rank_to_apply;
                                 $rank_to_apply--;
 
@@ -1386,12 +1392,12 @@ class EmundusModelRanking extends JModelList
                         $ranks = $this->db->loadAssocList();
                         $rank_to_apply = (int)$old_rank;
 
-                        $locked_rank_positions = array_filter(array_map(function ($rank) use ($status_user_can_rank) {
+                        $locked_rank_positions = $all_mighty_user ? [] : array_filter(array_map(function ($rank) use ($status_user_can_rank) {
                             return $rank['locked'] == 1 || $rank['status'] != $status_user_can_rank ? $rank['rank'] : null;
                         }, $ranks));
 
                         foreach ($ranks as $rank) {
-                            if ($rank['locked'] != 1 && $rank['status'] == $status_user_can_rank) {
+                            if (($rank['locked'] != 1 && $rank['status'] == $status_user_can_rank) || $all_mighty_user) {
                                 $re_arranged_ranking[$rank['id']] = $rank_to_apply;
                                 $rank_to_apply++;
 
