@@ -4375,4 +4375,30 @@ class EmundusControllerFiles extends JControllerLegacy
         echo json_encode($response);
         exit;
     }
+
+    public function renderemundustags() {
+        $response = ['status' => false, 'code' => 403, 'msg' => JText::_('ACCESS_DENIED')];
+
+        if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+            $string = JFactory::getApplication()->input->getString('string', '');
+            $fnum = JFactory::getApplication()->input->getString('fnum', '');
+
+            if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)) {
+                if (!empty($string)) {
+                    require_once(JPATH_SITE . '/components/com_emundus/model/emails.php');
+                    $m_emails = new EmundusModelEmails();
+                    $tags = $m_emails->setTags($this->_user->id, null, $fnum, '', $string);
+                    $string = preg_replace($tags['patterns'], $tags['replacements'], $string);
+
+                    $response['data'] = $string;
+                } else {
+                    $response['msg'] = JText::_('MISSING_PARAMS');
+                    $response['code'] = 500;
+                }
+            }
+        }
+
+        echo json_encode($response);
+        exit;
+    }
 }

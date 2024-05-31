@@ -1,6 +1,7 @@
 import moment from 'moment';
 import userService from '../services/user.js';
 import attachmentService from '../services/attachment.js';
+import fileService from '@/services/file.js';
 
 import mimeTypes from '../data/mimeTypes';
 
