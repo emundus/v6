@@ -529,7 +529,7 @@ if ($user != null)
 
             jQuery.ajax({
                 type: 'POST',
-                url: 'index.php?option=com_emundus&task=switchprofile',
+                url: '/index.php?option=com_emundus&task=switchprofile',
                 data: ({
                     profnum: current_fnum
                 }),
@@ -549,7 +549,7 @@ if ($user != null)
         function closeTip() {
             jQuery.ajax({
                 type: 'POST',
-                url: 'index.php?option=com_emundus&controller=users&task=updateemundussession',
+                url: '/index.php?option=com_emundus&controller=users&task=updateemundussession',
                 data: ({
                     param: 'first_logged',
                     value: 0,

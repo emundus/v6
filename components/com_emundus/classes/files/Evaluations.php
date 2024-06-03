@@ -9,7 +9,7 @@ class Evaluations extends Files
 	protected array $evaluated = [];
 	protected array $all = [];
 	protected array $in_progress = [];
-	protected string $selected_tab = 'to_evaluate';
+	protected string $selected_tab = 'all';
 
     public function __construct(){
         JLog::addLogger(['text_file' => 'com_emundus.evaluations.php'], JLog::ERROR, 'com_emundus.evaluations');

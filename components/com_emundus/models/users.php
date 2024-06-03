@@ -837,7 +837,7 @@ class EmundusModelUsers extends JModelList {
         return $this->data;
     }
 
-    public function addUserFromParams($params, $current_user) {
+    public function addUserFromParams($params, $current_user, $send_email = 1) {
         $created = false;
 
         if (!empty($params['username']) && !empty($params['email'])) {
@@ -904,20 +904,22 @@ class EmundusModelUsers extends JModelList {
                 throw new Exception(JText::_('COM_EMUNDUS_USERS_CANT_CREATE_USER_FOLDER_CONTACT_ADMIN'));
             }
 
-            // Envoi de la confirmation de création de compte par email
-            if (!class_exists('EmundusModelEmails')) {
-                require_once(JPATH_ROOT . '/components/com_emundus/models/emails.php');
-            }
-            $m_emails = new EmundusModelEmails();
+            if ($send_email) {
+                // Envoi de la confirmation de création de compte par email
+                if (!class_exists('EmundusModelEmails')) {
+                    require_once(JPATH_ROOT . '/components/com_emundus/models/emails.php');
+                }
+                $m_emails = new EmundusModelEmails();
 
-            $email = $params['ldap'] == 1 ? 'new_ldap_account' : 'new_account';
-            $pswd = $params['ldap'] == 0 ? $password : null;
-            $post = $params['ldap'] == 0 ? array('PASSWORD' => $pswd) : array();
+                $email = $params['ldap'] == 1 ? 'new_ldap_account' : 'new_account';
+                $pswd = $params['ldap'] == 0 ? $password : null;
+                $post = $params['ldap'] == 0 ? array('PASSWORD' => $pswd) : array();
 
-            $sent = $m_emails->sendEmailNoFnum($user->email, $email, $post, $user->id, [], null, false);
+                $sent = $m_emails->sendEmailNoFnum($user->email, $email, $post, $user->id, [], null, false);
 
-            if (!$sent) {
-                throw new Exception(JText::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT'));
+                if (!$sent) {
+                    throw new Exception(JText::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT'));
+                }
             }
 
             $created = true;

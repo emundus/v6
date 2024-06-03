@@ -1115,34 +1115,62 @@ class EmundusModelFiles extends JModelLegacy
     }
 
     /**
-     * @return mixed
-     * @throws Exception
+     * @return array
      */
     public function getEvalGroups()
     {
+        $eval_groups = [
+            'groups' => [],
+            'users' => []
+        ];
+
         try {
             $db = $this->getDbo();
+            $query = $db->getQuery(true);
+            $query->select('*')
+                ->from('#__emundus_setup_groups')
+                ->where('published = 1');
 
-            $query = 'select * from #__emundus_setup_groups where 1';
             $db->setQuery($query);
+            $eval_groups['groups'] = $db->loadAssocList();
 
-            $evalGroups['groups'] = $db->loadAssocList();
+            $query->clear()
+                ->select('id, label')
+                ->from('#__emundus_setup_profiles')
+                ->where('published != 1')
+                ->andWhere('id != 1');
 
-            $query = 'SELECT DISTINCT(eu.user_id) as user_id, CONCAT( eu.lastname, " ", eu.firstname ) as name, esp.label, u.email
-                        FROM #__emundus_users AS eu
-                        LEFT JOIN #__users AS u ON u.id=eu.user_id
-                        LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = eu.profile
-                        LEFT JOIN #__emundus_users_profiles AS eup ON eup.user_id = eu.user_id
-                        WHERE u.block=0 AND eu.profile !=1 AND esp.published !=1';
             $db->setQuery($query);
+            $non_applicant_profiles = $db->loadAssocList('id');
 
-            $evalGroups['users'] = $db->loadAssocList();
+            if (!empty($non_applicant_profiles)) {
+                $non_applicant_profiles_ids = array_keys($non_applicant_profiles);
+                $query->clear()
+                    ->select('DISTINCT(eu.user_id) as user_id, CONCAT(eu.lastname, " ", eu.firstname) as name, u.email, eu.profile as default_profile_id, GROUP_CONCAT(DISTINCT eup.profile_id) as profiles_ids')
+                    ->from('#__emundus_users AS eu')
+                    ->leftJoin('#__users AS u ON u.id = eu.user_id')
+                    ->leftJoin('#__emundus_users_profiles AS eup ON eup.user_id = eu.user_id')
+                    ->where('u.block = 0')
+                    ->where('(eu.profile IN (' . implode(',', $non_applicant_profiles_ids) . ') OR eup.profile_id IN (' . implode(',', $non_applicant_profiles_ids) . '))')
+                    ->group('eu.user_id');
 
-            return $evalGroups;
+                $db->setQuery($query);
+                $eval_groups['users'] = $db->loadAssocList();
+
+                foreach($eval_groups['users'] as $key => $user) {
+                    if (!in_array($user['default_profile_id'], $non_applicant_profiles_ids)) {
+                        $profile_ids = explode(',', $user['profiles_ids']);
+                        $eval_groups['users'][$key]['label'] = $non_applicant_profiles[$profile_ids[0]]['label'];
+                    } else {
+                        $eval_groups['users'][$key]['label'] = $non_applicant_profiles[$user['default_profile_id']]['label'];
+                    }
+                }
+            }
+        } catch(Exception $e) {
+            JLog::add(JUri::getInstance().' :: USER ID : '. JFactory::getUser()->id.' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
         }
-        catch(Exception $e) {
-            throw $e;
-        }
+
+        return $eval_groups;
     }
 
     /**
