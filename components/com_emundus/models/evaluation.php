@@ -862,11 +862,11 @@ class EmundusModelEvaluation extends JModelList {
 
         if ($this->use_module_filters) {
             $caller_params = [
-                'fnum_assoc'               => $this->fnum_assoc,
-                'code'                     => $this->code
+                'fnum_assoc' => $this->fnum_assoc,
+                'code'       => $this->code,
+                'eval'       => true
             ];
             if (!empty($this->filter_module_params->get('filter_to_evaluate_custom_users'))) {
-                $caller_params['eval'] = true;
                 $caller_params['custom_eval_users_filter'] = $this->filter_module_params->get('filter_to_evaluate_custom_users');
             }
             return $h_files->_moduleBuildWhere($already_joined_tables, 'files', $caller_params);

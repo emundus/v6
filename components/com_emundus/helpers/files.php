@@ -3634,7 +3634,11 @@ class EmundusHelperFiles
      * @param array $caller_params
      * @return array containing 'q' the where clause and 'join' the join clause
      */
-    public function _moduleBuildWhere($already_joined = array(), $caller = 'files', $caller_params = [], $filters_to_exclude = []) {
+    public function _moduleBuildWhere($already_joined = array(), $caller = 'files', $caller_params = [], $filters_to_exclude = [], $menu_item = null, $user = null) {
+        $app = JFactory::getApplication();
+        if(empty($user)) {
+            $user = $app->getIdentity();
+        }
 		$where = ['q' => '', 'join' => ''];
 
 	    $db = JFactory::getDbo();
@@ -3663,9 +3667,9 @@ class EmundusHelperFiles
         if (!empty($caller_params) && $caller_params['eval']) {
             $where['q'] .= ' AND jecc.status <> 0';
             if (!empty($caller_params) && !empty($caller_params['custom_eval_users_filter'])) {
-                $where['q'] .= ' AND (jos_emundus_evaluations.user IN ('.str_replace('[CURRENT_USER]', $db->quote(JFactory::getUser()->id), $caller_params['custom_eval_users_filter']).') OR jos_emundus_evaluations.user IS NULL)';
+                $where['q'] .= ' AND (jos_emundus_evaluations.user IN ('.str_replace('[CURRENT_USER]', $db->quote($user->id), $caller_params['custom_eval_users_filter']).') OR jos_emundus_evaluations.user IS NULL)';
             } else {
-                $where['q'] .= ' AND (jos_emundus_evaluations.user = '.$db->quote(JFactory::getUser()->id).' OR jos_emundus_evaluations.user IS NULL)';
+                $where['q'] .= ' AND (jos_emundus_evaluations.user = '.$db->quote($user->id).' OR jos_emundus_evaluations.user IS NULL)';
             }
         }
 
@@ -4550,14 +4554,29 @@ class EmundusHelperFiles
     /*
      *
      */
-    public function setFiltersValuesAvailability($applied_filters, $custom_eval_users_filter = ''): array
+    public function setFiltersValuesAvailability($applied_filters, $user_id = null, $menu_item = null, $custom_eval_users_filter = ''): array
     {
         $applied_filters = empty($applied_filters) ? [] : $applied_filters;
 
         if (!empty($applied_filters)) {
+            $app = JFactory::getApplication();
 			$user = JFactory::getUser();
+            if (empty($user_id))
+            {
+                $user_id = JFactory::getApplication()->getIdentity()->id;
+                $user_id = $app->getIdentity()->id;
+            }
 
-			require_once (JPATH_ROOT . '/components/com_emundus/models/users.php');
+            if (empty($menu_item))
+            {
+                $menu = $app->getMenu();
+                if (!empty($menu))
+                {
+                    $menu_item = $menu->getActive();
+                }
+            }
+
+            require_once (JPATH_ROOT . '/components/com_emundus/models/users.php');
 			$m_users = new EmundusModelUsers;
 	        $user_programmes = array_filter($m_users->getUserGroupsProgrammeAssoc($user->id));
 	        $groups = $m_users->getUserGroups($user->id, 'Column');
@@ -4736,7 +4755,6 @@ class EmundusHelperFiles
 
                             if ($applied_filter['uid'] == 'to_evaluate') {
                                 $query .= 'LEFT JOIN jos_emundus_evaluations on jos_emundus_evaluations.fnum = jecc.fnum';
-                                $where_params['eval'] = true;
                                 if (!empty($custom_eval_users_filter)) {
                                     $where_params['custom_eval_users_filter'] = $custom_eval_users_filter;
                                 }
@@ -4744,6 +4762,12 @@ class EmundusHelperFiles
 
                             if (!empty($leftJoins)) {
                                 $query .= $leftJoins;
+                            }
+
+                            if(!empty($menu_item)) {
+                                if($menu_item->query['view'] == 'evaluation') {
+                                    $where_params['eval'] = true;
+                                }
                             }
 
                             $where_params['code'] = $user_programmes;
