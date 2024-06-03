@@ -42,6 +42,7 @@
       <export-ranking
           :user="user"
           :packages="packages"
+          :current-package="selectedPackageItem.id"
       >
       </export-ranking>
     </modal>

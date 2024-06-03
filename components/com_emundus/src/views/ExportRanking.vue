@@ -57,6 +57,10 @@ export default {
     packages: {
       type: Array,
       default: []
+    },
+    currentPackage: {
+      type: Number,
+      default: 0
     }
   },
   data() {
@@ -81,6 +85,11 @@ export default {
     } else {
       this.userPackages = this.packages;
     }
+
+    if (this.currentPackage != 0) {
+      this.selectedPackages.push(this.currentPackage);
+    }
+
     this.getHierarchiesUserCanSee();
   },
   methods: {
