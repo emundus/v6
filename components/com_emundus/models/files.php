@@ -3080,7 +3080,7 @@ class EmundusModelFiles extends JModelLegacy
      * @param $fnums
      * @return bool|mixed
      */
-    public function getFilesByFnums($fnums, $attachment_ids = null)
+    public function getFilesByFnums($fnums, $attachment_ids = null, $return_as_object = false)
     {
 		$files = false;
 
@@ -3094,8 +3094,13 @@ class EmundusModelFiles extends JModelLegacy
 
 			try {
 				$db->setQuery($query);
-				$files = $db->loadAssocList();
-			} catch(Exception $e) {
+
+                if ($return_as_object) {
+                    $files = $db->loadObjectList();
+                } else {
+                    $files = $db->loadAssocList();
+                }
+            } catch(Exception $e) {
 				echo $e;
 				JLog::add('Failed to get files by fnum ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
 			}
@@ -4930,7 +4935,7 @@ class EmundusModelFiles extends JModelLegacy
 		return $status;
 	}
 
-    public function exportZip($fnums, $form_post = 1, $attachment = 1, $assessment = 1, $decision = 1, $admission = 1, $form_ids = null, $attachids = null, $options = null, $acl_override = false, $current_user = null) {
+    public function exportZip($fnums, $form_post = 1, $attachment = 1, $assessment = 1, $decision = 1, $admission = 1, $form_ids = null, $attachids = null, $options = null, $acl_override = false, $current_user = null, $params = []) {
         $eMConfig = JComponentHelper::getParams('com_emundus');
 
         require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
@@ -5010,9 +5015,31 @@ class EmundusModelFiles extends JModelLegacy
                     $admission_file = EmundusHelperExport::getAdmissionPDF($fnum, $options);
                 }
 
-                if (count($files_list) > 0) {
-                    foreach ($files_list as $key => $file_list){
-                        if(empty($file_list)){
+                $concat_attachments_with_form = $params['concat_attachments_with_form'] ?? false;
+                if ($concat_attachments_with_form) {
+                    if ($attachment || !empty($attachids)) {
+                        $attachment_to_export = array();
+                        if (!empty($attachids)) {
+                            foreach ($attachids as $aids) {
+                                $detail = explode("|", $aids);
+                                if ($detail[1] == $fnumsInfo[$fnum]['training'] && ($detail[2] == $fnumsInfo[$fnum]['campaign_id'] || $detail[2] == "0")) {
+                                    $attachment_to_export[] = $detail[0];
+                                }
+                            }
+                        }
+
+                        if ($attachment || !empty($attachment_to_export)) {
+                            $files = $this->getFilesByFnums([$fnum], $attachment_to_export, true);
+                        }
+
+                        $tmpArray = [];
+                        EmundusHelperExport::getAttachmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id']);
+                    }
+                }
+
+                if (!empty($files_list)) {
+                    foreach ($files_list as $key => $file_list) {
+                        if (empty($file_list)) {
                             unset($files_list[$key]);
                         }
                     }
@@ -5032,7 +5059,9 @@ class EmundusModelFiles extends JModelLegacy
                             }
                         }
                         $pdf->Output($dossier . $application_pdf, 'F');
-                    } else {
+                    }
+                    else
+                    {
                         $gotenberg_url = $eMConfig->get('gotenberg_url', '');
 
                         if (!empty($gotenberg_url)) {
@@ -5081,7 +5110,7 @@ class EmundusModelFiles extends JModelLegacy
                     $zip->addFile($admission_file, $filename);
                 }
 
-                if ($attachment || !empty($attachids)) {
+                if (($attachment || !empty($attachids)) && !$concat_attachments_with_form) {
                     $attachment_to_export = array();
                     if (!empty($attachids)) {
                         foreach($attachids as $aids){

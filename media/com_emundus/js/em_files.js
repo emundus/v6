@@ -2751,6 +2751,13 @@ $(document).ready(function() {
                         '</select>'+
                         '</div></div>');
 
+                    // add an input checkbox concat_attachments_with_form
+                    $('#data').append('<div class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 em-mt-16" id="params">'+
+                        '<div class="flex flex-row">' +
+                        '<input class="em-ex-check" type="checkbox"  value="concat_attachments_with_form" name="concat_attachments_with_form" id="concat_attachments_with_form" />&ensp;' +
+                        '<label for="concat_attachments_with_form">'+Joomla.JText._('COM_EMUNDUS_EXPORTS_CONCAT_ATTACHMENTS_WITH_FORMS')+'</label>'+
+                        '</div>');
+
                     checkInput = getUserCheck();
 
                     prghtml = '';

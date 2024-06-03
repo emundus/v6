@@ -1181,6 +1181,8 @@ class EmundusControllerFiles extends JControllerLegacy
 	        $formids    = $jinput->getVar('formids', null);
 	        $attachids  = $jinput->getVar('attachids', null);
 	        $options    = $jinput->getVar('options', null);
+            $params = $jinput->getString('params', null);
+            $params = !empty($params) ? json_decode($params, true) : [];
 
 	        $m_files  = new EmundusModelFiles();
 
@@ -1205,7 +1207,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
 
 	        if (extension_loaded('zip')) {
-                $name = $m_files->exportZip($validFnums, $forms, $attachment, $assessment, $decision, $admission, $formids, $attachids, $options, false, $current_user);
+                $name = $m_files->exportZip($validFnums, $forms, $attachment, $assessment, $decision, $admission, $formids, $attachids, $options, false, $current_user, $params);
 	        } else {
 		        $name = $this->export_zip_pcl($validFnums);
 	        }
