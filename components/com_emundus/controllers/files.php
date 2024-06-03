@@ -4391,6 +4391,8 @@ class EmundusControllerFiles extends JControllerLegacy
                     $string = preg_replace($tags['patterns'], $tags['replacements'], $string);
 
                     $response['data'] = $string;
+                    $response['status'] = true;
+                    $response['code'] = 200;
                 } else {
                     $response['msg'] = JText::_('MISSING_PARAMS');
                     $response['code'] = 500;
