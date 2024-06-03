@@ -1,5 +1,5 @@
 <template>
-  <div id="export-ranking" class="p-4">
+  <div id="export-ranking" class="p-4 !rounded">
     <h4>{{ translate('COM_EMUNDUS_RANKING_EXPORT_TITLE') }}</h4>
 
     <div class="p-2">
@@ -27,9 +27,32 @@
 
       <h5>{{ translate('COM_EMUNDUS_RANKING_EXPORT_COLUMNS') }}</h5>
       <div class="p-4">
-        <div v-for="column in columns" :key="column.id" class="flex flex-row items-center">
-          <input type="checkbox" v-model="selectedColumns" :value="column.id" name="selectedColumns" :id="'column-' + column.id">
-          <label :for="'column-' + column.id">{{ translate(column.label) }}</label>
+        <draggable
+            id="columns-to-export"
+            name="columns-to-export"
+            :v-model="selectedColumns"
+            class="list-group"
+            :sort="true"
+            handle=".handle"
+            @start="dragging = true"
+            @end="dragging = false"
+        >
+          <div class="list-group-item flex flex-row justify-between items-center" v-for="element in selectedColumns" :key="element.id">
+            <div class="flex flex-row justify-start items-center">
+              <span class="material-icons-outlined handle cursor-grab" title="move column">drag_indicator</span>
+              <span>{{ translate(element.label) }}</span>
+            </div>
+            <span class="material-icons-outlined cursor-pointer" title="remove column" @click="removeColumn(element.id)">remove</span>
+          </div>
+        </draggable>
+
+        <div id="add-column-to-export" class="mt-4 mb-4 flex flex-row" v-if="addableColumns.length > 0">
+          <select v-model="columnToAdd" @change="addColumn" id="add-column-to-export-select" class="w-fit">
+            <option value=''> {{ translate('COM_EMUNDUS_RANKING_SELECT_COLUMN') }}</option>
+            <option v-for="addableColumn in addableColumns" :key="addableColumn.id" :value="addableColumn.id">
+              {{ translate(addableColumn.label) }}
+            </option>
+          </select>
         </div>
       </div>
     </div>
@@ -46,6 +69,7 @@
 
 <script>
 import rankingService from "@/services/ranking";
+import draggable  from "vuedraggable";
 
 export default {
   name: "export-ranking",
@@ -56,8 +80,15 @@ export default {
     },
     packages: {
       type: Array,
-      default: []
+      default: () => {return []}
+    },
+    currentPackage: {
+      type: Number,
+      default: 0
     }
+  },
+  components: {
+    draggable
   },
   data() {
     return {
@@ -67,12 +98,17 @@ export default {
       hierarchies: [],
       selectedHierarchies: [],
       columns: [
-        {id: 'applicant', label: 'COM_EMUNDUS_RANKING_EXPORT_COLUMN_NAME'},
-        {id: 'status', label: 'COM_EMUNDUS_RANKING_EXPORT_COLUMN_STATUS'},
-        {id: 'ranker', label: 'COM_EMUNDUS_RANKING_EXPORT_COLUMN_RANKER'},
+        {id: 'id', label: 'COM_EMUNDUS_RANKING_EXPORT_FILE_ID'},
+        {id: 'fnum', label: 'COM_EMUNDUS_RANKING_EXPORT_FILE_FNUM'},
+        {id: 'rank', label: 'COM_EMUNDUS_RANKING_EXPORT_RANKING'},
+        {id: 'applicant', label: 'COM_EMUNDUS_RANKING_EXPORT_APPLICANT'},
+        {id: 'status', label: 'COM_EMUNDUS_RANKING_EXPORT_STATUS'},
+        {id: 'ranker', label: 'COM_EMUNDUS_RANKING_EXPORT_RANKER'},
       ],
-      selectedColumns: ['fnum', 'applicant', 'status', 'rank', 'ranker'],
-      downloadLink: null
+      selectedColumns: [],
+      downloadLink: null,
+      dragging: false,
+      columnToAdd: ''
     }
   },
   created() {
@@ -81,6 +117,12 @@ export default {
     } else {
       this.userPackages = this.packages;
     }
+
+    if (this.currentPackage != 0) {
+      this.selectedPackages.push(this.currentPackage);
+    }
+
+    this.selectedColumns = this.columns;
     this.getHierarchiesUserCanSee();
   },
   methods: {
@@ -118,6 +160,33 @@ export default {
         }
       }).catch(error => {
         console.log(error);
+      });
+    },
+    removeColumn(columnId) {
+      this.selectedColumns = this.selectedColumns.filter((column) => {
+        return column.id !== columnId;
+      });
+    },
+    addColumn() {
+      if (this.columnToAdd && this.columnToAdd !== '') {
+        let columnToAddObject = this.columns.find((column) => {
+          return column.id === this.columnToAdd;
+        });
+
+        if (columnToAddObject) {
+          this.selectedColumns.push(columnToAddObject);
+        }
+      }
+
+      this.columnToAdd = '';
+    }
+  },
+  computed: {
+    addableColumns() {
+      return this.columns.filter((column) => {
+        return !this.selectedColumns.find((selectedColumn) => {
+          return selectedColumn.id === column.id;
+        });
       });
     }
   }

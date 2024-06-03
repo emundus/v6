@@ -3571,6 +3571,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .animate-spin {
   animation: spin 1s linear infinite;
 }
+.cursor-grab {
+  cursor: grab;
+}
 .cursor-pointer {
   cursor: pointer;
 }
@@ -5726,6 +5729,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .items-center {
   align-items: center;
 }
+.justify-start {
+  justify-content: flex-start;
+}
 .justify-end {
   justify-content: flex-end;
 }
@@ -5776,6 +5782,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .whitespace-nowrap {
   white-space: nowrap;
+}
+.\!rounded {
+  border-radius: 0.25rem !important;
 }
 .rounded {
   border-radius: 0.25rem;

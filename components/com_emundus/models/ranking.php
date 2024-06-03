@@ -1703,7 +1703,7 @@ class EmundusModelRanking extends JModelList
      * @param $columns, the additional columns we want to export
      * @return void
      */
-    public function exportRanking($user_id, $package_ids, $hierachy_ids, $columns): string
+    public function exportRanking($user_id, $package_ids, $hierachy_ids, $ordered_columns): string
     {
         $export_link = '';
 
@@ -1716,7 +1716,17 @@ class EmundusModelRanking extends JModelList
             }
 
             if (!empty($files_by_package)) {
+                $query = $this->db->getQuery(true);
+                $query->select('name')
+                    ->from('#__users')
+                    ->where('id = ' . $user_id);
+
+                $this->db->setQuery($query);
+                $user_name = $this->db->loadResult();
+
                 $user_packages = $this->getUserPackages($user_id);
+                $fnums = [];
+                $ccids = [];
 
                 if (!class_exists('EmundusModelFiles')) {
                     require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
@@ -1724,28 +1734,8 @@ class EmundusModelRanking extends JModelList
                 $m_files = new EmundusModelFiles();
                 $states = $m_files->getAllStatus($user_id, 'step');
 
-                $ordered_columns = [
-                    ['key' => 'id', 'label' => Text::_('COM_EMUNDUS_RANKING_EXPORT_FILE_ID')],
-                    ['key' => 'fnum', 'label' =>  Text::_('COM_EMUNDUS_RANKING_EXPORT_FILE_FNUM')]
-                ];
-
-                if (in_array('applicant', $columns)) {
-                    $ordered_columns[] = ['key' => 'applicant', 'label' => Text::_('COM_EMUNDUS_RANKING_EXPORT_APPLICANT')];
-                }
-
-                $ordered_columns[] = ['key' => 'rank', 'label' =>  Text::_('COM_EMUNDUS_RANKING_EXPORT_RANKING')];
-                $ordered_columns[] = ['key' => 'package', 'label' => Text::_('COM_EMUNDUS_RANKING_EXPORT_PACKAGE')];
-
-                if (in_array('status', $columns)) {
-                    $ordered_columns[] = ['key' => 'status', 'label' => Text::_('COM_EMUNDUS_RANKING_EXPORT_STATUS')];
-                }
-
-                if (in_array('ranker', $columns)) {
-                    $ordered_columns[] = ['key' => 'ranker', 'label' => Text::_('COM_EMUNDUS_RANKING_EXPORT_RANKER')];
-                }
-
                 $ordered_columns_keys = array_map(function($column) {
-                    return $column['key'];
+                    return $column['id'];
                 }, $ordered_columns);
 
                 foreach ($files_by_package as $package_id => $files) {
@@ -1763,8 +1753,10 @@ class EmundusModelRanking extends JModelList
                             $other_rankings_values = $this->getOtherRankingsRankerCanSee($user_id, $hierachy_ids, $package_id);
                         }
 
-                        foreach ($files as $file) {
+                        foreach ($files as $index => $file) {
                             $file_data = [];
+                            $fnums[$index] = $file['fnum'];
+                            $ccids[$index] = $file['id'];
 
                             foreach($ordered_columns_keys as $column) {
                                 switch($column) {
@@ -1775,7 +1767,7 @@ class EmundusModelRanking extends JModelList
                                         $file_data[] = $package_label;
                                         break;
                                     case 'ranker':
-                                        $file_data[] = $user_id;
+                                        $file_data[] = $user_name;
                                         break;
                                     case 'rank':
                                         $file_data[] = empty($file[$column]) || $file[$column] == -1 ? Text::_('COM_EMUNDUS_RANKING_NOT_RANKED') : $file[$column];
@@ -1819,7 +1811,7 @@ class EmundusModelRanking extends JModelList
                         fprintf($csv_file, chr(0xEF).chr(0xBB).chr(0xBF));
 
                         $header = array_map(function($column) {
-                            return $column['label'];
+                            return Text::_($column['label']);
                         }, $ordered_columns);
 
                         foreach($hierachy_ids as $hierachy_id) {
@@ -1829,7 +1821,7 @@ class EmundusModelRanking extends JModelList
                             $header[] = Text::_('COM_EMUNDUS_RANKING_EXPORT_STATUS') . ' - ' . $hierarchy_label;
                         }
 
-                        $this->dispatchEvent('onBeforeExportRanking', ['header' => &$header, 'lines' => &$export_array]);
+                        $this->dispatchEvent('onBeforeExportRanking', ['header' => &$header, 'lines' => &$export_array, 'fnums' => $fnums, 'ccids' => $ccids]);
 
                         fputcsv($csv_file, $header, ';');
                         foreach ($export_array as $line) {
