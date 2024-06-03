@@ -537,16 +537,17 @@ class EmundusFiltersFiles extends EmundusFilters
                 ];
 
                 $this->applied_filters[] = [
-                    'uid'       => 'to_evaluate',
-                    'id'        => 'to_evaluate',
-                    'label'     => JText::_('MOD_EMUNDUS_FILTERS_TO_EVALUATE'),
-                    'type'      => 'select',
-                    'values'    => $evaluated,
-                    'value'     => [1],
-                    'default'   => true,
-                    'available' => true,
-                    'order'     => $config['filter_to_evaluate_order'],
-                    'operator'  => '='
+                    'uid'           => 'to_evaluate',
+                    'id'            => 'to_evaluate',
+                    'label'         => JText::_('MOD_EMUNDUS_FILTERS_TO_EVALUATE'),
+                    'type'          => 'select',
+                    'values'        => $evaluated,
+                    'value'         => [1],
+                    'default'       => true,
+                    'defaultValue'  => [1],
+                    'available'     => true,
+                    'order'         => $config['filter_to_evaluate_order'],
+                    'operator'      => '='
                 ];
             }
 
@@ -605,19 +606,20 @@ class EmundusFiltersFiles extends EmundusFilters
 			if ($config['filter_published'])
 			{
 				$this->applied_filters[] = [
-					'uid'       => 'published',
-					'id'        => 'published',
-					'label'     => JText::_('MOD_EMUNDUS_FILTERS_PUBLISHED_STATE'),
-					'type'      => 'select',
-					'values'    => [
+					'uid'           => 'published',
+					'id'            => 'published',
+					'label'         => JText::_('MOD_EMUNDUS_FILTERS_PUBLISHED_STATE'),
+					'type'          => 'select',
+					'values'        => [
 						['value' => 1, 'label' => JText::_('MOD_EMUNDUS_FILTERS_VALUE_PUBLISHED'), 'count' => 0],
 						['value' => 0, 'label' => JText::_('MOD_EMUNDUS_FILTERS_VALUE_ARCHIVED'), 'count' => 0],
 						['value' => -1, 'label' => JText::_('MOD_EMUNDUS_FILTERS_VALUE_DELETED'), 'count' => 0]
 					],
-					'value'     => [1],
-					'default'   => true,
-					'available' => true,
-					'order'     => $config['filter_published_order']
+					'value'         => [1],
+					'default'       => true,
+                    'defaultValue'  => [1],
+					'available'     => true,
+					'order'         => $config['filter_published_order']
 				];
 			}
 

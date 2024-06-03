@@ -266,12 +266,11 @@ export default {
         if (filter.type === 'select') {
           filter.operator = 'IN';
 
-					// TODO: too specific to the published filter, should create a default_value field.
-					if (filter.uid === 'published') {
-						filter.value = [1];
-					} else {
-						filter.value = [];
-					}
+          if (filter.defaultValue) {
+            filter.value = filter.defaultValue;
+          } else {
+            filter.value = [];
+          }
 				} else if (filter.type === 'date' || filter.type === 'time') {
 					filter.value = ['', ''];
 				} else {
