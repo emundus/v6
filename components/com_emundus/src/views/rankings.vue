@@ -38,7 +38,7 @@
       </ranking>
     </div>
 
-    <modal id="export-modal" name="export-modal">
+    <modal id="export-modal" name="export-modal" v-if="packages.length > 0">
       <export-ranking
           :user="user"
           :packages="packages"
@@ -126,6 +126,7 @@ export default {
     top: 10vh !important;
     left: 10vw !important;
     height: auto !important;
+    border-radius: .25rem !important;
   }
 }
 </style>
