@@ -2268,7 +2268,7 @@ div[id^='current_'] .mod_emundus_campaign__list_content h3 {
 }
 
 .mod_emundus_campaign__details_content {
-  position: relative;
+  position: sticky;
   overflow: hidden;
 }
 
@@ -2285,8 +2285,8 @@ div[id^='current_'] .mod_emundus_campaign__list_content h3 {
   background: var(--em-profile-color);
   mask-repeat: no-repeat;
   -webkit-mask-repeat: no-repeat;
-  mask-position: center;
-  -webkit-mask-position: center;
+  mask-position: top;
+  -webkit-mask-position: top;
   mask-size: 300px;
   -webkit-mask-size: 300px;
   mask-origin: border-box;

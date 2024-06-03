@@ -117,6 +117,38 @@ array_unshift($tabs, [
 ksort($applications);
 
 $current_tab = 0;
+
+if (!empty($applications) && !empty($title_override) && !empty(str_replace(array(' ', "\t", "\n", "\r", "&nbsp;"), '', htmlentities(strip_tags($title_override))))) {
+    if (!isset($m_email)) {
+        if (!class_exists('EmundusModelEmails')) {
+            require_once(JPATH_ROOT . '/components/com_emundus/models/emails.php');
+        }
+        $m_email = new EmundusModelEmails();
+    }
+
+    foreach ($applications[0]['all']['applications'] as $key => $sub_applications) {
+        foreach ($sub_applications as $a_key => $application) {
+            $title_override_display = $title_override;
+            $post = array(
+                'APPLICANT_ID' => $user->id,
+                'DEADLINE' => strftime("%A %d %B %Y %H:%M", strtotime($application->end_date)),
+                'CAMPAIGN_LABEL' => $application->label,
+                'CAMPAIGN_YEAR' => $application->year,
+                'CAMPAIGN_START' => $application->start_date,
+                'CAMPAIGN_END' => $application->end_date,
+                'CAMPAIGN_CODE' => $application->training,
+                'FNUM' => $application->fnum
+            );
+
+            $tags = $m_email->setTags($user->id, $post, $application->fnum, '', $title_override_display);
+            $title_override_display = preg_replace($tags['patterns'], $tags['replacements'], $title_override_display);
+            $title_override_display = $m_email->setTagsFabrik($title_override_display, array($application->fnum));
+
+            $applications[0]['all']['applications'][$key][$a_key]->label = $title_override_display;
+        }
+    }
+}
+
 ?>
 <div class="mod_emundus_applications___header mod_emundus_applications___tmp_tchooz">
 	<?php if ($mod_em_applications_show_hello_text == 1 && !$is_anonym_user) : ?>

@@ -920,16 +920,17 @@ video {
   justify-content: center;
   align-items: center;
 }
-.com_fabrik #g-sidebar {
-      position: sticky;
-    }
+.view-form #g-sidebar, .view-checklist #g-sidebar {
+    position: sticky;
+  }
 @media all and (max-width: 480px) {
-    .com_fabrik #g-sidebar {
-        position: static;
-        padding-top: 0;
-        padding-bottom: 24px
+
+  .view-form #g-sidebar, .view-checklist #g-sidebar {
+      position: static;
+      padding-top: 0;
+      padding-bottom: 24px
+  }
     }
-      }
 .com_fabrik .popover:not(.clockpicker-popover) {
       display: none !important;
     }
@@ -1945,6 +1946,7 @@ input[type="text"],
 .chzn-container .chzn-single li.search-field input[type="text"], .chzn-container .chzn-choices li.search-field input[type="text"], .chzn-container.chzn-container-multi .chzn-single li.search-field input[type="text"], .chzn-container.chzn-container-multi .chzn-choices li.search-field input[type="text"], .chzn-container.chzn-container-multi.chzn-container-active .chzn-single li.search-field input[type="text"], .chzn-container.chzn-container-multi.chzn-container-active .chzn-choices li.search-field input[type="text"] {
           outline: none;
           height: 18px;
+          min-width: 254px;
         }
 .chzn-container .chzn-search, .chzn-container.chzn-container-multi .chzn-search, .chzn-container.chzn-container-multi.chzn-container-active .chzn-search {
       padding: 4px 12px;
@@ -3532,6 +3534,12 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .w-11\/12 {
   width: 91.666667%;
 }
+.w-\[150px\] {
+  width: 150px;
+}
+.w-\[200px\] {
+  width: 200px;
+}
 .w-auto {
   width: auto;
 }
@@ -3541,12 +3549,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .w-full {
   width: 100%;
-}
-.max-w-\[150px\] {
-  max-width: 150px;
-}
-.max-w-\[200px\] {
-  max-width: 200px;
 }
 .flex-none {
   flex: none;
@@ -5783,6 +5785,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .whitespace-nowrap {
   white-space: nowrap;
 }
+.whitespace-pre-line {
+  white-space: pre-line;
+}
 .\!rounded {
   border-radius: 0.25rem !important;
 }
@@ -6831,6 +6836,11 @@ hr {
     }
 ul {
         list-style: initial;
+        padding-left: 24px;
+    }
+ol {
+        list-style: auto;
+        padding-left: 24px;
     }
 legend {
         margin: 10px 0 20px 0;

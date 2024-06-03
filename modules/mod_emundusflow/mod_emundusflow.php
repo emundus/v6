@@ -46,6 +46,7 @@ if (isset($user->fnum) && !empty($user->fnum)) {
     $home_link = EmundusHelperMenu::getHomepageLink($params->get('home_link', 'index.php'));
     $add_to_cart_icon = $params->get('add_to_cart_icon', 'large add to cart icon');
     $scholarship_icon = $params->get('scholarship_icon', 'large student icon');
+	$title_override = JText::_($params->get('title_override', ''));
     $file_tags = JText::_($params->get('tags', ''));
 
     // eMundus parameters
@@ -94,6 +95,30 @@ if (isset($user->fnum) && !empty($user->fnum)) {
     $current_application = $m_application->getApplication($user->fnum);
 
     $campaign_name = $current_application->label;
+
+	if (!empty($title_override) && !empty(str_replace(array(' ', "\t", "\n", "\r", "&nbsp;"), '', htmlentities(strip_tags($title_override))))) {
+		$m_email = new EmundusModelEmails();
+		$emundusUser = JFactory::getSession()->get('emundusUser');
+
+		$post = array(
+			'APPLICANT_ID'   => $user->id,
+			'DEADLINE'       => strftime("%A %d %B %Y %H:%M", strtotime($emundusUser->end_date)),
+			'CAMPAIGN_LABEL' => $emundusUser->label,
+			'CAMPAIGN_YEAR'  => $emundusUser->year,
+			'CAMPAIGN_START' => $emundusUser->start_date,
+			'CAMPAIGN_END'   => $emundusUser->end_date,
+			'CAMPAIGN_CODE'  => $emundusUser->training,
+			'FNUM'           => $emundusUser->fnum
+		);
+
+		$tags                   = $m_email->setTags($user->id, $post, $emundusUser->fnum, '', $title_override);
+		$title_override_display = preg_replace($tags['patterns'], $tags['replacements'], $title_override);
+		$title_override_display = $m_email->setTagsFabrik($title_override_display, array($emundusUser->fnum));
+
+        if (!empty($title_override_display)) {
+            $campaign_name = $title_override_display;
+        }
+    }
 
 	$fnumInfos = $m_files->getFnumInfos($user->fnum);
 

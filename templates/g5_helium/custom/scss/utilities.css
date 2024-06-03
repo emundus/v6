@@ -136,6 +136,12 @@
 
     ul {
         list-style: initial;
+        padding-left: 24px;
+    }
+
+    ol {
+        list-style: auto;
+        padding-left: 24px;
     }
 
     legend {

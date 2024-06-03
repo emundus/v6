@@ -31,6 +31,7 @@ include_once(JPATH_SITE . '/components/com_emundus/models/files.php');
 include_once(JPATH_SITE . '/components/com_emundus/helpers/files.php');
 include_once(JPATH_SITE . '/components/com_emundus/helpers/users.php');
 include_once(JPATH_SITE . '/components/com_emundus/models/profile.php');
+include_once(JPATH_SITE . '/components/com_emundus/models/users.php');
 
 jimport('joomla.user.helper');
 jimport('joomla.application.application');
@@ -99,7 +100,7 @@ class EmundusModelFilesTest extends TestCase{
 
         $user_id = $this->h_sample->createSampleUser(9, 'unit-test-candidat-' . rand(0, 1000) . '@emundus.test.fr');
         $program = $this->h_sample->createSampleProgram('Nouveau programme');
-	    $campaign_id = $this->h_sample->createSampleCampaign($program);
+	    $campaign_id = $this->h_sample->createSampleCampaign($program, true);
         $fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
         $this->assertNotEmpty($fnum);
 
@@ -745,4 +746,64 @@ class EmundusModelFilesTest extends TestCase{
 
 		$this->assertGreaterThanOrEqual($elapsed_new_function_time, $elapsed_old_function_time, 'getFnumArray2 is faster than getFnumArray ' . $elapsed_new_function_time . ' vs ' . $elapsed_old_function_time);
 	}
+
+    public function testmakeAttachmentsEditableByApplicant()
+    {
+        $emundus_config = JComponentHelper::getParams('com_emundus');
+        $can_edit_back_attachments = $emundus_config->get('can_edit_back_attachments', 0);
+        if ($can_edit_back_attachments != 1) {
+            $emundus_config->set('can_edit_back_attachments', 1);
+        }
+
+        $user_id = $this->h_sample->createSampleUser(9, 'unit-test-candidat-' . rand(0, 1000) . '@emundus.test.fr');
+        $program = $this->h_sample->createSampleProgram();
+        $campaign_id = $this->h_sample->createSampleCampaign($program);
+        $fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
+        $m_users = new EmundusModelUsers;
+        $profile_id = $m_users->getProfileIDByCampaignID($campaign_id);
+
+        $this->assertTrue($this->m_files->makeAttachmentsEditableByApplicant(['123123'], 0), 'makeAttachmentsEditableByApplicant returns true if the fnum does not exist');
+        $this->assertTrue($this->m_files->makeAttachmentsEditableByApplicant([$fnum], 999999), 'makeAttachmentsEditableByApplicant returns true if the status does not exist');
+        $this->assertTrue($this->m_files->makeAttachmentsEditableByApplicant([$fnum], 0), 'makeAttachmentsEditableByApplicant returns true if the fnum and status exist');
+
+        $attachment_id_1 = $this->h_sample->createSampleAttachment();
+        $attachment_id_2 = $this->h_sample->createSampleAttachment();
+        $this->h_sample->createSampleUpload($fnum, $campaign_id, $user_id, $attachment_id_1);
+        $this->h_sample->createSampleUpload($fnum, $campaign_id, $user_id, $attachment_id_2);
+
+        $values = [
+            $profile_id.', '.$attachment_id_1,
+            $profile_id.', '.$attachment_id_2
+        ];
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->insert($db->quoteName('#__emundus_setup_attachment_profiles'))
+            ->columns($db->quoteName(['profile_id', 'attachment_id']))
+            ->values($values);
+        $db->setQuery($query);
+        $db->execute();
+
+        $query->clear()
+            ->update($db->quoteName('#__emundus_uploads'))
+            ->set($db->quoteName('can_be_deleted').' = 0')
+            ->where($db->quoteName('fnum').' LIKE '.$db->quote($fnum))
+            ->andWhere($db->quoteName('attachment_id').' IN ('.$attachment_id_1.','.$attachment_id_2.')')
+            ->andWhere($db->quoteName('user_id').' = '.$user_id);
+        $db->setQuery($query);
+        $db->execute();
+
+        $this->assertTrue($this->m_files->makeAttachmentsEditableByApplicant([$fnum], 0), 'makeAttachmentsEditableByApplicant returns true as the attachments have been updated');
+
+        $query->clear()
+            ->select($db->quoteName('attachment_id'))
+            ->from($db->quoteName('#__emundus_uploads'))
+            ->where($db->quoteName('fnum').' LIKE '.$db->quote($fnum))
+            ->andWhere($db->quoteName('attachment_id').' IN ('.$attachment_id_1.','.$attachment_id_2.')')
+            ->andWhere($db->quoteName('user_id').' = '.$user_id)
+            ->andWhere($db->quoteName('can_be_deleted').' = 1');
+        $db->setQuery($query);
+        $updated_attachments = $db->loadColumn();
+
+        $this->assertSame([(string)$attachment_id_1, (string)$attachment_id_2], $updated_attachments, 'makeAttachmentsEditableByApplicant attachments should now be editable by the applicant');
+    }
 }

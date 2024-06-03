@@ -597,6 +597,7 @@ function export_zip(fnums){
     var form_checked = [];
     var attach_checked = [];
     var options = [];
+    var params = {};
 
     $('#felts input:checked').each(function() {
         form_checked.push($(this).val());
@@ -625,6 +626,12 @@ function export_zip(fnums){
         });
     } else {
         options.push("0");
+    }
+
+    if ($('#concat_attachments_with_form').is(":checked")) {
+        params.concat_attachments_with_form = 1;
+    } else {
+        params.concat_attachments_with_form = 0;
     }
 
     $('#data').hide();
@@ -671,7 +678,8 @@ function export_zip(fnums){
             admission: admission,
             formids: form_checked,
             attachids:attach_checked,
-            options:options
+            options:options,
+            params: JSON.stringify(params)
         },
         dataType:'json',
         success: function(result) {

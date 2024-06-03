@@ -2448,6 +2448,17 @@ label[for="em-file_to_upload"]:hover {
     padding: 20px;
 }
 
+/* adaptations for wysiwyg */
+.em-container-form table tbody td p:first-child ~ p {
+    margin-top:10px;
+}
+.em-container-form table tbody td ul {
+    margin: 1.5rem 0 0 1.5rem;
+}
+.em-container-form table tbody td span {
+    font-weight:inherit;
+}
+
 footer#g-footer {
     background: transparent;
     border-top: 1px solid #bbb;
