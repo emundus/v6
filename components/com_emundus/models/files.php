@@ -4962,6 +4962,8 @@ class EmundusModelFiles extends JModelLegacy
             unlink($path);
         }
 
+        $concat_attachments_with_form = $params['concat_attachments_with_form'] ?? false;
+
         foreach ($fnums as $fnum) {
 
             if ($zip->open($path, ZipArchive::CREATE) == TRUE) {
@@ -5004,11 +5006,13 @@ class EmundusModelFiles extends JModelLegacy
                     }
 
                     if ($form_post || !empty($forms_to_export)) {
-                        $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum],$fnumsInfo[$fnum]['applicant_id'], $fnum, $form_post, $forms_to_export, $options);
+                        if ($concat_attachments_with_form) {
+                            $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum],$fnumsInfo[$fnum]['applicant_id'], $fnum, $form_post, $forms_to_export, $options, null, null, false);
+                        } else {
+                            $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum],$fnumsInfo[$fnum]['applicant_id'], $fnum, $form_post, $forms_to_export, $options);
+                        }
                     }
                 }
-
-
 
                 if ($assessment) {
                     $files_list[] = EmundusHelperExport::getEvalPDF($fnum, $options);
@@ -5022,7 +5026,6 @@ class EmundusModelFiles extends JModelLegacy
                     $admission_file = EmundusHelperExport::getAdmissionPDF($fnum, $options);
                 }
 
-                $concat_attachments_with_form = $params['concat_attachments_with_form'] ?? false;
                 if ($concat_attachments_with_form) {
                     if ($attachment || !empty($attachids)) {
                         $attachment_to_export = array();
