@@ -4554,7 +4554,7 @@ class EmundusHelperFiles
     /*
      *
      */
-    public function setFiltersValuesAvailability($applied_filters, $custom_eval_users_filter = '', $user = null, $menu_item = null): array
+    public function setFiltersValuesAvailability($applied_filters, $module_params = [], $user = null, $menu_item = null): array
     {
         $applied_filters = empty($applied_filters) ? [] : $applied_filters;
 
@@ -4754,8 +4754,8 @@ class EmundusHelperFiles
 
                             if ($applied_filter['uid'] == 'to_evaluate') {
                                 $query .= 'LEFT JOIN jos_emundus_evaluations on jos_emundus_evaluations.fnum = jecc.fnum';
-                                if (!empty($custom_eval_users_filter)) {
-                                    $where_params['custom_eval_users_filter'] = $custom_eval_users_filter;
+                                if (!empty($module_params['filter_to_evaluate_custom_users'])) {
+                                    $where_params['custom_eval_users_filter'] = $module_params['filter_to_evaluate_custom_users'];
                                 }
                             }
 
