@@ -3634,7 +3634,7 @@ class EmundusHelperFiles
      * @param array $caller_params
      * @return array containing 'q' the where clause and 'join' the join clause
      */
-    public function _moduleBuildWhere($already_joined = array(), $caller = 'files', $caller_params = [], $filters_to_exclude = [], $menu_item = null, $user = null) {
+    public function _moduleBuildWhere($already_joined = array(), $caller = 'files', $caller_params = [], $filters_to_exclude = [], $user = null, $menu_item = null) {
         $app = JFactory::getApplication();
         if(empty($user)) {
             $user = $app->getIdentity();
@@ -4554,17 +4554,16 @@ class EmundusHelperFiles
     /*
      *
      */
-    public function setFiltersValuesAvailability($applied_filters, $user_id = null, $menu_item = null, $custom_eval_users_filter = ''): array
+    public function setFiltersValuesAvailability($applied_filters, $custom_eval_users_filter = '', $user = null, $menu_item = null): array
     {
         $applied_filters = empty($applied_filters) ? [] : $applied_filters;
 
         if (!empty($applied_filters)) {
             $app = JFactory::getApplication();
-			$user = JFactory::getUser();
-            if (empty($user_id))
+
+            if (empty($user))
             {
-                $user_id = JFactory::getApplication()->getIdentity()->id;
-                $user_id = $app->getIdentity()->id;
+                $user = $app->getIdentity();
             }
 
             if (empty($menu_item))

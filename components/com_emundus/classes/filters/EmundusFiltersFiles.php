@@ -57,7 +57,7 @@ class EmundusFiltersFiles extends EmundusFilters
 			{
 				require_once JPATH_ROOT . '/components/com_emundus/helpers/files.php';
 				$helper_files          = new EmundusHelperFiles();
-				$this->applied_filters = $helper_files->setFiltersValuesAvailability($this->applied_filters, $this->user->id, null, $config['filter_to_evaluate_custom_users']);
+				$this->applied_filters = $helper_files->setFiltersValuesAvailability($this->applied_filters, $config['filter_to_evaluate_custom_users'], $this->user);
 			}
 		}
 	}
@@ -546,8 +546,7 @@ class EmundusFiltersFiles extends EmundusFilters
                     'default'       => true,
                     'defaultValue'  => [1],
                     'available'     => true,
-                    'order'         => $config['filter_to_evaluate_order'],
-                    'operator'      => '='
+                    'order'         => $config['filter_to_evaluate_order']
                 ];
             }
 

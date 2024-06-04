@@ -124,12 +124,12 @@ export default {
 		this.getRegisteredFilters();
 		this.selectedRegisteredFilter = sessionStorage.getItem('emundus-current-filter') || 0;
 		this.appliedFilters = this.defaultAppliedFilters.map((filter) => {
-			if (!filter.hasOwnProperty('operator')) {
-				filter.operator = '=';
-			}
-			if (!filter.hasOwnProperty('andorOperator')) {
-				filter.andorOperator = 'OR';
-			}
+      if (!filter.operator) {
+        filter.operator = '=';
+      }
+      if (!filter.andorOperator) {
+        filter.andorOperator = 'OR';
+      }
 
 			return filter;
 		});
