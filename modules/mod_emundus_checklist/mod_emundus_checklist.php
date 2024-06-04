@@ -58,10 +58,12 @@ if (isset($user->fnum) && !empty($user->fnum)) {
     $show_send = $params->get('showsend', 1);
 
     $eMConfig = JComponentHelper::getParams('com_emundus');
+    $can_edit_after_deadline = $eMConfig->get('can_edit_after_deadline', '0');
     $id_applicants = $eMConfig->get('id_applicants', '0');
     $exceptions = explode(',',$id_applicants);
     $applicant_files_path = $eMConfig->get('applicant_files_path', 'images/emundus/files/');
     $application_fee = $eMConfig->get('application_fee', 0);
+    $application_fee = (!empty($application_fee) && !empty($m_profile->getHikashopMenu($user->profile)));
 
     $checkout_url = null;
     if ($application_fee) {
@@ -242,20 +244,6 @@ if (isset($user->fnum) && !empty($user->fnum)) {
     } elseif (!empty($user->status)) {
         $is_app_sent = $user->status != 0;
     }
-
-    $id_applicants = $eMConfig->get('id_applicants', '0');
-    $applicants = explode(',',$id_applicants);
-    $can_edit_after_deadline = $eMConfig->get('can_edit_after_deadline', '0');
-    $application_fee = $eMConfig->get('application_fee', 0);
-    $application_fee = (!empty($application_fee) && !empty($m_profile->getHikashopMenu($user->profile)));
-    if ($application_fee) {
-        $fnumInfos = $m_files->getFnumInfos($user->fnum);
-
-        $order = $m_application->getHikashopOrder($fnumInfos);
-        $cart = $m_application->getHikashopCartUrl($user->profile);
-        $paid = !empty($order);
-    }
-    //
 
 	if ($show_preliminary_documents) {
 		include_once(JPATH_BASE . '/modules/mod_emundus_campaign_dropfiles/helper.php');

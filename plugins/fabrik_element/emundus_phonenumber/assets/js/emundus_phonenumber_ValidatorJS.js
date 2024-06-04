@@ -60,25 +60,25 @@ class ValidatorJS {
     inputValidation(e)
     {
         const countryCode = this.countrySelected.country_code;
-        this.frontMessage('invalid');
 
         if (countryCode !== '+')
         {
             const number = this.renderCountryCode.value + this.input.value;
             let format;
 
-            try // test number.lengh > 1
-            {
-                format = libphonenumber.parsePhoneNumber(number.substring(countryCode.length, number.length), this.countrySelected.iso2).format('E.164')
-            }
-            catch (e)
-            {
-                // too short, meh
-            }
+            if(this.input.value.length > 0) {
+                try // test number.lengh > 1
+                {
+                    format = libphonenumber.parsePhoneNumber(number.substring(countryCode.length, number.length), this.countrySelected.iso2).format('E.164')
+                } catch (e) {
+                    // too short, meh
+                }
 
-            if (format && libphonenumber.isValidPhoneNumber(format))
-            {
-                this.frontMessage('valid');
+                if (format && libphonenumber.isValidPhoneNumber(format)) {
+                    this.frontMessage('valid');
+                } else {
+                    this.frontMessage('invalid');
+                }
             }
         }
         else // unsupported country
@@ -108,7 +108,6 @@ class ValidatorJS {
 
     handlerSelectChange()
     {
-        this.mustValidate ? this.frontMessage('invalid') : this.frontMessage('default');
         this.newCountry(document.querySelector(this.select_chosen).selectedIndex);
         this.changeRenderCountryCode();
     }

@@ -14,8 +14,8 @@ class EmundusControllerFile extends JControllerLegacy
 
     public function __construct($config = array())
     {
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'classes'.DS.'files'.DS.'Files.php');
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'classes'.DS.'files'.DS.'Evaluations.php');
+        require_once (JPATH_SITE . '/components/com_emundus/classes/files/Files.php');
+        require_once (JPATH_SITE . '/components/com_emundus/classes/files/Evaluations.php');
 		
 		$this->type = JFactory::getApplication()->input->getString('type','default');
 		$refresh = JFactory::getApplication()->input->getString('refresh',false);
@@ -26,16 +26,23 @@ class EmundusControllerFile extends JControllerLegacy
 			$this->files = $files_session;
 		}
 
-		if(empty($this->files)) {
+		if (empty($this->files)) {
 			if ($this->type == 'evaluation') {
 				$this->files = new Evaluations();
 			}
 			else {
 				$this->files = new Files();
 			}
-		}
+		} else {
+            $class = get_class($this->files);
 
-		if(empty($this->files->getTotal()) || $refresh == true) {
+            if ($this->type == 'evaluation' && $class != 'Evaluations') {
+                $this->files = new Evaluations();
+            }
+        }
+
+
+        if(empty($this->files->getTotal()) || $refresh == true) {
 			try {
 				$this->files->setFiles();
 			} catch (Exception $e) {

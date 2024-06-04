@@ -23,15 +23,12 @@ defined('_JEXEC') or die;
                 content: "" +
 	                <?php if($current_lang == 'fr') : ?>
                     "<a href='https://emundus.atlassian.net/wiki/x/BoCjn' target='_blank'><img class='icone-aide-tchoozy' src='../../../media/com_emundus/images/tchoozy/icons/Tchoozy-icone-articles-aide.svg' alt='icone articles aide'><p><?= JText::_('MOD_EMUNDUS_HELP_ARTICLES'); ?></p></a>" +
-	                <?php else : ?>
+                    <?php /* "<a href='https://emundus.atlassian.net/wiki/x/BADPn' target='_blank'><span class='material-icons'>smart_display</span><p><?= JText::_('MOD_EMUNDUS_HELP_VIDEOS'); ?></p></a>" + */ ?>
+                    <?php else : ?>
                     "<a href='https://emundus.atlassian.net/wiki/x/NQDLn' target='_blank'><img class='icone-aide-tchoozy' src='../../../media/com_emundus/images/tchoozy/icons/Tchoozy-icone-articles-aide.svg' alt='icone articles aide'><p><?= JText::_('MOD_EMUNDUS_HELP_ARTICLES'); ?></p></a>" +
-	                <?php endif; ?>
-                    "<a href='https://emundus.atlassian.net/servicedesk/customer/portals' target='_blank'><img class='icone-aide-tchoozy' src='../../../media/com_emundus/images/tchoozy/icons/Tchoozy-icone-centre-aide.svg' alt='icone centre aide'><p><?= JText::_('MOD_EMUNDUS_HELP_HELP_CENTER'); ?></p></a>" +
-	                <?php if($current_lang == 'fr') : ?>
-                    "<a href='https://emundus.atlassian.net/wiki/x/BADPn' target='_blank'><span class='material-icons'>smart_display</span><p><?= JText::_('MOD_EMUNDUS_HELP_VIDEOS'); ?></p></a>" +
-	                <?php else : ?>
-                    "<a href='https://emundus.atlassian.net/wiki/x/FoDMn' target='_blank'><span class='material-icons'>smart_display</span><p><?= JText::_('MOD_EMUNDUS_HELP_VIDEOS'); ?></p></a>" +
-	                <?php endif; ?>
+                    <?php /* "<a href='https://emundus.atlassian.net/wiki/x/FoDMn' target='_blank'><span class='material-icons'>smart_display</span><p><?= JText::_('MOD_EMUNDUS_HELP_VIDEOS'); ?></p></a>" + */ ?>
+                    <?php endif; ?>
+                    "<a href='https://support.client.emundus.fr' target='_blank'><img class='icone-aide-tchoozy' src='../../../media/com_emundus/images/tchoozy/icons/Tchoozy-icone-centre-aide.svg' alt='icone centre aide'><p><?= JText::_('MOD_EMUNDUS_HELP_HELP_CENTER'); ?></p></a>" +
                     "<hr/>" +
                     <?php if($current_lang == 'fr') : ?>
                     "<a href='https://emundus.atlassian.net/wiki/x/EIBskg' target='_blank'><span class='material-icons'>new_releases</span><p><?= JText::_('MOD_EMUNDUS_HELP_LAST_RELEASE'); ?></p></a>" +

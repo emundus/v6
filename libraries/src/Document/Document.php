@@ -1249,6 +1249,7 @@ class Document
 	 */
 	public function parse($params = array())
 	{
+
 		return $this;
 	}
 

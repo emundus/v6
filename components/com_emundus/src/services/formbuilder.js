@@ -43,11 +43,12 @@ export default {
             };
         }
     },
-    async createSimpleGroup(fid, label)
+    async createSimpleGroup(fid, label, mode)
     {
         try {
             const formData = new FormData();
             formData.append('fid', fid);
+            formData.append('mode', mode);
             formData.append('label', JSON.stringify(label));
 
             const response = await client().post(

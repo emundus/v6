@@ -5,14 +5,26 @@
  * Copyright (c) 2013, salesforce.com
  */
 
-$selectors: "div[itemprop="articleBody"], .ql-editor, .single-campaign";
+div[itemprop="articleBody"], div[itemprop="blogPost"], .single-campaign, .mod_emundus_campaign__intro {
+  * {
+    font-family: var(--em-applicant-font);
+  }
+}
+
+.ql-editor {
+  * {
+    font-family: var(--em-coordinator-font);
+  }
+}
+
+
+$selectors: "div[itemprop="articleBody"], div[itemprop="blogPost"], .ql-editor, .single-campaign, .mod_emundus_campaign__intro";
 
 .ql-container {
   box-sizing: border-box;
-  font-family: Helvetica, Arial, sans-serif;
   font-size: 13px;
   height: 100%;
-  margin: 0px;
+  margin: 0;
   position: relative;
 }
 
@@ -50,7 +62,7 @@ $selectors: "div[itemprop="articleBody"], .ql-editor, .single-campaign";
 
 #{$selectors}{
   box-sizing: border-box;
-  line-height: 1.42;
+  line-height: 1.5em;
   height: 100%;
   outline: none;
   overflow-y: auto;
@@ -82,60 +94,18 @@ $selectors: "div[itemprop="articleBody"], .ql-editor, .single-campaign";
   }
   ol > li,
   ul > li {
-    list-style-type: none;
-  }
-  ul > li::before {
-    content: '\2022';
-  }
-  ul[data-checked=true],
-  ul[data-checked=false] {
-    pointer-events: none;
+    line-height: 1.5em;
   }
 
-  ul[data-checked=true] > li *,
-  ul[data-checked=false] > li * {
-    pointer-events: all;
+  li {
+    color: initial;
   }
 
-  ul[data-checked=true] > li::before,
-  ul[data-checked=false] > li::before {
-    color: #777;
-    cursor: pointer;
-    pointer-events: all;
+  ol li:not(.ql-direction-rtl) {
+    padding-left: 0;
   }
 
-  ul[data-checked=true] > li::before {
-    content: '\2611';
-  }
-
-  ul[data-checked=false] > li::before {
-    content: '\2610';
-  }
-
-  li::before {
-    display: inline-block;
-    white-space: nowrap;
-    width: 1.2em;
-  }
-
-  li:not(.ql-direction-rtl)::before {
-    margin-left: -1.5em;
-    margin-right: 0.3em;
-    text-align: right;
-  }
-
-  li.ql-direction-rtl::before {
-    margin-left: 0.3em;
-    margin-right: -1.5em;
-  }
-
-  ol li:not(.ql-direction-rtl),
-  ul li:not(.ql-direction-rtl) {
-    padding-left: 1.5em;
-  }
-
-  ol li.ql-direction-rtl,
-  ul li.ql-direction-rtl {
+  ol li.ql-direction-rtl {
     padding-right: 1.5em;
   }
 
@@ -144,7 +114,7 @@ $selectors: "div[itemprop="articleBody"], .ql-editor, .single-campaign";
     counter-increment: list-0;
   }
 
-  ol li:before {
+  ol li::marker {
     content: counter(list-0, decimal) '. ';
   }
 
@@ -152,8 +122,8 @@ $selectors: "div[itemprop="articleBody"], .ql-editor, .single-campaign";
     counter-increment: list-1;
   }
 
-  ol li.ql-indent-1:before {
-    content: counter(list-1, lower-alpha) '. ';
+  ol li.ql-indent-1::marker {
+    content: counter(list-1, decimal) '. ';
   }
 
   ol li.ql-indent-1 {
@@ -164,8 +134,8 @@ $selectors: "div[itemprop="articleBody"], .ql-editor, .single-campaign";
     counter-increment: list-2;
   }
 
-  ol li.ql-indent-2:before {
-    content: counter(list-2, lower-roman) '. ';
+  ol li.ql-indent-2::marker {
+    content: counter(list-2, decimal) '. ';
   }
 
   ol li.ql-indent-2 {
@@ -176,7 +146,7 @@ $selectors: "div[itemprop="articleBody"], .ql-editor, .single-campaign";
     counter-increment: list-3;
   }
 
-  ol li.ql-indent-3:before {
+  ol li.ql-indent-3::marker {
     content: counter(list-3, decimal) '. ';
   }
 
@@ -188,8 +158,8 @@ $selectors: "div[itemprop="articleBody"], .ql-editor, .single-campaign";
     counter-increment: list-4;
   }
 
-  ol li.ql-indent-4:before {
-    content: counter(list-4, lower-alpha) '. ';
+  ol li.ql-indent-4::marker {
+    content: counter(list-4, decimal) '. ';
   }
 
   ol li.ql-indent-4 {
@@ -200,8 +170,8 @@ $selectors: "div[itemprop="articleBody"], .ql-editor, .single-campaign";
     counter-increment: list-5;
   }
 
-  ol li.ql-indent-5:before {
-    content: counter(list-5, lower-roman) '. ';
+  ol li.ql-indent-5::marker {
+    content: counter(list-5, decimal) '. ';
   }
 
   ol li.ql-indent-5 {
@@ -212,7 +182,7 @@ $selectors: "div[itemprop="articleBody"], .ql-editor, .single-campaign";
     counter-increment: list-6;
   }
 
-  ol li.ql-indent-6:before {
+  ol li.ql-indent-6::marker {
     content: counter(list-6, decimal) '. ';
   }
 
@@ -224,8 +194,8 @@ $selectors: "div[itemprop="articleBody"], .ql-editor, .single-campaign";
     counter-increment: list-7;
   }
 
-  ol li.ql-indent-7:before {
-    content: counter(list-7, lower-alpha) '. ';
+  ol li.ql-indent-7::marker {
+    content: counter(list-7, decimal) '. ';
   }
 
   ol li.ql-indent-7 {
@@ -236,164 +206,45 @@ $selectors: "div[itemprop="articleBody"], .ql-editor, .single-campaign";
     counter-increment: list-8;
   }
 
-  ol li.ql-indent-8:before {
-    content: counter(list-8, lower-roman) '. ';
+  ol li.ql-indent-8::marker {
+    content: counter(list-8, decimal) '. ';
   }
 
   ol li.ql-indent-8 {
     counter-reset: list-9;
   }
 
-  ol li.ql-indent-9 {
-    counter-increment: list-9;
+
+  li.ql-indent-1 {
+    margin-left: 24px;
   }
 
-  ol li.ql-indent-9:before {
-    content: counter(list-9, decimal) '. ';
+  li.ql-indent-2 {
+    margin-left: 48px;
   }
 
-  .ql-indent-1:not(.ql-direction-rtl) {
-    padding-left: 3em;
+  li.ql-indent-3 {
+    margin-left: 72px;
   }
 
-  li.ql-indent-1:not(.ql-direction-rtl) {
-    padding-left: 4.5em;
+  li.ql-indent-4 {
+    margin-left: 96px;
   }
 
-  .ql-indent-1.ql-direction-rtl.ql-align-right {
-    padding-right: 3em;
+  li.ql-indent-5 {
+    margin-left: 120px;
   }
 
-  li.ql-indent-1.ql-direction-rtl.ql-align-right {
-    padding-right: 4.5em;
+  li.ql-indent-6 {
+    margin-left: 144px;
   }
 
-  .ql-indent-2:not(.ql-direction-rtl) {
-    padding-left: 6em;
+  li.ql-indent-7 {
+    margin-left: 168px;
   }
 
-  li.ql-indent-2:not(.ql-direction-rtl) {
-    padding-left: 7.5em;
-  }
-
-  .ql-indent-2.ql-direction-rtl.ql-align-right {
-    padding-right: 6em;
-  }
-
-  li.ql-indent-2.ql-direction-rtl.ql-align-right {
-    padding-right: 7.5em;
-  }
-
-  .ql-indent-3:not(.ql-direction-rtl) {
-    padding-left: 9em;
-  }
-
-  li.ql-indent-3:not(.ql-direction-rtl) {
-    padding-left: 10.5em;
-  }
-
-  .ql-indent-3.ql-direction-rtl.ql-align-right {
-    padding-right: 9em;
-  }
-
-  li.ql-indent-3.ql-direction-rtl.ql-align-right {
-    padding-right: 10.5em;
-  }
-
-  .ql-indent-4:not(.ql-direction-rtl) {
-    padding-left: 12em;
-  }
-
-  li.ql-indent-4:not(.ql-direction-rtl) {
-    padding-left: 13.5em;
-  }
-
-  .ql-indent-4.ql-direction-rtl.ql-align-right {
-    padding-right: 12em;
-  }
-
-  li.ql-indent-4.ql-direction-rtl.ql-align-right {
-    padding-right: 13.5em;
-  }
-
-  .ql-indent-5:not(.ql-direction-rtl) {
-    padding-left: 15em;
-  }
-
-  li.ql-indent-5:not(.ql-direction-rtl) {
-    padding-left: 16.5em;
-  }
-
-  .ql-indent-5.ql-direction-rtl.ql-align-right {
-    padding-right: 15em;
-  }
-
-  li.ql-indent-5.ql-direction-rtl.ql-align-right {
-    padding-right: 16.5em;
-  }
-
-  .ql-indent-6:not(.ql-direction-rtl) {
-    padding-left: 18em;
-  }
-
-  li.ql-indent-6:not(.ql-direction-rtl) {
-    padding-left: 19.5em;
-  }
-
-  .ql-indent-6.ql-direction-rtl.ql-align-right {
-    padding-right: 18em;
-  }
-
-  li.ql-indent-6.ql-direction-rtl.ql-align-right {
-    padding-right: 19.5em;
-  }
-
-  .ql-indent-7:not(.ql-direction-rtl) {
-    padding-left: 21em;
-  }
-
-  li.ql-indent-7:not(.ql-direction-rtl) {
-    padding-left: 22.5em;
-  }
-
-  .ql-indent-7.ql-direction-rtl.ql-align-right {
-    padding-right: 21em;
-  }
-
-  li.ql-indent-7.ql-direction-rtl.ql-align-right {
-    padding-right: 22.5em;
-  }
-
-  .ql-indent-8:not(.ql-direction-rtl) {
-    padding-left: 24em;
-  }
-
-  li.ql-indent-8:not(.ql-direction-rtl) {
-    padding-left: 25.5em;
-  }
-
-  .ql-indent-8.ql-direction-rtl.ql-align-right {
-    padding-right: 24em;
-  }
-
-  li.ql-indent-8.ql-direction-rtl.ql-align-right {
-    padding-right: 25.5em;
-  }
-
-  .ql-indent-9:not(.ql-direction-rtl) {
-    padding-left: 27em;
-  }
-
-  li.ql-indent-9:not(.ql-direction-rtl) {
-    padding-left: 28.5em;
-  }
-
-  .ql-indent-9.ql-direction-rtl.ql-align-right {
-    padding-right: 27em;
-  }
-
-  li.ql-indent-9.ql-direction-rtl.ql-align-right {
-    padding-right: 28.5em;
+  li.ql-indent-8 {
+    margin-left: 192px;
   }
 
   .ql-video {
@@ -513,31 +364,84 @@ $selectors: "div[itemprop="articleBody"], .ql-editor, .single-campaign";
   }
 
   h1 {
-    font-size: 2em;
+    font-size: 32px;
+    font-weight: 500;
+    color: #0B0C0F;
+    margin: 0;
+    line-height: 1.2em;
   }
 
   h2 {
-    font-size: 1.5em;
+    font-size: 24px;
+    font-weight: 500;
+    color: #0B0C0F;
+    margin: 0;
+    line-height: 1.2em;
   }
 
   h3 {
-    font-size: 1.17em;
+    font-weight: 500;
+    font-size: 18px;
+    color: #0B0C0F;
+    margin: 0;
+    line-height: 1.2rem;
   }
 
   h4 {
-    font-size: 1em;
+    font-weight: 500;
+    color: #0B0C0F;
+    font-size: 16px;
+    margin: 0;
+    line-height: 1.2em;
   }
 
   h5 {
-    font-size: 0.83em;
+    font-weight: 500;
+    font-size: 14px;
+    color: #0B0C0F;
+    margin: 0;
+    line-height: 1.2em;
   }
 
   h6 {
-    font-size: 0.67em;
+    font-weight: 500;
+    font-size: 12px;
+    color: #0B0C0F;
+    margin: 0;
+    line-height: 1.2em;
   }
 
-  a {
+  p {
+    margin: 0;
+    line-height: 1.5em !important;
+    font-size: 16px;
+    color: #0B0C0F;
+    font-weight: 400;
+
+    span.ql-font-serif {
+      font-family: serif !important;
+    }
+
+    span.ql-font-monospace {
+      font-family: monospace !important;
+    }
+  }
+
+  hr {
+    margin: 16px 0;
+    border-bottom: 1px solid #e0e0e5;
+  }
+
+  a, p > a {
     text-decoration: underline;
+    color: var(--link-regular) !important;
+    cursor: pointer;
+  }
+
+  a:hover {
+    text-decoration: none;
+    font-weight: normal;
+    color: var(--link-hover) !important;
   }
 
   blockquote {
@@ -545,6 +449,12 @@ $selectors: "div[itemprop="articleBody"], .ql-editor, .single-campaign";
     margin-bottom: 5px;
     margin-top: 5px;
     padding-left: 16px;
+    border-left: 4px solid #ccc;
+    margin-left: 0;
+  }
+
+  blockquote p {
+    font-size: 18px;
   }
 
   code,
@@ -558,11 +468,18 @@ $selectors: "div[itemprop="articleBody"], .ql-editor, .single-campaign";
     margin-bottom: 5px;
     margin-top: 5px;
     padding: 5px 10px;
+    background-color: #f0f0f0;
+    border-radius: 3px;
+    border: 1px solid #e0e0e5;
   }
 
   code {
-    font-size: 85%;
     padding: 2px 4px;
+    border: 1px solid #e0e0e5;
+    background: #f0f0f0;
+    border-radius: 3px;
+    white-space: nowrap;
+    font-size: 14px;
   }
 
   pre.ql-syntax {
@@ -878,7 +795,7 @@ $selectors: "div[itemprop="articleBody"], .ql-editor, .single-campaign";
 }
 
 .ql-snow .ql-icon-picker .ql-picker-options {
-  padding: 4px 0px;
+  padding: 4px 0;
 }
 
 .ql-snow .ql-icon-picker .ql-picker-item {
@@ -897,7 +814,7 @@ $selectors: "div[itemprop="articleBody"], .ql-editor, .single-campaign";
   float: left;
   height: 16px;
   margin: 2px;
-  padding: 0px;
+  padding: 0;
   width: 16px;
 }
 
@@ -1086,13 +1003,13 @@ $selectors: "div[itemprop="articleBody"], .ql-editor, .single-campaign";
 }
 
 .ql-toolbar.ql-snow + .ql-container.ql-snow {
-  border-top: 0px;
+  border-top: 0;
 }
 
 .ql-snow .ql-tooltip {
   background-color: #fff;
   border: 1px solid #ccc;
-  box-shadow: 0px 0px 5px #ddd;
+  box-shadow: 0 0 5px #ddd;
   color: #444;
   padding: 5px 12px;
   white-space: nowrap;
@@ -1109,7 +1026,7 @@ $selectors: "div[itemprop="articleBody"], .ql-editor, .single-campaign";
   border: 1px solid #ccc;
   font-size: 13px;
   height: 26px;
-  margin: 0px;
+  margin: 0;
   padding: 3px 5px;
   width: 170px;
 }
@@ -1148,9 +1065,9 @@ $selectors: "div[itemprop="articleBody"], .ql-editor, .single-campaign";
 }
 
 .ql-snow .ql-tooltip.ql-editing a.ql-action::after {
-  border-right: 0px;
+  border-right: 0;
   content: 'Save';
-  padding-right: 0px;
+  padding-right: 0;
 }
 
 .ql-snow .ql-tooltip[data-mode=link]::before {
@@ -1163,10 +1080,6 @@ $selectors: "div[itemprop="articleBody"], .ql-editor, .single-campaign";
 
 .ql-snow .ql-tooltip[data-mode=video]::before {
   content: "Enter video:";
-}
-
-.ql-snow a {
-  color: #06c;
 }
 
 .ql-container.ql-snow {

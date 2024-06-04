@@ -4,7 +4,7 @@ defined('JPATH_BASE') or die;
 $d = $displayData;
 ?>
 
-<img src="<?php echo $d->url;?>" alt="<?php echo FText::_('security image'); ?>" />
+<img src="<?php echo $d->url;?>" alt="<?php echo $d->code;?>" />
 
 <div class="captcha_input">
 	<input class="inputbox <?php echo $d->type;?>"
