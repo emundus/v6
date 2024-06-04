@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\Utilities\ArrayHelper;
+
 jimport('joomla.application.component.model');
 /**
  * Plugin element to render currency
@@ -286,33 +288,42 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
      */
     public function validate($data, $repeatCounter = 0)
     {
-        $valid = true;
-        $this->selectedCurrencies = $this->getSelectedCurrencies();
-        $selectedIso3Front = $data['selectedIso3Front'];
-        $rowInputValueFront = $data['rowInputValueFront'];
+	    $valid                    = true;
 
-        if (strlen($rowInputValueFront) === 0) // empty data so no value in DB
-        {
-            $this->validationError = JText::_('PLG_ELEMENT_CURRENCY_NOT_IN_INTERVALS');
-            $valid = !$this->validator->hasValidations(); // valid if no validation, not valid if validation
-        }
-        else
-        {
-            $valid = $this->currencyFormatValidation($selectedIso3Front);
-        }
+	    $name = $this->getHTMLId($repeatCounter);
+	    $hiddenElements = ArrayHelper::getValue($this->getFormModel()->formData, 'hiddenElements', '[]');
+	    $hiddenElements = json_decode($hiddenElements);
 
-        if ($valid)
-        {
-            $this->idSelectedCurrency = $this->getIdCurrencyFromIso3($selectedIso3Front); // valid so we can get his id
-            if ($this->validator->hasValidations()) // element mandatory
-            {
-                $valid = $this->isValueCorrect(floatval($rowInputValueFront));
-            }
-            else // element not mandatory
-            {
-                $valid = strlen($rowInputValueFront) !== 0 ? $this->isValueCorrect(intval($rowInputValueFront)) : $valid; // test if not empty
-            }
-        }
+	    if(!in_array($name, $hiddenElements))
+	    {
+		    $this->selectedCurrencies = $this->getSelectedCurrencies();
+		    $selectedIso3Front        = $data['selectedIso3Front'];
+		    $rowInputValueFront       = $data['rowInputValueFront'];
+
+		    if (strlen($rowInputValueFront) === 0) // empty data so no value in DB
+		    {
+			    $this->validationError = JText::_('PLG_ELEMENT_CURRENCY_NOT_IN_INTERVALS');
+			    $valid                 = !$this->validator->hasValidations(); // valid if no validation, not valid if validation
+		    }
+		    else
+		    {
+			    $valid = $this->currencyFormatValidation($selectedIso3Front);
+		    }
+
+		    if ($valid)
+		    {
+			    $this->idSelectedCurrency = $this->getIdCurrencyFromIso3($selectedIso3Front); // valid so we can get his id
+			    if ($this->validator->hasValidations()) // element mandatory
+			    {
+				    $valid = $this->isValueCorrect(floatval($rowInputValueFront));
+			    }
+			    else // element not mandatory
+			    {
+				    $valid = strlen($rowInputValueFront) !== 0 ? $this->isValueCorrect(intval($rowInputValueFront)) : $valid; // test if not empty
+			    }
+		    }
+	    }
+
         return $valid;
     }
 

@@ -175,6 +175,7 @@ if($user->guest || in_array($e_user->profile,$app_prof))
     include_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'programme.php');
     $m_progs  = new EmundusModelProgramme();
     $programs = $m_progs->getProgrammes(1, $program_array);
+    
 
     if (in_array('category', $mod_em_campaign_show_filters_list))
     {
@@ -234,7 +235,7 @@ if($user->guest || in_array($e_user->profile,$app_prof))
             $condition .= ' ORDER BY ' . $order;
             break;
         case 'program':
-            $condition .= ' ORDER BY training, ' . $order;
+            $condition .= ' ORDER BY programme_ordering, training, ' . $order;
             break;
         case 'ordering':
             $condition .= ' ORDER BY ordering, ' . $order;

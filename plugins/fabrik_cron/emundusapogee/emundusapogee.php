@@ -232,7 +232,7 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
                 $soapConnectObj->sendRequest($soapConnectObj->webServiceConnect($wsdl_url,$xmlOutputString->saveXML(),$credentials),$fnum);
 
                 # uncomment this line if you want to export requests into XML file (** should be deactivate on PROD env **)
-                $xmlSchemaObj->exportXMLFile($xmlOutputString, JPATH_SITE . DS . 'tmp' . DS . $fnum);            // save on "tmp" (not in "images/emundus/files")
+                # $xmlSchemaObj->exportXMLFile($xmlOutputString, JPATH_SITE . DS . 'tmp' . DS . $fnum);            // save on "tmp" (not in "images/emundus/files")
             }
 
             sleep($offset_interval);

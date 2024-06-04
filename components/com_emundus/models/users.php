@@ -3972,4 +3972,94 @@ class EmundusModelUsers extends JModelList {
         }
         return $user_details;
     }
+
+    /**
+     * Check if user is already registered in emundus_users, if not, create it
+     * @param $user_id
+     * @return bool true if user is already registered or if we are able to create it, false otherwise
+     */
+    public function repairEmundusUser($user_id)
+    {
+        $repaired = false;
+
+        if (!empty($user_id)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select($db->quoteName('id'))
+                ->from($db->quoteName('#__emundus_users'))
+                ->where($db->quoteName('user_id') . ' = ' . $db->quote($user_id));
+            $db->setQuery($query);
+            $user = $db->loadResult();
+
+            if (empty($user)) {
+                $query->clear()
+                    ->select('*')
+                    ->from($db->quoteName('#__users'))
+                    ->where($db->quoteName('id') . ' = ' . $db->quote($user_id));
+                $db->setQuery($query);
+                $user_details = $db->loadObject();
+
+                if (!empty($user_details)) {
+                    list($firstname, $lastname) = !empty($user_details->name) ? explode(' ', $user_details->name, 2) : ['',''];
+
+                    $no_profile = null;
+
+                    $query->clear()
+                        ->select('id')
+                        ->from('#__emundus_setup_profiles')
+                        ->where('label like ' . $db->quote('noprofile'));
+
+                    $db->setQuery($query);
+                    $no_profile = $db->loadResult();
+
+                    if (empty($no_profile)) {
+                        // select first applicant profile
+                        $query->clear()
+                            ->select('id')
+                            ->from('#__emundus_setup_profiles')
+                            ->where('published = 1');
+
+                        $db->setQuery($query);
+                        $no_profile = $db->loadResult();
+                    }
+
+                    $query->clear()
+                        ->insert($db->quoteName('#__emundus_users'))
+                        ->set($db->quoteName('user_id') . ' = ' . $db->quote($user_id))
+                        ->set($db->quoteName('firstname') . ' = ' . $db->quote($firstname))
+                        ->set($db->quoteName('lastname') . ' = ' . $db->quote($lastname))
+                        ->set($db->quoteName('profile') . ' = ' . $no_profile)
+                        ->set($db->quoteName('schoolyear') . ' = ' . $db->quote(''))
+                        ->set($db->quoteName('disabled') . ' = 0')
+                        ->set($db->quoteName('university_id') . ' = 0')
+                        ->set($db->quoteName('email') . ' = ' . $db->quote($user_details->email))
+                        ->set($db->quoteName('registerDate') . ' = ' . $db->quote($user_details->registerDate))
+                        ->set($db->quoteName('name') . ' = ' . $db->quote($user_details->name));
+
+                    try {
+                        $db->setQuery($query);
+                        $inserted = $db->execute();
+
+                        if ($inserted) {
+                            JLog::add('com_emundus/models/users.php | reconstruction of user ' . $user_id, JLog::INFO, 'com_emundus.error');
+                            $repaired = true;
+
+                            require_once(JPATH_ROOT . '/components/com_emundus/models/profile.php');
+                            $m_profile = new EmundusModelProfile;
+                            $m_profile->initEmundusSession();
+                        } else {
+                            JLog::add('com_emundus/models/users.php | failed to repair user ' . $user_id, JLog::ERROR, 'com_emundus.error');
+                        }
+                    } catch (Exception $e) {
+                        JLog::add('com_emundus/models/users.php | error while trying to repair user ' . $user_id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                    }
+                }
+            } else {
+                $repaired = true;
+            }
+        }
+
+        return $repaired;
+    }
 }

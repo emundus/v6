@@ -35,30 +35,12 @@ class PlgFabrik_FormEmundusencryptdatas extends plgFabrik_Form
      * @since version
      */
     public function onLoad() {
-        $cipher = "aes-128-cbc";
-
-        $encryption_key = JFactory::getConfig()->get('secret');
-
         $formModel = $this->getModel();
         $datas = $formModel->data;
 
         //Decrypt data
         foreach($datas as $key => $data){
-            if(is_array(json_decode($data))){
-                $data = json_decode($data);
-                foreach($data as $index => $subvalue){
-                    $decrypted_data = openssl_decrypt($subvalue, $cipher, $encryption_key, 0);
-                    if($decrypted_data !== false){
-                        $data[$index] = $decrypted_data;
-                    }
-                }
-                $formModel->data[$key] = json_encode($data);
-            } else {
-                $decrypted_data = openssl_decrypt($data, $cipher, $encryption_key, 0);
-                if($decrypted_data !== false){
-                    $formModel->data[$key] = $decrypted_data;
-                }
-            }
+	        $formModel->data[$key] = EmundusHelperFabrik::decryptDatas($data);
         }
     }
 
@@ -70,27 +52,13 @@ class PlgFabrik_FormEmundusencryptdatas extends plgFabrik_Form
      * @since version
      */
 	public function onBeforeProcess() {
-        //Define cipher
-        $cipher = "aes-128-cbc";
-
-        //Generate a 256-bit encryption key
-        $encryption_key = JFactory::getConfig()->get('secret');
-
         $formModel = $this->getModel();
         $datas = $formModel->formData;
 
         //Data to encrypt
         foreach($datas as $key => $data){
             if(strpos($key,'jos_emundus') !== false && strpos($key,'raw') === false && strpos($key,'fnum') === false && strpos($key,'id') === false && strpos($key,'user') === false && strpos($key,'time_date') === false){
-                if(is_array($data)){
-                    foreach($data as $index => $subvalue){
-                        $data[$index] = openssl_encrypt($subvalue, $cipher, $encryption_key, 0);
-                    }
-                    $formModel->updateFormData($key,$data);
-                } else {
-                    $encrypted_data = openssl_encrypt($data, $cipher, $encryption_key, 0);
-                    $formModel->updateFormData($key,$encrypted_data);
-                }
+	            $formModel->updateFormData($key,EmundusHelperFabrik::encryptDatas($data));
             }
         }
 	}

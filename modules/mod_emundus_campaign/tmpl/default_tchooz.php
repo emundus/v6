@@ -51,9 +51,9 @@ if (sizeof($tmp_campaigns) > 0)
 
 	if ($group_by == 'program')
 	{
-		usort($tmp_campaigns, function ($a, $b) {
+		/*usort($tmp_campaigns, function ($a, $b) {
 			return strcmp($a->programme, $b->programme);
-		});
+		});*/
 
 		foreach ($tmp_campaigns as $campaign)
 		{
@@ -795,6 +795,16 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 													if ($interval->y == 0 && $interval->m == 0 && $interval->d == 0)
 													{
 														$displayInterval = true;
+                                                        if ($interval->h < 10) {
+                                                            $interval_h = '0' . $interval->h;
+                                                        } else {
+                                                            $interval_h = $interval->h;
+                                                        }
+                                                        if ($interval->i < 10) {
+                                                            $interval_i = '0' . $interval->i;
+                                                        } else {
+                                                            $interval_i = $interval->i;
+                                                        }
 													}
 													?>
                                                     <div class="mod_emundus_campaign__date em-flex-row em-mb-4">
@@ -808,11 +818,11 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                                             <p class="em-red-500-color"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_LAST_DAY'); ?>
 																<?php if ($interval->h > 0)
 																{
-																	echo $interval->h . 'h' . $interval->i;
+																	echo $interval_h . 'h' . $interval_i;
 																}
 																else
 																{
-																	echo $interval->i . 'm';
+																	echo $interval_i . 'm';
 																} ?>
                                                             </p>
 														<?php endif; ?>

@@ -22,9 +22,9 @@ $d = $displayData;
 		    <?php if (!empty($d->title) && $d->accordion == 0) : ?>
                 <h3><?php echo $d->title ?></h3>
 		    <?php endif; ?>
-            <div class="<?php if (!empty($d->title)) : ?>mt-2<?php endif; ?>">
-		        <?php echo $d->value;?>
-            </div>
+            <p class="<?php if (!empty($d->title)) : ?>mt-2<?php endif; ?>">
+                <span class="whitespace-pre-line"><?php echo $d->value;?></span>
+            </p>
         </div>
     </div>
 </div>
