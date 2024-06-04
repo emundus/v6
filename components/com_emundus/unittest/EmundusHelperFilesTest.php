@@ -10,6 +10,7 @@ define('JPATH_BASE', dirname(__DIR__) . '/../../');
 include_once(JPATH_BASE . 'includes/defines.php');
 include_once(JPATH_BASE . 'includes/framework.php');
 include_once(JPATH_SITE . '/components/com_emundus/helpers/files.php');
+include_once(JPATH_SITE . '/components/com_emundus/unittest/helpers/samples.php');
 
 jimport('joomla.user.helper');
 jimport('joomla.application.application');
@@ -28,11 +29,13 @@ session_start();
 class EmundusHelperFilesTest extends TestCase {
 
 	private $h_files;
+    private $h_sample;
 
 	public function __construct(?string $name = null, array $data = [], $dataName = '')
 	{
 		parent::__construct($name, $data, $dataName);
 		$this->h_files = new EmundusHelperFiles;
+        $this->h_sample = new EmundusUnittestHelperSamples;
 	}
 
 	public function testFoo()
@@ -224,5 +227,19 @@ class EmundusHelperFilesTest extends TestCase {
 		]);
 		$where = $this->h_files->_moduleBuildWhere([], 'files', []);
 		$this->assertSame(' AND esc.published > 0 AND jecc.published = \'1\'', $where['q'], 'Build where with quick search filters with unhandled scope returns only default filter on published');
+
+        $caller_params = [
+            'eval' => true
+        ];
+        $where = $this->h_files->_moduleBuildWhere([], 'files', $caller_params);
+        $this->assertSame(' AND esc.published > 0 AND jecc.status <> 0 AND jecc.published = \'1\'', $where['q'], 'Build where on evaluation view should return default filters and filter on status');
+
+        $user_id = $this->h_sample->createSampleUser(9, 'unit-test-candidat-' . rand(0, 1000) . '@emundus.test.fr');
+        $caller_params = [
+            'eval' => true,
+            'custom_eval_users_filter' => 'select jeu.user_id from jos_emundus_users as jeu where jeu.user_id = '.$user_id
+        ];
+        $where = $this->h_files->_moduleBuildWhere([], 'files', $caller_params);
+        $this->assertSame(' AND esc.published > 0 AND jecc.status <> 0 AND (jos_emundus_evaluations.user IN (select jeu.user_id from jos_emundus_users as jeu where jeu.user_id = '.$user_id.') OR jos_emundus_evaluations.user IS NULL) AND jecc.published = \'1\'', $where['q'], 'Build where with evaluation filter should return default filters, filter on status and the given custom query');
 	}
 }
