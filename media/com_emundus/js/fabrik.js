@@ -411,19 +411,23 @@ function getElementShowedValue(element) {
             case 'fabrikcheckbox':
             case 'databasejoin':
             case 'fabrikdropdown':
-                const values = Array.isArray(element.get('value')) ? element.get('value'): [element.get('value')];
+                const values = Array.isArray(element.get('value')) ? element.get('value') : [element.get('value')];
                 let inputChecked = [];
                 values.forEach((value) => {
-                    inputChecked.push(container.querySelector('[value=\"'+value+'\"]'));
+                    if (value !== null && value !== '') {
+                        inputChecked.push(container.querySelector('[value=\"' + value + '\"]'));
+                    }
                 });
 
                 let checked = [];
                 inputChecked.forEach((input) => {
-                   if (input.localName === 'option') {
-                       checked.push(input.innerText);
-                   } else {
-                       checked.push(input.nextSibling.textContent);
-                   }
+                    if (input) {
+                        if (input.localName === 'option') {
+                            checked.push(input.innerText);
+                        } else {
+                            checked.push(input.nextSibling.textContent);
+                        }
+                    }
                 });
                 return checked.join(', ');
 
