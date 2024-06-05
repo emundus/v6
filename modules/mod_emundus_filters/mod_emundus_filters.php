@@ -35,6 +35,7 @@ if (!empty($user) && EmundusHelperAccess::asAccessAction(1, 'r', $user->id)) {
 		}
 
 		if (!empty($m_filters)) {
+            $menu_id = 0;
 			$document 	= JFactory::getDocument();
 			$document->addScript('media/mod_emundus_filters/chunk-vendors.js');
 			$document->addStyleSheet('media/mod_emundus_filters/app.css');
@@ -43,6 +44,13 @@ if (!empty($user) && EmundusHelperAccess::asAccessAction(1, 'r', $user->id)) {
 			$filters = $m_filters->getFilters();
 			$applied_filters = $m_filters->getAppliedFilters();
 			$quick_search_filters = $m_filters->getQuickSearchFilters();
+
+            $menu = $app->getMenu();
+            if (!empty($menu))
+            {
+                $menu_item = $menu->getActive();
+                $menu_id = $menu_item->id;
+            }
 
 			require JModuleHelper::getLayoutPath('mod_emundus_filters', $layout);
 		}

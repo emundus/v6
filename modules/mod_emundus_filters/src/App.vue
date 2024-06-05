@@ -97,6 +97,10 @@ export default {
       type: Boolean,
       default: false
     },
+    menuId: {
+      type: Number,
+      default: 0
+    }
 	},
 	data() {
 		return {
@@ -242,7 +246,7 @@ export default {
 			window.dispatchEvent(this.startApplyFilters);
 			filtersService.applyFilters(this.appliedFilters, this.globalSearch, this.applySuccessEvent).then((applied) => {
         if (applied && this.countFilterValues) {
-          filtersService.countFiltersValues(this.moduleId).then((response) => {
+          filtersService.countFiltersValues(this.moduleId, this.menuId).then((response) => {
             if (response.status) {
               this.appliedFilters = response.data;
             }
