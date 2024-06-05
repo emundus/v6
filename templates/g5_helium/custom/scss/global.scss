@@ -1130,6 +1130,11 @@ footer#g-footer > .g-container {
 }
 
 /** PAGE EDIT PROFILE **/
+
+.view-profile #system-message-container > div:not(#system-message) {
+  margin-top: 20px;
+}
+
 .com_users.view-profile.layout-edit {
   .alert.alert-message {
     color: #468847;
