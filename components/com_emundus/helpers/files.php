@@ -3989,9 +3989,11 @@ class EmundusHelperFiles
                                     $jecc_alias = array_search('jos_emundus_campaign_candidature', $already_joined);
                                     if (!in_array('jos_emundus_evaluations', $already_joined)) {
                                         if (!empty($caller_params) && !empty($caller_params['custom_eval_users_filter'])) {
-                                            $where['join'] .= ' LEFT JOIN jos_emundus_evaluations on jos_emundus_evaluations.fnum = ' . $jecc_alias . '.fnum AND jos_emundus_evaluations.user IN (' . str_replace('[CURRENT_USER]', $db->quote(JFactory::getUser()->id), $caller_params['custom_eval_users_filter']) . ')';
+                                            $where['join'] .= ' LEFT JOIN jos_emundus_evaluations on jos_emundus_evaluations.fnum = ' . $jecc_alias . '.fnum';
+                                            $where['q'] .= ' AND (jos_emundus_evaluations.user IN ('.str_replace('[CURRENT_USER]', $db->quote(JFactory::getUser()->id), $caller_params['custom_eval_users_filter']).') OR jos_emundus_evaluations.user IS NULL)';
                                         } else {
-                                            $where['join'] .= ' LEFT JOIN jos_emundus_evaluations on jos_emundus_evaluations.fnum = ' . $jecc_alias . '.fnum AND jos_emundus_evaluations.user = ' . $db->quote(JFactory::getUser()->id);
+                                            $where['join'] .= ' LEFT JOIN jos_emundus_evaluations on jos_emundus_evaluations.fnum = ' . $jecc_alias . '.fnum';
+                                            $where['q'] .= ' AND (jos_emundus_evaluations.user = '.$db->quote(JFactory::getUser()->id).' OR jos_emundus_evaluations.user IS NULL)';
                                         }
                                     }
                                     break;
@@ -4001,10 +4003,14 @@ class EmundusHelperFiles
                         }
                     }
                 }
-            } else if (!in_array('published', $filters_to_exclude)) {
-                $where['q'] .= ' AND ' . $this->writeQueryWithOperator('jecc.published', 1, '=');
             }
-	    } else if (!in_array('published', $filters_to_exclude)) {
+	    }
+
+        $found_published_filter = array_filter($session_filters, function($filter) {
+            return $filter['uid'] === 'filter-published';
+        });
+
+        if (!in_array('published', $filters_to_exclude) && empty($found_published_filter)) {
             $where['q'] .= ' AND ' . $this->writeQueryWithOperator('jecc.published', 1, '=');
         }
 
@@ -4753,6 +4759,7 @@ class EmundusHelperFiles
                             LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jecc.fnum ';
 
                             if ($applied_filter['uid'] == 'to_evaluate') {
+                                $where_params['eval'] = true;
                                 $query .= 'LEFT JOIN jos_emundus_evaluations on jos_emundus_evaluations.fnum = jecc.fnum';
                                 if (!empty($module_params['filter_to_evaluate_custom_users'])) {
                                     $where_params['custom_eval_users_filter'] = $module_params['filter_to_evaluate_custom_users'];
