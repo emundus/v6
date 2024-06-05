@@ -187,7 +187,11 @@ export default {
       this.filter.operator = 'IN';
       this.filter.andorOperator = 'OR';
       this.search = '';
-      this.filter.value = [];
+      if (this.filter.defaultValue) {
+        this.filter.value = this.filter.defaultValue;
+      } else {
+        this.filter.value = [];
+      }
 
       if (this.opened) {
         this.opened = false;

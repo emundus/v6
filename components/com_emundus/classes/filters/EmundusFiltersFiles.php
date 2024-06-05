@@ -57,7 +57,7 @@ class EmundusFiltersFiles extends EmundusFilters
 			{
 				require_once JPATH_ROOT . '/components/com_emundus/helpers/files.php';
 				$helper_files          = new EmundusHelperFiles();
-				$this->applied_filters = $helper_files->setFiltersValuesAvailability($this->applied_filters);
+                $this->applied_filters = $helper_files->setFiltersValuesAvailability($this->applied_filters, $config, $this->user);
 			}
 		}
 	}
@@ -530,6 +530,27 @@ class EmundusFiltersFiles extends EmundusFilters
 			}
 
 
+            if ($config['filter_to_evaluate'])
+            {
+                $evaluated = [
+                    ['value' => 1, 'label' => JText::_('MOD_EMUNDUS_FILTERS_VALUE_TO_EVALUATE_TODO'), 'count' => 0],
+                    ['value' => 2, 'label' => JText::_('MOD_EMUNDUS_FILTERS_VALUE_TO_EVALUATE_DONE'), 'count' => 0]
+                ];
+
+                $this->applied_filters[] = [
+                    'uid'           => 'to_evaluate',
+                    'id'            => 'to_evaluate',
+                    'label'         => JText::_('MOD_EMUNDUS_FILTERS_TO_EVALUATE'),
+                    'type'          => 'select',
+                    'values'        => $evaluated,
+                    'value'         => [1],
+                    'default'       => true,
+                    'defaultValue'  => [1],
+                    'available'     => true,
+                    'order'         => $config['filter_to_evaluate_order']
+                ];
+            }
+
 			if ($config['filter_years'])
 			{
 				$years = [];
@@ -584,19 +605,20 @@ class EmundusFiltersFiles extends EmundusFilters
 			if ($config['filter_published'])
 			{
 				$this->applied_filters[] = [
-					'uid'       => 'published',
-					'id'        => 'published',
-					'label'     => JText::_('MOD_EMUNDUS_FILTERS_PUBLISHED_STATE'),
-					'type'      => 'select',
-					'values'    => [
+					'uid'           => 'published',
+					'id'            => 'published',
+					'label'         => JText::_('MOD_EMUNDUS_FILTERS_PUBLISHED_STATE'),
+					'type'          => 'select',
+					'values'        => [
 						['value' => 1, 'label' => JText::_('MOD_EMUNDUS_FILTERS_VALUE_PUBLISHED'), 'count' => 0],
 						['value' => 0, 'label' => JText::_('MOD_EMUNDUS_FILTERS_VALUE_ARCHIVED'), 'count' => 0],
 						['value' => -1, 'label' => JText::_('MOD_EMUNDUS_FILTERS_VALUE_DELETED'), 'count' => 0]
 					],
-					'value'     => [1],
-					'default'   => true,
-					'available' => true,
-					'order'     => $config['filter_published_order']
+                    'value'         => [1],
+                    'default'       => true,
+                    'defaultValue'  => [1],
+                    'available'     => true,
+                    'order'         => $config['filter_published_order']
 				];
 			}
 
@@ -654,6 +676,8 @@ class EmundusFiltersFiles extends EmundusFilters
                     'order' => $config['filter_users_order']
                 ];
             }
+
+            $session = JFactory::getSession();
 
             if (!empty($config['more_filter_elements']))
 			{
@@ -738,7 +762,6 @@ class EmundusFiltersFiles extends EmundusFilters
 							$this->applied_filters[]     = $new_default_filter;
 
 							// add filter to adv cols
-							$session                 = JFactory::getSession();
 							$files_displayed_columns = $session->get('adv_cols');
 							if (!empty($files_displayed_columns))
 							{
@@ -753,6 +776,8 @@ class EmundusFiltersFiles extends EmundusFilters
 					}
 				}
 			}
+
+            $session->set('em-applied-filters', $this->applied_filters);
 
 			// sort applied filters array by array entry 'order'
 			usort($this->applied_filters, function ($a, $b) {

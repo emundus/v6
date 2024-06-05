@@ -124,12 +124,12 @@ export default {
 		this.getRegisteredFilters();
 		this.selectedRegisteredFilter = sessionStorage.getItem('emundus-current-filter') || 0;
 		this.appliedFilters = this.defaultAppliedFilters.map((filter) => {
-			if (!filter.hasOwnProperty('operator')) {
-				filter.operator = '=';
-			}
-			if (!filter.hasOwnProperty('andorOperator')) {
-				filter.andorOperator = 'OR';
-			}
+      if (!filter.operator) {
+        filter.operator = '=';
+      }
+      if (!filter.andorOperator) {
+        filter.andorOperator = 'OR';
+      }
 
 			return filter;
 		});
@@ -266,12 +266,11 @@ export default {
         if (filter.type === 'select') {
           filter.operator = 'IN';
 
-					// TODO: too specific to the published filter, should create a default_value field.
-					if (filter.uid === 'published') {
-						filter.value = [1];
-					} else {
-						filter.value = [];
-					}
+          if (filter.defaultValue) {
+            filter.value = filter.defaultValue;
+          } else {
+            filter.value = [];
+          }
 				} else if (filter.type === 'date' || filter.type === 'time') {
 					filter.value = ['', ''];
 				} else {
