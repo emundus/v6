@@ -30,7 +30,7 @@ $document->addStyleSheet("modules/mod_emundus_profile/style/mod_emundus_profile.
                     <div id="pp_profile_background_no_picture"
 					     <?php if ($update_profile_picture == 1) : ?>onclick="openBrowser()"
                          onmouseover="displayEdit('flex', false)" onmouseleave="displayEdit('none', false)"<?php endif; ?>
-                         class="em-pointer em-user-dropdown-icon em-user-dropdown-icon-xxl relative <?php if (!empty($profile_picture)) : ?>em-display-none<?php endif; ?>"
+                         class="em-mr-16 em-pointer em-user-dropdown-icon em-user-dropdown-icon-xxl relative <?php if (!empty($profile_picture)) : ?>em-display-none<?php endif; ?>"
                          data-initials="<?php echo substr($e_user->firstname, 0, 1) . substr($e_user->lastname, 0, 1); ?>"
                     >
                     <span class="em-flex-row" style="display: none" id="pp_edit_icon_no_picture">
@@ -42,7 +42,7 @@ $document->addStyleSheet("modules/mod_emundus_profile/style/mod_emundus_profile.
 
             <div class="em-flex-row <?php if ($show_name == 1) : ?>em-flex-space-between<?php else : ?>em-flex-row-justify-end<?php endif; ?> em-w-100">
 				<?php if ($show_name == 1) : ?>
-                    <div class="em-ml-16 em-m-xs-0 em-flex-column em-flex-col-start em-mt-xs-8">
+                    <div class="em-m-xs-0 em-flex-column em-flex-col-start em-mt-xs-8">
                         <h2><?php echo $user_fullname ?></h2>
                     </div>
 				<?php endif; ?>
