@@ -86,6 +86,10 @@ class PlgFabrik_ElementBooking extends PlgFabrik_Element
 		$displayData = new stdClass;
 		$displayData->id = $this->getHTMLId($repeatCounter);
 		$displayData->value = $this->getValue($data, $repeatCounter);
+        $displayData->mode = $this->getParams()->get('mode');
+        $displayData->slug = $this->getParams()->get('slug');
+        $displayData->owner = $this->getParams()->get('owner');
+        $displayData->user = $this->getParams()->get('user');
 
 		return $layout->render($displayData);
 	}

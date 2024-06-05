@@ -1,21 +1,21 @@
-//import { useState } from 'react'
-import './App.css'
+import React from 'react';
+import './App.css';
 import "@calcom/atoms/globals.min.css";
-import Home from "./Home.tsx";
-import {Component} from "react";
+import Availability  from "./Availability.tsx";
+import Booking from "./Booking.tsx";
 
-class App extends Component<{ pageProps: any }> {
+
+class App extends React.Component<{ pageProps: any }> {
+    componentDidMount() {
+        console.log('pageProps', this.props.pageProps);
+    }
     render() {
-        let {pageProps} = this.props;
-        console.log(pageProps)
-
         return (
             <main>
-                <p>Test</p>
-                <Home/>
+                {this.props.pageProps?.mode === '1' ? <Availability pageProps={this.props.pageProps}/> : <Booking pageProps={this.props.pageProps}/>}
             </main>
         );
     }
 }
 
-export default App
+export default App;
