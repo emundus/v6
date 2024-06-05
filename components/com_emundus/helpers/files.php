@@ -4006,7 +4006,7 @@ class EmundusHelperFiles
 	    }
 
         $found_published_filter = array_filter($session_filters, function($filter) {
-            return $filter['uid'] === 'filter-published';
+            return $filter['uid'] === 'published';
         });
 
         if (!in_array('published', $filters_to_exclude) && empty($found_published_filter)) {
