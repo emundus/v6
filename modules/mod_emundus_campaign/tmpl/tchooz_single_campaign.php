@@ -285,14 +285,14 @@ if($currentCampaign->apply_online == 0){
             sidebar.style.top = headerNav.offsetHeight + 8 + 'px';
         }
         document.getElementById('campaign_tab').classList.add('current-tab');
-        <?php if (in_array('faq', $modules_tabs)) : ?>
+        <?php if (is_array($modules_tabs) && in_array('faq', $modules_tabs)) : ?>
         const faq = document.getElementById('faq');
         if (faq) {
             document.getElementById('faq').style.display = 'none';
         }
         <?php endif; ?>
 
-        <?php if (in_array('documents', $modules_tabs)) : ?>
+        <?php if (is_array($modules_tabs) && in_array('documents', $modules_tabs)) : ?>
         const documents = document.getElementById('documents');
         if (documents) {
             documents.style.display = 'none';

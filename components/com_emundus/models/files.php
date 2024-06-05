@@ -2962,9 +2962,10 @@ class EmundusModelFiles extends JModelLegacy
                         if (is_array($value)) {
                             $separator = ComponentHelper::getParams('com_emundus')->get('export_concat_separator', ', ');
                             $data[$d_key][$r_key] = '"' . implode($separator, $value) . '"';
-                        } else if (!empty($value) && is_string($value)) {
-							$data[$d_key][$r_key] = str_replace('-', '\-', $value);
                         }
+						/*else if (!empty($value) && is_string($value)) {
+							$data[$d_key][$r_key] = str_replace('-', '\-', $value);
+                        }*/
                     }
                 }
 
@@ -4696,27 +4697,17 @@ class EmundusModelFiles extends JModelLegacy
                                 JLog::add($send, JLog::ERROR, 'com_emundus.email');
                             } else {
                                 // Assoc tags if email has been sent
-                                if(!empty($trigger['tmpl']['tags'])){
-                                    $db = JFactory::getDBO();
-                                    $query = $db->getQuery(true);
+	                            if(!empty($trigger['tmpl']['tags'])) {
+		                            $user = JFactory::getUser();
+		                            $tags = array_filter(explode(',',$trigger['tmpl']['tags']));
 
-                                    $tags = array_filter(explode(',',$trigger['tmpl']['tags']));
-
-                                    foreach($tags as $tag) {
-                                        try{
-                                            $query->clear()
-                                                ->insert($db->quoteName('#__emundus_tag_assoc'));
-                                            $query->set($db->quoteName('fnum') . ' = ' . $db->quote($file['fnum']))
-                                                ->set($db->quoteName('id_tag') . ' = ' . $db->quote($tag))
-                                                ->set($db->quoteName('user_id') . ' = ' . $db->quote(JFactory::getUser()->id));
-
-                                            $db->setQuery($query);
-                                            $db->execute();
-                                        }  catch (Exception $e) {
-                                            JLog::add('NOT IMPORTANT IF DUPLICATE ENTRY : Error getting template in model/messages at query :'.$query->__toString(). " with " . $e->getMessage(), JLog::ERROR, 'com_emundus');
-                                        }
-                                    }
-                                }
+		                            if(!empty($tags))
+		                            {
+										require_once (JPATH_SITE.'/components/com_emundus/models/files.php');
+										$m_files = new EmundusModelFiles();
+			                            $m_files->tagFile([$file['fnum']], $tags, $user->id);
+		                            }
+	                            }
 
 	                            $message = array(
                                     'user_id_from' => $from_id,
@@ -4777,27 +4768,17 @@ class EmundusModelFiles extends JModelLegacy
                             JLog::add($send->__toString(), JLog::ERROR, 'com_emundus.email');
                         } else {
                             // Assoc tags if email has been sent
-                            if(!empty($trigger['tmpl']['tags'])){
-                                $db = JFactory::getDBO();
-                                $query = $db->getQuery(true);
+	                        if(!empty($trigger['tmpl']['tags'])) {
+		                        $user = JFactory::getUser();
+		                        $tags = array_filter(explode(',',$trigger['tmpl']['tags']));
 
-                                $tags = array_filter(explode(',',$trigger['tmpl']['tags']));
-
-                                foreach($tags as $tag) {
-                                    try{
-                                        $query->clear()
-                                            ->insert($db->quoteName('#__emundus_tag_assoc'));
-                                        $query->set($db->quoteName('fnum') . ' = ' . $db->quote($file['fnum']))
-                                            ->set($db->quoteName('id_tag') . ' = ' . $db->quote($tag))
-                                            ->set($db->quoteName('user_id') . ' = ' . $db->quote(JFactory::getUser()->id));
-
-                                        $db->setQuery($query);
-                                        $db->execute();
-                                    }  catch (Exception $e) {
-                                        JLog::add('NOT IMPORTANT IF DUPLICATE ENTRY : Error getting template in model/messages at query :'.$query->__toString(). " with " . $e->getMessage(), JLog::ERROR, 'com_emundus');
-                                    }
-                                }
-                            }
+		                        if(!empty($tags))
+		                        {
+			                        require_once (JPATH_SITE.'/components/com_emundus/models/files.php');
+			                        $m_files = new EmundusModelFiles();
+			                        $m_files->tagFile([$file['fnum']], $tags, $user->id);
+		                        }
+	                        }
 
                             $message = array(
                                 'user_id_from' => $from_id,

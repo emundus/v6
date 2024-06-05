@@ -775,27 +775,14 @@ class EmundusControllerMessages extends JControllerLegacy {
                 JLog::add('Error sending email to email ' . $fnum->email . ' : ' . $send->__toString(), JLog::ERROR, 'com_emundus.error');
             } else {
                 // Assoc tags if email has been sent
-                if($tags_str != null || !empty($template->tags)){
-                    $db = JFactory::getDBO();
-                    $query = $db->getQuery(true);
+	            if($tags_str != null || !empty($template->tags)) {
+					$tags = array_filter(array_merge(explode(',',$tags_str),explode(',',$template->tags)));
 
-                    $tags = array_filter(array_merge(explode(',',$tags_str),explode(',',$template->tags)));
-
-                    foreach($tags as $tag) {
-                        try{
-                            $query->clear()
-                                ->insert($db->quoteName('#__emundus_tag_assoc'));
-                            $query->set($db->quoteName('fnum') . ' = ' . $db->quote($fnum->fnum))
-                                ->set($db->quoteName('id_tag') . ' = ' . $db->quote($tag))
-                                ->set($db->quoteName('user_id') . ' = ' . $db->quote($fnum->applicant_id));
-
-                            $db->setQuery($query);
-                            $db->execute();
-                        }  catch (Exception $e) {
-                            JLog::add('NOT IMPORTANT IF DUPLICATE ENTRY : Error getting template in model/messages at query :'.$query->__toString(). " with " . $e->getMessage(), JLog::ERROR, 'com_emundus');
-                        }
-                    }
-                }
+					if(!empty($tags))
+					{
+						$m_files->tagFile([$fnum->fnum], $tags, $user->id);
+					}
+				}
 
                 // Log email
                 $sent[] = $fnum->email;
