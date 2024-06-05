@@ -22,15 +22,15 @@ $tmp_campaigns    = [];
 $campaigns        = [];
 $campaigns_pinned = [];
 
-if (in_array('current', $mod_em_campaign_list_tab) && !empty($currentCampaign))
+if (is_array($mod_em_campaign_list_tab) && in_array('current', $mod_em_campaign_list_tab) && !empty($currentCampaign))
 {
 	$tmp_campaigns = array_merge($tmp_campaigns, $currentCampaign);
 }
-if (in_array('futur', $mod_em_campaign_list_tab) && !empty($futurCampaign))
+if (is_array($mod_em_campaign_list_tab) && in_array('futur', $mod_em_campaign_list_tab) && !empty($futurCampaign))
 {
 	$tmp_campaigns = array_merge($tmp_campaigns, $futurCampaign);
 }
-if (in_array('past', $mod_em_campaign_list_tab) && !empty($pastCampaign))
+if (is_array($mod_em_campaign_list_tab) && in_array('past', $mod_em_campaign_list_tab) && !empty($pastCampaign))
 {
 	$tmp_campaigns = array_merge($tmp_campaigns, $pastCampaign);
 }
@@ -110,7 +110,7 @@ $protocol   = ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') || $_SE
 $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 ?>
 
-<?php if (in_array('intro', $mod_em_campaign_list_sections)): ?>
+<?php if (is_array($mod_em_campaign_list_sections) && in_array('intro', $mod_em_campaign_list_sections)): ?>
     <div class="mod_emundus_campaign__intro">
 		<?= $mod_em_campaign_intro; ?>
     </div>
@@ -454,17 +454,17 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 								<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_START_DATE_NEAR') ?>
                             </a>
 						<?php endif; ?>
-						<?php if (in_array('programme', $mod_em_campaign_sort_list) && $group_by != 'program') : ?>
+						<?php if (is_array($mod_em_campaign_sort_list) && in_array('programme', $mod_em_campaign_sort_list) && $group_by != 'program') : ?>
                             <a onclick="filterCampaigns('group_by','program')" class="em-text-neutral-900 em-pointer">
 								<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_PROGRAM') ?>
                             </a>
 						<?php endif; ?>
-						<?php if (in_array('category', $mod_em_campaign_sort_list) && $group_by != 'category') : ?>
+						<?php if (is_array($mod_em_campaign_sort_list) && in_array('category', $mod_em_campaign_sort_list) && $group_by != 'category') : ?>
                             <a onclick="filterCampaigns('group_by','category')" class="em-text-neutral-900 em-pointer">
 								<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_CATEGORY') ?>
                             </a>
 						<?php endif; ?>
-						<?php if (in_array('month', $mod_em_campaign_sort_list) && $group_by != 'month') : ?>
+						<?php if (is_array($mod_em_campaign_sort_list) && in_array('month', $mod_em_campaign_sort_list) && $group_by != 'month') : ?>
                             <a onclick="filterCampaigns('group_by','month')" class="em-text-neutral-900 em-pointer">
 								<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_MONTH') ?>
                             </a>
@@ -980,11 +980,11 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             '<select onchange="setupFilter(' + index + ')" id="select_filter_' + index + '"> ' +
             '<option value="0"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_PLEASE_SELECT') ?></option> ';
 
-		<?php if (in_array('programme', $mod_em_campaign_show_filters_list)) : ?>
+		<?php if (is_array($mod_em_campaign_show_filters_list) && in_array('programme', $mod_em_campaign_show_filters_list)) : ?>
         html += '<option value="programme"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_PROGRAMME') ?></option> ';
 		<?php endif; ?>
 
-		<?php if (in_array('category', $mod_em_campaign_show_filters_list)) : ?>
+		<?php if (is_array($mod_em_campaign_show_filters_list) && in_array('category', $mod_em_campaign_show_filters_list)) : ?>
         html += '<option value="category"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_PROGRAMME_CATEGORY') ?></option> ';
 		<?php endif; ?>
 

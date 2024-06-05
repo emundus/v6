@@ -104,7 +104,7 @@ if($user->guest || in_array($e_user->profile,$app_prof))
     $mod_em_campaign_show_localedate           = $params->get('mod_em_campaign_show_localedate', 0);
     $redirect_url                              = $params->get('mod_em_campaign_link', 'registration');
     $program_code                              = $params->get('mod_em_program_code');
-    $modules_tabs                              = $params->get('mod_em_campaign_modules_tab');
+    $modules_tabs                              = $params->get('mod_em_campaign_modules_tab', []);
     // END PARAMS
 
     $links = $helper->getLinks();
