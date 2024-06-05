@@ -4757,7 +4757,6 @@ class EmundusHelperFiles
                             LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jecc.fnum ';
 
                             if ($applied_filter['uid'] == 'to_evaluate') {
-                                $where_params['eval'] = true;
                                 $query .= 'LEFT JOIN jos_emundus_evaluations on jos_emundus_evaluations.fnum = jecc.fnum';
                                 if (!empty($module_params['filter_to_evaluate_custom_users'])) {
                                     $where_params['custom_eval_users_filter'] = $module_params['filter_to_evaluate_custom_users'];

@@ -98,9 +98,10 @@ export default {
             return filters;
         });
     },
-    async countFiltersValues(moduleId) {
+    async countFiltersValues(moduleId, menuId) {
         return client.post('setFiltersValuesAvailability', {
-            module_id: moduleId
+            module_id: moduleId,
+            menu_id: menuId
         }).then(data => {
             if (data.status) {
                 return data;

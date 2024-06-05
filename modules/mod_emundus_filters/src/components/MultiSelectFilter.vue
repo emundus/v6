@@ -264,7 +264,7 @@ export default {
         })
 
         if (selectedValue) {
-          labels.push(selectedValue.label);
+          labels.push(this.translate(selectedValue.label));
         }
       });
 

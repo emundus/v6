@@ -1080,6 +1080,11 @@ form.fabrikForm .check
       opacity: 0;
       position: absolute;
     }
+form.fabrikForm .\!check
+    {
+      opacity: 0 !important;
+      position: absolute !important;
+    }
 form.fabrikForm .fabrikEmundusPhoneNumber .chzn-container{
       width: auto !important;
     }
@@ -2277,6 +2282,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .top-px {
   top: 1px;
+}
+.isolate {
+  isolation: isolate;
 }
 .float-right {
   float: right;
@@ -4306,6 +4314,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .duration-300 {
   transition-duration: 300ms;
+}
+.ease-in {
+  transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
 }
 .ease-in-out {
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);

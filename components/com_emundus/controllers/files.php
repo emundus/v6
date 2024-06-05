@@ -4034,10 +4034,18 @@ class EmundusControllerFiles extends JControllerLegacy
 
         if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $response['msg'] = JText::_('MISSING_PARAMS');
-            $module_id = JFactory::getApplication()->input->getInt('module_id', 0);
+            $app = JFactory::getApplication();
+            $module_id = $app->input->getInt('module_id', 0);
 
             if (!empty($module_id)) {
                 $response['msg'] = JText::_('NO_CALCULATION_FOR_THIS_MODULE');
+
+                $menu_id = $app->input->getInt('menu_id', 0);
+                $menu_item = null;
+                if (!empty($menu_id)) {
+                    $menu = $app->getMenu();
+                    $menu_item = $menu->getItem($menu_id);
+                }
 
                 $db = JFactory::getDbo();
                 $query = $db->getQuery(true);
@@ -4064,8 +4072,8 @@ class EmundusControllerFiles extends JControllerLegacy
 
                         require_once(JPATH_SITE . '/components/com_emundus/helpers/files.php');
                         $h_files = new EmundusHelperFiles();
-                        $data = $h_files->setFiltersValuesAvailability($applied_filters, $module_params);
-
+                        $data = $h_files->setFiltersValuesAvailability($applied_filters, $module_params, null, $menu_item);
+                        
                         $response = ['status' => true, 'code' => 200, 'msg' => JText::_('SUCCESS'), 'data' => $data];
                     }
                 }
