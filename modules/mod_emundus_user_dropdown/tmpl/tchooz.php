@@ -330,7 +330,7 @@ if ($user != null)
 			if (!empty($user->emProfiles) && sizeof($user->emProfiles) > 1 && (!$only_applicant))
 			{
 				echo '<h5 class="mb-2">' . JText::_('SELECT_PROFILE') . '</h5>';
-				echo '<div class="select">';
+				echo '<div class="select em-mb-16 ">';
 				echo '<select class="profile-select" id="profile" name="profiles" onchange="postCProfile()"> ';
 				foreach ($user->emProfiles as $profile)
 				{
@@ -349,7 +349,7 @@ if ($user != null)
 			?>
 
 			<?php if ($show_update == '1' && !$is_anonym_user) : ?>
-                <li><a class="em-mt-16 edit-button-user em-flex-row em-flex-important em-flex-center"
+                <li><a class="edit-button-user em-flex-row em-flex-important em-flex-center"
                        href="<?= $link_edit_profile ?>"><span
                                 class="material-icons-outlined mr-2">person_outline</span><?= JText::_('COM_EMUNDUS_USER_MENU_PROFILE_LABEL') ?>
                     </a></li>
