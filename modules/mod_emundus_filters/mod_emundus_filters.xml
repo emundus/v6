@@ -42,6 +42,8 @@
                     </form>
                 </field>
 
+                <field type="checkbox" name="force_reload_on_refresh" default="0" label="MOD_EM_FILTER_FORCE_RELOAD_ON_REFRESH"/>
+
                 <!-- fields shown on fnum context -->
                 <fieldset showon="filter_on_fnum=1">
                     <field type="checkbox" name="count_filter_values" label="MOD_EMUNDUS_FILTER_COUNT_FILTER_VALUES" description="MOD_EMUNDUS_FILTER_COUNT_FILTER_VALUES_DESC" default="0"/>

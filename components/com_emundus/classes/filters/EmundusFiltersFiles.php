@@ -339,26 +339,6 @@ class EmundusFiltersFiles extends EmundusFilters
 	{
 		$found_from_cache = false;
 
-		/*if ($this->h_cache->isEnabled())
-		{
-			$menu = JFactory::getApplication()->getMenu();
-
-			if (!empty($menu))
-			{
-				$active_menu = $menu->getActive();
-				if (!empty($active_menu))
-				{
-					$cache_default_filters = $this->h_cache->get('em_default_filters_' . $active_menu->id);
-
-					if (!empty($cache_default_filters))
-					{
-						$this->applied_filters = array_merge($this->applied_filters, $cache_default_filters);
-						$found_from_cache      = true;
-					}
-				}
-			}
-		}*/
-
 		if (!$found_from_cache)
 		{
 			$db    = JFactory::getDbo();
@@ -782,10 +762,9 @@ class EmundusFiltersFiles extends EmundusFilters
 				return intval($a['order']) <=> intval($b['order']);
 			});
 
-			if ($this->h_cache->isEnabled() && !empty($active_menu))
-			{
-				$this->h_cache->set('em_default_filters_' . $active_menu->id, $this->applied_filters);
-			}
+            if (isset($config['force_reload_on_refresh']) && $config['force_reload_on_refresh']) {
+                $session->set('em-applied-filters', $this->applied_filters);
+            }
 		}
 	}
 
