@@ -4386,8 +4386,7 @@ screen and (max-height: 769px) {
 
 @media screen and (max-width: 959px) {
   .mon-profil .emundus-form #background-shapes {
-    left: 28px;
-    top: -32px;
+    display: none;
   }
 
   .applicant-form .emundus-form #background-shapes {

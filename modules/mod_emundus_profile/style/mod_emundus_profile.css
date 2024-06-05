@@ -18,3 +18,14 @@
 .em-container-profile-view-pict a.btn.manage-account-icon span.material-icons-outlined{
     font-size: 20px;
 }
+
+.em-container-profile-view-pict h2 {
+    word-break: break-word;
+    hyphens: auto;
+}
+
+@media screen and (max-width: 767px) {
+    .em-container-profile-view-pict .em-small-flex-column.em-gap-8 {
+        align-items: flex-start;
+    }
+}
