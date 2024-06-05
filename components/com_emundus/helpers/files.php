@@ -4279,11 +4279,10 @@ class EmundusHelperFiles
 	public function writeQueryWithOperator($element, $values, $operator, $type = 'select', $fabrik_element_data = null) {
 		$query = '1=1';
 
-
 		if (!empty($element) && (!empty($values) || $values == '0') && !empty($operator)) {
 			$db = JFactory::getDbo();
 
-			if ($type === 'date' || $type === 'time') {
+            if ($type === 'date' || $type === 'time') {
 				$from = $values[0];
 				if (!empty($from)) {
 					$to = !empty($values[1]) ? $values[1] : null;
