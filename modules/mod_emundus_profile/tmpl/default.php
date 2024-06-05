@@ -40,7 +40,7 @@ $document->addStyleSheet("modules/mod_emundus_profile/style/mod_emundus_profile.
                     </div>
 			<?php endif; ?>
 
-            <div class="em-flex-row <?php if ($show_name == 1) : ?>em-flex-space-between<?php else : ?>em-flex-row-justify-end<?php endif; ?> em-w-100">
+            <div class="em-small-flex-column em-gap-8 em-flex-row <?php if ($show_name == 1) : ?>em-flex-space-between<?php else : ?>em-flex-row-justify-end<?php endif; ?> em-w-100">
 				<?php if ($show_name == 1) : ?>
                     <div class="em-m-xs-0 em-flex-column em-flex-col-start em-mt-xs-8">
                         <h2><?php echo $user_fullname ?></h2>
