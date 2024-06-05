@@ -1812,7 +1812,18 @@ class EmundusModelApplication extends JModelList
                                                         if (strlen($index) > 0) {
                                                             $elt = JText::_($params->sub_options->sub_labels[$index]);
                                                         } elseif (!empty($params->dropdown_populate)) {
-                                                            $elt = $r_elt;
+                                                            try {
+                                                                $options = eval($params->dropdown_populate);
+                                                                $elt = $r_elt;
+                                                                foreach ($options as $option) {
+                                                                    if ($option->value == $r_elt) {
+                                                                        $elt = $option->text;
+                                                                        break;
+                                                                    }
+                                                                }
+                                                            } catch (Exception $e) {
+                                                                $elt = $r_elt;
+                                                            }
                                                         } else {
                                                             $elt = "";
                                                         }
@@ -2059,7 +2070,18 @@ class EmundusModelApplication extends JModelList
                                                 if (strlen($index) > 0) {
                                                     $elt = JText::_($params->sub_options->sub_labels[$index]);
                                                 } elseif (!empty($params->dropdown_populate)) {
-                                                    $elt = $element->content;
+                                                    try {
+                                                        $options = eval($params->dropdown_populate);
+                                                        $elt = $element->content;
+                                                        foreach ($options as $option) {
+                                                            if ($option->value == $element->content) {
+                                                                $elt = $option->text;
+                                                                break;
+                                                            }
+                                                        }
+                                                    } catch (Exception $e) {
+                                                        $elt = $element->content;
+                                                    }
                                                 } elseif ($params->multiple == 1) {
                                                     $elt = $elt = "<ul><li>" . implode("</li><li>", json_decode(@$element->content)) . "</li></ul>";
                                                 } else {
@@ -2427,7 +2449,18 @@ class EmundusModelApplication extends JModelList
                                                     if (strlen($index) > 0) {
                                                         $elt = JText::_($params->sub_options->sub_labels[$index]);
                                                     } elseif (!empty($params->dropdown_populate)) {
-                                                        $elt = $r_elt;
+                                                        try {
+                                                            $options = eval($params->dropdown_populate);
+                                                            $elt = $r_elt;
+                                                            foreach ($options as $option) {
+                                                                if ($option->value == $r_elt) {
+                                                                    $elt = $option->text;
+                                                                    break;
+                                                                }
+                                                            }
+                                                        } catch (Exception $e) {
+                                                            $elt = $r_elt;
+                                                        }
                                                     } else {
                                                         $elt = "";
                                                     }
@@ -2607,7 +2640,18 @@ class EmundusModelApplication extends JModelList
                                                     if (strlen($index) > 0) {
                                                         $elt = JText::_($params->sub_options->sub_labels[$index]);
                                                     } elseif (!empty($params->dropdown_populate)) {
-                                                        $elt = $r_elt;
+                                                        try {
+                                                            $options = eval($params->dropdown_populate);
+                                                            $elt = $r_elt;
+                                                            foreach ($options as $option) {
+                                                                if ($option->value == $r_elt) {
+                                                                    $elt = $option->text;
+                                                                    break;
+                                                                }
+                                                            }
+                                                        } catch (Exception $e) {
+                                                            $elt = $r_elt;
+                                                        }
                                                     } else {
                                                         $elt = "";
                                                     }
@@ -2828,7 +2872,18 @@ class EmundusModelApplication extends JModelList
                                                 } elseif ($params->multiple == 1) {
                                                     $elt = implode(", ", json_decode(@$element->content));
                                                 } elseif (!empty($params->dropdown_populate)) {
-                                                    $elt = $r_elt;
+                                                    try {
+                                                        $options = eval($params->dropdown_populate);
+                                                        $elt = $element->content;
+                                                        foreach ($options as $option) {
+                                                            if ($option->value == $element->content) {
+                                                                $elt = $option->text;
+                                                                break;
+                                                            }
+                                                        }
+                                                    } catch (Exception $e) {
+                                                        $elt = $element->content;
+                                                    }
                                                 } else {
                                                     $elt = "";
                                                 }
@@ -2905,7 +2960,7 @@ class EmundusModelApplication extends JModelList
             $forms .= $list_upload_files;
 			$forms .= '</div>';
         }
-		
+
         return $forms;
     }
 
@@ -3447,7 +3502,7 @@ class EmundusModelApplication extends JModelList
             catch(Exception $e)
             {
                 error_log($e->getMessage(), 0);
-            }   
+            }
         }
 
         return $access;

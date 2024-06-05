@@ -4307,6 +4307,16 @@ if(in_array($applicant,$exceptions)){
                     $db->updateObject('#__menu', $update, 'id');
                 }
             }
+
+			if (version_compare($cache_version, '1.38.11', '<=') || $firstrun) {
+				$query->clear()
+					->update($db->quoteName('#__extensions'))
+					->set($db->quoteName('enabled') . ' = 0')
+					->where($db->quoteName('element') . ' LIKE ' . $db->quote('com_contact'))
+					->where($db->quoteName('type') . ' LIKE ' . $db->quote('component'));
+				$db->setQuery($query);
+				$db->execute();
+			}
 		}
 
 		return $succeed;
