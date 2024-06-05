@@ -123,6 +123,7 @@ class PlgFabrik_ElementPanel extends PlgFabrik_Element
 		$layout = $this->getLayout('form');
 		$displayData = new stdClass;
 		$displayData->id = $this->getHTMLId($repeatCounter);
+		$displayData->name = $this->getHTMLName($repeatCounter);
 		$displayData->type = $params->get('type', 0);
 		$displayData->accordion = $params->get('accordion', '');
 		$displayData->title = $params->get('title', '');

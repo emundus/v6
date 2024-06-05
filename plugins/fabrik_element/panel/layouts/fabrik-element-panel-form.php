@@ -2,7 +2,7 @@
 $d = $displayData;
 ?>
 
-<div id="<?php echo $d->id; ?>" class="fabrikinput fabrikElementReadOnly" style="background-color: <?php echo $d->backgroundColor ?>;<?php if ($d->type == 4): ?>padding: 0;<?php endif; ?>">
+<div id="<?php echo $d->id; ?>" class="fabrikinput fabrikElementReadOnly" style="background-color: <?php echo $d->backgroundColor ?>;<?php if ($d->type == 4): ?>padding: 0;<?php endif; ?>" name="<?php echo $d->name; ?>">
     <span class="material-icons<?php echo $d->iconType ?>" style="color: <?php echo $d->iconColor ?>"><?php echo $d->icon ?></span>
 
     <div class="fabrikElementContent w-full" <?php if ($d->type == 4): ?>style="margin-left: 0;"<?php endif; ?>>
@@ -23,7 +23,7 @@ $d = $displayData;
                 <h3><?php echo $d->title ?></h3>
 		    <?php endif; ?>
             <p class="<?php if (!empty($d->title)) : ?>mt-2<?php endif; ?>">
-                <span class="whitespace-pre-line"><?php echo $d->value;?></span>
+                <span class="whitespace-pre-line" id="<?php echo $d->id; ?>-value"><?php echo $d->value;?></span>
             </p>
         </div>
     </div>
