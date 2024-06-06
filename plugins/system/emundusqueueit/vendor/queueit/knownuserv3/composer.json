@@ -1,0 +1,12 @@
+{
+    "name": "queueit/knownuserv3",
+    "description": "The Queue-it Security Framework is used to ensure that end users cannot bypass the queue by adding a server-side integration to your server.",
+    "require": {
+        "php": ">=5.3.3"
+    },
+    "license":"LGPL-3.0",
+    "autoload": {
+        "classmap": ["./"],
+        "exclude-from-classmap": ["**/Tests/**","**/tests/**"]
+    }
+}

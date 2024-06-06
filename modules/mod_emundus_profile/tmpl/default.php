@@ -52,6 +52,7 @@ $document->addStyleSheet("modules/mod_emundus_profile/style/mod_emundus_profile.
                        href="/index.php?option=com_users&view=profile&layout=edit"
                        title="<?php echo JText::_('MOD_EMUNDUS_PROFILE_EDIT_PROFILE_PASSWORD_TITLE') ?>">
                         <span class="material-icons-outlined">manage_accounts</span>
+                        <?php echo JText::_('MOD_EMUNDUS_PROFILE_EDIT_PROFILE_PASSWORD_TITLE'); ?>
                     </a>
 				<?php endif; ?>
 

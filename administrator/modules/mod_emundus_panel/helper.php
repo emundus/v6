@@ -164,4 +164,37 @@ class ModEmunduspanelHelper
 
         return $features;
     }
+
+    /**
+     * Display messages about the current state of the system
+     * @return void
+     */
+    public function checkup(): void
+    {
+        $app = JFactory::getApplication();
+
+        // verify session sql mode
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select('@@sql_mode');
+
+        try {
+            $db->setQuery($query);
+            $sql_mode = $db->loadResult();
+        } catch (Exception $e) {
+            $app->enqueueMessage(JText::_('MOD_EMUNDUS_PANEL_SQL_MODE_ERROR'), 'error');
+        }
+
+        if (!empty($sql_mode)) {
+            if (strpos($sql_mode, 'NO_ZERO_DATE') !== false) {
+                $app->enqueueMessage(JText::_('MOD_EMUNDUS_PANEL_SQL_MODE_NO_ZERO_DATE'), 'warning');
+            }
+            if (strpos($sql_mode, 'NO_ZERO_IN_DATE') !== false) {
+                $app->enqueueMessage(JText::_('MOD_EMUNDUS_PANEL_SQL_MODE_NO_IN_ZERO_DATE'), 'warning');
+            }
+            if (strpos($sql_mode, 'ONLY_FULL_GROUP_BY') !== false) {
+                $app->enqueueMessage(JText::_('MOD_EMUNDUS_PANEL_SQL_MODE_ONLY_FULL_GROUP_BY'), 'warning');
+            }
+        }
+    }
 }

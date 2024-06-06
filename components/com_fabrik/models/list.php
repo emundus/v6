@@ -7885,8 +7885,8 @@ class FabrikFEModelList extends JModelForm
 			JFactory::getCache('com_' . $package)->clean();
 
 			// $$$ rob new as if you update a record the insertid() returns 0
-			$this->lastInsertId = ($rowId == '') ? $fabrikDb->insertid() : $rowId;
-
+			$this->lastInsertId = empty($rowId) ? $fabrikDb->insertid() : $rowId;
+			
 			// $$$ hugh - if insertid() returned 0, probably means auto-inc is turned off, so see if PK was set in data
 			if (empty($this->lastInsertId))
 			{

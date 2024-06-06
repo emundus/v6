@@ -82,6 +82,7 @@ if($user->guest || in_array($e_user->profile,$app_prof))
     $mod_em_campaign_show_sort               = $params->get('mod_em_campaign_show_sort', 1);
     $mod_em_campaign_show_filters_list       = $params->get('mod_em_campaign_show_filters_list', []);
     $mod_em_campaign_sort_list               = $params->get('mod_em_campaign_sort_list');
+    $mod_em_campaign_display_tmpl                 = $params->get('mod_em_campaign_display_tmpl', 1);
     $mod_em_campaign_groupby                 = $params->get('mod_em_campaign_groupby');
     $mod_em_campaign_groupby_closed          = $params->get('mod_em_campaign_groupby_closed');
 
@@ -174,6 +175,7 @@ if($user->guest || in_array($e_user->profile,$app_prof))
     include_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'programme.php');
     $m_progs  = new EmundusModelProgramme();
     $programs = $m_progs->getProgrammes(1, $program_array);
+    
 
     if (in_array('category', $mod_em_campaign_show_filters_list))
     {
@@ -238,7 +240,7 @@ if($user->guest || in_array($e_user->profile,$app_prof))
             $condition .= ' ORDER BY ' . $order;
             break;
         case 'program':
-            $condition .= ' ORDER BY training, ' . $order;
+            $condition .= ' ORDER BY programme_ordering, training, ' . $order;
             break;
         case 'ordering':
             $condition .= ' ORDER BY ordering, ' . $order;

@@ -1188,32 +1188,40 @@ class EmundusModelCampaign extends JModelList {
 						$new_category_id = $this->getCampaignCategory($new_campaign_id);
 
 						if (!empty($new_category_id)) {
-							$old_category_id = $this->getCampaignCategory($id);
-							$old_campaign_documents = $this->getCampaignDropfilesDocuments($old_category_id);
+                            // TODO: add message if copy of dropfiles documents failed
+                            if (mkdir(JPATH_ROOT.'/media/com_dropfiles/' . $new_category_id, 0755)) {
+                                $old_category_id = $this->getCampaignCategory($id);
+                                $old_campaign_documents = $this->getCampaignDropfilesDocuments($old_category_id);
 
-							if (!empty($old_campaign_documents)) {
-								foreach($old_campaign_documents as $document) {
-									$document->catid = $new_category_id;
-									$document->author = $this->_user->id;
+                                if (!empty($old_campaign_documents)) {
+                                    foreach($old_campaign_documents as $document) {
+                                        $document->catid = $new_category_id;
+                                        $document->author = $this->_user->id;
 
-									$columns = array_keys($this->_db->getTableColumns('#__dropfiles_files'));
-									$columns = array_filter($columns, function ($k) {return $k != 'id';});
+                                        $columns = array_keys($this->_db->getTableColumns('#__dropfiles_files'));
+                                        $columns = array_filter($columns, function ($k) {return $k != 'id';});
 
-									$values = '';
-									foreach ($columns as $column) {
-										$values .= $this->_db->quote($document->$column) . ', ';
-									}
-									$values = rtrim($values, ', ');
+                                        $values = '';
+                                        foreach ($columns as $column) {
+                                            $values .= $this->_db->quote($document->$column) . ', ';
+                                        }
+                                        $values = rtrim($values, ', ');
 
-									$query->clear()
-										->insert($this->_db->quoteName('#__dropfiles_files'))
-										->columns(implode(',', $this->_db->quoteName($columns)))
-										->values($values);
+                                        $query->clear()
+                                            ->insert($this->_db->quoteName('#__dropfiles_files'))
+                                            ->columns(implode(',', $this->_db->quoteName($columns)))
+                                            ->values($values);
 
-									$this->_db->setQuery($query);
-									$this->_db->execute();
-								}
-							}
+                                        $this->_db->setQuery($query);
+                                        $this->_db->execute();
+
+                                        // Copy documents on server
+                                        $old_path = JPATH_ROOT.'/media/com_dropfiles/' . $old_category_id . '/' . $document->file;
+                                        $new_path = JPATH_ROOT.'/media/com_dropfiles/' . $new_category_id . '/' . $document->file;
+                                        copy($old_path, $new_path);
+                                    }
+                                }
+                            }
 						}
 					}
 				}
@@ -3009,6 +3017,60 @@ class EmundusModelCampaign extends JModelList {
         }
 
         return $incoherences;
+    }
+
+    /**
+     * @param $campaign_id int
+     * @return string
+     */
+    public function getCampaignMoreFormUrl($campaign_id): string
+    {
+        $form_url = '';
+
+        if (!empty($campaign_id)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            // get the form id where the table is jos_emundus_setup_campaigns_more
+            $query->select('form_id')
+                ->from($db->quoteName('#__fabrik_lists'))
+                ->where($db->quoteName('db_table_name') . ' = ' . $db->quote('jos_emundus_setup_campaigns_more'));
+
+            $db->setQuery($query);
+            $form_id = $db->loadResult();
+
+            if (!empty($form_id)) {
+                // check if there are more elements other than id, date_time and campaign_id
+                // otherwhise, we don't need to display the form
+                $query->clear()
+                    ->select('COUNT(jfe.id)')
+                    ->from($db->quoteName('#__fabrik_elements', 'jfe'))
+                    ->leftJoin($db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON ' . $db->quoteName('jffg.group_id') . ' = ' . $db->quoteName('jfe.group_id'))
+                    ->where($db->quoteName('jffg.form_id') . ' = ' . $db->quote($form_id))
+                    ->andWhere('jfe.published = 1')
+                    ->andWhere('jfe.name NOT IN ("id", "date_time", "campaign_id")');
+                $db->setQuery($query);
+                $nb_elements = $db->loadResult();
+
+                if ($nb_elements > 0) {
+                    $query->clear()
+                        ->select('id')
+                        ->from($db->quoteName('#__emundus_setup_campaigns_more'))
+                        ->where('campaign_id = ' . $db->quote($campaign_id));
+
+                    $db->setQuery($query);
+                    $row_id = $db->loadResult();
+
+                    if (!empty($row_id)) {
+                        $form_url = '/index.php?option=com_fabrik&view=form&formid=' . $form_id . '&rowid=' . $row_id . '&tmpl=component&iframe=1';
+                    } else {
+                        $form_url = '/index.php?option=com_fabrik&view=form&formid=' . $form_id . '&rowid=0&tmpl=component&iframe=1&jos_emundus_setup_campaigns_more___campaign_id=' . $campaign_id . '&Itemid=0';
+                    }
+                }
+            }
+        }
+
+        return $form_url;
     }
 
 	public function getAllItemsAlias($cid)

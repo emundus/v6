@@ -52,10 +52,10 @@
           @click="addGroup(group)"
       >
           <div
-              class="form-builder-element flex items-center justify-between cursor-pointer"
+              class="form-builder-element flex items-center justify-between cursor-pointer gap-3 p-3"
           >
             <span class="material-icons-outlined">{{ group.icon }}</span>
-            <span class="em-w-100 em-p-16">{{ translate(group.name) }}</span>
+            <p class="w-full flex flex-col">{{ translate(group.name) }}</p>
             <span class="material-icons-outlined">add_circle_outline</span>
           </div>
       </div>

@@ -357,7 +357,7 @@ class EmundusHelperFilters {
 			if ($hidden !== null) {
 				$query->andWhere('jfe.hidden = ' . $hidden);
 			}
-			$query->order('find_in_set(jfg.id, "'. $groups . '"), jfe.ordering');
+			$query->order('jffg.ordering, jfe.ordering');
 			try {
 				$db->setQuery($query);
 				$elements = $db->loadObjectList();

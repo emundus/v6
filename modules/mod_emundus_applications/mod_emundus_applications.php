@@ -126,6 +126,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $query_order_by = $order_applications . ' ' . $applications_as_desc;
 
     $file_status = $params->get('file_status', 1);
+	$title_override = JText::_($params->get('title_override', ''));
     $file_tags = JText::_($params->get('tags', ''));
     $cc_list_url = $params->get('cc_list_url', 'index.php?option=com_fabrik&view=form&formid=102');
 

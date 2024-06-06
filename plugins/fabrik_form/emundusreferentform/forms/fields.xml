@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+		<fieldset name="plg-form-emundusreferentform" label="PLG_FABRIK_FORM_EMUNDUS_REFERENT_FORM_FIELDS">
+			<field label="PLG_FABRIK_FORM_EMUNDUS_REFERENT_FORM_SEND_EMAIL_TO_APPLICANT"
+					name="send_email_to_applicant"
+				   type="list"
+				   default="1">
+				<option value="1">JYES</option>
+				<option value="0">JNO</option>
+			</field>
+			<field
+				type="text"
+				name="applicant_email_model"
+				label="PLG_FABRIK_FORM_EMUNDUS_REFERENT_FORM_APPLICANT_EMAIL_MODEL"
+				description="PLG_FABRIK_FORM_EMUNDUS_REFERENT_FORM_APPLICANT_EMAIL_MODEL_DESC"
+				default="reference_form_complete"
+			/>
+			<field label="PLG_FABRIK_FORM_EMUNDUS_REFERENT_FORM_SEND_EMAIL_TO_REFERENT"
+					name="send_email_to_referent"
+				   type="list"
+				   default="1">
+				<option value="1">JYES</option>
+				<option value="0">JNO</option>
+			</field>
+			<field type="text"
+				   name="referent_email_model"
+				   label="PLG_FABRIK_FORM_EMUNDUS_REFERENT_FORM_REFERENT_EMAIL_MODEL"
+				   description="PLG_FABRIK_FORM_EMUNDUS_REFERENT_FORM_REFERENT_EMAIL_MODEL_DESC"
+				   default="reference_form_received"/>
+			<field type="text"
+				   name="other_emails"
+				   label="PLG_FABRIK_FORM_EMUNDUS_REFERENT_FORM_REFERENT_OTHER_EMAILS"
+				   default=""/>
+		</fieldset>
+	</fields>
+</form>

@@ -53,7 +53,7 @@ $msgList = $displayData['msgList'];
                     <span class="material-icons"><?php echo $icon ?></span>
                     <div>
                         <?php foreach ($msgs as $msg) : ?>
-                            <p><?php echo $msg; ?></p>
+                            <p id="alert-message-text"><?php echo $msg; ?></p>
                         <?php endforeach; ?>
                     </div>
                 <?php endif; ?>

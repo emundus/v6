@@ -8,6 +8,7 @@ class EmundusFiltersFiles extends EmundusFilters
 	private $profiles = [];
 	private $user_campaigns = [];
 	private $user_programs = [];
+    private $user_fnum_assocs = [];
 	private $config = [];
 	private $m_users = null;
 	private $menu_params = null;
@@ -28,6 +29,7 @@ class EmundusFiltersFiles extends EmundusFilters
 		$this->config         = $config;
 		$this->user_campaigns = $this->m_users->getAllCampaignsAssociatedToUser($this->user->id);
 		$this->user_programs  = $this->m_users->getUserGroupsProgrammeAssoc($this->user->id, 'jesp.id');
+        $this->setUsersFnumsAssoc();
 
 		if (!$skip)
 		{
@@ -102,6 +104,57 @@ class EmundusFiltersFiles extends EmundusFilters
 			throw new Exception('Menu params not found', 404);
 		}
 	}
+
+    private function setUsersFnumsAssoc()
+    {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('DISTINCT eua.fnum')
+            ->from($db->quoteName('#__emundus_users_assoc', 'eua'))
+            ->where('eua.user_id = ' . $db->quote($this->user->id))
+            ->andWhere('eua.action_id = 1')
+            ->andWhere('eua.r = 1');
+
+        try {
+            $db->setQuery($query);
+            $this->user_fnum_assocs = $db->loadColumn();
+        } catch (Exception $e) {
+            JLog::add('Failed to get user fnums assoc : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
+        }
+
+        if (!empty($this->user_fnum_assocs))
+        {
+            // get fnums distinct campaigns
+            $query->clear()
+                ->select('DISTINCT campaign_id')
+                ->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+                ->where('ecc.fnum IN (' . implode(',', $db->quote($this->user_fnum_assocs)) . ')');
+
+            try {
+                $db->setQuery($query);
+                $campaigns = $db->loadColumn();
+                $this->user_campaigns = array_merge($this->user_campaigns, $campaigns);
+            } catch (Exception $e) {
+                JLog::add('Failed to get user campaigns assoc : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
+            }
+
+            // get fnums distinct programs
+            $query->clear()
+                ->select('DISTINCT jesp.id')
+                ->from($db->quoteName('#__emundus_setup_programmes', 'jesp'))
+                ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esc.training') . ' = ' . $db->quoteName('jesp.code'))
+                ->where('esc.id IN (' . implode(',', $db->quote($this->user_campaigns)) . ')');
+
+            try {
+                $db->setQuery($query);
+                $programs = $db->loadColumn();
+                $this->user_programs = array_merge($this->user_programs, $programs);
+            } catch (Exception $e) {
+                JLog::add('Failed to get user programs assoc : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
+            }
+        }
+    }
 
 	private function setProfiles()
 	{
@@ -286,7 +339,7 @@ class EmundusFiltersFiles extends EmundusFilters
 	{
 		$found_from_cache = false;
 
-		if ($this->h_cache->isEnabled())
+		/*if ($this->h_cache->isEnabled())
 		{
 			$menu = JFactory::getApplication()->getMenu();
 
@@ -304,7 +357,7 @@ class EmundusFiltersFiles extends EmundusFilters
 					}
 				}
 			}
-		}
+		}*/
 
 		if (!$found_from_cache)
 		{
@@ -331,19 +384,27 @@ class EmundusFiltersFiles extends EmundusFilters
 				{
 					$position = array_search('status', $filter_names);
 
-					if ($position !== false && isset($filter_menu_values[$position]))
+					if ($position !== false && isset($filter_menu_values[$position]) && $filter_menu_values[$position] !== '')
 					{
 						$statuses = explode('|', $filter_menu_values[$position]);
-						$query->where('step IN (' . implode(',', $statuses) . ')');
+
+                        if (!empty($statuses)) {
+                            $query->where('step IN (' . implode(',', $statuses) . ')');
+                        }
 					}
 				}
 
 				$query->order('ordering ASC');
 
-				$db->setQuery($query);
-				$statuses = $db->loadObjectList();
+                try {
+                    $db->setQuery($query);
+                    $statuses = $db->loadObjectList();
+                } catch (Exception $e) {
+                    Log::add('Failed to get statuses : ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
+                    throw new Exception('Failed to get statuses ', 500);
+                }
 
-				$values = [];
+                $values = [];
 				foreach ($statuses as $status)
 				{
 					$values[] = ['value' => $status->step, 'label' => $status->value];
@@ -391,9 +452,14 @@ class EmundusFiltersFiles extends EmundusFilters
 
 					$query->order('ordering ASC');
 
-					$db->setQuery($query);
-					$programs = $db->loadAssocList();
-				}
+                    try {
+                        $db->setQuery($query);
+                        $programs = $db->loadAssocList();
+                    } catch (Exception $e) {
+                        Log::add('Failed to get programs : ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
+                        throw new Exception('Failed to get programs ', 500);
+                    }
+                }
 
 				$this->applied_filters[] = [
 					'uid'       => 'programs',
@@ -441,14 +507,19 @@ class EmundusFiltersFiles extends EmundusFilters
 
 					$query->order('id DESC');
 
-					$db->setQuery($query);
-					$campaigns = $db->loadAssocList();
-				}
+                    try {
+                        $db->setQuery($query);
+                        $campaigns = $db->loadAssocList();
+                    } catch (Exception $e) {
+                        Log::add('Failed to get campaigns : ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
+                        throw new Exception('Failed to get campaigns', 500);
+                    }
+                }
 
 				$this->applied_filters[] = [
 					'uid'       => 'campaigns',
 					'id'        => 'campaigns',
-					'label'     => Text::_('MOD_EMUNDUS_FILTERS_CAMPAIGNS'),
+					'label'     => JText::_('MOD_EMUNDUS_FILTERS_CAMPAIGNS'),
 					'type'      => 'select',
 					'values'    => $campaigns,
 					'value'     => ['all'],
@@ -541,13 +612,46 @@ class EmundusFiltersFiles extends EmundusFilters
                 $this->applied_filters[] = [
                     'uid' => 'group_assoc',
                     'id' => 'group_assoc',
-                    'label' => Text::_('MOD_EMUNDUS_FILTERS_GROUP_ASSOC'),
+                    'label' => JText::_('MOD_EMUNDUS_FILTERS_GROUP_ASSOC'),
                     'type' => 'select',
                     'values' => $groups,
                     'value' => ['all'],
                     'default' => true,
                     'available' => true,
                     'order' => $config['filter_groups_order']
+                ];
+            }
+
+            if ($config['filter_users']) {
+                $query->clear()
+                    ->select('ju.id as value, CONCAT(ju.name, " ", ju.email ) as label')
+                    ->from('#__users as ju')
+                    ->leftJoin('#__emundus_users_assoc as jeua ON ju.id = jeua.user_id')
+                    ->leftJoin('#__emundus_campaign_candidature AS jecc ON jeua.fnum = jecc.fnum')
+                    ->leftJoin('#__emundus_setup_campaigns AS jesc ON jecc.campaign_id = jesc.id')
+                    ->leftJoin('#__emundus_setup_programmes AS jesp ON jesc.training = jesp.code')
+                    ->where('jeua.action_id = 1')
+                    ->andWhere('jecc.campaign_id IN ' . '(' . implode(',', $this->user_campaigns) . ') OR jesp.id IN ' . '(' . implode(',', $this->user_programs) . ')')
+                    ->andWhere('ju.block = 0')
+                    ->group('ju.id');
+
+                try {
+                    $db->setQuery($query);
+                    $users = $db->loadAssocList();
+                } catch (Exception $e) {
+                    JLog::add('Failed to get users associated to profiles that current' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
+                }
+
+                $this->applied_filters[] = [
+                    'uid' => 'users_assoc',
+                    'id' => 'users_assoc',
+                    'label' => JText::_('MOD_EMUNDUS_FILTERS_USERS_ASSOC'),
+                    'type' => 'select',
+                    'values' => $users,
+                    'value' => ['all'],
+                    'default' => true,
+                    'available' => true,
+                    'order' => $config['filter_users_order']
                 ];
             }
 
@@ -618,7 +722,9 @@ class EmundusFiltersFiles extends EmundusFilters
 									{
 										$new_default_filter['operator'] = 'IN';
 										$new_default_filter['values']   = $this->getFabrikElementValuesFromElementId($element['id']);
-									}
+									} else if ($new_default_filter['type'] === 'text') {
+                                        $new_default_filter['operator'] = 'LIKE';
+                                    }
 								}
 								$new_default_filter['plugin'] = $element['plugin'];
 							}

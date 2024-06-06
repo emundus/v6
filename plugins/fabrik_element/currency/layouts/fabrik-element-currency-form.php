@@ -5,6 +5,9 @@ defined('JPATH_BASE') or die;
 $doc = JFactory::getDocument();
 $doc->addScript(JURI::root() . "plugins/fabrik_element/currency/assets/js/emundus_imask-min.js");
 
+if ($displayData->attributes['inputValue'] === '') {
+    $displayData->attributes['inputValue'] = 0;
+}
 ?>
 
 <div id="<?php echo $displayData->attributes['id']; ?>" class="em-flex-row fabrikSubElementContainer marginNone currencyElement <?php echo $displayData->bootstrap_class?>" >

@@ -51,10 +51,6 @@ function export_excel(fnums, letter) {
     });
     options = JSON.stringify(options);
 
-    if ($('#view').val() == 'evaluation') {
-        methode = 0;
-    }
-
     $('#data').hide();
 
     $('div').remove('#chargement');
