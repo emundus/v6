@@ -35,7 +35,6 @@ if (!empty($user) && EmundusHelperAccess::asAccessAction(1, 'r', $user->id)) {
 		}
 
 		if (!empty($m_filters)) {
-            $menu_id = 0;
 			$document 	= JFactory::getDocument();
 			$document->addScript('media/mod_emundus_filters/chunk-vendors.js');
 			$document->addStyleSheet('media/mod_emundus_filters/app.css');
@@ -45,6 +44,7 @@ if (!empty($user) && EmundusHelperAccess::asAccessAction(1, 'r', $user->id)) {
 			$applied_filters = $m_filters->getAppliedFilters();
 			$quick_search_filters = $m_filters->getQuickSearchFilters();
 
+            $menu_id = 0;
             $menu = $app->getMenu();
             if (!empty($menu))
             {
@@ -52,7 +52,7 @@ if (!empty($user) && EmundusHelperAccess::asAccessAction(1, 'r', $user->id)) {
                 $menu_id = $menu_item->id;
             }
 
-			require JModuleHelper::getLayoutPath('mod_emundus_filters', $layout);
+            require JModuleHelper::getLayoutPath('mod_emundus_filters', $layout);
 		}
 	}
 } else {

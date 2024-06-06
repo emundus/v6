@@ -134,7 +134,7 @@ export default {
   },
   mounted() {
     this.filter.operator = this.filter.operator === '=' ? 'IN' : this.filter.operator;
-    this.originalFilterValue = this.filter.value;
+    this.originalFilterValue = JSON.parse(JSON.stringify(this.filter.value));
     this.originalFilterOperator = this.filter.operator;
   },
   beforeUnmount() {
