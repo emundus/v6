@@ -237,9 +237,12 @@ class EmundusHelperFilesTest extends TestCase {
         $user_id = $this->h_sample->createSampleUser(9, 'unit-test-candidat-' . rand(0, 1000) . '@emundus.test.fr');
         $caller_params = [
             'eval' => true,
-            'custom_eval_users_filter' => 'select jeu.user_id from jos_emundus_users as jeu where jeu.user_id = '.$user_id
+            'custom_eval_users_filter' => 'select jeu.user_id from jos_emundus_users as jeu where jeu.user_id = [CURRENT_USER]'
         ];
-        $where = $this->h_files->_moduleBuildWhere([], 'files', $caller_params);
-        $this->assertSame(' AND esc.published > 0 AND jecc.status <> 0 AND (jos_emundus_evaluations.user IN (select jeu.user_id from jos_emundus_users as jeu where jeu.user_id = '.$user_id.') OR jos_emundus_evaluations.user IS NULL) AND jecc.published = \'1\'', $where['q'], 'Build where with evaluation filter should return default filters, filter on status and the given custom query');
+
+        $user = new stdClass();
+        $user->id = $user_id;
+        $where = $this->h_files->_moduleBuildWhere([], 'files', $caller_params, [], $user);
+        $this->assertSame(' AND esc.published > 0 AND jecc.status <> 0 AND (jos_emundus_evaluations.user IN (select jeu.user_id from jos_emundus_users as jeu where jeu.user_id = \''.$user_id.'\') OR jos_emundus_evaluations.user IS NULL) AND jecc.published = \'1\'', $where['q'], 'Build where with evaluation filter should return default filters, filter on status and the given custom query');
 	}
 }
