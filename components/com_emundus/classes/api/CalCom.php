@@ -26,12 +26,13 @@ class CalCom extends Api
         $this->setBaseUrl();
         $this->setClient();
         // $this->setAuth();
-        $this->setHeaders();
 
     }
 
     public function postUser($name, $time_format = 12, $week_start = "Monday", $time_zone = "Europe/Paris")
     {
+        $this->setHeadersPostUser();
+
         $query_body = json_encode([
             "email" => $name . "@emundus.com",
             "timeFormat" => $time_format,
@@ -40,7 +41,23 @@ class CalCom extends Api
             "name" => $name
         ]);
 
-        $this->post("v2/oauth-clients/7774eb2e5e7d7b4387c2c3ed31c881512d07d90bd7fcee274ec6a4132f0c0e9c/users", $query_body);
+        return $this->post("v2/oauth-clients/7774eb2e5e7d7b4387c2c3ed31c881512d07d90bd7fcee274ec6a4132f0c0e9c/users", $query_body);
+    }
+
+    public function patchUser($name, $user_id, $schedule_id, $time_format = 12, $week_start = "Monday", $time_zone = "Europe/Paris")
+    {
+        $this->setHeadersPostUser();
+
+        $query_body = json_encode([
+            "email" => $name . "@emundus.com",
+            "timeFormat" => $time_format,
+            "weekStart" => $week_start,
+            "timeZone" => $time_zone,
+            "name" => $name,
+            "defaultScheduleId" => (int)$schedule_id
+        ]);
+
+        return $this->patch("v2/oauth-clients/7774eb2e5e7d7b4387c2c3ed31c881512d07d90bd7fcee274ec6a4132f0c0e9c/users/" . $user_id, $query_body);
     }
 
     public function setBaseUrl(): void
@@ -48,7 +65,7 @@ class CalCom extends Api
         $this->baseUrl = "http://192.168.1.72:3004";
     }
 
-    public function setHeaders(): void
+    public function setHeadersPostUser(): void
     {
         $this->headers = array(
             'Content-Type' => "application/json",
@@ -56,14 +73,73 @@ class CalCom extends Api
         );
     }
 
-    public function postSchedule($name, $time_zone="Europe/Paris")
+    public function setHeadersPostSchedule($access_token): void
     {
-        // dans availabilities, mettre days avec tous les jours
+        $this->headers = array(
+            'accept' => "application/json",
+            'Content-Type' => "application/json",
+            'Authorization' => "Bearer " . $access_token
+        );
+
     }
 
-    public function postDateOverlay($schedule_id, $name, $begin_date, $end_date, $time_zone="Europe/Paris")
+    public function postSchedule($access_token, $name="Default Schedule Name", $time_zone="Europe/Paris")
     {
-        // Selon la date renvoyée, les mettre dans datesOverrides start et end
+        $this->setHeadersPostSchedule($access_token);
+
+        $query_body = json_encode([
+            "name" => $name,
+            "timeZone" => $time_zone,
+            "availabilities" => [
+                [
+                    "days" => [],
+                    "startTime" => "1900-06-06T08:46:13.823Z",
+                    "endTime" => "1900-06-06T08:46:13.823Z"
+                ]
+            ],
+            "isDefault" => true
+        ]);
+
+        return $this->post("v2/schedules", $query_body);
+    }
+
+    public function patchSchedule($access_token, $schedule_id, $start_date, $end_date, $name="Default Schedule Name", $time_zone="Europe/Paris")
+    {
+        $this->setHeadersPostSchedule($access_token);
+
+        $end_date_iso = date('Y-m-d', strtotime($end_date)) . "T23:59:00.000Z";
+
+        $query_body = json_encode([
+            "timeZone" => $time_zone,
+            "name" => $name,
+            "isDefault" => true,
+            "dateOverrides" => [
+
+            ]
+        ]);
+
+        $query_body_array = json_decode($query_body, true);
+
+        $current_date = strtotime($start_date);
+        while ($current_date <= strtotime($end_date)) {
+            $current_iso_date = date('Y-m-d', $current_date) . "T23:59:00.000Z";
+            $query_body_array['dateOverrides'][] = [
+                "start" => $current_iso_date,
+                "end" => $end_date_iso
+            ];
+            $current_date = strtotime('+1 day', $current_date);
+        }
+
+        $query_body = json_encode($query_body_array);
+
+        return $this->patch("v2/schedules/" . $schedule_id, $query_body);
+    }
+
+    public function deleteSchedule($access_token, $schedule_id)
+    {
+        $this->setHeadersPostSchedule($access_token);
+
+        return $this->delete("v2/schedules/" . $schedule_id);
     }
 
     public function refreshingAccessToken($user_id)

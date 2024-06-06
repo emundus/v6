@@ -45,6 +45,9 @@ class PlgFabrik_FormCalcom extends plgFabrik_Form
 	 */
 	protected $URLfield = '';
 
+    protected $user_id;
+    protected $availability_id;
+
 	/**
 	 * Get an element name
 	 *
@@ -90,20 +93,53 @@ class PlgFabrik_FormCalcom extends plgFabrik_Form
 	/**
 	 * Main script.
 	 *
-	 * @return  bool
 	 * @throws Exception
 	 */
-    public function onAfterProcess()
+    public function onBeforeProcess()
     {
-        $w = new CalCom();
         $app         = Factory::getApplication();
-        $id      = $app->input->getString("date_id");
-        $w->postUser($id);
+        $id = $app->input->get('table_setup_availabilities___id');
 
+        $db       = Factory::getDbo();
+        $query    = $db->getQuery(true);
 
-        return true;
+        $query->select('*')
+            ->from($db->quoteName('table_setup_availabilities'))
+            ->where($db->quoteName('id') . ' = ' . $db->quote($id));
+
+            $db->setQuery($query);
+            $request = $db->loadObject();
+
+        $already_exists = empty($request);
+
+        $w = new CalCom();
+        $name = $app->input->get('table_setup_availabilities___Nom') ?: '';
+        $start_date = $app->input->get('table_setup_availabilities___date_debut') ?: '';
+        $end_date = $app->input->get('table_setup_availabilities___date_fin') ?: '';
+
+        if($already_exists)
+        {
+            $user = $w->postUser($name);
+            $w->deleteSchedule($user['data']->data->accessToken, $user['data']->data->user->defaultScheduleId);
+            $schedule = $w->postSchedule($user['data']->data->accessToken);
+            $w->patchSchedule($user['data']->data->accessToken, $schedule['data']->data->id, $start_date, $end_date);
+            $this->user_id = $user['data']->data->user->id;
+            $this->availability_id = $schedule['data']->data->id;
+        }
+        else
+        {
+            $w->patchUser($name, $request->id_user, $request->id_availability);
+            $this->user_id = $request->id_user;
+            $this->availability_id = $request->id_availability;
+        }
+
     }
 
-
+    public function onBeforeStore()
+    {
+        $formModel = $this->getModel();
+        $formModel->updateFormData('table_setup_availabilities___id_availability', $this->availability_id);
+        $formModel->updateFormData('table_setup_availabilities___id_user', $this->user_id);
+    }
 
 }
