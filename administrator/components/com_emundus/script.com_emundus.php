@@ -4589,6 +4589,8 @@ if(in_array($applicant,$exceptions)){
 					$inserted = (object)$inserted;
 					$db->insertObject('jos_fabrik_cron', $inserted);
 				}
+
+				EmundusHelperUpdate::installExtension('plg_fabrik_element_iban', 'iban', '{"name":"plg_fabrik_element_iban","type":"plugin","creationDate":"March 2024","author":"Media A-Team, Inc.","copyright":"Copyright (C) 2005-2024 Media A-Team, Inc. - All rights reserved.","authorEmail":"brice.hubinet@emundus.fr","authorUrl":"www.emundus.fr","version":"4.0Zeta","description":"PLG_ELEMENT_IBAN_DESCRIPTION","group":"","filename":"iban"}', 'plugin', 1, 'fabrik_element');
 			}
 		}
 
