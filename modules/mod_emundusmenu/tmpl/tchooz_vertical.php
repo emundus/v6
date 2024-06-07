@@ -481,7 +481,7 @@ defined('_JEXEC') or die;
     const originalMargin = parseInt(jQuery("[id^=tooltip-]:first").css('margin-top'),10);
 
     function enableTooltip(menu){
-        if(jQuery(".image-title").css("display") != 'none') {
+        if(jQuery(".grey-navbar-icons").css("opacity") != '0') {
             if(typeof jQuery("#sublevel_list_" + menu)[0] != 'undefined'){
                 jQuery("#tooltip-" + menu).css('margin-left', '200px');
                 jQuery("#tooltip-" + menu).css('display', 'block');
