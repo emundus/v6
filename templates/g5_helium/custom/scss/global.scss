@@ -4337,6 +4337,12 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
 
 /******************************* RESPONSIVE ***********************************/
 
+@media screen and (min-width: 48rem) and (max-width: 59.99rem) {
+  .gantry #g-container-main .g-container {
+    width: 45rem;
+  }
+}
+
 @media screen and (min-width: 1367px) and (max-width: 1919px)  {
   .view-form.com_fabrik:not(.applicant-form):not(.mon-profil):not(.view-registration) #g-container-main .g-container {
     max-width: 70%;
