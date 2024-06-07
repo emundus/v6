@@ -9,24 +9,39 @@
 
 namespace classes\api;
 
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Utils;
-use JComponentHelper;
-use JFactory;
-use JLog;
-
 defined('_JEXEC') or die('Restricted access');
 class CalCom extends Api
 {
 
-    public function __construct($entities = array())
+    public function __construct()
     {
         parent::__construct();
 
         $this->setBaseUrl();
         $this->setClient();
         // $this->setAuth();
+        $this->platform_oauth_clientId = "7774eb2e5e7d7b4387c2c3ed31c881512d07d90bd7fcee274ec6a4132f0c0e9c";
+        $this->platform_oauth_clientSecret = "e273621869bd693cfa186b790a46ad84880776dea895b905b299917642b97db6";
+        $this->api_key = "cal_edcfa25c9fae2e8d476cb6c02c4dc265";
 
+    }
+
+    public function setBaseUrl(): void
+    {
+        $this->baseUrl = "http://192.168.1.72:3004";
+    }
+
+    public function setBaseUrlFirstVersionApi()
+    {
+        $this->baseUrl = "http://192.168.1.72:3003";
+    }
+
+    public function setHeadersPostUser(): void
+    {
+        $this->headers = array(
+            'Content-Type' => "application/json",
+            'x-cal-secret-key' => $this->platform_oauth_clientSecret
+        );
     }
 
     public function postUser($name, $time_format = 12, $week_start = "Monday", $time_zone = "Europe/Paris")
@@ -41,7 +56,7 @@ class CalCom extends Api
             "name" => $name
         ]);
 
-        return $this->post("v2/oauth-clients/7774eb2e5e7d7b4387c2c3ed31c881512d07d90bd7fcee274ec6a4132f0c0e9c/users", $query_body);
+        return $this->post("v2/oauth-clients/" . $this->platform_oauth_clientId . "/users", $query_body);
     }
 
     public function patchUser($name, $user_id, $schedule_id, $time_format = 12, $week_start = "Monday", $time_zone = "Europe/Paris")
@@ -57,28 +72,17 @@ class CalCom extends Api
             "defaultScheduleId" => (int)$schedule_id
         ]);
 
-        return $this->patch("v2/oauth-clients/7774eb2e5e7d7b4387c2c3ed31c881512d07d90bd7fcee274ec6a4132f0c0e9c/users/" . $user_id, $query_body);
+        return $this->patch("v2/oauth-clients/" . $this->platform_oauth_clientId . "/users/" . $user_id, $query_body);
     }
 
-    public function setBaseUrl(): void
-    {
-        $this->baseUrl = "http://192.168.1.72:3004";
-    }
-
-    public function setHeadersPostUser(): void
-    {
-        $this->headers = array(
-            'Content-Type' => "application/json",
-            'x-cal-secret-key' => "e273621869bd693cfa186b790a46ad84880776dea895b905b299917642b97db6"
-        );
-    }
 
     public function setHeadersPostSchedule($access_token): void
     {
         $this->headers = array(
             'accept' => "application/json",
             'Content-Type' => "application/json",
-            'Authorization' => "Bearer " . $access_token
+            'Authorization' => "Bearer " . $access_token,
+            'x-cal-secret-key' => $this->platform_oauth_clientSecret
         );
 
     }
@@ -93,8 +97,8 @@ class CalCom extends Api
             "availabilities" => [
                 [
                     "days" => [],
-                    "startTime" => "1900-06-06T08:46:13.823Z",
-                    "endTime" => "1900-06-06T08:46:13.823Z"
+                    "startTime" => "1900-06-06T00:01:00.000Z",
+                    "endTime" => "1900-07-06T23:59:00.000Z",
                 ]
             ],
             "isDefault" => true
@@ -107,7 +111,7 @@ class CalCom extends Api
     {
         $this->setHeadersPostSchedule($access_token);
 
-        $end_date_iso = date('Y-m-d', strtotime($end_date)) . "T23:59:00.000Z";
+        $end_date_iso = date('Y-m-d\TH:i', strtotime($end_date)) . ':00.000Z';
 
         $query_body = json_encode([
             "timeZone" => $time_zone,
@@ -122,7 +126,7 @@ class CalCom extends Api
 
         $current_date = strtotime($start_date);
         while ($current_date <= strtotime($end_date)) {
-            $current_iso_date = date('Y-m-d', $current_date) . "T23:59:00.000Z";
+            $current_iso_date = date('Y-m-d', $current_date) . "T" . date('H:i', strtotime($start_date)). ":00.000Z";
             $query_body_array['dateOverrides'][] = [
                 "start" => $current_iso_date,
                 "end" => $end_date_iso
@@ -142,304 +146,42 @@ class CalCom extends Api
         return $this->delete("v2/schedules/" . $schedule_id);
     }
 
+    public function postEventType($length, $title, $user_id)
+    {
+        $this->setBaseUrlFirstVersionApi();
+
+        $slug = $title;
+        $slug = str_replace(' ', '_', $slug);
+        $slug = htmlentities($slug, ENT_COMPAT, "UTF-8");
+        $slug = preg_replace('/&([a-zA-Z])(uml|acute|grave|circ|tilde|cedil);/', '$1',$slug);
+        $slug= html_entity_decode($slug);
+        $slug = preg_replace('/[^\x20-\x7E]/','', $slug);
+        $slug = preg_replace('/[^a-zA-Z0-9_]/', '', $slug);
+        $slug = strtolower($slug);
+
+        $query_body = json_encode([
+            "length" => (int)$length,
+            "slug" => $slug . "_event",
+            "title" => $title . " Event",
+            "userId" => (int)$user_id
+
+        ]);
+
+        return $this->post("event-types?apiKey=" . $this->api_key, $query_body);
+    }
+
+    public function deleteEventType($event_type_id)
+    {
+        $this->setBaseUrlFirstVersionApi();
+
+        return $this->delete("event-types/" . $event_type_id . "?apiKey=" . $this->api_key);
+    }
+
     public function refreshingAccessToken($user_id)
     {
-        // Reprendre ce qu'il y a dans le fichier Availability.tsx
+        $this->setHeadersPostUser();
+
+        return $this->post("/v2/oauth-clients/" . $this->platform_oauth_clientId . "/users/" . $user_id . "/force-refresh");
     }
 
-    public function setAuth(): void
-    {
-        $config = JComponentHelper::getParams('com_emundus');
-
-        $this->auth['app_token'] = $config->get('ixparapheur_api_app_token', '');
-    }
-
-    public function getNatures($name = null): array
-    {
-        $natures = $this->get('nature');
-
-        if($natures['status'] !== 200)
-        {
-            return array();
-        }
-
-        $natures = $natures['data']->payload;
-        if(!empty($name)) {
-            $natures = array_filter($natures, function($nature) use ($name) {
-                return $nature->nom === $name;
-            });
-        }
-
-        return array_values($natures);
-    }
-
-    public function getRedacteursNature($nature, $email = null): array
-    {
-        $redacteurs = $this->get('nature/'.$nature.'/redacteur');
-
-        if($redacteurs['status'] !== 200)
-        {
-            return array();
-        }
-
-        $redacteurs = $redacteurs['data']->payload;
-        if(!empty($email)) {
-            $redacteurs = array_filter($redacteurs, function($redacteur) use ($email) {
-                return $redacteur->email === $email;
-            });
-        }
-
-        return $redacteurs;
-    }
-
-    public function getViseursNature($nature, $email = null): array
-    {
-        $viseurs = $this->get('nature/'.$nature.'/viseur');
-
-        if($viseurs['status'] !== 200)
-        {
-            return array();
-        }
-
-        $viseurs = $viseurs['data']->payload;
-        if(!empty($email)) {
-            $viseurs = array_filter($viseurs, function($viseur) use ($email) {
-                return $viseur->email === $email;
-            });
-        }
-
-        return $viseurs;
-    }
-
-    public function getSignatairesNature($nature, $email = null): array
-    {
-        $signataires = $this->get('nature/'.$nature.'/signataire');
-
-        if($signataires['status'] !== 200)
-        {
-            return array();
-        }
-
-        $signataires = $signataires['data']->payload;
-        if(!empty($email)) {
-            $signataires = array_filter($signataires, function($signataire) use ($email) {
-                return $signataire->email === $email;
-            });
-        }
-
-        return $signataires;
-    }
-
-    public function getServices($name = null, $user = null): array
-    {
-        $route = 'service';
-        if(!empty($user)) {
-            $route = 'service?idUtilisateur='.$user;
-        }
-        $services = $this->get($route);
-
-        if($services['status'] !== 200)
-        {
-            return array();
-        }
-
-        $services = $services['data']->payload;
-        if(!empty($name)) {
-            $services = array_filter($services, function($service) use ($name) {
-                return $service->nom === $name;
-            });
-        }
-
-        return $services;
-    }
-
-    public function getFonctions($name = null): array
-    {
-        $fonctions = $this->get('fonction');
-
-        if($fonctions['status'] !== 200)
-        {
-            return array();
-        }
-
-        $fonctions = $fonctions['data']->payload;
-        if(!empty($name)) {
-            $fonctions = array_filter($fonctions, function($fonction) use ($name) {
-                return $fonction->nom === $name;
-            });
-        }
-
-        return $fonctions;
-    }
-
-    public function getUtilisateurs($email = null): array
-    {
-        $users = $this->get('utilisateur');
-
-        if($users['status'] !== 200)
-        {
-            return array();
-        }
-
-        $users = $users['data']->payload;
-        if(!empty($email)) {
-            $users = array_filter($users, function($user) use ($email) {
-                return $user->email === $email;
-            });
-        }
-
-        return array_values($users);
-    }
-
-    public function getModelesCircuits($nature, $service, $name = null): array
-    {
-        $circuits = $this->get('circuit/'.$nature.'/'.$service);
-
-        if($circuits['status'] !== 200)
-        {
-            return array();
-        }
-
-        $circuits = $circuits['data']->payload;
-        if(!empty($name)) {
-            $circuits = array_filter($circuits, function($circuit) use ($name) {
-                return $circuit->nom === $name;
-            });
-        }
-
-        return $circuits;
-    }
-
-    public function createDossier($dossier, $transmettre = false): array
-    {
-        if(empty($dossier['nature']) || (empty($dossier['circuit']) && empty($dossier['etapes'])))
-        {
-            return array();
-        }
-
-        $datas = array_merge($this->default_values_dossier, $dossier);
-
-        return $this->post('dossier?transmettre='.$transmettre, json_encode($datas));
-    }
-
-    public function updateDossier($idDossier,$datas): array
-    {
-        return $this->patch('dossier/'.$idDossier, json_encode($datas));
-    }
-
-    //TODO: Add filters parameter to get dossier by user, service, state
-    public function getDossier($idDossier): array
-    {
-        return $this->get('dossier/'.$idDossier);
-    }
-
-    public function actionDossier($idDossier, $action = 'transmettre'): array
-    {
-        return $this->post('dossier/'.$idDossier.'/'.$action,json_encode(array()));
-    }
-
-    public function addDocument($idDossier, $datas, $filename, $filepath): array
-    {
-        $response = ['status' => 500, 'message' => '', 'data' => ''];
-
-        $copied = copy($filepath,JPATH_SITE.'/tmp/'.$filename);
-
-        if($copied) {
-            $params = [
-                'multipart' => [
-                    [
-                        'name'     => 'fichier',
-                        'contents' => \GuzzleHttp\Psr7\Utils::tryFopen(JPATH_SITE . '/tmp/' . $filename, 'r'),
-                        'filename' => $filepath,
-                        'headers'  => [
-                            'Content-Type' => '<Content-type header>'
-                        ]
-                    ],
-                    [
-                        'name'     => 'type',
-                        'contents' => $datas['type']
-                    ],
-                    [
-                        'name'     => 'estASigner',
-                        'contents' => $datas['estASigner']
-                    ],
-                    [
-                        'name'     => 'estPublique',
-                        'contents' => $datas['estPublique']
-                    ],
-                ]
-            ];
-
-            $response = $this->postFormData('document/' . $idDossier, $params);
-
-            if($response['status'] === 200) {
-                if($response['data']->message === 'Ce dossier possède déjà un document principal') {
-                    //TODO: Update document content by his id
-                }
-
-                unlink(JPATH_SITE . '/tmp/' . $filename);
-            }
-        }
-
-        return $response;
-    }
-
-    public function deleteDocument($idDossier): array
-    {
-        return $this->delete('document/'.$idDossier);
-    }
-
-    public function getDocumentContent($idDocument, $path): array
-    {
-        $response = ['status' => 200, 'message' => '', 'data' => ''];
-
-        $url = 'document/contenu/'.$idDocument;
-        $params = array();
-
-        try
-        {
-            $url_params = http_build_query($params);
-            $url = !empty($url_params) ? $url . '?' . $url_params : $url;
-            $request = $this->client->get($this->baseUrl.'/'.$url, ['headers' => $this->getHeaders(),'sink' => $path]);
-            $response['status'] = $request->getStatusCode();
-            $response['data'] = json_decode($request->getBody());
-        }
-        catch (\Exception $e)
-        {
-            if ($this->getRetry()) {
-                $this->setRetry(false);
-                $this->get($url, $params);
-            }
-
-            JLog::add('[GET] ' . $e->getMessage(), JLog::ERROR, 'com_emundus.api');
-            $response['status'] = $e->getCode();
-            $response['message'] = $e->getMessage();
-        }
-
-        return $response;
-    }
-
-    public function updateDocumentContent($idDocument,$file): array
-    {
-        return $this->patch('document/contenu/'.$idDocument,json_encode($file));
-    }
-
-    private function postFormData($url, $params = array())
-    {
-        $response = ['status' => 200, 'message' => '', 'data' => ''];
-
-        try {
-            $request = new Request('POST', $this->baseUrl.'/'.$url, $this->getHeaders());
-            $res = $this->client->sendAsync($request, $params)->wait();
-
-            $response['status']         = $res->getStatusCode();
-            $response['data']         = json_decode($res->getBody());
-        } catch (\Exception $e) {
-            JLog::add('[POST-multipart] : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.ixparapheur');
-            $response['status'] = $e->getCode();
-            $response['message'] = $e->getMessage();
-        }
-
-        return $response;
-    }
 }

@@ -46,7 +46,8 @@ class PlgFabrik_FormCalcom extends plgFabrik_Form
 	protected $URLfield = '';
 
     protected $user_id;
-    protected $availability_id;
+    protected $schedule_id;
+    protected $event_id;
 
 	/**
 	 * Get an element name
@@ -97,49 +98,53 @@ class PlgFabrik_FormCalcom extends plgFabrik_Form
 	 */
     public function onBeforeProcess()
     {
-        $app         = Factory::getApplication();
-        $id = $app->input->get('table_setup_availabilities___id');
+        $w          = new CalCom();
+        $app        = Factory::getApplication();
+        $id         = $app->input->get('jos_emundus_setup_availabilities___id');
+        $name       = $app->input->get('jos_emundus_setup_availabilities___name') ?: '';
+        $start_date = $app->input->get('jos_emundus_setup_availabilities___start_date') ?: '';
+        $end_date   = $app->input->get('jos_emundus_setup_availabilities___end_date') ?: '';
+        $length     = $app->input->get('jos_emundus_setup_availabilities___event_length') ?: '';
 
-        $db       = Factory::getDbo();
-        $query    = $db->getQuery(true);
+        $db         = Factory::getDbo();
+        $query       = $db->getQuery(true);
 
         $query->select('*')
-            ->from($db->quoteName('table_setup_availabilities'))
+            ->from($db->quoteName('jos_emundus_setup_availabilities'))
             ->where($db->quoteName('id') . ' = ' . $db->quote($id));
 
             $db->setQuery($query);
             $request = $db->loadObject();
 
-        $already_exists = empty($request);
-
-        $w = new CalCom();
-        $name = $app->input->get('table_setup_availabilities___Nom') ?: '';
-        $start_date = $app->input->get('table_setup_availabilities___date_debut') ?: '';
-        $end_date = $app->input->get('table_setup_availabilities___date_fin') ?: '';
-
-        if($already_exists)
+        if(!empty($request))
+        {
+            $access_token = $w->refreshingAccessToken($request->user_id);
+            $user = $w->patchUser($name, $request->user_id, $request->schedule_id);
+            $w->patchSchedule($access_token['data']->data->accessToken, $request->schedule_id, $start_date, $end_date);
+            $w->deleteEventType($request->event_id);
+            $event_type = $w->postEventType($length, $name, $user['data']->data->id);
+            $this->user_id = $request->user_id;
+            $this->schedule_id = $request->schedule_id;
+        }
+        else
         {
             $user = $w->postUser($name);
             $w->deleteSchedule($user['data']->data->accessToken, $user['data']->data->user->defaultScheduleId);
             $schedule = $w->postSchedule($user['data']->data->accessToken);
             $w->patchSchedule($user['data']->data->accessToken, $schedule['data']->data->id, $start_date, $end_date);
+            $event_type = $w->postEventType($length, $name, $user['data']->data->user->id);
             $this->user_id = $user['data']->data->user->id;
-            $this->availability_id = $schedule['data']->data->id;
+            $this->schedule_id = $schedule['data']->data->id;
         }
-        else
-        {
-            $w->patchUser($name, $request->id_user, $request->id_availability);
-            $this->user_id = $request->id_user;
-            $this->availability_id = $request->id_availability;
-        }
-
+        $this->event_id = $event_type['data']->event_type->id;
     }
 
     public function onBeforeStore()
     {
         $formModel = $this->getModel();
-        $formModel->updateFormData('table_setup_availabilities___id_availability', $this->availability_id);
-        $formModel->updateFormData('table_setup_availabilities___id_user', $this->user_id);
+        $formModel->updateFormData('jos_emundus_setup_availabilities___schedule_id', $this->schedule_id);
+        $formModel->updateFormData('jos_emundus_setup_availabilities___user_id', $this->user_id);
+        $formModel->updateFormData('jos_emundus_setup_availabilities___event_id', $this->event_id);
     }
 
 }
