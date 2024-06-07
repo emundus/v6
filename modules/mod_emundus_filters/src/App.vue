@@ -12,7 +12,7 @@
 						  <span class="material-icons-outlined em-pointer" @click="removeGlobalSearchValue(value.value, value.scope)">clear</span>
 					  </div>
 				  </div>
-				  <input id="current-global-search" ref="globalSearchInput" class="em-border-radius-8" v-model="currentGlobalSearch" type="text" @keyup.enter="(e) => {this.onGlobalSearchChange(e, 'everywhere')}" :placeholder="globalSearchPlaceholder">
+				  <input id="current-global-search" ref="globalSearchInput" class="em-border-radius-8" v-model="currentGlobalSearch" type="text" @keyup.enter="(e) => {this.onGlobalSearchChange(e, 'everywhere')}" @paste="onPasteQuickSearch" :placeholder="globalSearchPlaceholder">
 			  </div>
 			  <ul id="select-scopes" class="em-w-100 em-w-100 em-border-radius-8 em-white-bg em-border-neutral-400 em-box-shadow" :class="{'hidden': currentGlobalSearch.length < 1}">
 				  <li v-for="option in globalSearchScopes" :key="option.value" @click="(e) => {this.onGlobalSearchChange(e, option.value)}" class="em-pointer global-search-scope">
@@ -374,13 +374,26 @@ export default {
 			event.preventDefault();
 
 			if (this.currentGlobalSearch.length > 0) {
-				// if the current search is already in the list, no need to add it again
-				const foundSearch = this.globalSearch.find((search) => search.value === this.currentGlobalSearch && search.scope === scope);
+        // if currentGlobalSearch contains ; then split it and add each value as a new search
+        if (this.currentGlobalSearch.includes(';')) {
+          const searches = this.currentGlobalSearch.split(';');
+          searches.forEach((search) => {
+            const foundSearch = this.globalSearch.find((existingSearch) => existingSearch.value === search && existingSearch.scope === scope);
 
-				if (!foundSearch) {
-					this.globalSearch.push({value: this.currentGlobalSearch, scope: scope});
-					this.applyFilters();
-				}
+            if (!foundSearch) {
+              this.globalSearch.push({value: search, scope: scope});
+              this.applyFilters();
+            }
+          });
+        } else {
+          // if the current search is already in the list, no need to add it again
+          const foundSearch = this.globalSearch.find((search) => search.value === this.currentGlobalSearch && search.scope === scope);
+
+          if (!foundSearch) {
+            this.globalSearch.push({value: this.currentGlobalSearch, scope: scope});
+            this.applyFilters();
+          }
+        }
 			}
 
 			this.currentGlobalSearch = '';
