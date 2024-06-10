@@ -10,6 +10,7 @@
 namespace classes\api;
 
 use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Exception\ClientException;
 use JLog;
 use JComponentHelper;
 
@@ -187,7 +188,7 @@ class Api
 			$response['status']         = $request->getStatusCode();
 			$response['data']         = json_decode($request->getBody());
 		}
-		catch (\Exception $e)
+		catch (ClientException $e)
 		{
 			if ($this->getRetry()) {
 				$this->setRetry(false);
@@ -197,6 +198,7 @@ class Api
 			JLog::add('[POST] ' . $e->getMessage(), JLog::ERROR, 'com_emundus.api');
 			$response['status'] = $e->getCode();
 			$response['message'] = $e->getMessage();
+			$response['data'] = json_decode($e->getResponse()->getBody()->getContents());
 		}
 
 		return $response;
