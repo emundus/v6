@@ -4317,6 +4317,28 @@ if(in_array($applicant,$exceptions)){
 				$db->setQuery($query);
 				$db->execute();
 			}
+
+			if (version_compare($cache_version, '1.38.12', '<=') || $firstrun) {
+				$query->clear()
+					->select('id,params')
+					->from($db->quoteName('#__fabrik_forms'))
+					->where($db->quoteName('label') . ' LIKE ' . $db->quote('FORM_REGISTRATION'));
+				$db->setQuery($query);
+				$registration_form = $db->loadObject();
+
+				if(!empty($registration_form))
+				{
+					$params = json_decode($registration_form->params, true);
+					$params['juser_auto_login'] = ["1"];
+
+					$query->clear()
+						->update($db->quoteName('#__fabrik_forms'))
+						->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+						->where($db->quoteName('id') . ' = ' . $db->quote($registration_form->id));
+					$db->setQuery($query);
+					$db->execute();
+				}	
+			}
 		}
 
 		return $succeed;
@@ -4446,6 +4468,28 @@ if(in_array($applicant,$exceptions)){
 		if (!$payment_activated) {
 			EmundusHelperUpdate::insertIntoFile(JPATH_ROOT . '/.htaccess', "php_value session.cookie_samesite Lax" . PHP_EOL);
 		}
+
+		// We check at each update that no password fields are stored in the database
+		$query->clear()
+			->select('id,params')
+			->from($db->quoteName('#__fabrik_elements'))
+			->where('json_valid(`params`)')
+			->where('json_extract(`params`, "$.password") = "1"');
+		$db->setQuery($query);
+		$password_elements = $db->loadObjectList();
+
+		foreach ($password_elements as $password_element) {
+			$params = json_decode($password_element->params, true);
+			$params['store_in_db'] = "0";
+
+			$query->clear()
+				->update($db->quoteName('#__fabrik_elements'))
+				->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+				->where($db->quoteName('id') . ' = ' . $db->quote($password_element->id));
+			$db->setQuery($query);
+			$db->execute();
+		}
+
 
 		return true;
 	}
