@@ -4308,6 +4308,16 @@ if(in_array($applicant,$exceptions)){
                 }
             }
 
+			if (version_compare($cache_version, '1.38.11', '<=') || $firstrun) {
+				$query->clear()
+					->update($db->quoteName('#__extensions'))
+					->set($db->quoteName('enabled') . ' = 0')
+					->where($db->quoteName('element') . ' LIKE ' . $db->quote('com_contact'))
+					->where($db->quoteName('type') . ' LIKE ' . $db->quote('component'));
+				$db->setQuery($query);
+				$db->execute();
+			}
+
             if (version_compare($cache_version, '1.39.0', '<=') || $firstrun) {
                 $succeed['get_attachments_for_profile_event_added'] = EmundusHelperUpdate::addCustomEvents([
                     ['label' => 'onAfterGetAttachmentsForProfile', 'category' => 'Files']
