@@ -130,6 +130,7 @@
 					<field showon="mod_em_campaign_show_filters:1" type="checkboxes" name="mod_em_campaign_show_filters_list" label="MOD_EM_CAMPAIGN_SHOW_FILTERS_LIST">
 						<option checked="true" value="programme">MOD_EM_CAMPAIGN_SHOW_FILTERS_LIST_PROGRAMME</option>
 						<option checked="false" value="category">MOD_EM_CAMPAIGN_SHOW_FILTERS_LIST_CATEGORY</option>
+						<option checked="false" value="reseau">MOD_EM_CAMPAIGN_SHOW_FILTERS_LIST_RESEAU</option>
 					</field>
 					<field showon="mod_em_campaign_layout:default_tchooz" type="list" name="mod_em_campaign_show_sort" label="MOD_EM_CAMPAIGN_SHOW_SORT" default="1">
 						<option value="0">JNO</option>

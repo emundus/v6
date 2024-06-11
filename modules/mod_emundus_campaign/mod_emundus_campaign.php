@@ -117,6 +117,7 @@ if($user->guest || in_array($e_user->profile,$app_prof))
     $searchword      = $app->input->getString('searchword', null);
     $codes           = $app->input->getString('code', null);
     $categories_filt = $app->input->getString('category', null);
+    $reseaux_filt    = $app->input->getString('reseau', null);
 
     // this verification is used to prevent SQL injection
     if (!empty($order_date) && in_array($order_date, ['start_date', 'end_date', 'formation_start', 'formation_end'])) {
@@ -154,12 +155,21 @@ if($user->guest || in_array($e_user->profile,$app_prof))
     {
         $session->clear('category');
     }
+    if (isset($reseaux_filt) && !empty($reseaux_filt))
+    {
+        $session->set('reseau', $reseaux_filt);
+    }
+    elseif (empty($reseaux_filt))
+    {
+        $session->clear('reseau');
+    }
 
     $order           = $session->get('order_date');
     $ordertime       = $session->get('order_time');
     $group_by        = $session->get('group_by');
     $codes           = $session->get('code');
     $categories_filt = $session->get('category');
+    $reseaux_filt    = $session->get('reseau');
 
     $program_array = [];
     if (!empty($program_code))
@@ -186,6 +196,16 @@ if($user->guest || in_array($e_user->profile,$app_prof))
             }
         }
     }
+
+    if (in_array('reseau', $mod_em_campaign_show_filters_list))
+    {
+        $reseaux = [
+            1 => JText::_('MOD_EM_CAMPAIGN_RESEAUX'),
+            2 => JText::_('MOD_EM_CAMPAIGN_HORS_RESEAUX'),
+            3 => JText::_('MOD_EM_CAMPAIGN_BOTH_RESEAUX')
+        ];
+    }
+
 
     $programs_codes = [];
     foreach ($programs as $program)
@@ -218,6 +238,10 @@ if($user->guest || in_array($e_user->profile,$app_prof))
     if (!empty($categories_filt))
     {
         $condition .= ' AND pr.programmes IN (' . implode(',', $db->quote(explode(',', $categories_filt))) . ')';
+    }
+    if (!empty($reseaux_filt))
+    {
+        $condition .= ' AND ca.reseaux IN (' . implode(',', $db->quote(explode(',', $reseaux_filt))) . ')';
     }
 
     // Get single campaign
