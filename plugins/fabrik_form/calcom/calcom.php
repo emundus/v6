@@ -33,47 +33,47 @@ defined('_JEXEC') or die('Restricted access');
 class PlgFabrik_FormCalcom extends plgFabrik_Form
 {
 
-	/**
-	 * Get an element name
-	 *
-	 * @param   string  $pname  Params property name to look up
-	 * @param   bool    $short  Short (true) or full (false) element name, default false/full
-	 *
-	 * @return    string    element full name
-	 */
-	public function getFieldName($pname, $short = false)
-	{
-		$params = $this->getParams();
+    /**
+     * Get an element name
+     *
+     * @param   string  $pname  Params property name to look up
+     * @param   bool    $short  Short (true) or full (false) element name, default false/full
+     *
+     * @return    string    element full name
+     */
+    public function getFieldName($pname, $short = false)
+    {
+        $params = $this->getParams();
 
-		if ($params->get($pname) == '')
-		{
-			return '';
-		}
+        if ($params->get($pname) == '')
+        {
+            return '';
+        }
 
-		$elementModel = FabrikWorker::getPluginManager()->getElementPlugin($params->get($pname));
+        $elementModel = FabrikWorker::getPluginManager()->getElementPlugin($params->get($pname));
 
-		return $short ? $elementModel->getElement()->name : $elementModel->getFullName();
-	}
+        return $short ? $elementModel->getElement()->name : $elementModel->getFullName();
+    }
 
-	/**
-	 * Get the fields value regardless of whether its in joined data or no
-	 *
-	 * @param   string  $pname    Params property name to get the value for
-	 * @param   mixed   $default  Default value
-	 *
-	 * @return  mixed  value
-	 */
-	public function getParam($pname, $default = '')
-	{
-		$params = $this->getParams();
+    /**
+     * Get the fields value regardless of whether its in joined data or no
+     *
+     * @param   string  $pname    Params property name to get the value for
+     * @param   mixed   $default  Default value
+     *
+     * @return  mixed  value
+     */
+    public function getParam($pname, $default = '')
+    {
+        $params = $this->getParams();
 
-		if ($params->get($pname) == '')
-		{
-			return $default;
-		}
+        if ($params->get($pname) == '')
+        {
+            return $default;
+        }
 
-		return $params->get($pname);
-	}
+        return $params->get($pname);
+    }
 
     /**
      * The event which runs before storing (saving) data to the database
@@ -82,14 +82,14 @@ class PlgFabrik_FormCalcom extends plgFabrik_Form
      */
     public function onBeforeStore()
     {
-        $w          = new CalCom();
+        $w          = new CalCom(true);
         $app        = Factory::getApplication();
         $id         = $app->input->get('jos_emundus_setup_availabilities___id');
         $name       = $app->input->get('jos_emundus_setup_availabilities___name', null, "raw") ?: '';
         $start_date = $app->input->get('jos_emundus_setup_availabilities___start_date') ?: '';
         $end_date   = $app->input->get('jos_emundus_setup_availabilities___end_date') ?: '';
-        $length     = $app->input->get('jos_emundus_setup_availabilities___event_length', null, "raw") ?: '';
-        $event_name     = $app->input->get('jos_emundus_setup_availabilities___event_name') ?: '';
+        $length     = $app->input->get('jos_emundus_setup_availabilities___event_length') ?: '';
+        $event_name = $app->input->get('jos_emundus_setup_availabilities___event_name', null, "raw") ?: '';
         $formModel  = $this->getModel();
 
         $db         = Factory::getDbo();
@@ -104,7 +104,6 @@ class PlgFabrik_FormCalcom extends plgFabrik_Form
 
         if(!empty($request))
         {
-            $access_token = $w->refreshingAccessToken($request->user_id);
             if($name !== $request->name)
             {
                 $w->patchUser($name, $request->user_id, $request->schedule_id);
@@ -113,7 +112,13 @@ class PlgFabrik_FormCalcom extends plgFabrik_Form
             $end_time = new DateTime($request->end_date);
             if($start_date !== $start_time->format('Y-m-dHis') || $end_date !== $end_time->format('Y-m-dHis'))
             {
-                $w->patchSchedule($access_token['data']->data->accessToken, $request->schedule_id, $start_date, $end_date);
+                if(!Factory::getSession()->get('cal_com_access_token_' . $request->user_id))
+                {
+                    $access_token = $w->refreshingAccessToken($request->user_id);
+                    Factory::getSession()->set('cal_com_access_token_' . $request->user_id, array($access_token['data']->data->accessToken, (new DateTime('now'))->modify('+1 hour')));
+                }
+                $access_token = Factory::getSession()->get('cal_com_access_token_' . $request->user_id);
+                $w->patchSchedule($access_token[0], $request->user_id, $request->schedule_id, $start_date, $end_date);
             }
             if($length !== $request->event_length || $event_name !== $request->event_name)
             {
@@ -125,9 +130,10 @@ class PlgFabrik_FormCalcom extends plgFabrik_Form
         else
         {
             $user = $w->postUser($name);
-            $w->deleteSchedule($user['data']->data->accessToken, $user['data']->data->user->defaultScheduleId);
-            $schedule = $w->postSchedule($user['data']->data->accessToken, $start_date, $end_date);
-            $w->patchSchedule($user['data']->data->accessToken, $schedule['data']->data->id, $start_date, $end_date);
+            Factory::getSession()->set('cal_com_access_token_' . $user['data']->data->user->id, array($user['data']->data->accessToken, (new DateTime('now'))->modify('+1 hour')));
+            $w->deleteSchedule($user['data']->data->accessToken, $user['data']->data->user->defaultScheduleId, $user['data']->data->user->id);
+            $schedule = $w->postSchedule($user['data']->data->accessToken, $user['data']->data->user->id, $start_date, $end_date);
+            $w->patchSchedule($user['data']->data->accessToken, $user['data']->data->user->id, $schedule['data']->data->id, $start_date, $end_date);
             $event_type = $w->postEventType($length, $event_name, $user['data']->data->user->id);
             $event_id = $event_type['data']->event_type->id;
             $formModel->updateFormData('jos_emundus_setup_availabilities___schedule_id', $schedule['data']->data->id);

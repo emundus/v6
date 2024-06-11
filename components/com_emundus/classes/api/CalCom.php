@@ -8,14 +8,17 @@
  */
 
 namespace classes\api;
+use Joomla\CMS\Log\Log;
+use Joomla\CMS\Factory;
+use Datetime;
 
 defined('_JEXEC') or die('Restricted access');
 class CalCom extends Api
 {
 
-    public function __construct()
+    public function __construct($retry = false)
     {
-        parent::__construct();
+        parent::__construct($retry);
 
         $this->setBaseUrl();
         $this->setClient();
@@ -53,6 +56,12 @@ class CalCom extends Api
             'Content-Type' => "application/json",
             'x-cal-secret-key' => $this->platform_oauth_client_secret
         );
+    }
+
+    public function getUsers()
+    {
+        $this->setHeadersUser();
+        return $this->get("v2/oauth-clients/" . $this->platform_oauth_client_id . "/users");
     }
 
     /**
@@ -150,13 +159,14 @@ class CalCom extends Api
      * @description Post request to create a Cal.com schedule
      *
      * @param $access_token string : User's access token associated to the schedule
+     * @param $user_id int : User's ID
      * @param $start_date string Schedule's start date
      * @param $end_date string Schedule's end date
      * @param $name string Schedule's name that will be created
      * @param $time_zone string Schedule's timezone
      *
      */
-    public function postSchedule($access_token, $start_date, $end_date, $name="Default Schedule Name", $time_zone="Europe/Paris")
+    public function postSchedule($access_token, $user_id, $start_date, $end_date, $name="Default Schedule Name", $time_zone="Europe/Paris")
     {
         $this->setHeadersSchedule($access_token);
 
@@ -173,13 +183,21 @@ class CalCom extends Api
             "isDefault" => true
         ]);
 
-        return $this->post("v2/schedules", $query_body);
+        if(!Factory::getSession()->get('cal_com_access_token_' . $user_id))
+        {
+            $access_token = $this->refreshingAccessToken($user_id);
+            Factory::getSession()->set('cal_com_access_token_' . $user_id, array($access_token['data']->data->accessToken, (new DateTime('now'))->modify('+1 hour')));
+        }
+
+
+        return $this->post("v2/schedules/", $query_body);
     }
 
     /**
      * @description Patch request to modify a Cal.com schedule
      *
      * @param $access_token string : User's access token associated to the schedule
+     * @param $user_id int : User's ID
      * @param $schedule_id int Schedule's ID to be modified
      * @param $start_date string Schedule's start date
      * @param $end_date string Schedule's end date
@@ -187,7 +205,7 @@ class CalCom extends Api
      * @param $time_zone string Schedule's timezone
      *
      */
-    public function patchSchedule($access_token, $schedule_id, $start_date, $end_date, $name="Default Schedule Name", $time_zone="Europe/Paris")
+    public function patchSchedule($access_token, $user_id, $schedule_id, $start_date, $end_date, $name="Default Schedule Name", $time_zone="Europe/Paris")
     {
         $this->setHeadersSchedule($access_token);
 
@@ -213,6 +231,13 @@ class CalCom extends Api
         }
         $query_body = json_encode($query_body);
 
+        if(!Factory::getSession()->get('cal_com_access_token_' . $user_id))
+        {
+            $access_token = $this->refreshingAccessToken($user_id);
+            Factory::getSession()->set('cal_com_access_token_' . $user_id, array($access_token['data']->data->accessToken, (new DateTime('now'))->modify('+1 hour')));
+        }
+
+
         return $this->patch("v2/schedules/" . $schedule_id, $query_body);
     }
 
@@ -221,13 +246,22 @@ class CalCom extends Api
      *
      * @param $access_token string : User's access token associated to the schedule
      * @param $schedule_id int Schedule's ID to be modified
+     * @param $user_id int User's ID
      *
      */
-    public function deleteSchedule($access_token, $schedule_id)
+    public function deleteSchedule($access_token, $schedule_id, $user_id)
     {
         $this->setHeadersSchedule($access_token);
 
+        if(!Factory::getSession()->get('cal_com_access_token_' . $user_id))
+        {
+            $access_token = $this->refreshingAccessToken($user_id);
+            Factory::getSession()->set('cal_com_access_token_' . $user_id, array($access_token['data']->data->accessToken, (new DateTime('now'))->modify('+1 hour')));
+        }
+
+
         return $this->delete("v2/schedules/" . $schedule_id);
+
     }
 
     /**
@@ -273,6 +307,14 @@ class CalCom extends Api
         $this->setBaseUrlFirstVersionApi();
 
         return $this->delete("event-types/" . $event_type_id . "?apiKey=" . $this->api_key);
+    }
+
+    public function getEventTypes($accessToken)
+    {
+        $this->setHeadersUser();
+        $this->setHeadersSchedule($accessToken);
+
+        return $this->get("v2/event-types");
     }
 
     /**
