@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+		<fieldset name="plg-cron-emunduslogsandmessagespurge" label="COM_FABRIK_OPTIONS">
+			<field name="amount_time"
+				   type="number"
+				   description="PLG_CRON_LOGSPURGE_DATING_FROM_DESC"
+				   label="PLG_CRON_LOGSPURGE_DATING_FROM"
+				   size="30"
+				   default="1"
+				   min="0"/>
+
+			<field name="unit_time"
+				   type="list"
+				   description="PLG_CRON_LOGSPURGE_CHOOSE_UNIT"
+				   label="PLG_CRON_LOGSPURGE_UNIT"
+				   size="1"
+				   default="year">
+				<option value="hour">PLG_CRON_LOGSPURGE_HOUR</option>
+				<option value="day">PLG_CRON_LOGSPURGE_DAY</option>
+				<option value="week">PLG_CRON_LOGSPURGE_WEEK</option>
+				<option value="month">PLG_CRON_LOGSPURGE_MONTH</option>
+				<option value="year">PLG_CRON_LOGSPURGE_YEAR</option>
+			</field>
+
+			<field name="export_zip"
+				   type="checkbox"
+				   label="PLG_CRON_LOGSPURGE_ZIP"
+				   description="PLG_CRON_LOGSPURGE_CHOOSE_EXPORT"
+				   checked="checked"/>
+
+			<field name="amount_time_tmp"
+				   type="number"
+				   description="PLG_CRON_LOGSPURGE_DATING_FROM_TMP_DESC"
+				   label="PLG_CRON_LOGSPURGE_DATING_FROM_TMP"
+				   size="30"
+				   default="1"
+				   min="0"/>
+
+			<field name="unit_time_tmp"
+				   type="list"
+				   description="PLG_CRON_LOGSPURGE_CHOOSE_UNIT"
+				   label="PLG_CRON_LOGSPURGE_UNIT"
+				   size="1"
+				   default="week">
+				<option value="hour">PLG_CRON_LOGSPURGE_HOUR</option>
+				<option value="day">PLG_CRON_LOGSPURGE_DAY</option>
+				<option value="week">PLG_CRON_LOGSPURGE_WEEK</option>
+				<option value="month">PLG_CRON_LOGSPURGE_MONTH</option>
+				<option value="year">PLG_CRON_LOGSPURGE_YEAR</option>
+			</field>
+
+
+		</fieldset>
+	</fields>
+</form>

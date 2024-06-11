@@ -2062,9 +2062,9 @@ class EmundusHelperFiles
             $fnum = $tag['fnum'];
 			$class = str_replace('label-','',$tag['class']);
             if (!isset($tagsList[$fnum])) {
-                $tagsList[$fnum] = '<div class="flex items-center gap-2 sticker label-'.$class.'" title="' . $tag['label'] . '"><span class="circle"></span><span class="text-white truncate font-semibold max-w-[150px] text-sm">'.$tag['label'].'</span></div>';
+                $tagsList[$fnum] = '<div class="flex items-center gap-2 sticker label-'.$class.'" title="' . $tag['label'] . '"><span class="circle"></span><span class="text-white truncate font-semibold w-[150px] text-sm">'.$tag['label'].'</span></div>';
             } else {
-                $tagsList[$fnum] .= '<div class="flex items-center gap-2 sticker label-'.$class.'" title="' . $tag['label'] . '"><span class="circle"></span><span class="text-white truncate font-semibold max-w-[150px] text-sm">'.$tag['label'].'</span></div>';
+                $tagsList[$fnum] .= '<div class="flex items-center gap-2 sticker label-'.$class.'" title="' . $tag['label'] . '"><span class="circle"></span><span class="text-white truncate font-semibold w-[150px] text-sm">'.$tag['label'].'</span></div>';
             }
         }
         return $tagsList;
@@ -3656,6 +3656,10 @@ class EmundusHelperFiles
 			$where['q'] .= ' AND (' . $programme_where_cond . $fnum_assoc_where_cond . ') ';
 		}
 
+        if ($caller == 'files') {
+            $where['q'] .= ' AND esc.published > 0';
+        }
+
 	    $menu = JFactory::getApplication()->getMenu();
 		if (!empty($menu)) {
 			$active = $menu->getActive();
@@ -3712,7 +3716,7 @@ class EmundusHelperFiles
 
 			    $at_least_one = false;
 
-			    $scopes = ['jecc.applicant_id', 'jecc.fnum', 'u.username', 'eu.firstname', 'eu.lastname', 'u.email', 'u.username'];
+			    $scopes = ['jecc.applicant_id', 'jecc.fnum', 'u.username', 'eu.firstname', 'eu.lastname', 'u.email'];
 			    foreach ($quick_search_filters as $index => $filter) {
 				    if (!empty($filter['scope'])) {
 					    if ($filter['scope'] === 'everywhere') {
@@ -3940,6 +3944,28 @@ class EmundusHelperFiles
 
                                     } else {
                                         $where['q'] .= ' AND (' . $this->writeQueryWithOperator($group_assoc_alias . '.group_id', $filter['value'], $filter['operator']) . ' OR ' . $this->writeQueryWithOperator($setup_groups_alias . '.id', $filter['value'], $filter['operator']). ')';
+                                    }
+
+                                    break;
+                                case 'users_assoc':
+                                    if (!in_array('jos_emundus_users_assoc', $already_joined)) {
+                                        $jecc_alias = array_search('jos_emundus_campaign_candidature', $already_joined);
+                                        $already_joined['jeua'] = 'jos_emundus_users_assoc';
+                                        $users_assoc_alias = 'jeua';
+                                        $where['join'] .= ' LEFT JOIN #__emundus_users_assoc as jeua on jeua.fnum = ' . $jecc_alias . '.fnum AND action_id = 1';
+                                    } else {
+                                        $users_assoc_alias = array_search('jos_emundus_group_assoc', $already_joined);
+                                    }
+
+                                    if ($filter['operator'] === 'NOT IN') {
+                                        $where['q'] .= ' AND jecc.fnum NOT IN (
+                                            SELECT DISTINCT jos_emundus_users_assoc.fnum
+                                            FROM jos_emundus_users_assoc
+                                            WHERE ' . $this->writeQueryWithOperator('jos_emundus_users_assoc.user_id', $filter['value'], 'IN') . '
+                                            AND jeua.action_id = 1 AND jeua.r = 1
+                                        )';
+                                    } else {
+                                        $where['q'] .= ' AND ' . $this->writeQueryWithOperator($users_assoc_alias . '.user_id', $filter['value'], $filter['operator']);
                                     }
 
                                     break;
@@ -4298,7 +4324,67 @@ class EmundusHelperFiles
 							$query = '(' . $element . ' != ' . $db->quote($values) . ' OR ' . $element . ' IS NULL ) ';
 						}
 						break;
-					case 'LIKE':
+                    case 'superior':
+                        if (is_array($values)) {
+                            $query = '(';
+                            foreach($values as $key => $value) {
+                                if ($key == 0) {
+                                    $query .= $element . ' > ' . $db->quote($value);
+                                } else {
+                                    $query .= ' AND ' . $element . ' > ' . $db->quote($value);
+                                }
+                            }
+                            $query .= ')';
+                        } else {
+                            $query = $element . ' > ' . $db->quote($values);
+                        }
+                        break;
+                    case 'superior_or_equal':
+                        if (is_array($values)) {
+                            $query = '(';
+                            foreach($values as $key => $value) {
+                                if ($key == 0) {
+                                    $query .= $element . ' >= ' . $db->quote($value);
+                                } else {
+                                    $query .= ' AND ' . $element . ' >= ' . $db->quote($value);
+                                }
+                            }
+                            $query .= ')';
+                        } else {
+                            $query = $element . ' >= ' . $db->quote($values);
+                        }
+                        break;
+                    case 'inferior':
+                        if (is_array($values)) {
+                            $query = '(';
+                            foreach($values as $key => $value) {
+                                if ($key == 0) {
+                                    $query .= $element . ' < ' . $db->quote($value);
+                                } else {
+                                    $query .= ' AND ' . $element . ' < ' . $db->quote($value);
+                                }
+                            }
+                            $query .= ')';
+                        } else {
+                            $query = $element . ' < ' . $db->quote($values);
+                        }
+                        break;
+                    case 'inferior_or_equal':
+                        if (is_array($values)) {
+                            $query = '(';
+                            foreach($values as $key => $value) {
+                                if ($key == 0) {
+                                    $query .= $element . ' <= ' . $db->quote($value);
+                                } else {
+                                    $query .= ' AND ' . $element . ' <= ' . $db->quote($value);
+                                }
+                            }
+                            $query .= ')';
+                        } else {
+                            $query = $element . ' <= ' . $db->quote($values);
+                        }
+                        break;
+                    case 'LIKE':
 						if (is_array($values)) {
 							$_values = implode(',', $db->quote($values));
 							$query = $element . ' IN (' . $_values . ')';

@@ -23,7 +23,7 @@ class EmundusModelChecklist extends JModelList
 	var $_forms = 0;
 	var $_attachments = 0;
 
-	function __construct()
+	function __construct($student_id = null)
 	{
 		parent::__construct();
 		jimport('joomla.log.log');
@@ -32,7 +32,7 @@ class EmundusModelChecklist extends JModelList
 		require_once (JPATH_SITE.'/components/com_emundus/helpers/menu.php');
 		$this->_db = JFactory::getDBO();
 		$app =  JFactory::getApplication();
-		$student_id = $app->input->getInt('sid');
+		$student_id = !empty($student_id) ?? $app->input->getInt('sid', 0);
 		$current_user = JFactory::getUser()->id;
 
 		if (!empty($student_id)) {
@@ -101,46 +101,113 @@ class EmundusModelChecklist extends JModelList
 		return $forms;
 	}
 
-	function getAttachmentsList() {
+	function getAttachmentsList()
+	{
 		$attachments = [];
 
 		if (!empty($this->_user->profile)) {
-			if (!empty($this->_user->campaign_id)) {
-				$query = 'SELECT attachments.*, COUNT(uploads.attachment_id) AS nb, uploads.id as uid, profiles.mandatory as mandatory, profiles.duplicate as duplicate, profiles.has_sample, profiles.sample_filepath
-					FROM #__emundus_setup_attachments AS attachments
-						INNER JOIN #__emundus_setup_attachment_profiles AS profiles ON attachments.id = profiles.attachment_id
-						LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.user_id = '.$this->_user->id.'  AND fnum like '.$this->_db->Quote($this->_user->fnum).'
-					WHERE (profiles.campaign_id = '.$this->_user->campaign_id.' OR profiles.profile_id ='.$this->_user->profile.') AND profiles.displayed = 1
-					GROUP BY attachments.id
-					ORDER BY profiles.mandatory DESC, profiles.ordering ASC';
-				$this->_db->setQuery($query);
-				$attachments = $this->_db->loadObjectList();
-			}
+			$attachments = $this->getAttachmentsForProfile($this->_user->profile, $this->_user->campaign_id);
 
-			if (empty($attachments)) {
-				$query = 'SELECT attachments.id, COUNT(uploads.attachment_id) AS nb, uploads.id as uid, attachments.nbmax, attachments.value, attachments.lbl, attachments.description, attachments.allowed_types, profiles.mandatory, profiles.duplicate,  profiles.has_sample, profiles.sample_filepath
-					FROM #__emundus_setup_attachments AS attachments
-						INNER JOIN #__emundus_setup_attachment_profiles AS profiles ON attachments.id = profiles.attachment_id
-						LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.user_id = '.$this->_user->id.'  AND fnum like '.$this->_db->Quote($this->_user->fnum).'
-					WHERE profiles.profile_id = '.$this->_user->profile.' AND profiles.displayed = 1 AND profiles.campaign_id IS NULL
-					GROUP BY attachments.id
-					ORDER BY profiles.mandatory DESC, attachments.ordering ASC';
+			foreach ($attachments as $attachment) {
+				$query = $this->_db->getQuery(true);
+
+				$query->select('COUNT(*)')
+					->from('#__emundus_uploads')
+					->where('user_id = ' . $this->_user->id)
+					->where('attachment_id = ' . $attachment->id)
+					->where('fnum like ' . $this->_db->quote($this->_user->fnum));
+
 				$this->_db->setQuery($query);
-				$attachments = $this->_db->loadObjectList();
+				$attachment->nb = $this->_db->loadResult();
 			}
 
 			foreach ($attachments as $attachment) {
 				if ($attachment->nb > 0) {
 
-					$query = 'SELECT * FROM #__emundus_uploads WHERE user_id = '.$this->_user->id.' AND attachment_id = '.$attachment->id. ' AND fnum like '.$this->_db->Quote($this->_user->fnum);
+					$query = 'SELECT * FROM #__emundus_uploads WHERE user_id = ' . $this->_user->id . ' AND attachment_id = ' . $attachment->id . ' AND fnum like ' . $this->_db->Quote($this->_user->fnum);
 					$this->_db->setQuery($query);
 					$attachment->liste = $this->_db->loadObjectList();
 
 				} elseif ($attachment->mandatory == 1) {
 					$this->_attachments = 1;
-					$this->_need = $this->_forms=1?1:0;
+					$this->_need = $this->_forms = 1 ?? 0;
 				}
 			}
+		}
+
+		return $attachments;
+	}
+
+	public function getAttachmentsForCampaignId($campaign_id)
+	{
+		$attachments = [];
+
+		if (!empty($campaign_id)) {
+			$query = $this->_db->getQuery(true);
+
+			$query->select('DISTINCT attachments.id, attachments.nbmax, attachments.value, attachments.lbl, attachments.description, attachments.allowed_types, profiles.mandatory, profiles.duplicate, profiles.has_sample, profiles.sample_filepath')
+				->from($this->_db->quoteName('#__emundus_setup_attachments', 'attachments'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_attachment_profiles', 'profiles') . ' ON attachments.id = profiles.attachment_id')
+				->where('profiles.campaign_id = ' . $campaign_id)
+				->andWhere('profiles.displayed = 1')
+				->andWhere('attachments.published = 1')
+				->order('profiles.mandatory DESC, profiles.ordering ASC');
+
+			try {
+				$this->_db->setQuery($query);
+				$attachments = $this->_db->loadObjectList();
+			} catch (Exception $e) {
+				JLog::add('Failed to get attachments for campaign ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $attachments;
+	}
+
+	/**
+	 * Get attachments for a profile
+	 * Be aware that this method will dispatch onAfterGetAttachmentsForProfile event
+	 * This event can be used to add or remove attachments from the list based on some conditions
+	 * @param $profile_id
+	 * @param $campaign_id
+	 * @return array|mixed
+	 */
+	public function getAttachmentsForProfile($profile_id, $campaign_id = null)
+	{
+		$attachments = [];
+
+		if (!empty($profile_id)) {
+			if (!empty($campaign_id)) {
+				$attachments = $this->getAttachmentsForCampaignId($campaign_id);
+			}
+
+			if (empty($attachments)) {
+				$query = $this->_db->getQuery(true);
+
+				$query->select('DISTINCT attachments.id, attachments.nbmax, attachments.value, attachments.lbl, attachments.description, attachments.allowed_types, profiles.mandatory, profiles.duplicate, profiles.has_sample, profiles.sample_filepath')
+					->from($this->_db->quoteName('#__emundus_setup_attachments', 'attachments'))
+					->leftJoin($this->_db->quoteName('#__emundus_setup_attachment_profiles', 'profiles') . ' ON attachments.id = profiles.attachment_id')
+					->where('profiles.profile_id = ' . $profile_id)
+					->andWhere('profiles.campaign_id IS NULL')
+					->andWhere('profiles.displayed = 1')
+					->andWhere('attachments.published = 1')
+					->order('profiles.mandatory DESC, profiles.ordering ASC');
+
+				try {
+					$this->_db->setQuery($query);
+					$attachments = $this->_db->loadObjectList();
+				} catch (Exception $e) {
+					JLog::add('Failed to get attachments for campaign ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				}
+			}
+
+			// Sometimes mandatory attachments are linked to the profile but also to some form fields.
+			// To allow that, we dispatch an event onAfterGetMandatoryAttachmentsForProfile
+			// to allow other components to add/remove their own mandatory attachments.
+			JPluginHelper::importPlugin('emundus', 'custom_event_handler');
+			$dispatcher = JEventDispatcher::getInstance();
+			$dispatcher->trigger('onAfterGetAttachmentsForProfile', array($profile_id, &$attachments));
+			$dispatcher->trigger('callEventHandler', ['onAfterGetAttachmentsForProfile', ['profile_id' => $profile_id, 'attachments' => &$attachments]]);
 		}
 
 		return $attachments;

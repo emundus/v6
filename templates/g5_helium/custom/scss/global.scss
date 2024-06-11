@@ -118,13 +118,28 @@ p,
   transition: all ease-in-out 0.3s;
 }
 
-.gantry:not(.applicant-form):not(.files-board) #g-container-main,
+.gantry:not(.applicant-form):not(.files-board):not(.view-contacts):not(.com_dropfiles) #g-container-main,
 .gantry.view-form #g-utility,
 .gantry.view-checklist #g-utility,
 .gantry.view-details #g-utility,
 .gantry.mon-profil #g-container-main {
-  padding-top: 40px !important;
+  padding-top: 32px !important;
 }
+
+.gantry:not(.applicant-form):not(.files-board) {
+  &.view-campaigns, &.view-form.com_emundus, &.view-emails, &.view-settings {
+    #g-container-main {
+      padding-top: 26px !important;
+      .g-container {
+        padding: 0 32px;
+      }
+    }
+  }
+   &.view-settings #g-container-main {
+     padding-top: 32px !important;
+   }
+}
+
 
 .mon-profil .plg-databasejoin.span12 .chzn-container.chzn-container-single {
   width: 100% !important;
@@ -132,6 +147,10 @@ p,
 
 #g-container-main .g-container {
   padding: 0 20px;
+}
+
+.view-syncs #g-container-main .g-container.g-flushed {
+  padding: 0 32px !important;
 }
 
 .view-form.com_fabrik:not(.applicant-form):not(.mon-profil):not(.view-registration) #g-container-main .g-container {
@@ -605,8 +624,10 @@ footer#g-footer > .g-container {
 
   a {
     color: $link-regular;
+    text-decoration: underline;
     &:hover {
       color: $link-hover;
+      text-decoration: none;
     }
   }
 }
@@ -1109,6 +1130,11 @@ footer#g-footer > .g-container {
 }
 
 /** PAGE EDIT PROFILE **/
+
+.view-profile #system-message-container > div:not(#system-message) {
+  margin-top: 20px;
+}
+
 .com_users.view-profile.layout-edit {
   .alert.alert-message {
     color: #468847;
@@ -1566,8 +1592,7 @@ footer#g-footer > .g-container {
 }
 
 .view-list #g-container-main .g-container {
-  padding-left: 5%;
-  padding-right: 5%;
+  padding: 0 32px;
 }
 
 .row-fluid .span3 {
@@ -1590,7 +1615,7 @@ footer#g-footer > .g-container {
 
 .view-list:not(.g-back-office-emundus-tableau) #g-container-main .g-container {
   position: relative;
-  width: calc(100% - 76px);
+  width: 100%;
 }
 
 .view-list, .g-back-office-emundus-tableau {
@@ -3123,6 +3148,10 @@ ul.unstyled.em-linkForgot li a {
   }
 }
 
+.toggle-editor .btn .icon-eye {
+  margin-right: 4px;
+}
+
 .files-board .dropdown-menu > li > a:not(.logout-button-user):focus,
 .files-board .dropdown-submenu:hover > a:not(.logout-button-user),
 .files-board .dropdown-submenu:focus > a:not(.logout-button-user) {
@@ -4211,7 +4240,7 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
 /* VIEW DETAILS */
 
 .view-details {
-  .span12 h1 {
+  .span12 .page-header  h1 {
     margin: 12px 0;
     font-family: var(--em-coordinator-font-title);
     color: var(--neutral-900);
@@ -4231,7 +4260,7 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
     padding-left: 20px;
   }
 
-  a {
+  .fabrikForm.fabrikDetails a {
     text-decoration: underline;
     &:hover {
         text-decoration: none;
@@ -4308,6 +4337,12 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
 
 /******************************* RESPONSIVE ***********************************/
 
+@media screen and (min-width: 48rem) and (max-width: 59.99rem) {
+  .gantry #g-container-main .g-container {
+    width: 45rem;
+  }
+}
+
 @media screen and (min-width: 1367px) and (max-width: 1919px)  {
   .view-form.com_fabrik:not(.applicant-form):not(.mon-profil):not(.view-registration) #g-container-main .g-container {
     max-width: 70%;
@@ -4357,8 +4392,7 @@ screen and (max-height: 769px) {
 
 @media screen and (max-width: 959px) {
   .mon-profil .emundus-form #background-shapes {
-    left: 28px;
-    top: -32px;
+    display: none;
   }
 
   .applicant-form .emundus-form #background-shapes {
@@ -6310,6 +6344,10 @@ fieldset[disabled] .multiselect {
     padding: 8px 0;
     border-radius: 5px;
     box-shadow: 0 5px 30px var(--neutral-100);
+
+    ul {
+      padding-left: 0 !important;
+    }
   }
 
   .popover-arrow {
@@ -6883,8 +6921,13 @@ tbody .el-table__row:nth-child(odd){
 .mce-container-body.mce-abs-layout {
   overflow: visible !important;
 }
+
+.mce-container.mce-panel .mce-combobox input {
+  width: fit-content !important;
+}
+
 .mce-container .mce-textbox.mce-abs-layout-item.mce-last {
-  width: 60px !important;
+  width: fit-content !important;
   height: 20px !important;
 }
 

@@ -12,8 +12,8 @@
       <div class="em-modal-header">
         <div class="em-flex-space-between em-flex-row em-pointer" @click.prevent="$modal.hide('contentTool')">
           <div class="em-w-max-content em-flex-row">
-            <span class="material-icons-outlined">arrow_back</span>
-            <span class="em-ml-8">{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
+            <span class="material-icons-outlined">navigate_before</span>
+            <span class="em-ml-8 em-text-neutral-900">{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
           </div>
           <div v-if="saving" class="em-flex-row em-flex-start">
             <div class="em-loader em-mr-8"></div>

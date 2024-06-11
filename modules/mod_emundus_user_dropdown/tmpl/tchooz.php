@@ -13,6 +13,8 @@ defined('_JEXEC') or die;
 require_once(JPATH_SITE . '/components/com_emundus/helpers/cache.php');
 $hash = EmundusHelperCache::getCurrentGitHash();
 
+JText::script('COM_EMUNDUS_SWITCH_PROFILE_ERROR');
+
 ?>
 
 <link rel="stylesheet" href="modules/mod_emundus_user_dropdown/style/mod_emundus_user_dropdown.css?<?php echo $hash; ?>"
@@ -328,7 +330,7 @@ if ($user != null)
 			if (!empty($user->emProfiles) && sizeof($user->emProfiles) > 1 && (!$only_applicant))
 			{
 				echo '<h5 class="mb-2">' . JText::_('SELECT_PROFILE') . '</h5>';
-				echo '<div class="select">';
+				echo '<div class="select em-mb-16 ">';
 				echo '<select class="profile-select" id="profile" name="profiles" onchange="postCProfile()"> ';
 				foreach ($user->emProfiles as $profile)
 				{
@@ -342,13 +344,13 @@ if ($user != null)
 						echo '<option  value="' . $profile->id . "." . '"' . (($user->profile == $profile->id) ? 'selected="selected"' : "") . '>' . trim($profile->label) . '</option>';
 					}
 				}
-				echo '</select></div><br/>';
+				echo '</select></div>';
 			}
 			?>
 
 			<?php if ($show_update == '1' && !$is_anonym_user) : ?>
                 <li><a class="edit-button-user em-flex-row em-flex-important em-flex-center"
-                       href="<?= $link_edit_profile ?>" style="margin-top: 0"><span
+                       href="<?= $link_edit_profile ?>"><span
                                 class="material-icons-outlined mr-2">person_outline</span><?= JText::_('COM_EMUNDUS_USER_MENU_PROFILE_LABEL') ?>
                     </a></li>
 			<?php endif; ?>
@@ -378,10 +380,8 @@ if ($user != null)
 				}
 			} ?>
 
-            <hr style="width: 100%">
-
 			<?php if ($show_logout == '1') : ?>
-				<?= '<li><a class="logout-button-user em-flex-important em-flex-row em-flex-center" href="' . JURI::base() . 'index.php?option=com_users&task=user.logout&' . JSession::getFormToken() . '=1"><span class="material-icons-outlined mr-2">logout</span>' . JText::_('COM_EMUNDUS_USER_MENU_LOGOUT_ACTION') . '</a></li>'; ?>
+				<?= '   <hr style="width: 100%"><li><a class="logout-button-user em-flex-important em-flex-row em-flex-center" href="' . JURI::base() . 'index.php?option=com_users&task=user.logout&' . JSession::getFormToken() . '=1"><span class="material-icons-outlined mr-2">logout</span>' . JText::_('COM_EMUNDUS_USER_MENU_LOGOUT_ACTION') . '</a></li>'; ?>
 			<?php endif; ?>
 
         </ul>
@@ -525,11 +525,11 @@ if ($user != null)
             var current_fnum = document.getElementById("profile").value;
             var redirect_url = document.getElementById("switch_profile_redirect").value;
 
-            var url = window.location.origin.toString() + '/' + redirect_url;
+            var url = window.location.origin.toString() + redirect_url;
 
             jQuery.ajax({
                 type: 'POST',
-                url: 'index.php?option=com_emundus&task=switchprofile',
+                url: '/index.php?option=com_emundus&task=switchprofile',
                 data: ({
                     profnum: current_fnum
                 }),
@@ -538,10 +538,21 @@ if ($user != null)
                     sessionStorage.removeItem('profile_color');
 
                     window.location.href = url;
-                    //location.reload(true);
                 },
-                error: function (jqXHR, status, err) {
-                    alert("Error switching porfiles.");
+                error : function (jqXHR, status, err) {
+                    Swal.fire({
+                        title: Joomla.JText._('COM_EMUNDUS_SWITCH_PROFILE_ERROR'),
+                        html: '<img alt="sad tchoozy" src="/media/com_emundus/images/tchoozy/facial-expressions/sad-face.svg" width="200"/>',
+                        showCancelButton: false,
+                        showConfirmButton: false,
+                        customClass: {
+                            title: 'em-swal-title !text-center',
+                            cancelButton: 'em-swal-cancel-button',
+                            confirmButton: 'em-swal-confirm-button',
+                            icon: 'border-0 w-full h-full mt-0',
+                        },
+                        timer: 3000
+                    });
                 }
             });
         }
