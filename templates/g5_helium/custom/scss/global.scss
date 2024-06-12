@@ -2764,7 +2764,15 @@ label[for='clear-search'] img:hover:focus {
   }
 }
 
-.panel-heading.em-container-form-heading, .panel-heading.em-container-admission-heading, .panel-heading.em-container-evaluation-heading, .panel-heading.em-container-decision-heading, .panel-heading.em-container-comment-heading, .panel-heading.em-container-tags-heading, .panel-heading.em-container-share-heading, .panel-heading.em-container-mail-heading {
+.panel-heading.em-container-form-heading,
+.panel-heading.em-container-admission-heading,
+.panel-heading.em-container-evaluation-heading,
+.panel-heading.em-container-decision-heading,
+.panel-heading.em-container-comment-heading,
+.panel-heading.em-container-tag-heading,
+.panel-heading.em-container-share-heading,
+.panel-heading.em-container-mail-heading,
+.panel-heading.em-container-logs-heading{
   padding: 6px !important;
 
   #em-prev-file.btn.btn-info.btn-xxl,
@@ -3629,13 +3637,13 @@ div#em-appli-block {
     }
   }
 
-  .em-container-tags-body .em-tags-date a {
+  .em-container-tag-body .em-tags-date a {
     color: var(--night-blue);
   }
 
   .edit-comment-container button.delete-comment,
-  .em-container-tags-body button.btn-danger[title="Supprimer"],
-  .em-container-tags-body button.btn-danger[title="Delete"] {
+  .em-container-tag-body button.btn-danger[title="Supprimer"],
+  .em-container-tag-body button.btn-danger[title="Delete"] {
     background: var(--neutral-0);
     border: 1px solid var(--neutral-0);
     border-radius: var(--em-coordinator-brborder-radius) !important;

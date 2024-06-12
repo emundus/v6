@@ -2699,7 +2699,7 @@ div#em-assoc-files .panel-body #unpublished_campaigns_container .panel:first-chi
     top: 0;
 }
 
-.g-back-office-emundus-tableau.evaluations-page .main-panel .panel-heading.em-container-tags-heading .btn-group.pull-right, .g-back-office-emundus-tableau.decision-page .main-panel .panel-heading.em-container-tags-heading .btn-group.pull-right {
+.g-back-office-emundus-tableau.evaluations-page .main-panel .panel-heading.em-container-tag-heading .btn-group.pull-right, .g-back-office-emundus-tableau.decision-page .main-panel .panel-heading.em-container-tag-heading .btn-group.pull-right {
     position: relative;
     top: 0;
 }
