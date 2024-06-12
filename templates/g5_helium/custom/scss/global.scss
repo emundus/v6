@@ -2134,6 +2134,11 @@ body.error-page .container-404 p {
   text-shadow: none !important;
 }
 
+.toggle-addoption.btn i.icon-plus {
+  margin-right: 2px;
+  margin-top: 4px;
+}
+
 button.btn-primary {
   background: var(--em-secondary-color);
   border: 1px solid var(--em-secondary-color);
