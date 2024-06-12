@@ -5655,7 +5655,7 @@ fieldset[disabled] .multiselect {
   width: 100%;
   height: 48px;
   text-align: left;
-  color: #a4a4a4;
+  color: var(--neutral-900);
 }
 
 .multiselect * {
