@@ -331,6 +331,20 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                     </div>
                                 </div>
 
+                                <?php if ($mod_em_campaign_single_campaign_line == 1 && $mod_em_campaign_show_info_button == 1 && $mod_em_campaign_show_apply_button == 1): ?>
+                                <div class="mod_emundus_campaign__list_content_buttons mod_emundus_campaign__list_content_buttons--pinned">
+                                <?php endif; ?>
+
+                                <?php if ($mod_em_campaign_show_info_button == 1) : ?>
+                                    <div>
+                                        <?php
+                                        $details_url = !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid);
+                                        ?>
+                                        <a class="btn btn-primary em-w-100 em-mt-8 em-applicant-default-font em-flex-column"
+                                           role="button" href='<?php echo $details_url; ?>'
+                                           data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_MORE_INFO'); ?></a>
+                                    </div>
+                                <?php endif; ?>
 								<?php if ($mod_em_campaign_show_apply_button == 1 && (strtotime($now) < strtotime($campaign_pinned->end_date)) && (strtotime($now) > strtotime($campaign_pinned->start_date))) : ?>
                                     <div>
 										<?php
@@ -356,11 +370,14 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 											$register_url .= '&redirect=' . $formUrl;
 										}
 										?>
-                                        <a class="btn btn-primary em-w-100 em-mt-8 em-applicant-default-font em-flex-column"
+                                        <a class="btn btn-secondary em-w-100 em-mt-8 em-applicant-default-font em-flex-column"
                                            role="button" href='<?php echo $register_url; ?>'
                                            data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
                                     </div>
 								<?php endif; ?>
+                                <?php if ($mod_em_campaign_single_campaign_line == 1 && $mod_em_campaign_show_info_button == 1 && $mod_em_campaign_show_apply_button == 1): ?>
+                                </div>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
@@ -644,7 +661,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 			<?php endif; ?>
 
 			<?php if (!empty($campaign)) : ?>
-                <div id="current_<?php echo $key ?>" class="mod_emundus_campaign__list_items<?php if($mod_em_campaign_groupby_closed == 1) : ?> em-display-none<?php endif; ?>">
+                <div id="current_<?php echo $key ?>" class="<?php echo ($mod_em_campaign_single_campaign_line == 1) ? 'mod_emundus_campaign__list_items--line' : 'mod_emundus_campaign__list_items' ?><?php if($mod_em_campaign_groupby_closed == 1) : ?> em-display-none<?php endif; ?>">
 					<?php
 					foreach ($campaign
 
@@ -858,6 +875,20 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                         </div>
                                     </div>
 
+                                    <?php if ($mod_em_campaign_single_campaign_line == 1 && $mod_em_campaign_show_info_button == 1 && $mod_em_campaign_show_apply_button == 1): ?>
+                                    <div class="mod_emundus_campaign__list_content_buttons">
+                                    <?php endif; ?>
+
+                                    <?php if ($mod_em_campaign_show_info_button == 1) : ?>
+                                        <div>
+                                            <?php
+                                            $details_url = !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2);
+                                            ?>
+                                            <a class="btn btn-primary em-w-100 em-mt-8 em-applicant-default-font em-flex-column"
+                                               role="button" href='<?php echo $details_url; ?>'
+                                               data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_MORE_INFO'); ?></a>
+                                        </div>
+                                    <?php endif; ?>
 									<?php if ($mod_em_campaign_show_apply_button == 1 && (strtotime($now) < strtotime($result->end_date)) && (strtotime($now) > strtotime($result->start_date))) : ?>
                                         <div>
 											<?php
@@ -882,11 +913,14 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 												$register_url .= '&redirect=' . $formUrl;
 											}
 											?>
-                                            <a class="btn btn-primary em-w-100 em-mt-8 em-applicant-default-font em-flex-column"
+                                            <a class="btn btn-secondary em-w-100 em-mt-8 em-applicant-default-font em-flex-column"
                                                role="button" href='<?php echo $register_url; ?>'
                                                data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
                                         </div>
 									<?php endif; ?>
+                                    <?php if ($mod_em_campaign_single_campaign_line == 1 && $mod_em_campaign_show_info_button == 1 && $mod_em_campaign_show_apply_button == 1): ?>
+                                    </div>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>

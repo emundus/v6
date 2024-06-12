@@ -21,6 +21,26 @@
     font-family: var(--em-applicant-font);
     font-size: var(--em-applicant-font-size);
 }
+.mod_emundus_campaign__list_content_head a.btn.btn-primary {
+    color:var(--neutral-0);
+    background:var(--em-primary-color);
+    border: 1px solid var(--em-primary-color);
+}
+.mod_emundus_campaign__list_content_head a.btn.btn-secondary {
+    color:var(--neutral-0);
+    background:var(--em-secondary-color);
+    border: 1px solid var(--em-secondary-color);
+}
+
+.mod_emundus_campaign__list_content_head a.btn.btn-primary:hover {
+    color:var(--em-primary-color);
+    background:transparent;
+}
+.mod_emundus_campaign__list_content_head a.btn.btn-secondary:hover {
+    color:var(--em-secondary-color);
+    background:transparent;
+}
+
 
 .mod_emundus_campaign__intro{
     width: 72%;
@@ -318,6 +338,21 @@ a.em-blue-400-color:hover {
     min-height: 46px;
     font-family: var(--em-applicant-font-title) !important;
 }
+
+.mod_emundus_campaign__list_content_buttons {
+    width:50%;
+    align-self:end;
+    display:flex;
+    justify-content:space-between;
+}
+.mod_emundus_campaign__list_content_buttons--pinned {
+    width:initial;
+    align-self:initial;
+}
+
+.mod_emundus_campaign__list_content_buttons > div {
+    width:49%;
+}
 /*
 .mod_emundus_campaign__date *{
     margin-right: 8px;
@@ -446,6 +481,12 @@ a.em-blue-400-color:hover {
     grid-template-columns: repeat(3, minmax(354px, 1fr));
 }
 
+.mod_emundus_campaign__list_items--line{
+    display:flex;
+    flex-direction:column;
+    gap:var(--p-12);
+}
+
 .mod_emundus_campaign__pinned_campaign{
     display: grid;
     align-items: flex-start;
@@ -508,6 +549,11 @@ a.em-blue-400-color:hover {
         grid-template-columns: repeat(1,1fr);
     }
 
+    .mod_emundus_campaign__list_content_buttons {
+        width:initial;
+        align-self:initial;
+    }
+
     .mod_emundus_campaign__grid {
         grid-template-columns: 100%;
     }
@@ -542,6 +588,11 @@ a.em-blue-400-color:hover {
 
     .mod_emundus_campaign__list_content .em-font-size-16 {
         flex-basis: auto !important;
+    }
+
+    .mod_emundus_campaign__list_content_buttons {
+        width:initial;
+        align-self:initial;
     }
 
     .mod_emundus_campaign__grid {
@@ -595,6 +646,11 @@ a.em-blue-400-color:hover {
         flex-basis: auto !important;
     }
 
+    .mod_emundus_campaign__list_content_buttons {
+        width:initial;
+        align-self:initial;
+    }
+
     .mod_emundus_campaign__grid {
         grid-template-columns: 94% !important;
     }
@@ -606,6 +662,7 @@ a.em-blue-400-color:hover {
     .mod_emundus_campaign__buttons {
         flex-direction: column !important;
     }
+
 
     .mod_emundus_campaign__buttons button:nth-child(2) {
         margin-top: var(--m-16);
