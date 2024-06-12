@@ -1566,6 +1566,13 @@ input:focus + .em-slider {
   }
 }
 
+
+.em-campaign-tag:hover {
+  background: var(--main-200);
+  color: var(--neutral-900);
+}
+
+
 /**
   Focus for lables
 */
