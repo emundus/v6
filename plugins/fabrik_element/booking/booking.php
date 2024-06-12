@@ -17,7 +17,7 @@ use Joomla\Utilities\ArrayHelper;
  * Plugin element to render plain text/HTML
  *
  * @package     Joomla.Plugin
- * @subpackage  Fabrik.element.display
+ * @subpackage  Fabrik.element.booking
  * @since       3.0
  */
 
@@ -124,24 +124,7 @@ class PlgFabrik_ElementBooking extends PlgFabrik_Element
 
 	public function getValue($data, $repeatCounter = 0, $opts = array())
 	{
-		$value = $this->getDefaultOnACL($data, $opts);
-
-		if ($value === '')
-		{
-			// Query string for joined data
-			$value = FArrayHelper::getValue($data, $value);
-		}
-
-		$formModel = $this->getFormModel();
-
-		// Stops this getting called from form validation code as it messes up repeated/join group validations
-
-		if (array_key_exists('runplugins', $opts) && $opts['runplugins'] == 1)
-		{
-			FabrikWorker::getPluginManager()->runPlugins('onGetElementDefault', $formModel, 'form', $this);
-		}
-
-		return $value;
+		return $this->getParams()->get('owner');
 	}
 
 	/**
@@ -157,6 +140,6 @@ class PlgFabrik_ElementBooking extends PlgFabrik_Element
 		$id = $this->getHTMLId($repeatCounter);
 		$opts = $this->getElementJSOptions($repeatCounter);
 
-		return array('FbBooking', $id, $opts);
+		return array('FbPanel', $id, $opts);
 	}
 }
