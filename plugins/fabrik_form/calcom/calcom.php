@@ -82,7 +82,7 @@ class PlgFabrik_FormCalcom extends plgFabrik_Form
      */
     public function onBeforeStore()
     {
-        $w          = new CalCom(true);
+        $w          = new CalCom();
         $app        = Factory::getApplication();
         $id         = $app->input->get('jos_emundus_setup_availabilities___id');
         $name       = $app->input->get('jos_emundus_setup_availabilities___name', null, "raw") ?: '';

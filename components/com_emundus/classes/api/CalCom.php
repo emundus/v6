@@ -16,9 +16,9 @@ defined('_JEXEC') or die('Restricted access');
 class CalCom extends Api
 {
 
-    public function __construct($retry = false)
+    public function __construct()
     {
-        parent::__construct($retry);
+        parent::__construct();
 
         $this->setBaseUrl();
         $this->setClient();
@@ -58,6 +58,10 @@ class CalCom extends Api
         );
     }
 
+    /**
+     * @description Get request to obtain all Cal.com OAuthClients
+     *
+     */
     public function getUsers()
     {
         $this->setHeadersUser();
@@ -138,14 +142,22 @@ class CalCom extends Api
      * @description Set headers for schedules' requests
      *
      * @param $access_token string : User's access token associated to the schedule
+     * @param $user_id : User concerned about the refreshing
      *
      * @value accept : Indicates the type of content expected (json here)
      * @value Content-Type : Indicates the type of content received (json here)
      * @value Authorization : Authorize the request thanks to user's access token given
      * @value x-cal-secret-key : PlatformOAuthClient's secret
      */
-    public function setHeadersSchedule($access_token): void
+    public function setHeadersSchedule($access_token, $user_id): void
     {
+        if(!Factory::getSession()->get('cal_com_access_token_' . $user_id) || Factory::getSession()->get('cal_com_access_token_' . $user_id)[1] <= new Datetime('now'))
+        {
+            $access_token = $this->refreshingAccessToken($user_id);
+            $access_token = $access_token['data']->data->accessToken;
+            Factory::getSession()->set('cal_com_access_token_' . $user_id, array($access_token['data']->data->accessToken, (new DateTime('now'))->modify('+1 hour')));
+        }
+
         $this->headers = array(
             'accept' => "application/json",
             'Content-Type' => "application/json",
@@ -168,7 +180,7 @@ class CalCom extends Api
      */
     public function postSchedule($access_token, $user_id, $start_date, $end_date, $name="Default Schedule Name", $time_zone="Europe/Paris")
     {
-        $this->setHeadersSchedule($access_token);
+        $this->setHeadersSchedule($access_token, $user_id);
 
         $query_body = json_encode([
             "name" => $name,
@@ -183,14 +195,16 @@ class CalCom extends Api
             "isDefault" => true
         ]);
 
-        if(!Factory::getSession()->get('cal_com_access_token_' . $user_id))
+        $result =  $this->post("v2/schedules/", $query_body);
+        if($result['status'] !== 201)
         {
-            $access_token = $this->refreshingAccessToken($user_id);
-            Factory::getSession()->set('cal_com_access_token_' . $user_id, array($access_token['data']->data->accessToken, (new DateTime('now'))->modify('+1 hour')));
+            $new_access_token = $this->refreshingAccessToken($user_id);
+            Factory::getSession()->set('cal_com_access_token_' . $user_id, array($new_access_token['data']->data->accessToken, (new DateTime('now'))->modify('+1 hour')));
+            $this->setHeadersSchedule($new_access_token['data']->data->accessToken, $user_id);
+            $result =  $this->post("v2/schedules/", $query_body);
+
         }
-
-
-        return $this->post("v2/schedules/", $query_body);
+        return $result;
     }
 
     /**
@@ -207,7 +221,7 @@ class CalCom extends Api
      */
     public function patchSchedule($access_token, $user_id, $schedule_id, $start_date, $end_date, $name="Default Schedule Name", $time_zone="Europe/Paris")
     {
-        $this->setHeadersSchedule($access_token);
+        $this->setHeadersSchedule($access_token, $user_id);
 
         $end_date_iso = date('Y-m-d\TH:i', strtotime($end_date)) . ':00.000Z';
 
@@ -231,14 +245,18 @@ class CalCom extends Api
         }
         $query_body = json_encode($query_body);
 
-        if(!Factory::getSession()->get('cal_com_access_token_' . $user_id))
+
+        $result = $this->patch("v2/schedules/" . $schedule_id, $query_body);
+        if($result['status'] !== 200)
         {
-            $access_token = $this->refreshingAccessToken($user_id);
-            Factory::getSession()->set('cal_com_access_token_' . $user_id, array($access_token['data']->data->accessToken, (new DateTime('now'))->modify('+1 hour')));
+            $new_access_token = $this->refreshingAccessToken($user_id);
+            Factory::getSession()->set('cal_com_access_token_' . $user_id, array($new_access_token['data']->data->accessToken, (new DateTime('now'))->modify('+1 hour')));
+            $this->setHeadersSchedule($new_access_token['data']->data->accessToken, $user_id);
+            $result = $this->patch("v2/schedules/" . $schedule_id, $query_body);
+
         }
 
-
-        return $this->patch("v2/schedules/" . $schedule_id, $query_body);
+        return $result;
     }
 
     /**
@@ -251,16 +269,20 @@ class CalCom extends Api
      */
     public function deleteSchedule($access_token, $schedule_id, $user_id)
     {
-        $this->setHeadersSchedule($access_token);
+        $this->setHeadersSchedule($access_token, $user_id);
 
-        if(!Factory::getSession()->get('cal_com_access_token_' . $user_id))
+        $result =  $this->delete("v2/schedules/" . $schedule_id);
+        if($result['status'] !== 200)
         {
-            $access_token = $this->refreshingAccessToken($user_id);
-            Factory::getSession()->set('cal_com_access_token_' . $user_id, array($access_token['data']->data->accessToken, (new DateTime('now'))->modify('+1 hour')));
+            $new_access_token = $this->refreshingAccessToken($user_id);
+            Factory::getSession()->set('cal_com_access_token_' . $user_id, array($new_access_token['data']->data->accessToken, (new DateTime('now'))->modify('+1 hour')));
+            $this->setHeadersSchedule($new_access_token['data']->data->accessToken, $user_id);
+            $result =  $this->delete("v2/schedules/" . $schedule_id);
+
         }
+        return $result;
 
 
-        return $this->delete("v2/schedules/" . $schedule_id);
 
     }
 
@@ -307,14 +329,6 @@ class CalCom extends Api
         $this->setBaseUrlFirstVersionApi();
 
         return $this->delete("event-types/" . $event_type_id . "?apiKey=" . $this->api_key);
-    }
-
-    public function getEventTypes($accessToken)
-    {
-        $this->setHeadersUser();
-        $this->setHeadersSchedule($accessToken);
-
-        return $this->get("v2/event-types");
     }
 
     /**
