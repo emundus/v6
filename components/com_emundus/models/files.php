@@ -4843,6 +4843,11 @@ class EmundusModelFiles extends JModelLegacy
         $m_emails = new EmundusModelEmails;
 
         $zip = new ZipArchive();
+        if (count($fnums) > 1) {
+            if ($fnums[0] == 'em-check-all') {
+                unset($fnums[0]);
+            }
+        }
         $nom = date("Y-m-d").'_'.rand(1000,9999).'_x'.(count($fnums)).'.zip';
 
         $path = JPATH_SITE.DS.'tmp'.DS.$nom;

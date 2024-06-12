@@ -920,17 +920,16 @@ video {
   justify-content: center;
   align-items: center;
 }
-.view-form #g-sidebar, .view-checklist #g-sidebar {
-    position: sticky;
-  }
-@media all and (max-width: 480px) {
-
-  .view-form #g-sidebar, .view-checklist #g-sidebar {
-      position: static;
-      padding-top: 0;
-      padding-bottom: 24px
-  }
+.com_fabrik #g-sidebar {
+      position: sticky;
     }
+@media all and (max-width: 480px) {
+    .com_fabrik #g-sidebar {
+        position: static;
+        padding-top: 0;
+        padding-bottom: 24px
+    }
+      }
 .com_fabrik .popover:not(.clockpicker-popover) {
       display: none !important;
     }
@@ -978,9 +977,6 @@ form.fabrikForm .fabrikElement {
       margin-top: var(--em-form-label-margin-bottom);
       position: relative;
     }
-form.fabrikForm .fabrikElement div li {
-        list-style-position: inside;
-      }
 form.fabrikForm .fabrikElementContainer:not(.fabrikHide) {
       margin-bottom: var(--em-form-field-margin-bottom);
     }
@@ -1567,7 +1563,6 @@ form.fabrikForm .plg-fileupload .fabrikSubElementContainer {
         flex-direction: column-reverse;
         padding: var(--em-form-fileupload-padding);
         background-color: var(--em-form-fileupload-bgc);
-        border-radius: var(--em-form-br);
       }
 form.fabrikForm .plg-fileupload .fabrikSubElementContainer input[type='file'] {
           height: auto;
@@ -37340,7 +37335,7 @@ button.swal2-cancel.goback-btn:hover,
 .alert a:hover {
         font-weight: normal;
         text-decoration: underline;
-        color: inherit;
+        color: var(--blue-500);
     }
 .has-error .help-block,
     .has-error .control-label,
@@ -37382,14 +37377,18 @@ button.swal2-cancel.goback-btn:hover,
         flex-basis: 8px;
         height: 8px;
         border-radius: 50%;
+        margin-right: 8px;
         flex-grow: 0;
+        margin-top: 4px;
         flex-shrink: 0;
     }
 .sticker {
-        border-radius: 20px 8px 8px 20px;
+        border: solid 1px;
+        border-radius: 4px 8px 8px 4px;
         padding: 4px 8px;
         margin: 4px 0;
         font-size: 14px;
+        max-width: 200px;
         white-space: break-spaces;
     }
 .label-default, .label-null, .label- {
