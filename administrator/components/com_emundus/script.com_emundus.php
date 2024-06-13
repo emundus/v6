@@ -4589,6 +4589,29 @@ if(in_array($applicant,$exceptions)){
                     $inserted = (object)$inserted;
                     $db->insertObject('jos_fabrik_cron', $inserted);
                 }
+
+				$query->clear()
+					->select('id,params')
+					->from($db->quoteName('#__fabrik_forms'))
+					->where($db->quoteName('label') . ' LIKE ' . $db->quote('FORM_REGISTRATION'));
+				$db->setQuery($query);
+				$form_registration = $db->loadObject();
+
+				if (!empty($form_registration->id)) {
+					$params = json_decode($form_registration->params, true);
+					if(empty($params['outro'])) {
+						$params['outro'] = '<p style="text-align: center;">BACK_TO_LOGIN</p>';
+						$query->clear()
+							->update($db->quoteName('#__fabrik_forms'))
+							->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+							->where($db->quoteName('id') . ' = ' . $db->quote($form_registration->id));
+						$db->setQuery($query);
+						$db->execute();
+					}
+				}
+
+				EmundusHelperUpdate::insertTranslationsTag('BACK_TO_LOGIN', '<br />Déjà un compte ? <a href="connexion">Connectez-vous</a>');
+				EmundusHelperUpdate::insertTranslationsTag('BACK_TO_LOGIN', '<br />Already have an account? <a href="en/connexion">Log in</a>', 'override', null, null, null, 'en-GB');
             }
         }
 
