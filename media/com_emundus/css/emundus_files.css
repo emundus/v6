@@ -549,6 +549,11 @@ div#em-appli-block .panel-heading {
     padding-top: 5px;
     border-radius: 0;
 }
+
+div#em-appli-block .panel-heading.em-container-decision-heading a.clean:hover {
+    text-decoration: none;
+}
+
 div#em-appli-block button.btn.btn-default {
     border: none !important;
 }
