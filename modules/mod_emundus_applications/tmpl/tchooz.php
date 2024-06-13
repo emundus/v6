@@ -1315,6 +1315,12 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                             sessionStorage.removeItem('mod_emundus_applications___selected_tab');
                             this.updateTab(0);
                         }
+
+                        let tabs =  document.querySelectorAll('div[id^="tab_link_"]');
+                        if(tabs.length <= 1) {
+                            document.getElementById('tab_manage_links').style.display = 'none';
+                            document.getElementById('tab_adding_link').style.display = 'flex';
+                        }
                     }
                 });
             }
