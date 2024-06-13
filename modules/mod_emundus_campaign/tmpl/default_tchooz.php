@@ -332,13 +332,13 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                 </div>
 
                                 <?php if ($mod_em_campaign_single_campaign_line == 1 && $mod_em_campaign_show_info_button == 1 && $mod_em_campaign_show_apply_button == 1): ?>
-                                <div class="mod_emundus_campaign__list_content_buttons mod_emundus_campaign__list_content_buttons--pinned">
+                                <div class="mod_emundus_campaign__list_content_buttons mod_emundus_campaign__list_content_buttons--pinned em-mt-8">
                                 <?php endif; ?>
 
                                 <?php if ($mod_em_campaign_show_info_button == 1) : ?>
                                     <div>
                                         <?php
-                                        $details_url = !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid);
+                                        $details_url = !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2);
                                         ?>
                                         <a class="btn btn-primary em-w-100 em-mt-8 em-applicant-default-font em-flex-column"
                                            role="button" href='<?php echo $details_url; ?>'
@@ -695,7 +695,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                 <div id="tile-hover-offset-procedure"></div>
 							<?php endif; ?>
 
-                            <div class="mod_emundus_campaign__list_content em-border-neutral-300 em-pointer"
+                            <div class="mod_emundus_campaign__list_content <?php echo ($mod_em_campaign_single_campaign_line == 1) ? 'mod_emundus_campaign__list_content--fc' : '' ; ?> em-border-neutral-300 em-pointer"
                                  onclick="window.location.href='<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'">
 
                             <?php if ($mod_em_campaign_display_svg == 1) : ?>
@@ -704,7 +704,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
 						<?php endif; ?>
 
-                                <div class="mod_emundus_campaign__list_content_head <?php echo $mod_em_campaign_class; ?>">
+                                <div class="mod_emundus_campaign__list_content_head <?php echo ($mod_em_campaign_single_campaign_line == 1) ? 'mod_emundus_campaign__list_content_head--fc' : '' ; ?> <?php echo $mod_em_campaign_class; ?>">
                                     <div class="mod_emundus_campaign__list_content_container">
 
 										<?php
@@ -876,7 +876,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                     </div>
 
                                     <?php if ($mod_em_campaign_single_campaign_line == 1 && $mod_em_campaign_show_info_button == 1 && $mod_em_campaign_show_apply_button == 1): ?>
-                                    <div class="mod_emundus_campaign__list_content_buttons">
+                                    <div class="mod_emundus_campaign__list_content_buttons em-mt-8">
                                     <?php endif; ?>
 
                                     <?php if ($mod_em_campaign_show_info_button == 1) : ?>

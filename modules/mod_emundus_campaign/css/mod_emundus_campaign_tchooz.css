@@ -41,6 +41,10 @@
     background:transparent;
 }
 
+.mod_emundus_campaign__list_content .mod_emundus_campaign__list_content_head--fc {
+    justify-content:unset;
+}
+
 
 .mod_emundus_campaign__intro{
     width: 72%;
@@ -158,6 +162,10 @@
     padding: var(--p-24);
     height: 345px;
     background: var(--neutral-0);
+}
+
+div.mod_emundus_campaign__list_content--fc {
+    height:fit-content;
 }
 
 .mod_emundus_campaign__list_content--default {
