@@ -68,6 +68,12 @@ class CalCom extends Api
         return $this->get("v2/oauth-clients/" . $this->platform_oauth_client_id . "/users");
     }
 
+    public function getUser($user_id)
+    {
+        $this->setHeadersUser();
+        return $this->get("v2/oauth-clients/" . $this->platform_oauth_client_id . "/users/" . $user_id);
+    }
+
     /**
      * @description Post request to create a Cal.com user
      *
@@ -284,6 +290,13 @@ class CalCom extends Api
 
 
 
+    }
+
+    public function getEventType($event_type_id)
+    {
+        $this->setBaseUrlFirstVersionApi();
+
+        return $this->get("event-types/" . $event_type_id . "?apiKey=" . $this->api_key);
     }
 
     /**

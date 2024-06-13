@@ -110,6 +110,7 @@ class PlgFabrik_FormCalcom extends plgFabrik_Form
             }
             $start_time = new DateTime($request->start_date);
             $end_time = new DateTime($request->end_date);
+            //todo find a solution to manage dates with UTC
             if($start_date !== $start_time->format('Y-m-dHis') || $end_date !== $end_time->format('Y-m-dHis'))
             {
                 if(!Factory::getSession()->get('cal_com_access_token_' . $request->user_id))
