@@ -3417,7 +3417,19 @@ class EmundusHelperUpdate
 			->set($db->quoteName('value') . ' = ' . $db->quote($back_button->content))
 			->where($db->quoteName('reference_id') . ' = ' . $db->quote($back_button->id))
 			->where($db->quoteName('reference_table') . ' = ' . $db->quote('modules'))
-			->where($db->quoteName('reference_field') . ' = ' . $db->quote('content'));
+			->where($db->quoteName('reference_field') . ' = ' . $db->quote('content'))
+			->where($db->quoteName('language_id') . ' = 2');
+		$db->setQuery($query);
+		$db->execute();
+
+		$back_button->content = str_replace('Retour à la page d\'accueil','Back to homepage',$back_button->content);
+		$query->clear()
+			->update($db->quoteName('#__falang_content'))
+			->set($db->quoteName('value') . ' = ' . $db->quote($back_button->content))
+			->where($db->quoteName('reference_id') . ' = ' . $db->quote($back_button->id))
+			->where($db->quoteName('reference_table') . ' = ' . $db->quote('modules'))
+			->where($db->quoteName('reference_field') . ' = ' . $db->quote('content'))
+			->where($db->quoteName('language_id') . ' = 1');
 		$db->setQuery($query);
 		$db->execute();
 		//
