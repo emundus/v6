@@ -59,11 +59,19 @@
   background: transparent;
   color: var(--em-coordinator-secondary-color);
   font-family: var(--em-coordinator-font);
-  &:hover {
+
+  span {
+    color: var(--em-coordinator-secondary-color);
+  }
+
+  &:hover, &:active, &:focus {
     background-color: var(--em-coordinator-secondary-color) !important;
     color: var(--neutral-0);
     border: 1px solid var(--em-coordinator-secondary-color);
     text-decoration: none;
+    span {
+      color: var(--neutral-0);
+    }
   }
 }
 
