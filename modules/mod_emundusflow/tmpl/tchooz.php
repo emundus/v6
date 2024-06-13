@@ -158,7 +158,7 @@ $now = $dateTime->format('Y-m-d H:i:s');
         <?php if ($show_deadline == 1) : ?>
         <div class="flex items-center">
             <p class="em-text-neutral-600 em-font-size-16"> <?php echo JText::_('MOD_EMUNDUS_FLOW_END_DATE'); ?></p>
-            <span class="ml-1.5" style="white-space: nowrap"><?php echo JFactory::getDate(new JDate($deadline, $site_offset))->format('d/m/Y H:i'); ?></span>
+            <span class="ml-1.5" style="white-space: nowrap"><?php echo EmundusHelperDate::displayDate($deadline,'DATE_FORMAT_EMUNDUS') ?></span>
         </div>
         <?php endif; ?>
 

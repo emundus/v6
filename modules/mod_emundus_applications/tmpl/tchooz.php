@@ -524,9 +524,9 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                                                                     :</label>
                                                                 <p class="em-applicant-default-font em-text-neutral-900">
                                                                     <?php if (empty($application->updated)) : ?>
-                                                                        <?php echo JFactory::getDate(new JDate($application->submitted_date, $site_offset))->format('d/m/Y H:i'); ?>
+                                                                        <?php echo EmundusHelperDate::displayDate($application->submitted_date, 'DATE_FORMAT_EMUNDUS'); ?>
                                                                     <?php else : ?>
-                                                                        <?php echo EmundusHelperDate::displayDate($application->updated, 'DATE_FORMAT_LC2', 0); ?>
+                                                                        <?php echo EmundusHelperDate::displayDate($application->updated, 'DATE_FORMAT_EMUNDUS', 0); ?>
                                                                     <?php endif; ?>
                                                                 </p>
                                                             </div>
@@ -757,9 +757,9 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                                                         <div>
                                                             <p class="em-applicant-default-font em-text-neutral-900 em-font-size-14">
 																<?php if (empty($application->updated)) : ?>
-																	<?php echo JFactory::getDate(new JDate($application->submitted_date, $site_offset))->format('d/m/Y H:i'); ?>
+																	<?php echo EmundusHelperDate::displayDate($application->submitted_date, 'DATE_FORMAT_EMUNDUS'); ?>
 																<?php else : ?>
-																	<?php echo EmundusHelperDate::displayDate($application->updated, 'd/m/Y H:i', 0); ?>
+																	<?php echo EmundusHelperDate::displayDate($application->updated, 'DATE_FORMAT_EMUNDUS', 0); ?>
 																<?php endif; ?>
                                                             </p>
                                                         </div>
