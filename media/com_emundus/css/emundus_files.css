@@ -328,6 +328,11 @@ table .btn-group > .btn {
     padding-left: 10px;
 }
 
+.files-board .panel-default .panel-heading h3.panel-title .chzn-choices {
+    overflow: auto;
+    height: 41px;
+}
+
 .main-panel .panel-default.em-data {
     color: #353544;
 }
