@@ -183,7 +183,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                          onclick="window.location.href='<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'">
 
 						<?php else : ?>
-                        <div class="mod_emundus_campaign__list_content em-border-neutral-300 em-pointer"
+                        <div class="mod_emundus_campaign__list_content <?php echo ($mod_em_campaign_single_campaign_line == 1) ? 'mod_emundus_campaign__list_content--fc' : '' ; ?> em-border-neutral-300 em-pointer"
                              onclick="window.location.href='<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'">
 							<?php endif; ?>
 
@@ -259,6 +259,26 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                                 title="<?php echo $campaign_pinned->label; ?>"><?php echo $campaign_pinned->label; ?></h4>
                                         </a>
 									<?php endif; ?>
+
+                                    <?php if (!empty($mod_em_campaign_tags)):
+                                        $post = array(
+                                            'DEADLINE'       => strftime("%A %d %B %Y %H:%M", strtotime($campaign_pinned->end_date)),
+                                            'CAMPAIGN_LABEL' => $campaign_pinned->label,
+                                            'CAMPAIGN_YEAR'  => $campaign_pinned->year,
+                                            'CAMPAIGN_START' => $campaign_pinned->start_date,
+                                            'CAMPAIGN_END'   => $campaign_pinned->end_date,
+                                            'CAMPAIGN_CODE'  => $campaign_pinned->training,
+                                            'CAMPAIGN_ID'    => $campaign_pinned->id
+                                        );
+
+                                        $tags = $m_email->setTags(null, $post, null, '', $mod_em_campaign_tags);
+                                        $campaign_tags_display = preg_replace($tags['patterns'], $tags['replacements'], $mod_em_campaign_tags); ?>
+                                        <div class="em-mb-8">
+                                            <span class="em-tags-display em-text-neutral-900">
+                                                <?= $campaign_tags_display; ?>
+                                            </span>
+                                        </div>
+                                    <?php endif; ?>
 
                                     <div class="<?php echo $mod_em_campaign_class; ?> em-applicant-text-color">
                                         <div>
@@ -340,7 +360,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                         <?php
                                         $details_url = !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2);
                                         ?>
-                                        <a class="btn btn-primary em-w-100 em-mt-8 em-applicant-default-font em-flex-column"
+                                        <a class="btn btn-secondary em-w-100 em-mt-8 em-applicant-default-font em-flex-column"
                                            role="button" href='<?php echo $details_url; ?>'
                                            data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_MORE_INFO'); ?></a>
                                     </div>
@@ -370,7 +390,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 											$register_url .= '&redirect=' . $formUrl;
 										}
 										?>
-                                        <a class="btn btn-secondary em-w-100 em-mt-8 em-applicant-default-font em-flex-column"
+                                        <a class="btn btn-primary em-w-100 em-mt-8 em-applicant-default-font em-flex-column"
                                            role="button" href='<?php echo $register_url; ?>'
                                            data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
                                     </div>
@@ -770,6 +790,27 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                                     title="<?php echo $result->label; ?>"><?php echo $result->label; ?></h4>
                                             </a>
 										<?php endif; ?>
+
+                                        <?php if (!empty($mod_em_campaign_tags)):
+                                            $post = array(
+                                            'DEADLINE'       => strftime("%A %d %B %Y %H:%M", strtotime($result->end_date)),
+                                            'CAMPAIGN_LABEL' => $result->label,
+                                            'CAMPAIGN_YEAR'  => $result->year,
+                                            'CAMPAIGN_START' => $result->start_date,
+                                            'CAMPAIGN_END'   => $result->end_date,
+                                            'CAMPAIGN_CODE'  => $result->training,
+                                            'CAMPAIGN_ID'    => $result->id
+                                            );
+
+                                            $tags = $m_email->setTags(null, $post, null, '', $mod_em_campaign_tags);
+                                            $campaign_tags_display = preg_replace($tags['patterns'], $tags['replacements'], $mod_em_campaign_tags); ?>
+                                        <div class="em-mb-8">
+                                            <span class="em-tags-display em-text-neutral-900">
+                                                <?= $campaign_tags_display; ?>
+                                            </span>
+                                        </div>
+                                        <?php endif; ?>
+
                                         <div class="<?php echo $mod_em_campaign_class; ?> em-applicant-text-color">
                                             <div>
 												<?php if (strtotime($now) < strtotime($result->start_date)) : //pas commencé ?>
@@ -884,7 +925,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                             <?php
                                             $details_url = !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2);
                                             ?>
-                                            <a class="btn btn-primary em-w-100 em-mt-8 em-applicant-default-font em-flex-column"
+                                            <a class="btn btn-secondary em-w-100 em-mt-8 em-applicant-default-font em-flex-column"
                                                role="button" href='<?php echo $details_url; ?>'
                                                data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_MORE_INFO'); ?></a>
                                         </div>
@@ -913,7 +954,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 												$register_url .= '&redirect=' . $formUrl;
 											}
 											?>
-                                            <a class="btn btn-secondary em-w-100 em-mt-8 em-applicant-default-font em-flex-column"
+                                            <a class="btn btn-primary em-w-100 em-mt-8 em-applicant-default-font em-flex-column"
                                                role="button" href='<?php echo $register_url; ?>'
                                                data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
                                         </div>

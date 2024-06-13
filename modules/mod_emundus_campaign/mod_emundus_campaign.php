@@ -70,6 +70,7 @@ if($user->guest || in_array($e_user->profile,$app_prof))
     $mod_em_campaign_order                   = $params->get('mod_em_campaign_orderby');
     $mod_em_campaign_order_type              = $params->get('mod_em_campaign_order_type');
     $ignored_program_code                    = $params->get('mod_em_ignored_program_code');
+    $mod_em_campaign_tags                    = $params->get('mod_em_campaign_tags');
     $showprogramme                           = $params->get('mod_em_campaign_param_showprogramme');
     $showcampaign                            = $params->get('mod_em_campaign_param_showcampaign');
     $mod_em_campaign_show_documents          = $params->get('mod_em_campaign_show_documents', 1);
@@ -181,6 +182,11 @@ if($user->guest || in_array($e_user->profile,$app_prof))
     if (!empty($ignored_program_code))
     {
         $program_array['NOT_IN'] = array_map('trim', explode(',', $ignored_program_code));
+    }
+
+    if (!empty($mod_em_campaign_tags)) {
+        include_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
+        $m_email = new EmundusModelEmails();
     }
 
     include_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'programme.php');

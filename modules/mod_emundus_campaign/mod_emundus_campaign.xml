@@ -220,6 +220,14 @@
 					<field type="text" name="mod_em_program_code" label="MOD_EM_PROGRAM_CODE" description="MOD_EM_PROGRAM_CODE_DESC"/>
 
 					<field type="text" name="mod_em_ignored_program_code" label="MOD_EM_PROGRAM_CODE_IGNORE" description="MOD_EM_PROGRAM_CODE_IGNORE_DESC"/>
+
+					<field  showon="mod_em_campaign_layout:default_tchooz"
+							name="mod_em_campaign_tags"
+						   	type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
+						   	default=""
+						   	label="MOD_EMUNDUS_TAGS"
+						   	description="MOD_EMUNDUS_TAGS_DESC">
+					</field>
 				</fieldset>
 
 				<fieldset name="single" label="Paramètres des détails">
