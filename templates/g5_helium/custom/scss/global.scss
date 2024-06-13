@@ -3044,6 +3044,18 @@ ul.unstyled.em-linkForgot li a {
   padding-left: 80px !important;
 }
 
+.g-back-office-emundus-tableau .g-grid {
+  .g-content {
+    height: 100%;
+    .row-fluid {
+        height: 100%;
+      .span12 {
+        height: 100%;
+      }
+    }
+  }
+}
+
 
 /* EMAILS */
 
