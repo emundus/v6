@@ -162,9 +162,10 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 		<?php if (!empty($campaigns_pinned) && $mod_em_campaign_show_pinned_campaign == 1) : ?>
         <h3><?php echo JText::_('MOD_EM_CAMPAIGN_PINNED_CAMPAIGN') ?></h3>
         <div class="mt-9 mb-9<?php if (sizeof($campaigns_pinned) > 1) : ?> mod_emundus_campaign__list_items<?php endif; ?>">
-			<?php foreach ($campaigns_pinned
-
-			               as $campaign_pinned) : ?>
+			<?php foreach ($campaigns_pinned as $campaign_pinned) : ?>
+                <?php
+                    $details_url = !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2);
+                ?>
             <div class="mod_emundus_campaign__pinned_campaign"
 			     <?php if (sizeof($campaigns_pinned) == 1) : ?>style="width: 60%"<?php endif; ?>>
                 <div class="hover-and-tile-container">
@@ -181,7 +182,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
 						<?php else : ?>
                         <div class="mod_emundus_campaign__list_content em-border-neutral-300 em-pointer"
-                             onclick="window.location.href='<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'">
+                             onclick="window.location.href='<?php echo $details_url; ?>'">
 							<?php endif; ?>
 
 							<?php if ($mod_em_campaign_display_svg == 1) : ?>
@@ -358,6 +359,11 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                            data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
                                     </div>
 								<?php endif; ?>
+                                <?php if ($mod_em_campaign_show_see_details_button == 1) : ?>
+                                    <div>
+                                        <a class="btn btn-primary em-w-100 em-mt-8 em-applicant-default-font em-flex-column" role="button" href='<?php echo $details_url;?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_SEE_DETAILS'); ?></a>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
@@ -672,7 +678,9 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 					{
 						continue;
 					}
-					?>
+
+                    $details_url =  !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2);
+                    ?>
 
                     <div class="hover-and-tile-container">
 						<?php if (strtotime($now) > strtotime($result->end_date)) : ?>
@@ -904,6 +912,11 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                                data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
                                         </div>
 									<?php endif; ?>
+                                    <?php if ($mod_em_campaign_show_see_details_button == 1) : ?>
+                                        <div>
+                                            <a class="btn btn-primary em-w-100 em-mt-8 em-applicant-default-font em-flex-column" role="button" href='<?php echo $details_url;?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_SEE_DETAILS'); ?></a>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
