@@ -343,7 +343,8 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
         </div>
 	<?php else : ?>
         <h4 id="no_file_tab_message_view" class="em-display-none"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_TAB') ?></h4>
-		<?php foreach ($applications as $key => $group) : ?>
+        <h4 id="no_file_search_message_view" class="em-display-none"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_SEARCH') ?></h4>
+        <?php foreach ($applications as $key => $group) : ?>
 			<?php foreach ($group as $g_key => $sub_group) : ?>
                 <?php if ((!empty($order_by_session) && !empty($sub_group['applications'])) || !empty($sub_group['applications'][0])) : ?>
                     <div id="group_application_tab_<?php echo $key ?>"
@@ -1052,7 +1053,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                 document.querySelectorAll('#application_content' + fnum).forEach((block) => {
                     block.style.display = 'none';
                 })
-            })
+            });
             fnums_to_show.forEach((fnum) => {
                 document.querySelectorAll('#application_content' + fnum).forEach((block) => {
                     if(block.nodeName === 'TR'){
@@ -1061,7 +1062,14 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                         block.style.display = 'block';
                     }
                 })
-            })
+            });
+
+            if (fnums_to_show.length === 0) {
+                document.getElementById('no_file_search_message_view').style.display = 'block';
+            } else {
+                document.getElementById('no_file_search_message_view').style.display = 'none';
+            }
+
         } else {
             for (let application of document.querySelectorAll("div[id^='application_content']")) {
                 if(application.nodeName === 'TR'){
@@ -1070,7 +1078,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                     application.style.display = 'block';
                 }
             }
-
+            document.getElementById('no_file_search_message_view').style.display = 'none';
         }
 
     }, 500));
