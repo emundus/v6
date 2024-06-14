@@ -8,7 +8,7 @@ function Booking(pageProps: any) {
         <CalProvider
             clientId={'Je_sers_a_quelque_chose_?'}
             options={{
-                apiUrl: "http://localhost:3004/v2",
+                apiUrl: import.meta.env.URL_API_CALCOM_V2,
             }}
         >
             <Booker

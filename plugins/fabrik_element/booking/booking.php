@@ -87,7 +87,6 @@ class PlgFabrik_ElementBooking extends PlgFabrik_Element
     public function render($data, $repeatCounter = 0)
     {
         $m_users = new EmundusModelUsers();
-        $params = $this->getParams();
         $layout = $this->getLayout('form');
         $displayData = new stdClass;
         $displayData->id = $this->getHTMLId($repeatCounter);
@@ -96,9 +95,8 @@ class PlgFabrik_ElementBooking extends PlgFabrik_Element
         $user = $m_users->getUserById($this->user->id);
 
         $bookinggArray = json_decode($user[0]->bookingg, true);
-        $displayData->slug = $bookinggArray[2];
         $displayData->owner = $bookinggArray[1];
-
+        $displayData->slug = $bookinggArray[2];
 
         return $layout->render($displayData);
     }
@@ -135,16 +133,20 @@ class PlgFabrik_ElementBooking extends PlgFabrik_Element
     public function getValue($data, $repeatCounter = 0, $opts = array())
     {
         $w = new CalCom();
-        $id = (int) $data['jos_emundus_users___dispo'][0];
-        $availa = $this->getIdsAvailabilities($id);
-        $user = $w->getUser($availa->user_id);
-        $event = $w->getEventType($availa->event_id);
-        $username = $user['data']->data->username;
-        $event_slug = $event['data']->event_type->slug;
-
-        return $id !== 0 ? json_encode(array($id, $username, $event_slug)) : json_encode(array($username, $event_slug));
+        $id = (int) $data['jos_emundus_users___dispo'][0]; // not very flexible...
+        if($id !== 0)
+        {
+            $availabilities = $this->getIdsAvailabilities($id);
+            $user = $w->getUser($availabilities->user_id);
+            $event = $w->getEventType($availabilities->event_id);
+            $username = $user['data']->data->username;
+            $event_slug = $event['data']->event_type->slug;
+            return json_encode(array($id, $username, $event_slug));
+        }
+        return null;
     }
 
+    // Should probably not be here
     public function getIdsAvailabilities($id_availability)
     {
         $result = '';
@@ -163,18 +165,15 @@ class PlgFabrik_ElementBooking extends PlgFabrik_Element
 
                 if (empty($result)) {
                     $result = '';
-                    JLog::add('No availability found ' . $result, JLog::ERROR, 'com_emundus.api');
+                    JLog::add('No availability found', JLog::ERROR, 'com_emundus.api');
                 }
             } catch (Exception $e) {
                 $result = '';
-                JLog::add('No availability request good ' . $result . ' ' . $e->getMessage() . ' ' . $query, JLog::ERROR, 'com_emundus.api');
+                JLog::add('Bad execution request ' . $e->getMessage() . ' ' . $query, JLog::ERROR, 'com_emundus.api');
             }
         }
-
         return $result;
-
     }
-
 
     /**
      * Returns javascript which creates an instance of the class defined in formJavascriptClass()
@@ -188,7 +187,6 @@ class PlgFabrik_ElementBooking extends PlgFabrik_Element
     {
         $id = $this->getHTMLId($repeatCounter);
         $opts = $this->getElementJSOptions($repeatCounter);
-        $opts->owner = $this->getParams()->get('owner');
         return array('FbPanel', $id, $opts);
     }
 }

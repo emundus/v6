@@ -8,32 +8,23 @@
  */
 
 namespace classes\api;
-use Joomla\CMS\Log\Log;
 use Joomla\CMS\Factory;
 use Datetime;
 
 defined('_JEXEC') or die('Restricted access');
 class CalCom extends Api
 {
-
     public function __construct()
     {
         parent::__construct();
 
         $this->setBaseUrl();
         $this->setClient();
+
+        // Values depending on PlatformOAuthClient values and API key generated on Cal.com
         $this->platform_oauth_client_id = "7774eb2e5e7d7b4387c2c3ed31c881512d07d90bd7fcee274ec6a4132f0c0e9c";
         $this->platform_oauth_client_secret = "e273621869bd693cfa186b790a46ad84880776dea895b905b299917642b97db6";
         $this->api_key = "cal_edcfa25c9fae2e8d476cb6c02c4dc265";
-
-    }
-
-    /**
-     * @description Set the URL to Cal.com API v2
-     */
-    public function setBaseUrl(): void
-    {
-        $this->baseUrl = "http://192.168.1.72:3004";
     }
 
     /**
@@ -42,6 +33,14 @@ class CalCom extends Api
     public function setBaseUrlFirstVersionApi()
     {
         $this->baseUrl = "http://192.168.1.72:3003";
+    }
+
+    /**
+     * @description Set the URL to Cal.com API v2
+     */
+    public function setBaseUrl(): void
+    {
+        $this->baseUrl = "http://192.168.1.72:3004";
     }
 
     /**
@@ -59,6 +58,46 @@ class CalCom extends Api
     }
 
     /**
+     * @description Set headers for schedules' requests
+     *
+     * @param $access_token string : User's access token associated to the schedule
+     * @param $user_id : User concerned about the refreshing
+     *
+     * @value accept : Indicates the type of content expected (json here)
+     * @value Content-Type : Indicates the type of content received (json here)
+     * @value Authorization : Authorize the request thanks to user's access token given
+     * @value x-cal-secret-key : PlatformOAuthClient's secret
+     */
+    public function setHeadersSchedule($access_token, $user_id): void
+    {
+        if(!Factory::getSession()->get('cal_com_access_token_' . $user_id) || Factory::getSession()->get('cal_com_access_token_' . $user_id)[1] <= new Datetime('now'))
+        {
+            $access_token = $this->refreshingAccessToken($user_id);
+            $access_token = $access_token['data']->data->accessToken;
+            Factory::getSession()->set('cal_com_access_token_' . $user_id, array($access_token['data']->data->accessToken, (new DateTime('now'))->modify('+1 hour')));
+        }
+
+        $this->headers = array(
+            'accept' => "application/json",
+            'Content-Type' => "application/json",
+            'Authorization' => "Bearer " . $access_token,
+            'x-cal-secret-key' => $this->platform_oauth_client_secret
+        );
+    }
+
+    /**
+     * @description Get request to obtain one Cal.com OAuthClient
+     *
+     * @param $user_id int User's ID
+     *
+     */
+    public function getUser($user_id)
+    {
+        $this->setHeadersUser();
+        return $this->get("v2/oauth-clients/" . $this->platform_oauth_client_id . "/users/" . $user_id);
+    }
+
+    /**
      * @description Get request to obtain all Cal.com OAuthClients
      *
      */
@@ -68,18 +107,12 @@ class CalCom extends Api
         return $this->get("v2/oauth-clients/" . $this->platform_oauth_client_id . "/users");
     }
 
-    public function getUser($user_id)
-    {
-        $this->setHeadersUser();
-        return $this->get("v2/oauth-clients/" . $this->platform_oauth_client_id . "/users/" . $user_id);
-    }
-
     /**
      * @description Post request to create a Cal.com user
      *
      * @param $name string User's name that will be created
      * @param $time_format int Hours' format (12 or 24)
-     * @param $week_start string First day of the week
+     * @param $week_start string First day of the week wanted
      * @param $time_zone string User's timezone
      *
      */
@@ -143,35 +176,6 @@ class CalCom extends Api
         return $this->patch("v2/oauth-clients/" . $this->platform_oauth_client_id . "/users/" . $user_id, $query_body);
     }
 
-
-    /**
-     * @description Set headers for schedules' requests
-     *
-     * @param $access_token string : User's access token associated to the schedule
-     * @param $user_id : User concerned about the refreshing
-     *
-     * @value accept : Indicates the type of content expected (json here)
-     * @value Content-Type : Indicates the type of content received (json here)
-     * @value Authorization : Authorize the request thanks to user's access token given
-     * @value x-cal-secret-key : PlatformOAuthClient's secret
-     */
-    public function setHeadersSchedule($access_token, $user_id): void
-    {
-        if(!Factory::getSession()->get('cal_com_access_token_' . $user_id) || Factory::getSession()->get('cal_com_access_token_' . $user_id)[1] <= new Datetime('now'))
-        {
-            $access_token = $this->refreshingAccessToken($user_id);
-            $access_token = $access_token['data']->data->accessToken;
-            Factory::getSession()->set('cal_com_access_token_' . $user_id, array($access_token['data']->data->accessToken, (new DateTime('now'))->modify('+1 hour')));
-        }
-
-        $this->headers = array(
-            'accept' => "application/json",
-            'Content-Type' => "application/json",
-            'Authorization' => "Bearer " . $access_token,
-            'x-cal-secret-key' => $this->platform_oauth_client_secret
-        );
-
-    }
 
     /**
      * @description Post request to create a Cal.com schedule
@@ -287,11 +291,14 @@ class CalCom extends Api
 
         }
         return $result;
-
-
-
     }
 
+    /**
+     * @description Get request to obtain a Cal.com event type
+     *
+     * @param $event_type_id int Event type's ID
+     *
+     */
     public function getEventType($event_type_id)
     {
         $this->setBaseUrlFirstVersionApi();

@@ -18,7 +18,7 @@ function Availability(pageProps: any) {
     const [data, setData] = useState<FetchResponse | null>(null);
 
     useEffect(() => {
-        fetch('http://localhost:3004/v2/oauth-clients/' + import.meta.env.VITE_CLIENT_ID + '/users/' + props.user + '/force-refresh', {
+        fetch(import.meta.env.URL_API_CALCOM_V2 + '/oauth-clients/' + import.meta.env.VITE_CLIENT_ID + '/users/' + props.user + '/force-refresh', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -44,7 +44,7 @@ function Availability(pageProps: any) {
             accessToken={data?.data.accessToken}
             clientId={'Je_sers_a_quelque_chose_?'}
             options={{
-                apiUrl: "http://localhost:3004/v2",
+                apiUrl: import.meta.env.URL_API_CALCOM_V2,
             }}
         >
             <AvailabilitySettings

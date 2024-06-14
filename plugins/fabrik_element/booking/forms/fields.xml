@@ -8,9 +8,7 @@
 	</fields>
 
 	<fields name="params">
-
 		<fieldset name="reservation" label="Réservation">
-
 			<field name="mode"
 				   type="list"
 				   default="1"
@@ -18,34 +16,7 @@
 				<option value="0">Réservation</option>
 				<option value="1">Disponibilité</option>
 			</field>
-
-			<field name="owner"
-				   type="text"
-				   label="Propriétaire"
-			       size="100"/>
-
-			<field name="slug"
-				   type="list"
-				   default="thirty-minutes"
-				   label="Evènement"
-				   hideon="mode!0">
-				<option value="thirty-minutes">30 minutes</option>
-				<option value="sixty-minutes">60 minutes</option>
-			</field>
-
 		</fieldset>
-
-		<fieldset name="disponibilite" label="Disponibilité">
-
-			<field name="user"
-				   type="number"
-				   label="ID utilisateur"
-				   min="1"
-				   default="1"
-				   size="5" />
-
-		</fieldset>
-
 	</fields>
 </form>
 
