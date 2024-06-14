@@ -397,12 +397,11 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 											$current_phase = $m_campaign->getCurrentCampaignWorkflow($application->fnum);
 
 											?>
-                                            <div class="hover-and-tile-container">
+                                            <div class="hover-and-tile-container" id="application_content<?php echo $application->fnum ?>">
 	                                            <?php if ($mod_em_campaign_display_hover_offset == 1) : ?>
                                                 <div id="tile-hover-offset-request"></div>
                                                 <?php endif; ?>
                                                 <div class="row em-border-neutral-300 mod_emundus_applications___content_app em-pointer"
-                                                     id="application_content<?php echo $application->fnum ?>"
                                                      onclick="openFile(event,'<?php echo $first_page_url ?>')">
 											        <?php if ($mod_em_campaign_display_svg == 1) : ?>
                                                         <div id="background-shapes" alt="<?= JText::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
