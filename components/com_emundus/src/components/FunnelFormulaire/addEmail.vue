@@ -93,7 +93,7 @@
               <span class="material-icons-outlined">edit</span>
             </a>
             <a class="em-pointer" @click="removeTrigger(trigger.trigger_id)">
-              <span class="material-icons-outlined">close</span>
+              <span class="material-icons-outlined em-red-500-color">close</span>
             </a>
           </div>
         </div>

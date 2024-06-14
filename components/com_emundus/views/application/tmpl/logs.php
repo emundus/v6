@@ -20,8 +20,8 @@ JFactory::getSession()->set('application_layout', 'logs');
     <input type="hidden" id="fnum_hidden" value="<?php echo $this->fnum ?>">
 
     <div class="row">
-        <div class="panel panel-default widget em-container-comment">
-            <div class="panel-heading em-container-comment-heading">
+        <div class="panel panel-default widget em-container-logs">
+            <div class="panel-heading em-container-logs-heading">
 
                 <h3 class="panel-title">
                 	<span class="glyphicon glyphicon-list"></span>
@@ -29,13 +29,16 @@ JFactory::getSession()->set('application_layout', 'logs');
                 </h3>
 
                 <div class="btn-group pull-right">
-                    <button id="em-prev-file" class="btn btn-info btn-xxl"><i class="small arrow left icon"></i></button>
-                    <button id="em-next-file" class="btn btn-info btn-xxl"><i class="small arrow right icon"></i></button>
+                    <button id="em-prev-file" class="btn btn-info btn-xxl"><span
+                                class="material-icons">arrow_back</span></button>
+                    <button id="em-next-file" class="btn btn-info btn-xxl"><span
+                                class="material-icons">arrow_forward</span></button>
+
                 </div>
 
             </div>
 
-            <br class="panel-body em-container-comment-body">
+            <br class="panel-body em-container-logs-body">
             <?php if (!empty($this->fileLogs)) { ?>
                 <div id="filters-logs" class="em-flex-row">
                     <!-- add CRUD filters (multi-chosen) -->
@@ -136,7 +139,7 @@ JFactory::getSession()->set('application_layout', 'logs');
                 } else {
                    $('#filters-logs').remove();
                    $('#log-filter-btn').remove();
-                   $('.em-container-comment-heading').after('<b style="color:red">' + Joomla.JText._("COM_EMUNDUS_NO_ACTION_FOUND") + '</b>');
+                   $('.em-container-logs-heading').after('<b style="color:red">' + Joomla.JText._("COM_EMUNDUS_NO_ACTION_FOUND") + '</b>');
                 }
             }, error: function(jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR.responseText, textStatus, errorThrown);
