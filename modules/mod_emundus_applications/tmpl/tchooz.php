@@ -345,7 +345,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
         <h4 id="no_file_tab_message_view" class="em-display-none"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_TAB') ?></h4>
 		<?php foreach ($applications as $key => $group) : ?>
 			<?php foreach ($group as $g_key => $sub_group) : ?>
-				<?php if (sizeof($sub_group['applications'][0]) > 0) : ?>
+                <?php if ((!empty($order_by_session) && !empty($sub_group['applications'])) || !empty($sub_group['applications'][0])) : ?>
                     <div id="group_application_tab_<?php echo $key ?>"
                          class="em-mb-44 <?php if ($key != $current_tab) : ?>em-display-none<?php endif; ?>">
                         <?php if (isset($sub_group['label'])) : ?>
@@ -667,7 +667,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
         <h4 id="no_file_tab_message_list" class="em-display-none"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_TAB') ?></h4>
 		<?php foreach ($applications as $key => $group) : ?>
 			<?php foreach ($group as $g_key => $sub_group) : ?>
-				<?php if (sizeof($sub_group['applications'][0]) > 0) : ?>
+                <?php if ((!empty($order_by_session) && !empty($sub_group['applications'])) || !empty($sub_group['applications'][0])) : ?>
                     <div id="group_application_tab_<?php echo $key ?>"
                          class="em-mb-44 <?php if ($key != $current_tab) : ?>em-display-none<?php endif; ?>">
 
