@@ -620,7 +620,9 @@ class EmundusFiltersFiles extends EmundusFilters
                     'value' => ['all'],
                     'default' => true,
                     'available' => true,
-                    'order' => $config['filter_groups_order']
+                    'order' => $config['filter_groups_order'],
+                    'andorOperator'  => 'OR',
+                    'andorOperators' => ['OR', 'AND']
                 ];
             }
 
@@ -653,7 +655,9 @@ class EmundusFiltersFiles extends EmundusFilters
                     'value' => ['all'],
                     'default' => true,
                     'available' => true,
-                    'order' => $config['filter_users_order']
+                    'order' => $config['filter_users_order'],
+                    'andorOperator'  => 'OR',
+                    'andorOperators' => ['OR', 'AND']
                 ];
             }
 

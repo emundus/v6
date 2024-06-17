@@ -3956,10 +3956,32 @@ class EmundusHelperFiles
                                         $setup_groups_alias = array_search('jos_emundus_setup_groups_repeat_course', $already_joined);
                                     }
 
-                                    if ($filter['operator'] === 'NOT IN') {
-                                        // not in necessits a different approach, because ther is a one to many relationship
-                                        // one jecc.id can have many group_assoc.id
-                                        $where['q'] .= 'AND ( jecc.fnum NOT IN (
+                                    if ($filter['andorOperator'] === 'AND' && sizeof($filter['value']) > 1) {
+                                        $where['q'] .= $filter['operator'] === 'NOT IN' ? ' AND (jecc.fnum NOT IN (' : ' AND (jecc.fnum IN (';
+
+                                        $first = true;
+                                        foreach ($filter['value'] as $value) {
+                                            if ($first) {
+                                                $first = false;
+                                            } else {
+                                                $where['q'] .= ' INTERSECT ';
+                                            }
+
+                                            $where['q'] .= '(SELECT jos_emundus_group_assoc.fnum
+										        FROM jos_emundus_group_assoc
+										        WHERE ' . $this->writeQueryWithOperator('jos_emundus_group_assoc.group_id', $value, 'IN') . '
+										        OR esc.training IN (
+									            SELECT jos_emundus_setup_groups_repeat_course.course
+									            FROM jos_emundus_setup_groups_repeat_course
+									            WHERE ' . $this->writeQueryWithOperator('jos_emundus_setup_groups_repeat_course.parent_id', $value, 'IN') . '))';
+                                        }
+
+                                        $where['q'] .= '))';
+                                    } else {
+                                        if ($filter['operator'] === 'NOT IN') {
+                                            // not in necessits a different approach, because ther is a one to many relationship
+                                            // one jecc.id can have many group_assoc.id
+                                            $where['q'] .= 'AND ( jecc.fnum NOT IN (
 												SELECT jos_emundus_group_assoc.fnum
 										        FROM jos_emundus_group_assoc
 										        WHERE ' . $this->writeQueryWithOperator('jos_emundus_group_assoc.group_id', $filter['value'], 'IN') . '
@@ -3971,10 +3993,10 @@ class EmundusHelperFiles
 									        )
 									    )';
 
-                                    } else {
-                                        $where['q'] .= ' AND (' . $this->writeQueryWithOperator($group_assoc_alias . '.group_id', $filter['value'], $filter['operator']) . ' OR ' . $this->writeQueryWithOperator($setup_groups_alias . '.id', $filter['value'], $filter['operator']). ')';
+                                        } else {
+                                            $where['q'] .= ' AND (' . $this->writeQueryWithOperator($group_assoc_alias . '.group_id', $filter['value'], $filter['operator']) . ' OR ' . $this->writeQueryWithOperator($setup_groups_alias . '.id', $filter['value'], $filter['operator']). ')';
+                                        }
                                     }
-
                                     break;
                                 case 'users_assoc':
                                     if (!in_array('jos_emundus_users_assoc', $already_joined)) {
