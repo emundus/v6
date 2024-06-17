@@ -1516,6 +1516,71 @@ footer#g-footer > .g-container {
   cursor: pointer;
 }
 
+/* INDICATORS PAGE */
+.view-list .fabrikForm.form-search {
+ .fabrikFilterContainer select.fabrik_filter {
+    background-position-x: 93%;
+    height: var(--em-form-height) !important;
+    padding-right: 20px;
+  }
+
+.fabrikButtonsContainer {
+    margin-top: 24px;
+
+    ul.dropdown-menu {
+      padding: 8px;
+
+     &> li {
+      a {
+        color: var(--neutral-900);
+        border-radius: 8px;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 4px;
+
+        &:hover {
+          background: #EBECF0 !important;
+          border-radius: 4px !important;
+          text-decoration: none;
+          color: var(--neutral-900) !important;
+          i {
+            color: var(--neutral-900) !important;
+          }
+        }
+      }
+     }
+    }
+
+    ul.nav {
+      li.dropdown {
+        a[role="button"] {
+        background: #FFFFFF;
+        border: 1px solid #EDEDED;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 10px 16px;
+        color: black;
+        gap: 14px;
+
+        &:hover {
+          text-decoration: none;
+        }
+
+          b.caret {
+            margin-top: 0;
+            color: var(--neutral-900);
+            border-top-color: var(--neutral-900);
+            border-bottom-color: var(--neutral-900);
+          }
+       }
+      }
+    }
+  }
+}
+
 /* NEW STYLE */
 .view-list .fabrikFilterContainer .table.filtertable .fabrik_filter_container .input-append {
   button.btn.calendarbutton {
