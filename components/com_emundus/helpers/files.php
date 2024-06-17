@@ -3657,7 +3657,7 @@ class EmundusHelperFiles
 		}
 
         if ($caller == 'files') {
-            $where['q'] .= ' AND esc.published > 0';
+            $where['q'] .= ' AND esc.published = ' . $db->quote('1');
         }
 
 	    $menu = JFactory::getApplication()->getMenu();
@@ -3902,15 +3902,33 @@ class EmundusHelperFiles
                                     $where['q'] .= ' AND ' . $this->writeQueryWithOperator('jecc.published', $filter['value'], $filter['operator']);
                                     break;
                                 case 'tags':
-                                    if ($filter['operator'] === 'NOT IN') {
-                                        $where['q'] .= ' AND jecc.fnum NOT IN (
-                                            SELECT DISTINCT jos_emundus_campaign_candidature.fnum
-                                            FROM jos_emundus_campaign_candidature
-                                            LEFT JOIN jos_emundus_tag_assoc ON jos_emundus_tag_assoc.fnum = jos_emundus_campaign_candidature.fnum
-                                            WHERE ' . $this->writeQueryWithOperator('jos_emundus_tag_assoc.id_tag', $filter['value'], 'IN') . '
-                                        )';
+                                    if ($filter['andorOperator'] === 'AND' && sizeof($filter['value']) > 1) {
+                                        $where['q'] .= $filter['operator'] === 'NOT IN' ? ' AND jecc.fnum NOT IN (' : ' AND jecc.fnum IN (';
+
+                                        $first = true;
+                                        foreach ($filter['value'] as $value) {
+                                            if ($first) {
+                                                $first = false;
+                                            } else {
+                                                $where['q'] .= ' INTERSECT ';
+                                            }
+
+                                            $where['q'] .= ' SELECT DISTINCT jos_emundus_tag_assoc.fnum
+                                                FROM jos_emundus_tag_assoc
+                                                WHERE ' . $this->writeQueryWithOperator('jos_emundus_tag_assoc.id_tag', $value, 'IN');
+                                        }
+
+                                        $where['q'] .= ')';
                                     } else {
-                                        $where['q'] .= ' AND ( ' . $this->writeQueryWithOperator('eta.id_tag', $filter['value'], $filter['operator']) . ' )';
+                                        if ($filter['operator'] === 'NOT IN') {
+                                            $where['q'] .= ' AND jecc.fnum NOT IN (
+                                                SELECT DISTINCT jos_emundus_tag_assoc.fnum
+                                                FROM jos_emundus_tag_assoc
+                                                WHERE ' . $this->writeQueryWithOperator('jos_emundus_tag_assoc.id_tag', $filter['value'], 'IN') . '
+                                            )';
+                                        } else {
+                                            $where['q'] .= ' AND ( ' . $this->writeQueryWithOperator('eta.id_tag', $filter['value'], $filter['operator']) . ' )';
+                                        }
                                     }
                                     break;
                                 case 'group_assoc':
@@ -4256,7 +4274,7 @@ class EmundusHelperFiles
 		return $left_joins;
 	}
 
-	public function writeQueryWithOperator($element, $values, $operator, $type = 'select', $fabrik_element_data = null) {
+	public function writeQueryWithOperator($element, $values, $operator, $type = 'select', $fabrik_element_data = null, $andor = 'OR') {
 		$query = '1=1';
 
 
@@ -4419,7 +4437,7 @@ class EmundusHelperFiles
                                     if ($key == 0) {
                                         $query = $element . ' LIKE ' . $db->quote('%"' . $value . '"%');
                                     } else {
-                                        $query .= ' OR ' . $element . ' LIKE ' . $db->quote('%"' . $value . '"%');
+                                        $query .=  $andor . ' ' . $element . ' LIKE ' . $db->quote('%"' . $value . '"%');
                                     }
                                 }
                             } else {

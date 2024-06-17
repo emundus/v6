@@ -577,7 +577,9 @@ class EmundusFiltersFiles extends EmundusFilters
 					'value'     => ['all'],
 					'default'   => true,
 					'available' => true,
-					'order'     => $config['filter_tags_order']
+					'order'     => $config['filter_tags_order'],
+                    'andorOperator'  => 'OR',
+                    'andorOperators' => ['OR', 'AND']
 				];
 			}
 
