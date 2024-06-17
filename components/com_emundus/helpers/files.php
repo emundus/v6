@@ -4008,17 +4008,46 @@ class EmundusHelperFiles
                                         $users_assoc_alias = array_search('jos_emundus_group_assoc', $already_joined);
                                     }
 
-                                    if ($filter['operator'] === 'NOT IN') {
-                                        $where['q'] .= ' AND jecc.fnum NOT IN (
+                                    if ($filter['andorOperator'] === 'AND' && sizeof($filter['value']) > 1) {
+                                        $user_assoc_fnums = [];
+
+                                        $first = true;
+                                        $subquery = '';
+                                        foreach ($filter['value'] as $value) {
+                                            if ($first) {
+                                                $first = false;
+                                            } else {
+                                                $subquery .= ' INTERSECT ';
+                                            }
+
+                                            $subquery .= ' SELECT DISTINCT jos_emundus_users_assoc.fnum
+                                            FROM jos_emundus_users_assoc
+                                            WHERE ' . $this->writeQueryWithOperator('jos_emundus_users_assoc.user_id', $value, 'IN')  . ' AND jos_emundus_users_assoc.fnum IS NOT NULL';
+                                        }
+
+                                        try {
+                                            $db->setQuery($subquery);
+                                            $user_assoc_fnums = $db->loadColumn();
+                                        } catch (Exception $e) {
+                                            JLog::add('Failed to get fnums for users_assoc filter ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                                        }
+
+                                        if (!empty($user_assoc_fnums)) {
+                                            $where['q'] .= $filter['operator'] === 'NOT IN' ? ' AND jecc.fnum NOT IN (' : ' AND jecc.fnum IN (';
+                                            $where['q'] .= implode(',', $user_assoc_fnums) . ')';
+                                        }
+                                    } else {
+                                        if ($filter['operator'] === 'NOT IN') {
+                                            $where['q'] .= ' AND jecc.fnum NOT IN (
                                             SELECT DISTINCT jos_emundus_users_assoc.fnum
                                             FROM jos_emundus_users_assoc
                                             WHERE ' . $this->writeQueryWithOperator('jos_emundus_users_assoc.user_id', $filter['value'], 'IN') . '
-                                            AND jeua.action_id = 1 AND jeua.r = 1
+                                            AND jos_emundus_users_assoc.action_id = 1 AND jos_emundus_users_assoc.r = 1
                                         )';
-                                    } else {
-                                        $where['q'] .= ' AND ' . $this->writeQueryWithOperator($users_assoc_alias . '.user_id', $filter['value'], $filter['operator']);
+                                        } else {
+                                            $where['q'] .= ' AND ' . $this->writeQueryWithOperator($users_assoc_alias . '.user_id', $filter['value'], $filter['operator']);
+                                        }
                                     }
-
                                     break;
                                 default:
                                     break;
