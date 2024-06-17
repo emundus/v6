@@ -12,7 +12,7 @@
 						  <span class="material-icons-outlined em-pointer" @click="removeGlobalSearchValue(value.value, value.scope)">clear</span>
 					  </div>
 				  </div>
-				  <input id="current-global-search" ref="globalSearchInput" class="em-border-radius-8" v-model="currentGlobalSearch" type="text" @keyup.enter="(e) => {this.onGlobalSearchChange(e, 'everywhere')}" @paste="onPasteQuickSearch" :placeholder="globalSearchPlaceholder">
+				  <input id="current-global-search" ref="globalSearchInput" class="em-border-radius-8" v-model="currentGlobalSearch" type="text" @keyup.enter="(e) => {this.onGlobalSearchChange(e, 'everywhere')}" :placeholder="globalSearchPlaceholder">
 			  </div>
 			  <ul id="select-scopes" class="em-w-100 em-w-100 em-border-radius-8 em-white-bg em-border-neutral-400 em-box-shadow" :class="{'hidden': currentGlobalSearch.length < 1}">
 				  <li v-for="option in globalSearchScopes" :key="option.value" @click="(e) => {this.onGlobalSearchChange(e, option.value)}" class="em-pointer global-search-scope">
