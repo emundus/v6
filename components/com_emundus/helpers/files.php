@@ -3902,7 +3902,7 @@ class EmundusHelperFiles
                                     $where['q'] .= ' AND ' . $this->writeQueryWithOperator('jecc.published', $filter['value'], $filter['operator']);
                                     break;
                                 case 'tags':
-                                    if ($filter['andorOperator'] === 'AND' && sizeof($filter['value']) > 1) {
+                                    if ($filter['andorOperator'] === 'AND' && is_array($filter['value']) && sizeof($filter['value']) > 1) {
                                         $where['q'] .= $filter['operator'] === 'NOT IN' ? ' AND jecc.fnum NOT IN (' : ' AND jecc.fnum IN (';
 
                                         $first = true;
@@ -3956,7 +3956,7 @@ class EmundusHelperFiles
                                         $setup_groups_alias = array_search('jos_emundus_setup_groups_repeat_course', $already_joined);
                                     }
 
-                                    if ($filter['andorOperator'] === 'AND' && sizeof($filter['value']) > 1) {
+                                    if ($filter['andorOperator'] === 'AND' && is_array($filter['value']) && sizeof($filter['value']) > 1) {
                                         $where['q'] .= $filter['operator'] === 'NOT IN' ? ' AND (jecc.fnum NOT IN (' : ' AND (jecc.fnum IN (';
 
                                         $first = true;
@@ -4008,7 +4008,7 @@ class EmundusHelperFiles
                                         $users_assoc_alias = array_search('jos_emundus_group_assoc', $already_joined);
                                     }
 
-                                    if ($filter['andorOperator'] === 'AND' && sizeof($filter['value']) > 1) {
+                                    if ($filter['andorOperator'] === 'AND' && is_array($filter['value']) && sizeof($filter['value']) > 1) {
                                         $user_assoc_fnums = [];
 
                                         $first = true;
