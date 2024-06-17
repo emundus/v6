@@ -382,9 +382,10 @@ export default {
 
             if (!foundSearch) {
               this.globalSearch.push({value: search, scope: scope});
-              this.applyFilters();
             }
           });
+
+          this.applyFilters();
         } else {
           // if the current search is already in the list, no need to add it again
           const foundSearch = this.globalSearch.find((search) => search.value === this.currentGlobalSearch && search.scope === scope);
