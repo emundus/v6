@@ -1130,6 +1130,11 @@ footer#g-footer > .g-container {
 }
 
 /** PAGE EDIT PROFILE **/
+
+.view-profile #system-message-container > div:not(#system-message) {
+  margin-top: 20px;
+}
+
 .com_users.view-profile.layout-edit {
   .alert.alert-message {
     color: #468847;
@@ -2129,6 +2134,11 @@ body.error-page .container-404 p {
   text-shadow: none !important;
 }
 
+.toggle-addoption.btn i.icon-plus {
+  margin-right: 2px;
+  margin-top: 4px;
+}
+
 button.btn-primary {
   background: var(--em-secondary-color);
   border: 1px solid var(--em-secondary-color);
@@ -2754,7 +2764,15 @@ label[for='clear-search'] img:hover:focus {
   }
 }
 
-.panel-heading.em-container-form-heading, .panel-heading.em-container-admission-heading, .panel-heading.em-container-evaluation-heading, .panel-heading.em-container-decision-heading, .panel-heading.em-container-comment-heading, .panel-heading.em-container-tags-heading, .panel-heading.em-container-share-heading, .panel-heading.em-container-mail-heading {
+.panel-heading.em-container-form-heading,
+.panel-heading.em-container-admission-heading,
+.panel-heading.em-container-evaluation-heading,
+.panel-heading.em-container-decision-heading,
+.panel-heading.em-container-comment-heading,
+.panel-heading.em-container-tag-heading,
+.panel-heading.em-container-share-heading,
+.panel-heading.em-container-mail-heading,
+.panel-heading.em-container-logs-heading{
   padding: 6px !important;
 
   #em-prev-file.btn.btn-info.btn-xxl,
@@ -3024,6 +3042,18 @@ ul.unstyled.em-linkForgot li a {
 
 .g-back-office-emundus-tableau.indicateurs-page #g-container-main {
   padding-left: 80px !important;
+}
+
+.g-back-office-emundus-tableau .g-grid {
+  .g-content {
+    height: 100%;
+    .row-fluid {
+        height: 100%;
+      .span12 {
+        height: 100%;
+      }
+    }
+  }
 }
 
 
@@ -3408,7 +3438,7 @@ fieldset.em_filters_adv_filter .em_save_filter input#save-filter,
   background: transparent !important;
   color: var(--red-500) !important;
   border: none;
-  margin: unset !important;
+  margin: 0 0 0 8px !important;
   display: flex !important;
   align-items: center !important;
   padding: unset !important;
@@ -3619,13 +3649,13 @@ div#em-appli-block {
     }
   }
 
-  .em-container-tags-body .em-tags-date a {
+  .em-container-tag-body .em-tags-date a {
     color: var(--night-blue);
   }
 
   .edit-comment-container button.delete-comment,
-  .em-container-tags-body button.btn-danger[title="Supprimer"],
-  .em-container-tags-body button.btn-danger[title="Delete"] {
+  .em-container-tag-body button.btn-danger[title="Supprimer"],
+  .em-container-tag-body button.btn-danger[title="Delete"] {
     background: var(--neutral-0);
     border: 1px solid var(--neutral-0);
     border-radius: var(--em-coordinator-brborder-radius) !important;
@@ -4251,11 +4281,11 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
     font-family: var(--em-coordinator-font);
   }
 
-  ul {
+  .fabrikForm.fabrikDetails ul {
     padding-left: 20px;
   }
 
-  a {
+  .fabrikForm.fabrikDetails a {
     text-decoration: underline;
     &:hover {
         text-decoration: none;
@@ -4332,6 +4362,12 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
 
 /******************************* RESPONSIVE ***********************************/
 
+@media screen and (min-width: 48rem) and (max-width: 59.99rem) {
+  .gantry #g-container-main .g-container {
+    width: 45rem;
+  }
+}
+
 @media screen and (min-width: 1367px) and (max-width: 1919px)  {
   .view-form.com_fabrik:not(.applicant-form):not(.mon-profil):not(.view-registration) #g-container-main .g-container {
     max-width: 70%;
@@ -4381,8 +4417,7 @@ screen and (max-height: 769px) {
 
 @media screen and (max-width: 959px) {
   .mon-profil .emundus-form #background-shapes {
-    left: 28px;
-    top: -32px;
+    display: none;
   }
 
   .applicant-form .emundus-form #background-shapes {
@@ -5645,7 +5680,7 @@ fieldset[disabled] .multiselect {
   width: 100%;
   height: 48px;
   text-align: left;
-  color: #a4a4a4;
+  color: var(--neutral-900);
 }
 
 .multiselect * {
@@ -6334,6 +6369,10 @@ fieldset[disabled] .multiselect {
     padding: 8px 0;
     border-radius: 5px;
     box-shadow: 0 5px 30px var(--neutral-100);
+
+    ul {
+      padding-left: 0 !important;
+    }
   }
 
   .popover-arrow {

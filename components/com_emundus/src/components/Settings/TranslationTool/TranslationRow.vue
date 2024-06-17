@@ -7,6 +7,7 @@
           <p class="em-neutral-700-color">{{ field.default_lang }}</p>
           <input v-if="field.field_type === 'field'" class="mb-0 em-input em-w-100" type="text" :value="field.lang_to" @focusout="saveTranslation($event.target.value,field)" />
           <textarea v-if="field.field_type === 'textarea'" class="mb-0 em-input" :value="field.lang_to" @focusout="saveTranslation($event.target.value,field)" />
+          <editor-quill v-if="field.field_type === 'editor'" :enable_variables="false" :text="field.lang_to" v-model="field.lang_to" :key="dynamicComponent" :id="'editor_'+field.reference_id" @input="saveTranslation($event,field)" />
         </div>
       </div>
     </div>
@@ -17,10 +18,12 @@
 import Multiselect from "vue-multiselect";
 import mixin from "com_emundus/src/mixins/mixin";
 import translationsService from "com_emundus/src/services/translations";
+import EditorQuill from "@/components/editorQuill.vue";
 
 export default {
   name: "TranslationRow",
   components: {
+    EditorQuill,
     Multiselect
   },
   mixins: [mixin],
@@ -32,6 +35,8 @@ export default {
     return {
       translations_rows: {},
       key_fields: [],
+
+      dynamicComponent: 0
     }
   },
   created(){

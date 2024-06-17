@@ -747,7 +747,7 @@ $(document).ready(function () {
 			case 24:
 				swalForm = true;
 				title = 'COM_EMUNDUS_ACTIONS_EDIT_USER';
-				swal_confirm_button = '	COM_EMUNDUS_USERS_EDIT_USER_CONFIRM';
+				swal_confirm_button = 'COM_EMUNDUS_USERS_EDIT_USER_CONFIRM';
 				preconfirm = "let checklanme =formCheck('lname');let checkfname =formCheck('fname');let checkmail =formCheck('mail');let checklogin =formCheck('login'); if (!checklanme || !checkfname || !checkmail || !checklogin) {Swal.showValidationMessage(Joomla.JText._('COM_EMUNDUS_USERS_ERROR_PLEASE_COMPLETE'))}";				html = '<div id="data"></div>';
 
 				addLoader();
