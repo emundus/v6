@@ -1425,7 +1425,7 @@ class EmundusHelperEvents {
             $query->select('fe.id, fe.name, fe.plugin, fe.label, fe.params, fe.group_id, fe.default, fl.db_table_name, fg.params as group_params')
                 ->from($db->quoteName('#__fabrik_elements', 'fe'))
 	            ->innerJoin($db->quoteName('#__fabrik_groups','fg').' ON '.$db->quoteName('fg.id').' = '.$db->quoteName('fe.group_id'))
-	            ->innerJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffj.group_id').' = '.$db->quoteName('fe.group_id'))
+	            ->innerJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffg.group_id').' = '.$db->quoteName('fe.group_id'))
 	            ->innerJoin($db->quoteName('#__fabrik_lists','fl').' ON '.$db->quoteName('fl.form_id').' = '.$db->quoteName('ffg.form_id'))
                 ->where($db->quoteName('ffg.form_id') . ' = ' . $form_id)
                 ->where($db->quoteName('fe.published') . ' = 1')
