@@ -173,6 +173,10 @@
 						<option value="0">JNO</option>
 						<option value="1">JYES</option>
 					</field>
+					<field showon="mod_em_campaign_layout:default_tchooz" type="list" name="mod_em_campaign_show_see_details_button" label="MOD_EM_CAMPAIGN_LIST_SHOW_SEE_DETAILS_BUTTON" default="0">
+						<option value="0">JNO</option>
+						<option value="1">JYES</option>
+					</field>
 
                     <field showon="mod_em_campaign_layout!:default_tchooz" name="mod_em_campaign_param_tab" type="checkbox" label="MOD_EM_CAMPAIGN_PARAM_TAB" description="MOD_EM_CAMPAIGN_PARAM_TAB_DESC" value="1"/>
 
