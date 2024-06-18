@@ -699,11 +699,7 @@ if(!in_array($name,['settings','campaigns','emails','form'])) {
     } else {
         $document->addScript('media/com_emundus/js/lib/tinymce.min.js');
     }
-    $document->addScript('media/com_emundus/lib/jquery-1.12.4.min.js');
-    $document->addScript('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
     $document->addScript('media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
-    //TODO : Stop use chosen replace by an other js native library
-    //$document->addScript('media/com_emundus/lib/chosen/chosen.jquery.min.js' );
     $document->addScript('media/jui/js/chosen.jquery.min.js');
     $document->addScript('media/com_emundus/js/em_files.js?' . $hash);
     $document->addScript('media/com_emundus/js/mixins/exports.js?' . $hash);

@@ -305,11 +305,11 @@ $timezone = new DateTimeZone($offset);
     $('.em-check, .em-check-all-all').off('change');
     $(document).on('change', '.em-check, .em-check-all-all', function() {
 
-        let countCheckedCheckbox = $('.em-check').not('#em-check-all.em-check,#em-check-all-all.em-check ').filter(':checked').length;
-        let allCheck = $('.em-check-all-all#em-check-all-all').is(':checked');
-        let nbChecked = allCheck == true ? Joomla.JText._('COM_EMUNDUS_FILTERS_SELECT_ALL') : countCheckedCheckbox;
+        var countCheckedCheckbox = $('.em-check').not('#em-check-all.em-check,#em-check-all-all.em-check ').filter(':checked').length;
+        var allCheck = $('.em-check-all-all#em-check-all-all').is(':checked');
+        var nbChecked = allCheck == true ? Joomla.JText._('COM_EMUNDUS_FILTERS_SELECT_ALL') : countCheckedCheckbox;
         //console.log(countCheckedCheckbox);
-        let files = countCheckedCheckbox === 1 ? Joomla.JText._('COM_EMUNDUS_USERS_SELECT_USER') : Joomla.JText._('COM_EMUNDUS_USERS_SELECT_USERS');
+        var files = countCheckedCheckbox === 1 ? Joomla.JText._('COM_EMUNDUS_USERS_SELECT_USER') : Joomla.JText._('COM_EMUNDUS_USERS_SELECT_USERS');
         if (countCheckedCheckbox !== 0) {
             $('#countCheckedCheckbox').html('<p>'+Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + nbChecked + ' ' + files+'</p>');
         } else {

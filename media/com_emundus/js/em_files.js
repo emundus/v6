@@ -421,25 +421,27 @@ function openFiles(fnum, page = 0, vue = false) {
     var cid = parseInt(fnum.fnum.substr(14, 7));
     var sid = parseInt(fnum.fnum.substr(21, 7));
 
-    $('#em-assoc-files .panel-body').empty();
+    if(document.getElementById('em-assoc-files')) {
+        $('#em-assoc-files .panel-body').empty();
 
-    $.ajax({
-        type: 'get',
-        url: 'index.php?option=com_emundus&view=application&fnum=' + fnum.fnum + '&Itemid=' + itemId + '&format=raw&layout=assoc_files',
-        dataType: 'html',
-        success: function (result) {
-            if (result) {
-                $('#em-assoc-files .panel-body').append(result);
-                document.getElementById('em-assoc-files').show();
-            } else {
-                document.getElementById('em-assoc-files').hide();
+        $.ajax({
+            type: 'get',
+            url: 'index.php?option=com_emundus&view=application&fnum=' + fnum.fnum + '&Itemid=' + itemId + '&format=raw&layout=assoc_files',
+            dataType: 'html',
+            success: function (result) {
+                if (result) {
+                    $('#em-assoc-files .panel-body').append(result);
+                    $('#em-assoc-files').show();
+                } else {
+                    $('#em-assoc-files').hide();
+                }
+
+            },
+            error: function (jqXHR) {
+                console.log(jqXHR.responseText);
             }
-
-        },
-        error: function (jqXHR) {
-            console.log(jqXHR.responseText);
-        }
-    });
+        });
+    }
 
     $.ajax({
         type: 'get',

@@ -208,7 +208,7 @@ $now = EmundusHelperDate::displayDate(date('Y-m-d H:i:s'), 'DATE_FORMAT_LC2', 0)
 
                                 const notifications_counter = document.querySelector('a[href*="layout=comment"] span.notifications-counter')
                                 if (notifications_counter) {
-                                    let count = parseInt(notifications_counter.innerText);
+                                    var count = parseInt(notifications_counter.innerText);
                                     count--;
                                     notifications_counter.innerText = count;
                                 }
@@ -269,7 +269,7 @@ $now = EmundusHelperDate::displayDate(date('Y-m-d H:i:s'), 'DATE_FORMAT_LC2', 0)
 
                     const notifications_counter = document.querySelector('a[href*="layout=comment"] span.notifications-counter')
                     if(notifications_counter) {
-                        let count = parseInt(notifications_counter.innerText);
+                        var count = parseInt(notifications_counter.innerText);
                         count++;
                         notifications_counter.innerText = count;
                     }

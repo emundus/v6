@@ -79,7 +79,7 @@ JFactory::getDocument()->addStyleSheet("media/com_emundus/css/emundus_chat.css")
 
     document.getElementsByTagName('body')[0].classList.add('espace-perso');
 
-    let lastId = '<?= $lastId; ?>';
+    var lastId = '<?= $lastId; ?>';
 
     function updateMessages() {
 
@@ -96,8 +96,8 @@ JFactory::getDocument()->addStyleSheet("media/com_emundus/css/emundus_chat.css")
                 result = JSON.parse(result);
                 if (result.status == 'true') {
                     lastId = result.messages[0].message_id;
-                    for (let key in result.messages) {
-                        let messageList = $('.message-list');
+                    for (var key in result.messages) {
+                        var messageList = $('.message-list');
                         messageList.append('<div class="columns-4 w-row">' +
                             '<div class="w-col w-col-6">\n'+
 '                              <p class="name-message"><strong>'+result.messages[key].user_from+'</strong> <?= JText::_('NOW'); ?></p>\n'+
@@ -123,7 +123,7 @@ JFactory::getDocument()->addStyleSheet("media/com_emundus/css/emundus_chat.css")
     });
 
     function strip(html) {
-        let tmp = document.createElement("DIV");
+        var tmp = document.createElement("DIV");
         tmp.innerHTML = html;
         return tmp.textContent || tmp.innerText;
     }
@@ -134,7 +134,7 @@ JFactory::getDocument()->addStyleSheet("media/com_emundus/css/emundus_chat.css")
     });
 
     function sendMessage() {
-        let message = document.getElementById('Tapez-votre-message-ici').value;
+        var message = document.getElementById('Tapez-votre-message-ici').value;
         const chatroom = '<?= $this->chatroom_id; ?>';
 
         if (message.length !== 0  && strip(message).replace(/\s/g, '').length !== 0) {
@@ -148,8 +148,8 @@ JFactory::getDocument()->addStyleSheet("media/com_emundus/css/emundus_chat.css")
                     chatroom: chatroom
                 },
                 success: function (result) {
-                    let messageList = $('.message-list');
-                    let contactMessage = document.getElementById('contact-message');
+                    var messageList = $('.message-list');
+                    var contactMessage = document.getElementById('contact-message');
 
                     messageList.append('<div class="columns-4 w-row"></div>' +
                                              '<div class="w-col w-col-6"></div>\n'+

@@ -117,7 +117,7 @@ JFactory::getSession()->set('application_layout', 'tag');
                 }
             }).then((result) => {
                 if (result.value) {
-                    let formData = new FormData();
+                    var formData = new FormData();
                     formData.append('fnum', fnum);
                     formData.append('id_tag', id);
 

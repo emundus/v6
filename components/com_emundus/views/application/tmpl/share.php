@@ -249,8 +249,8 @@
 			}
             // set inner text  of span icon refresh
 			$(this).children('span').text('refresh');
-			let type = $(this).parents('table').attr('id').split('-');
-			let accessId = $(this).attr('id');
+			var type = $(this).parents('table').attr('id').split('-');
+			var accessId = $(this).attr('id');
             $.ajax({
                 type:'post',
                 url:'/index.php?option=com_emundus&controller=application&task=updateaccess',
@@ -313,7 +313,7 @@
 		if(e.handle !== true)
 		{
 			e.handle = true;
-			let r = confirm("<?= JText::_("COM_EMUNDUS_ACCESS_ARE_YOU_SURE_YOU_WANT_TO_REMOVE_THIS_ACCESS")?>");
+			var r = confirm("<?= JText::_("COM_EMUNDUS_ACCESS_ARE_YOU_SURE_YOU_WANT_TO_REMOVE_THIS_ACCESS")?>");
 
             if(r) {
                 $.ajax({
