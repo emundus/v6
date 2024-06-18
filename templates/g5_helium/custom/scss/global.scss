@@ -624,8 +624,10 @@ footer#g-footer > .g-container {
 
   a {
     color: $link-regular;
+    text-decoration: underline;
     &:hover {
       color: $link-hover;
+      text-decoration: none;
     }
   }
 }
@@ -4233,7 +4235,7 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
 /* VIEW DETAILS */
 
 .view-details {
-  .span12 h1 {
+  .span12 .page-header  h1 {
     margin: 12px 0;
     font-family: var(--em-coordinator-font-title);
     color: var(--neutral-900);
@@ -6905,8 +6907,13 @@ tbody .el-table__row:nth-child(odd){
 .mce-container-body.mce-abs-layout {
   overflow: visible !important;
 }
+
+.mce-container.mce-panel .mce-combobox input {
+  width: fit-content !important;
+}
+
 .mce-container .mce-textbox.mce-abs-layout-item.mce-last {
-  width: 60px !important;
+  width: fit-content !important;
   height: 20px !important;
 }
 

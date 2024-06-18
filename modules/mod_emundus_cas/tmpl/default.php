@@ -32,7 +32,7 @@ JHtml::_('bootstrap.tooltip');
                     <?php if (empty($mod_emundus_cas_logo)) :?>
                         <div class="btn-cas">
 
-                            <a href="<?= $mod_emundus_cas_url1; ?>" target="_blank" class="btn btn-primary rounded">
+                            <a href="<?= $mod_emundus_cas_url1; ?>" class="btn btn-primary rounded">
                             <?= $mod_emundus_cas_btn1; ?>
                            </a>
                         </div>
@@ -169,6 +169,13 @@ JHtml::_('bootstrap.tooltip');
                             <div class="controls">
                                 <button type="submit" tabindex="0" name="Submit"
                                         class="btn btn-primary login-button"><?php echo JText::_('JLOGIN'); ?></button>
+                            </div>
+                        </div>
+                        <div class="control-group em-float-right">
+                            <div class="control-label">
+                                <a class="em-text-underline" href="<?php echo JRoute::_($forgottenLink); ?>">
+				                    <?php echo JText::_('COM_USERS_LOGIN_RESET'); ?>
+                                </a>
                             </div>
                         </div>
                         <?php

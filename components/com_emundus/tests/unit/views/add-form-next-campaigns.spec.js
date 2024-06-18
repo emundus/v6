@@ -1,6 +1,6 @@
 import { mount, createLocalVue } from '@vue/test-utils';
 import '../../mocks/matchMedia.mock';
-import addFormNextCampaign from '../../../src/views/addFormNextCampaign';
+import CampaignEdition from '../../../src/views/CampaignEdition';
 import translate from '../../mocks/mixins/translate';
 import store from '../../../src/store/index';
 import VModal from 'vue-js-modal';
@@ -17,8 +17,8 @@ store.commit('global/initDatas', {
 });
 store.commit('global/initCurrentLanguage', 'fr-FR');
 
-describe('addFormNextCampaign.vue', () => {
-    const wrapper = mount(addFormNextCampaign, {
+describe('CampaignEdition.vue', () => {
+    const wrapper = mount(CampaignEdition, {
         propsData: {
             index: 1
         },
@@ -26,8 +26,8 @@ describe('addFormNextCampaign.vue', () => {
         store
     });
 
-    it ('addFormNextCampaign should exist', () => {
-        expect(wrapper.find('#add-form-next-campaign').exists()).toBeTruthy();
+    it ('CampaignEdition should exist', () => {
+        expect(wrapper.find('#edit-campaign').exists()).toBeTruthy();
     });
 
     it ('dates should be formatted correctly on initDates', () => {

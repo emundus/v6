@@ -13,6 +13,8 @@ defined('_JEXEC') or die;
 require_once(JPATH_SITE . '/components/com_emundus/helpers/cache.php');
 $hash = EmundusHelperCache::getCurrentGitHash();
 
+JText::script('COM_EMUNDUS_SWITCH_PROFILE_ERROR');
+
 ?>
 
 <link rel="stylesheet" href="modules/mod_emundus_user_dropdown/style/mod_emundus_user_dropdown.css?<?php echo $hash; ?>"
@@ -525,11 +527,11 @@ if ($user != null)
             var current_fnum = document.getElementById("profile").value;
             var redirect_url = document.getElementById("switch_profile_redirect").value;
 
-            var url = window.location.origin.toString() + '/' + redirect_url;
+            var url = window.location.origin.toString() + redirect_url;
 
             jQuery.ajax({
                 type: 'POST',
-                url: 'index.php?option=com_emundus&task=switchprofile',
+                url: '/index.php?option=com_emundus&task=switchprofile',
                 data: ({
                     profnum: current_fnum
                 }),
@@ -538,10 +540,21 @@ if ($user != null)
                     sessionStorage.removeItem('profile_color');
 
                     window.location.href = url;
-                    //location.reload(true);
                 },
-                error: function (jqXHR, status, err) {
-                    alert("Error switching porfiles.");
+                error : function (jqXHR, status, err) {
+                    Swal.fire({
+                        title: Joomla.JText._('COM_EMUNDUS_SWITCH_PROFILE_ERROR'),
+                        html: '<img alt="sad tchoozy" src="/media/com_emundus/images/tchoozy/facial-expressions/sad-face.svg" width="200"/>',
+                        showCancelButton: false,
+                        showConfirmButton: false,
+                        customClass: {
+                            title: 'em-swal-title !text-center',
+                            cancelButton: 'em-swal-cancel-button',
+                            confirmButton: 'em-swal-confirm-button',
+                            icon: 'border-0 w-full h-full mt-0',
+                        },
+                        timer: 3000
+                    });
                 }
             });
         }
