@@ -33,9 +33,9 @@
             <div class="file-comment-header-left flex flex-row cursor-pointer items-center"
                  @click="replyToComment(comment.id)">
               <div class="flex flex-row items-center">
-                <div class="profile-picture h-8 w-8 rounded-full border-2 mr-2 flex flex-row justify-center items-center">
+                <div class="profile-picture h-8 w-8 rounded-full border-2 mr-2 flex flex-row justify-center items-center" :class="{'bg-neutral-300' : !comment.profile_picture}">
                   <div v-if="comment.profile_picture" class="image h-full w-full rounded-full" :style="'background-image: url(' + comment.profile_picture + ');background-size: cover;background-position: center;'"></div>
-                  <span v-else>{{ comment.firstname.charAt(0) }}{{ comment.lastname.charAt(0) }}</span>
+                  <span v-else class="text-sm">{{ comment.firstname.charAt(0).toUpperCase() }}{{ comment.lastname.charAt(0).toUpperCase() }}</span>
                 </div>
                 <div class="flex flex-col mr-3">
                   <span class="em-text-neutral-500 text-xs">{{ comment.updated ? comment.updated : comment.date }}</span>
