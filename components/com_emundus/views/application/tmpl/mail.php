@@ -26,6 +26,10 @@ $fnum = JFactory::getApplication()->input->getString('fnum', 0);
         border-radius: var(--em-coordinator-br);
     }
 
+    .em-container-mail-content-body img {
+        display:initial;
+    }
+
     div.em-container-mail-content-heading.panel-heading small {
         font-size: 12px;
         color: var(--neutral-800);
