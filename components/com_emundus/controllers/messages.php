@@ -790,9 +790,10 @@ class EmundusControllerMessages extends JControllerLegacy {
                     'user_id_from' => $user->id,
                     'user_id_to' => $fnum->applicant_id,
                     'subject' => $subject,
-                    'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . JText::_('COM_EMUNDUS_TO') . ' ' . $fnum->email . '</i><br>' . $body . $files,
+                    'message' => $body . $files,
                     'type' => (empty($template->type))?'':$template->type,
-	                'email_id' => $template_id
+	                'email_id' => $template_id,
+                    'email_to' => $fnum->email
                 ];
                 if (!empty($cc_final)) {
                     $log['email_cc'] = implode(', ',$cc_final);
@@ -967,8 +968,9 @@ class EmundusControllerMessages extends JControllerLegacy {
 					'user_id_from' => $current_user->id,
 					'user_id_to' => $user->id,
 					'subject' => $subject,
-					'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . JText::_('COM_EMUNDUS_TO') . ' ' . $user->email . '</i><br>' . $body . $files,
-					'type' => !empty($template->type)?$template->type:''
+					'message' => $body . $files,
+					'type' => !empty($template->type)?$template->type:'',
+                    'email_to' => $user->email
 				];
 				$m_emails->logEmail($log);
 				// Log the email in the eMundus logging system.
@@ -1412,9 +1414,10 @@ class EmundusControllerMessages extends JControllerLegacy {
                 'user_id_from' => $user->id,
                 'user_id_to' => $fnum_info['applicant_id'],
                 'subject' => $subject,
-                'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . JText::_('COM_EMUNDUS_TO') . ' ' . $fnum_info['email'] . '</i><br>' . $body . $files,
+                'message' => $body . $files,
                 'type' => (empty($template->type))?'':$template->type,
 	            'email_id' => $template_email_id,
+                'email_to' => $fnum_info['email']
             ];
             $m_emails->logEmail($log, $fnum);
         }

@@ -386,8 +386,9 @@ class EmundusModelEmails extends JModelList {
                             'user_id_from' => $from_id,
                             'user_id_to' => $to_id,
                             'subject' => $subject,
-                            'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body,
-                            'email_id' => $trigger_email_id
+                            'message' => $body,
+                            'email_id' => $trigger_email_id,
+                            'email_to' => $to
                         );
                         $this->logEmail($message, $student->fnum);
                     }
@@ -1001,7 +1002,8 @@ class EmundusModelEmails extends JModelList {
                 'user_id_from'  => $this->_em_user->id,
                 'user_id_to'    => $mail_to_id,
                 'subject'       => $mail_subject,
-                'message'       => $mail_body
+                'message'       => $mail_body,
+                'email_to'      => $mail_to
             ];
             $this->logEmail($message);
 
@@ -1167,7 +1169,8 @@ class EmundusModelEmails extends JModelList {
                             'user_id_from'  => $this->_em_user->id,
                             'user_id_to'    => $user_id_to,
                             'subject'       => $mail_subject,
-                            'message'       => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$m_to.'</i><br>'.$body
+                            'message'       => $body,
+                            'email_to'      => $m_to
                         ];
                         $this->logEmail($message);
                     }
@@ -1459,7 +1462,8 @@ class EmundusModelEmails extends JModelList {
                                     'user_id_from'  => $this->_em_user->id,
                                     'user_id_to'    => $user_id_to,
                                     'subject'       => $mail_subject,
-                                    'message'       => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$m_to.'</i><br>'.$body
+                                    'message'       => $body,
+                                    'email_to'      => $m_to
                                 ];
                                 $this->logEmail($message);
                             }
@@ -1534,8 +1538,8 @@ class EmundusModelEmails extends JModelList {
 
         $query = $this->_db->getQuery(true);
 
-        $columns = ['user_id_from', 'user_id_to', 'date_time', 'subject', 'message', 'email_cc'];
-        $values = [$row['user_id_from'], $row['user_id_to'], $this->_db->quote($now), $this->_db->quote($row['subject']), $this->_db->quote($row['message']), $this->_db->quote($row['email_cc'])];
+        $columns = ['user_id_from', 'user_id_to', 'date_time', 'subject', 'message', 'email_cc', 'email_to'];
+        $values = [$row['user_id_from'], $row['user_id_to'], $this->_db->quote($now), $this->_db->quote($row['subject']), $this->_db->quote($row['message']), $this->_db->quote($row['email_cc']), $this->_db->quote($row['email_to'])];
 
         // If we are logging the email type as well, this allows us to put them in separate folders.
         if (isset($row['type']) && !empty($row['type'])) {
@@ -1761,8 +1765,9 @@ class EmundusModelEmails extends JModelList {
                     'user_id_from' => $current_user->id,
                     'user_id_to' => $user->id,
                     'subject' => $subject,
-                    'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . JText::_('COM_EMUNDUS_TO') . ' ' . $user->email . '</i><br>' . $body . $files,
-                    'type' => !empty($template)?$template->type:''
+                    'message' => $body . $files,
+                    'type' => !empty($template)?$template->type:'',
+                    'email_to' => $user->email
                 ];
                 $this->logEmail($log);
                 // Log the email in the eMundus logging system.
@@ -3050,8 +3055,9 @@ class EmundusModelEmails extends JModelList {
                             'user_id_from'  => !empty(JFactory::getUser()->id) ? JFactory::getUser()->id : 62,
                             'user_id_to'    => $user_id_to,
                             'subject'       => $subject,
-                            'message'       => '<i>'.JText::_('COM_EMUNDUS_EMAILS_MESSAGE_SENT_TO').' '.$email_address.'</i><br>'.$body,
-                            'type'          => $template->type
+                            'message'       => $body,
+                            'type'          => $template->type,
+                            'email_to'      => $email_address
                         ];
                         $this->logEmail($log);
                     }
@@ -3271,9 +3277,10 @@ class EmundusModelEmails extends JModelList {
                     'user_id_from'  => $user_id,
                     'user_id_to'    => $fnum['applicant_id'],
                     'subject'       => $subject,
-                    'message'       => '<i>'.JText::_('COM_EMUNDUS_EMAILS_MESSAGE_SENT_TO').' '.$fnum['email'].'</i><br>'.$body,
+                    'message'       => $body,
                     'type'          => $template->type,
                     'email_id'      => $email_id,
+                    'email_to'      => $fnum['email']
                 ];
                 $this->logEmail($log, $fnum['fnum']);
 
