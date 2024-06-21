@@ -441,6 +441,7 @@ class EmundusFiltersFiles extends EmundusFilters
                 'default' => true,
                 'available' => true,
                 'operator' => 'IN',
+                'andorOperator' => 'OR',
                 'order' => $config['filter_programs_order']
             ];
         }
@@ -498,8 +499,8 @@ class EmundusFiltersFiles extends EmundusFilters
 
         if ($config['filter_to_evaluate']) {
             $evaluated = [
-                ['value' => 1, 'label' => JText::_('MOD_EMUNDUS_FILTERS_VALUE_TO_EVALUATE_TODO'), 'count' => 0],
-                ['value' => 2, 'label' => JText::_('MOD_EMUNDUS_FILTERS_VALUE_TO_EVALUATE_DONE'), 'count' => 0]
+                ['value' => 'to_evaluate', 'label' => JText::_('MOD_EMUNDUS_FILTERS_VALUE_TO_EVALUATE_TODO'), 'count' => 0],
+                ['value' => 'evaluated', 'label' => JText::_('MOD_EMUNDUS_FILTERS_VALUE_TO_EVALUATE_DONE'), 'count' => 0]
             ];
 
             $this->applied_filters[] = [
@@ -508,9 +509,9 @@ class EmundusFiltersFiles extends EmundusFilters
                 'label' => JText::_('MOD_EMUNDUS_FILTERS_TO_EVALUATE'),
                 'type' => 'select',
                 'values' => $evaluated,
-                'value' => [1],
+                'value' => ['to_evaluate'],
                 'default' => true,
-                'defaultValue' => [1],
+                'defaultValue' => ['to_evaluate'],
                 'available' => true,
                 'operator' => 'IN',
                 'order' => $config['filter_to_evaluate_order']

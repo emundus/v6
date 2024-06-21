@@ -3667,14 +3667,6 @@ class EmundusHelperFiles
 
         if (!empty($caller_params) && $caller_params['eval']) {
             $where['q'] .= ' AND jecc.status <> 0';
-
-            if (!empty($user->id)) {
-                if (!empty($caller_params) && !empty($caller_params['custom_eval_users_filter'])) {
-                    $where['q'] .= ' AND (jos_emundus_evaluations.user IN ('.str_replace('[CURRENT_USER]', $db->quote($user->id), $caller_params['custom_eval_users_filter']).') OR jos_emundus_evaluations.user IS NULL)';
-                } else {
-                    $where['q'] .= ' AND (jos_emundus_evaluations.user = '.$db->quote($user->id).' OR jos_emundus_evaluations.user IS NULL)';
-                }
-            }
         }
 
 	    $menu = JFactory::getApplication()->getMenu();
@@ -3997,21 +3989,64 @@ class EmundusHelperFiles
                                     }
 
                                     break;
+                                /**
+                                 * Si condition custom, évaluer le code, qui doit retourner un tableau de evaluation id avec evaluated et to_evaluate
+                                 *
+                                 * Si multi eval,
+                                 * un dossier traité = un dossier avec une évaluation pour moi
+                                 * un dossier non traité = un dossier sans évaluation, ou une évaluation pour un autre
+                                 *
+                                 * Sinon,
+                                 * un dossier traité = un dossier avec une évaluation pour moi
+                                 * un dossier non traité = un dossier sans évaluation
+                                 */
                                 case 'to_evaluate':
-                                    $where['q'] .= ' AND ' . $this->writeQueryWithOperator('IF(jos_emundus_evaluations.id IS NULL, 1, 2)', $filter['value'], $filter['operator']);
                                     $jecc_alias = array_search('jos_emundus_campaign_candidature', $already_joined);
-
                                     $jee_alias = array_search('jos_emundus_evaluations', $already_joined);
-                                    if (!empty($jee_alias)) {
-                                        $jee_alias = 'jee';
+
+                                    if ($jee_alias === false) {
+                                        $jee_alias = 'jos_emundus_evaluations';
                                         $where['join'] .= ' LEFT JOIN jos_emundus_evaluations AS ' . $jee_alias . ' on jos_emundus_evaluations.fnum = ' . $jecc_alias . '.fnum';
                                         $already_joined[$jee_alias] = 'jos_emundus_evaluations';
                                     }
 
+                                    $searched = $filter['value'];
+                                    if ($filter['operator'] === 'NOT IN') {
+                                        if (is_array($filter['value'])) {
+                                            $where['q'] .= ' AND 1 = 2';
+                                            break;
+                                        }
+
+                                        $searched = $filter['value'] === 'evaluated' ? 'to_evaluate' : 'evaluated';
+                                    }
+
                                     if (!empty($caller_params) && !empty($caller_params['custom_eval_users_filter'])) {
-                                        $where['q'] .= ' AND (' . $jee_alias . '.user IN ('.str_replace('[CURRENT_USER]', $db->quote(JFactory::getUser()->id), $caller_params['custom_eval_users_filter']).') OR ' . $jee_alias . '.user IS NULL)';
+
                                     } else {
-                                        $where['q'] .= ' AND (' . $jee_alias . '.user = '.$db->quote(JFactory::getUser()->id).' OR ' . $jee_alias . '.user IS NULL)';
+                                        $emundus_config = JComponentHelper::getParams('com_emundus');
+                                        if ($emundus_config['multi_eval']) {
+                                            if ($searched == 'evaluated') {
+                                                $where['q'] .= ' AND ' . $this->writeQueryWithOperator($jee_alias . '.user', $user->id, '=');
+                                            } else if ($searched == 'to_evaluate') {
+                                                $where['q'] .= ' AND (' . $jee_alias . '.id IS NULL OR ' . $jee_alias . '.id NOT IN (
+                                                SELECT id
+                                                FROM jos_emundus_evaluations
+                                                WHERE fnum = ' . $jecc_alias . '.fnum
+                                                AND user = ' . $user->id . '
+                                            ))';
+                                            } else {
+                                                $where['q'] .= ' AND (' . $jee_alias . '.id IS NULL OR ' . $jee_alias . '.user = ' . $user->id . ')';
+                                            }
+                                        }
+                                        else {
+                                            if ($searched == 'evaluated') {
+                                                $where['q'] .= ' AND ' . $this->writeQueryWithOperator($jee_alias . '.user', $user->id, '=');
+                                            } else if ($searched == 'to_evaluate') {
+                                                $where['q'] .= ' AND ' . $jee_alias . '.id IS NULL';
+                                            } else {
+                                                $where['q'] .= ' AND (' . $jee_alias . '.id IS NULL OR ' . $jee_alias . '.user = ' . $user->id . ')';
+                                            }
+                                        }
                                     }
                                     break;
                                 default:
@@ -4640,7 +4675,7 @@ class EmundusHelperFiles
                                 $table_column_to_count = 'jecc.published';
                                 break;
                             case 'to_evaluate':
-                                $table_column_to_count = 'IF(jos_emundus_evaluations.id IS NOT NULL, 2, 1)';
+                                $table_column_to_count = 'IF(jos_emundus_evaluations.id IS NOT NULL AND jos_emundus_evaluations.user = ' . $user->id . ', "evaluated", "to_evaluate")';
                                 break;
                         }
                     } else {
@@ -4777,12 +4812,10 @@ class EmundusHelperFiles
                                 $query .= $leftJoins;
                             }
 
-                            if (!empty($menu_item)) {
-                                if ($menu_item->query['view'] == 'evaluation') {
-                                    $query .= 'LEFT JOIN jos_emundus_evaluations on jos_emundus_evaluations.fnum = jecc.fnum';
-                                    $already_joined['jos_emundus_evaluations'] = 'jos_emundus_evaluations';
-                                    $where_params['eval'] = true;
-                                }
+                            if ((!empty($menu_item) && $menu_item->query['view'] == 'evaluation') || $applied_filter['uid'] == 'to_evaluate') {
+                                $query .= 'LEFT JOIN jos_emundus_evaluations on jos_emundus_evaluations.fnum = jecc.fnum';
+                                $already_joined['jos_emundus_evaluations'] = 'jos_emundus_evaluations';
+                                $where_params['eval'] = true;
                             }
 
                             if (!empty($module_params['filter_to_evaluate_custom_users'])) {

@@ -964,9 +964,6 @@ class EmundusModelEvaluation extends JModelList {
 					LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
 					LEFT JOIN #__users as u on u.id = jecc.applicant_id
                     LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum = jecc.fnum ';
-        $q = $this->_buildWhere($already_joined_tables);
-
-
         if (EmundusHelperAccess::isCoordinator($current_user->id)
             || (EmundusHelperAccess::asEvaluatorAccessLevel($current_user->id) && $evaluators_can_see_other_eval == 1)
             || EmundusHelperAccess::asAccessAction(5, 'r', $current_user->id)
@@ -975,6 +972,9 @@ class EmundusModelEvaluation extends JModelList {
         } else {
             $query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum = jecc.fnum AND (jos_emundus_evaluations.user='.$current_user->id.' OR jos_emundus_evaluations.user IS NULL)';
         }
+
+        $already_joined_tables['jos_emundus_evaluations'] = 'jos_emundus_evaluations';
+        $q = $this->_buildWhere($already_joined_tables);
 
         if (!empty($leftJoin)) {
             $query .= $leftJoin;
@@ -1008,7 +1008,6 @@ class EmundusModelEvaluation extends JModelList {
                     $query .= " limit $limitStart, $limit ";
                 }
             }
-
             $dbo->setQuery($query);
             return $dbo->loadAssocList();
         } catch(Exception $e) {
