@@ -219,7 +219,9 @@ class EmundusFilters
                                     $params['database_join_where_sql'] = substr($params['database_join_where_sql'], $first_where_pos + 5);
                                 }
 
-                                $query->where($params['database_join_where_sql']);
+                                // this field can contains order by clause, so we need to split it
+                                $where_clause = stripos($params['database_join_where_sql'], 'ORDER BY') !== false ? substr($params['database_join_where_sql'], 0, $order_by_pos) : $params['database_join_where_sql'];
+                                $query->where($where_clause);
                             }
 						}
 
