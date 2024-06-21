@@ -4021,7 +4021,24 @@ class EmundusHelperFiles
                                     }
 
                                     if (!empty($caller_params) && !empty($caller_params['custom_eval_users_filter'])) {
+                                        $custom_eval_users_filter = $caller_params['custom_eval_users_filter'];
+                                        $custom_eval_users_filter = str_replace('{user_id}', $user->id, $custom_eval_users_filter);
 
+                                        try {
+                                            $evaluated_and_to_evaluate_files = eval($custom_eval_users_filter);
+                                        } catch (Exception $e) {
+                                            JLog::add('Failed to evaluate custom_eval_users_filter in filter context ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                                        }
+
+                                        if (!empty($evaluated_and_to_evaluate_files) && isset($evaluated_and_to_evaluate_files['evaluated']) && isset($evaluated_and_to_evaluate_files['to_evaluate'])) {
+                                            if ($searched == 'evaluated') {
+                                                $where['q'] .= ' AND ' . $this->writeQueryWithOperator($jecc_alias . '.fnum', $evaluated_and_to_evaluate_files['evaluated'], 'IN');
+                                            } else if ($searched == 'to_evaluate') {
+                                                $where['q'] .= ' AND ' . $this->writeQueryWithOperator($jecc_alias . '.fnum', $evaluated_and_to_evaluate_files['to_evaluate'], 'IN');
+                                            } else {
+                                                $where['q'] .= ' AND ' . $this->writeQueryWithOperator($jecc_alias . '.fnum', array_merge($evaluated_and_to_evaluate_files['evaluated'], $evaluated_and_to_evaluate_files['to_evaluate']), 'IN');
+                                            }
+                                        }
                                     } else {
                                         $emundus_config = JComponentHelper::getParams('com_emundus');
                                         if ($emundus_config['multi_eval']) {
