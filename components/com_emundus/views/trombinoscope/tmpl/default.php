@@ -163,7 +163,7 @@ if (!empty($this->htmlLetters)) {
         tinyMCE.execCommand('mceToggleEditor', false, 'trombi_tmpl');
         tinyMCE.execCommand('mceToggleEditor', false, 'trombi_tmpl');
 
-        let string_fnums;
+        var string_fnums;
         if ('<?= $this->string_fnums; ?>' === 'all') {
             string_fnums = '["all"]';
         } else {

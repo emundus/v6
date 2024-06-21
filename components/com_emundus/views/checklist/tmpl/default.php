@@ -792,7 +792,6 @@ $(document).ready(() => {
     }
     ?>
     var attachments = "<?php echo $attachments_label; ?>";
-    console.log(attachments);
     Swal.fire({
         position: 'top',
         type: 'info',
@@ -818,7 +817,7 @@ $(document).ready(() => {
 
 //ADDPIPE check if video is uploaded. If yes, reaload page
 function is_file_uploaded(fnum, aid, applicant_id) {
-    let is_file_uploaded_timer = setInterval(function(){
+    var is_file_uploaded_timer = setInterval(function(){
 
         $.ajax({
             type: 'POST',

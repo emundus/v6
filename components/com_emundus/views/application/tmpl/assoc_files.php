@@ -149,11 +149,10 @@ if (!empty((array) $this->assoc_files)) :
 
 <script>
 
-    let headings = document.querySelectorAll(".closed-tab");
+    var headings = document.querySelectorAll(".closed-tab");
     headings.forEach((heading) => {
-        let clickElement = heading.querySelector('.em-container-assocFiles-heading');
+        var clickElement = heading.querySelector('.em-container-assocFiles-heading');
         clickElement.addEventListener('click', function () {
-            console.log('cliqué sur le header !');
             if (heading.classList.contains('closed-tab')) {
                 heading.classList.remove('closed-tab');
             } else {
@@ -163,8 +162,8 @@ if (!empty((array) $this->assoc_files)) :
     });
 
     function openAccordion(fnum) {
-        let block = document.getElementById(fnum + '-collapse-item');
-        let icon = document.getElementById(fnum + '-icon');
+        var block = document.getElementById(fnum + '-collapse-item');
+        var icon = document.getElementById(fnum + '-icon');
 
         block.toggle(200);
 
@@ -176,9 +175,9 @@ if (!empty((array) $this->assoc_files)) :
     }
 
     function displayUnpublishedCampaignsContainer() {
-        let blocks = document.querySelectorAll('#unpublished_campaigns_container');
+        var blocks = document.querySelectorAll('#unpublished_campaigns_container');
         blocks.forEach((block) => {
-            let icon = document.querySelector('#unpublished_campaigns_icon');
+            var icon = document.querySelector('#unpublished_campaigns_icon');
             if (block.style.display === 'none') {
                 jQuery(block).css("display", "block");
                 jQuery(icon).css("transform", "rotate(-180deg)");

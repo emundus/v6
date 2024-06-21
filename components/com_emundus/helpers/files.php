@@ -3746,6 +3746,17 @@ class EmundusHelperFiles
 
 							    $quick_search_where .= $this->writeQueryWithOperator($scope, $filter['value'], 'LIKE');
 						    }
+
+                            // if filter value is a concat of firstname and lastname
+                            // in this case, we split the value and search for each part
+                            $pattern_fullname = '/^([a-zA-Z]+) ([a-zA-Z]+)$/';
+                            if (preg_match($pattern_fullname, $filter['value'])) {
+                                $quick_search_where .= ' OR ';
+                                $quick_search_where .= $this->writeQueryWithOperator('CONCAT(eu.firstname, " ", eu.lastname)', $filter['value'], 'LIKE');
+
+                                $quick_search_where .= ' OR ';
+                                $quick_search_where .= $this->writeQueryWithOperator('CONCAT(eu.lastname, " ", eu.firstname)', $filter['value'], 'LIKE');
+                            }
 					    } else if (in_array($filter['scope'], $scopes)) {
 						    $at_least_one = true;
 						    if ($index > 0) {

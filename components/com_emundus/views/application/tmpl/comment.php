@@ -166,43 +166,68 @@ $now = EmundusHelperDate::displayDate(date('Y-m-d H:i:s'), 'DATE_FORMAT_LC2', 0)
     }
 
     function deleteComment(id) {
-        url = 'index.php?option=com_emundus&controller=application&task=deletecomment';
-
-        $.ajax({
-            type: 'GET',
-            url: url,
-            dataType: 'json',
-            data: ({comment_id: id}),
-            success: function (result) {
-
-                if (result.status) {
-
-                    $('.comments li#' + id).empty();
-                    $('.comments li#' + id).append('<p class="text-danger" id="comment_deleted"><strong>' + result.msg + '</strong></p>');
-
-                    setTimeout(() => {
-                        $('.comments li#' + id).remove();
-                    }, 3000);
-
-                    const notifications_counter = document.querySelector('a[href*="layout=comment"] span.notifications-counter')
-                    if(notifications_counter) {
-                        let count = parseInt(notifications_counter.innerText);
-                        count--;
-                        notifications_counter.innerText = count;
-                    }
-
-                    var nbCom = parseInt($('.panel-default.widget .panel-heading .label.label-info').text().trim());
-                    nbCom--;
-                    $('.panel-default.widget .panel-heading .label.label-info').html(nbCom);
-
-                } else {
-                    $('.comments li#' + id).append('<p class="text-danger"><strong>' + result.msg + '</strong></p>');
+        if(id) {
+            Swal.fire({
+                title: "<?php echo JText::_('COM_EMUNDUS_APPLICATION_DELETE_COMMENT'); ?>",
+                text: "<?php echo JText::_('COM_EMUNDUS_APPLICATION_DELETE_COMMENT_CONFIRM'); ?>",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: '<?php echo JText::_('COM_EMUNDUS_DELETE_ITEM'); ?>',
+                cancelButtonText: '<?php echo JText::_('CANCEL'); ?>',
+                reverseButtons: true,
+                customClass: {
+                    title: 'em-swal-title',
+                    cancelButton: 'em-swal-cancel-button',
+                    confirmButton: 'em-swal-confirm-button',
                 }
-            },
-            error: function (jqXHR) {
-                console.log(jqXHR.responseText);
-            }
-        });
+            }).then((result) => {
+                if (result.value) {
+                    url = 'index.php?option=com_emundus&controller=application&task=deletecomment';
+
+                    $.ajax({
+                        type: 'GET',
+                        url: url,
+                        dataType: 'json',
+                        data: ({comment_id: id}),
+                        success: function (result) {
+
+                            if (result.status) {
+
+                                document.querySelector('.comments .list-group').removeChild(document.querySelector('li[id="' + id + '"'));
+
+                                Swal.fire({
+                                    title: "<?php echo JText::_('COM_EMUNDUS_APPLICATION_DELETE_COMMENT_SUCCESS'); ?>",
+                                    text: "",
+                                    type: 'success',
+                                    showConfirmButton: false,
+                                    timer: 1500,
+                                    customClass: {
+                                        title: 'em-swal-title',
+                                    }
+                                });
+
+                                const notifications_counter = document.querySelector('a[href*="layout=comment"] span.notifications-counter')
+                                if (notifications_counter) {
+                                    var count = parseInt(notifications_counter.innerText);
+                                    count--;
+                                    notifications_counter.innerText = count;
+                                }
+
+                                var nbCom = parseInt($('.panel-default.widget .panel-heading .label.label-info').text().trim());
+                                nbCom--;
+                                $('.panel-default.widget .panel-heading .label.label-info').html(nbCom);
+
+                            } else {
+                                $('.comments li#' + id).append('<p class="text-danger"><strong>' + result.msg + '</strong></p>');
+                            }
+                        },
+                        error: function (jqXHR) {
+                            console.log(jqXHR.responseText);
+                        }
+                    });
+                }
+            });
+        }
     }
 
     var textArea = '<hr><div id="form" class="em-decision-form-content">' +
@@ -244,7 +269,7 @@ $now = EmundusHelperDate::displayDate(date('Y-m-d H:i:s'), 'DATE_FORMAT_LC2', 0)
 
                     const notifications_counter = document.querySelector('a[href*="layout=comment"] span.notifications-counter')
                     if(notifications_counter) {
-                        let count = parseInt(notifications_counter.innerText);
+                        var count = parseInt(notifications_counter.innerText);
                         count++;
                         notifications_counter.innerText = count;
                     }

@@ -421,25 +421,27 @@ function openFiles(fnum, page = 0, vue = false) {
     var cid = parseInt(fnum.fnum.substr(14, 7));
     var sid = parseInt(fnum.fnum.substr(21, 7));
 
-    $('#em-assoc-files .panel-body').empty();
+    if(document.getElementById('em-assoc-files')) {
+        $('#em-assoc-files .panel-body').empty();
 
-    $.ajax({
-        type: 'get',
-        url: 'index.php?option=com_emundus&view=application&fnum=' + fnum.fnum + '&Itemid=' + itemId + '&format=raw&layout=assoc_files',
-        dataType: 'html',
-        success: function (result) {
-            if (result) {
-                $('#em-assoc-files .panel-body').append(result);
-                document.getElementById('em-assoc-files').show();
-            } else {
-                document.getElementById('em-assoc-files').hide();
+        $.ajax({
+            type: 'get',
+            url: 'index.php?option=com_emundus&view=application&fnum=' + fnum.fnum + '&Itemid=' + itemId + '&format=raw&layout=assoc_files',
+            dataType: 'html',
+            success: function (result) {
+                if (result) {
+                    $('#em-assoc-files .panel-body').append(result);
+                    $('#em-assoc-files').show();
+                } else {
+                    $('#em-assoc-files').hide();
+                }
+
+            },
+            error: function (jqXHR) {
+                console.log(jqXHR.responseText);
             }
-
-        },
-        error: function (jqXHR) {
-            console.log(jqXHR.responseText);
-        }
-    });
+        });
+    }
 
     $.ajax({
         type: 'get',
@@ -1785,7 +1787,7 @@ $(document).ready(function() {
                 swal_actions_class = 'em-actions-none'
                 verb = 'c';
 
-                html = '<iframe src="'+url+'" style="width:'+window.getWidth()*0.8+'px; height:'+window.getHeight()*0.8+'px; border:none"></iframe>';
+                html = '<iframe src="'+url+'" style="width:'+$(window).width()*0.8+'px; height:'+$(window).height()*0.8+'px; border:none"></iframe>';
 
                 removeLoader();
                 break;
@@ -4301,7 +4303,7 @@ $(document).ready(function() {
                 swal_popup_class = 'em-w-auto';
                 swal_confirm_button = 'COM_EMUNDUS_TROMBI_GENERATE';
                 title = 'COM_EMUNDUS_TROMBINOSCOPE';
-                html = '<iframe id="iframe-trombinoscope" src="'+url+'" style="width:'+window.getWidth()*0.8+'px;height:'+window.getHeight()*0.8+'px;border:none;"></iframe>';
+                html = '<iframe id="iframe-trombinoscope" src="'+url+'" style="width:'+$(window).width()*0.8+'px;height:'+$(window).height()*0.8+'px;border:none;"></iframe>';
                 break;
 
             // TODO: Synthesis (fast pdf generation from a model)
@@ -5170,7 +5172,7 @@ $(document).ready(function() {
         $('.modal-dialog').addClass('modal-lg');
         $(".modal-body").empty();
 
-        $(".modal-body").append('<iframe src="'+url+'" style="width:'+window.getWidth()*0.8+'px; height:'+window.getHeight()*0.8+'px; border:none"></iframe>');
+        $(".modal-body").append('<iframe src="'+url+'" style="width:'+$(window).width()*0.8+'px; height:'+$(window).height()*0.8+'px; border:none"></iframe>');
     });
 
 

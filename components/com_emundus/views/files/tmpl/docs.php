@@ -55,7 +55,7 @@ $template_type = array(
 
 <script type="text/javascript">
     addLoader();
-    let fnums = document.querySelector('input[name="em-doc-fnums"]').value;
+    var fnums = document.querySelector('input[name="em-doc-fnums"]').value;
 
     if(fnums.split(',').length === 1) {
         document.getElementById('merge-div').remove();
@@ -71,7 +71,7 @@ $template_type = array(
         data: { fnums: fnums },
         success: function(result) {
             if(result.status) {
-                let attachment_letters = result.attachment_letters;
+                var attachment_letters = result.attachment_letters;
                 $('#export-div').show();
 
                 attachment_letters.forEach((letter,index) => {
@@ -107,7 +107,7 @@ $template_type = array(
     })
 
     $('#em-doc-tmpl').on('change', function() {
-        let tmpl = $(this).val();
+        var tmpl = $(this).val();
         if(tmpl == null || tmpl.includes('-1')) {
             $('#em-generate').remove();
             $('#export-div').hide();

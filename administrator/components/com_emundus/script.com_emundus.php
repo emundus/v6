@@ -4308,6 +4308,16 @@ if(in_array($applicant,$exceptions)){
                 }
             }
 
+			if (version_compare($cache_version, '1.38.11', '<=') || $firstrun) {
+				$query->clear()
+					->update($db->quoteName('#__extensions'))
+					->set($db->quoteName('enabled') . ' = 0')
+					->where($db->quoteName('element') . ' LIKE ' . $db->quote('com_contact'))
+					->where($db->quoteName('type') . ' LIKE ' . $db->quote('component'));
+				$db->setQuery($query);
+				$db->execute();
+			}
+
             if (version_compare($cache_version, '1.39.0', '<=') || $firstrun) {
                 $succeed['get_attachments_for_profile_event_added'] = EmundusHelperUpdate::addCustomEvents([
                     ['label' => 'onAfterGetAttachmentsForProfile', 'category' => 'Files']
@@ -4579,6 +4589,29 @@ if(in_array($applicant,$exceptions)){
                     $inserted = (object)$inserted;
                     $db->insertObject('jos_fabrik_cron', $inserted);
                 }
+
+				$query->clear()
+					->select('id,params')
+					->from($db->quoteName('#__fabrik_forms'))
+					->where($db->quoteName('label') . ' LIKE ' . $db->quote('FORM_REGISTRATION'));
+				$db->setQuery($query);
+				$form_registration = $db->loadObject();
+
+				if (!empty($form_registration->id)) {
+					$params = json_decode($form_registration->params, true);
+					if(empty($params['outro'])) {
+						$params['outro'] = '<p style="text-align: center;">BACK_TO_LOGIN</p>';
+						$query->clear()
+							->update($db->quoteName('#__fabrik_forms'))
+							->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+							->where($db->quoteName('id') . ' = ' . $db->quote($form_registration->id));
+						$db->setQuery($query);
+						$db->execute();
+					}
+				}
+
+				EmundusHelperUpdate::insertTranslationsTag('BACK_TO_LOGIN', '<br />Déjà un compte ? <a href="connexion">Connectez-vous</a>');
+				EmundusHelperUpdate::insertTranslationsTag('BACK_TO_LOGIN', '<br />Already have an account? <a href="en/connexion">Log in</a>', 'override', null, null, null, 'en-GB');
             }
         }
 

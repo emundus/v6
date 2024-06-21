@@ -72,7 +72,7 @@ if (empty($id)) {
 
 <script type="text/javascript">
 
-    let lastId = '<?= $lastId; ?>';
+    var lastId = '<?= $lastId; ?>';
 
     function updateMessages() {
 
@@ -88,8 +88,8 @@ if (empty($id)) {
                 result = JSON.parse(result);
                 if (result.status == 'true') {
                     lastId = result.messages[0].message_id;
-                    for (let key in result.messages) {
-                        let user_from = result.messages[key].user_id_from;
+                    for (var key in result.messages) {
+                        var user_from = result.messages[key].user_id_from;
                         $('#contact-'+user_from+'-name').removeClass('read-contact');
                         $('#contact-'+user_from+'-name').addClass('unread-contact');
 
@@ -104,7 +104,7 @@ if (empty($id)) {
                         $('#em-contact-'+user_from).prependTo('#em-message-list');
 
                         if (user_from === chatClass) {
-                            let messageList = $('.message-list');
+                            var messageList = $('.message-list');
                             messageList.append('<li><div class="em-message-bubble em-contact-left"><p style="margin-top: 15px; margin-bottom: 15px !important;">'+ result.messages[key].message + '</p></div></li><hr id="separator">');
 
                             $('#em-messagerie').scrollTop($('#em-messagerie')[0].scrollHeight);
@@ -123,7 +123,7 @@ if (empty($id)) {
 
         setInterval(updateMessages, 10000);
 
-        let id = '<?= $id; ?>';
+        var id = '<?= $id; ?>';
 
         if (id != null && id != '') {
             $.ajax({

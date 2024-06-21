@@ -76,7 +76,7 @@
                 @searched="onSearchYear"
                 :items="this.session"
                 :year="form.year"
-                :name="'2020 - 2021'"
+                :name="sessionPlaceholder"
             />
           </div>
 
@@ -755,6 +755,15 @@ export default {
         document.getElementById('select_prog').setAttribute('disabled', 'disabled');
       }
       this.isHiddenProgram = !this.isHiddenProgram;
+    },
+  },
+
+  computed: {
+    sessionPlaceholder() {
+      let oneYearFromNow = new Date();
+      oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
+
+      return new Date().getFullYear() + ' - ' + oneYearFromNow.getFullYear();
     },
   },
 
