@@ -293,7 +293,8 @@ export default {
     onClose(e) {
       e.preventDefault();
 
-      console.log('onClose');
+      window.location.href = window.location.origin + window.location.pathname;
+
       this.hidden = true;
       this.$modal.hide('application-modal');
       document.querySelector('body').style.overflow= 'visible';
