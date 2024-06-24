@@ -8,6 +8,7 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       3.1
  */
+use Joomla\CMS\Factory;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
@@ -15,6 +16,17 @@ defined('_JEXEC') or die('Restricted access');
 $form  = $this->form;
 $model = $this->getModel();
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+require_once JPATH_SITE . '/components/com_emundus/models/application.php';
+$m_application = new EmundusModelApplication();
+
+$fnum = Factory::getApplication()->input->getString('fnum','');
+$this->collaborators = $m_application->getSharedFileUsers(null, $fnum);
+$this->collaborator = false;
+$e_user = Factory::getSession()->get('emundusUser', null);
+if(!empty($e_user->fnums)) {
+    $fnumInfos = $e_user->fnums[$fnum];
+    $this->collaborator = $fnumInfos->applicant_id != $e_user->id;
+}
 
 if ($this->params->get('show_page_heading', 1)) : ?>
     <div class="componentheading<?php echo $this->params->get('pageclass_sfx') ?>">
