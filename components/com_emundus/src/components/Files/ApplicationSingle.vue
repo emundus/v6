@@ -292,11 +292,13 @@ export default {
     },
     onClose(e) {
       e.preventDefault();
+
+      console.log('onClose');
       this.hidden = true;
       this.$modal.hide('application-modal');
       document.querySelector('body').style.overflow= 'visible';
       window.dispatchEvent(this.closeSplitModal);
-      swal.close();
+      Swal.close();
     },
     openNextFnum() {
       let index = typeof this.selectedFile === 'string' ? this.fnums.indexOf(this.selectedFile) : this.fnums.indexOf(this.selectedFile.fnum);
