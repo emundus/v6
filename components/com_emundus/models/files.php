@@ -1536,19 +1536,6 @@ class EmundusModelFiles extends JModelLegacy
             $query = $db->getQuery(true);
             $fnums = is_array($fnums) ? $fnums : [$fnums];
 
-            $codes = [];
-            foreach ($fnums as $fnum) {
-                $fnumTraining = $this->getFnumInfos($fnum)['training'];
-                $codes[] = $fnumTraining;
-            }
-            $codes = array_unique($codes);
-
-            // Get email triggers
-            include_once(JPATH_SITE.'/components/com_emundus/models/emails.php');
-            $m_emails = new EmundusModelEmails;
-
-            $triggers = $m_emails->getEmailTrigger($state, $codes, '0,1');
-
             try {
                 $query->select($db->quoteName('profile'))
                     ->from($db->quoteName('#__emundus_setup_status'))
@@ -1578,6 +1565,7 @@ class EmundusModelFiles extends JModelLegacy
                     }
                 }
 
+                $students = [];
                 foreach ($fnums as $fnum) {
                     $fnumInfos = $this->getFnumInfos($fnum);
 
@@ -1604,6 +1592,14 @@ class EmundusModelFiles extends JModelLegacy
                     $old_status_lbl = $all_status[$old_status_step]['value'];
                     $new_status_lbl = $all_status[$state]['value'];
                     if ($res) {
+                        $students[$fnum] = new stdClass();
+                        $students[$fnum]->id = $fnumInfos['applicant_id'];
+                        $students[$fnum]->name = $fnumInfos['name'];
+                        $students[$fnum]->email = $fnumInfos['email'];
+                        $students[$fnum]->fnum = $fnum;
+                        $students[$fnum]->campaign_id = $fnumInfos['campaign_id'];
+                        $students[$fnum]->code = $fnumInfos['training'];
+
                         $logs_params = ['updated' => [['old' => $old_status_lbl, 'new' => $new_status_lbl, 'old_id' => $old_status_step, 'new_id' => $state]]];
                         EmundusModelLogs::log($user_id, $fnumInfos['applicant_id'], $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
                     } else {
@@ -1622,30 +1618,17 @@ class EmundusModelFiles extends JModelLegacy
                         $db->setQuery($query);
                         $db->execute();
                     }
-
-                    if ($res) {
-                        $student = new stdClass();
-                        $student->id = $fnumInfos['applicant_id'];
-                        $student->name = $fnumInfos['name'];
-                        $student->email = $fnumInfos['email'];
-                        $student->fnum = $fnum;
-                        $student->campaign_id = $fnumInfos['campaign_id'];
-                        $student->code = $fnumInfos['training'];
-
-                        // Send email triggers
-                        $sent = $m_emails->sendEmailTrigger($state, [$fnumInfos['training']], '0,1', $student, null, $triggers);
-
-                        if ($sent) {
-                            $res = [
-                                'status' => true,
-                                'msg' => JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT').'<br>'
-                            ];
-                        }
-                    }
                 }
             } catch (Exception $e) {
                 echo $e->getMessage();
                 JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            }
+
+            if ($res) {
+                $res = [
+                    'status' => true,
+                    'msg' => $this->sendEmailAfterUpdateState($fnums, $state, $students)
+                ];
             }
         }
 
@@ -4548,4 +4531,52 @@ class EmundusModelFiles extends JModelLegacy
 
 		return $updated;
 	}
+
+    private function sendEmailAfterUpdateState($fnums, $state, $students)
+    {
+        $msg = '';
+
+        $app = JFactory::getApplication();
+        $email_from_sys = $app->get('mailfrom');
+        $fnumsInfos = $this->getFnumsInfos($fnums);
+        $status = $this->getStatus();
+
+        $current_user = JFactory::getUser();
+        if(empty($current_user)){
+            $eMConfig = JComponentHelper::getParams('com_emundus');
+            $user_from = $eMConfig->get('automated_task_user', 62);
+        } else {
+            $user_from = $current_user->id;
+        }
+
+        // Get all codes from fnum
+        $codes = array();
+        foreach($students as $student) {
+            $codes[] = $student->code;
+        }
+        $codes = array_unique($codes);
+
+        //*********************************************************************
+        // Get email triggers
+        include_once(JPATH_SITE.'/components/com_emundus/models/emails.php');
+        $m_emails = new EmundusModelEmails;
+
+        $triggers = $m_emails->getEmailTrigger($state, $codes, '0,1');
+
+        if (!empty($triggers)) {
+            foreach($students as $student) {
+                // Send email triggers
+                $sent = $m_emails->sendEmailTrigger($state, [$student->code], '0,1', $student, null, $triggers);
+
+                if ($sent !== true) {
+                    $msg .= '<div class="alert alert-dismissable alert-danger">'.JText::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT').' : '.$student->fnum.' '.$sent->__toString().'</div>';
+                    JLog::add($sent->__toString(), JLog::ERROR, 'com_emundus.email');
+                }  else {
+                    $msg .= JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT').' : '.$student->email.'<br>';
+                }
+            }
+        }
+
+        return $msg;
+    }
 }
