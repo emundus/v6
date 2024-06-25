@@ -24,10 +24,18 @@ $db_table_name = $this->table->db_table_name;
 $gallery = $m_gallery->getGalleryByList($listid);
 $votes   = $m_vote->getVotesByUser();
 
-$user = Factory::getApplication()->getIdentity();
+$app = Factory::getApplication();
+$user = $app->getIdentity();
 
 $db    = Factory::getDbo();
 $query = $db->getQuery(true);
+
+$is_iframe = $app->input->getInt('iframe', null);
+
+$url_details_parameters = '';
+if ($is_iframe) {
+    $url_details_parameters = '?tmpl=component&iframe=1';
+}
 
 $voted = false;
 foreach ($votes as $vote) {
@@ -107,7 +115,7 @@ foreach ($votes as $vote) {
         </div>
 
         <div class="inferior-infos-container">
-            <a href="<?php echo $this->_row->data->fabrik_view_url ?>" class="em-applicant-secondary-button w-full em-white-space-normal"
+            <a href="<?php echo $this->_row->data->fabrik_view_url . $url_details_parameters ?>" class="em-applicant-secondary-button w-full em-white-space-normal"
                style="text-transform: unset"><?php echo JText::_('COM_FABRIK_VOTING_GO_DETAILS') ?></a>
 
             <?php if ($gallery->is_voting == 1) : ?>

@@ -36,13 +36,28 @@ JText::script('COM_FABRIK_VOTE_MODAL_ERROR_TEXT');
 $listid = explode('_', $this->form->db_table_name);
 $listid = $listid[sizeof($listid) - 1];
 
+$db    = Factory::getDbo();
+$query = $db->getQuery(true);
+
+if (!is_numeric($listid)) {
+	$query->clear()
+		->select('id')
+		->from('jos_fabrik_lists')
+		->where('form_id = '. $this->form->id);
+
+	$db->setQuery($query);
+	$listid = $db->loadResult();
+}
+
 $gallery = $m_gallery->getGalleryByList($listid);
 $votes   = $m_vote->getVotesByUser();
 
+
+$app = Factory::getApplication();
+$is_iframe = $app->input->getInt('iframe', null);
+
 $user = Factory::getApplication()->getIdentity();
 
-$db    = Factory::getDbo();
-$query = $db->getQuery(true);
 
 if ($this->params->get('show_page_heading', 1)) : ?>
     <div class="componentheading<?php echo $this->params->get('pageclass_sfx') ?>">
@@ -53,7 +68,7 @@ endif;
 
 ?>
 
-<div id="fabrikDetailsContainer_<?php echo $form->id ?>" class="mb-12">
+<div id="fabrikDetailsContainer_<?php echo $form->id ?>" class="mb-12 <?= $is_iframe ? 'view-details' : '' ?>">
 	<?php
 	echo $form->intro;
 	if ($this->isMambot) :
