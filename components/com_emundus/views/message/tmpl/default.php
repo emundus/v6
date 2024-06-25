@@ -465,7 +465,7 @@ if ($allowed_attachments !== true) {
             var email = value.substring(value.indexOf(":") + 1);
             email = email.trim();
 
-            const regex = /^\S{1,64}@\S{1,255}\.\S{1,255}$/;
+            var regex = /^\S{1,64}@\S{1,255}\.\S{1,255}$/;
             if (!regex.test(email)) {
                 this.removeItem(value);
             }
@@ -492,7 +492,7 @@ if ($allowed_attachments !== true) {
             var email = value.substring(value.indexOf(":") + 1);
             email = email.trim();
 
-            const regex = /^\S{1,64}@\S{1,255}\.\S{1,255}$/;
+            var regex = /^\S{1,64}@\S{1,255}\.\S{1,255}$/;
             if (!regex.test(email)) {
                 this.removeItem(value);
             }
@@ -659,7 +659,7 @@ if ($allowed_attachments !== true) {
                         if (searchTerm.length === 0) {
                             renderList(values, searchTerm);
                         } else {
-                            const matches = [];
+                            var matches = [];
                             for (var i = 0; i < values.length; i++)
                                 if (
                                     ~values[i].value.toLowerCase().indexOf(searchTerm.toLowerCase())
@@ -683,7 +683,7 @@ if ($allowed_attachments !== true) {
                     }
                 }
                 editor = new Quill('#editor', options);
-                const editorContent = "<?php echo addslashes($this->body) ?>";
+                var editorContent = "<?php echo addslashes($this->body) ?>";
                 var delta = editor.clipboard.convert(editorContent);
                 editor.setContents(delta);
                 $('#mail_body').val(editor.root.innerHTML);

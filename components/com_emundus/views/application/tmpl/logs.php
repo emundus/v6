@@ -130,7 +130,7 @@ JFactory::getSession()->set('application_layout', 'logs');
             dataType: 'json',
             success: function(results) {
                 if(results.status) {
-                    const typeLogs = $('#type-logs');
+                    var typeLogs = $('#type-logs');
 
                     results.data.forEach(log => {
                         typeLogs.append('<option value="' + log.id + '">' + Joomla.JText._(log.label) + '</option>');           /// append data
@@ -168,7 +168,7 @@ JFactory::getSession()->set('application_layout', 'logs');
             dataType: 'json',
             success: function(results) {
                 if(results.status) {
-                    const actorsLog = $('#actors-logs');
+                    var actorsLog = $('#actors-logs');
 
                     results.data.forEach((user) => {
                         actorsLog.append('<option value="' + user.uid + '">' + user.name + '</option>');           /// append data
@@ -191,8 +191,8 @@ JFactory::getSession()->set('application_layout', 'logs');
                 crud = ['c','r', 'u', 'd'];
             }
 
-            const types = $('#type-logs').val();
-            const persons = $('#actors-logs').val();
+            var types = $('#type-logs').val();
+            var persons = $('#actors-logs').val();
 
            $.ajax({
                 type: 'post',
@@ -208,7 +208,7 @@ JFactory::getSession()->set('application_layout', 'logs');
                     $('#log-count-results').remove();
 
                     // add loading icon
-                    const logList = $('#logs_list');
+                    var logList = $('#logs_list');
                     logList.empty();
                     logList.before('<div id="loading"><img src="'+loading+'" alt="loading"/></div>');
 
@@ -256,10 +256,10 @@ JFactory::getSession()->set('application_layout', 'logs');
    $(document).on('click', '#show-more', function(e) {
        if(e.handle === true) {
            e.handle = false;
-           const fnum = "<?php echo $this->fnum; ?>";
-           const crud =$('#crud-logs').val();
-           const types =$('#type-logs').val();
-           const persons =$('#actors-logs').val();
+           var fnum = "<?php echo $this->fnum; ?>";
+           var crud =$('#crud-logs').val();
+           var types =$('#type-logs').val();
+           var persons =$('#actors-logs').val();
 
            $.ajax({
                type:'POST',
@@ -306,7 +306,7 @@ JFactory::getSession()->set('application_layout', 'logs');
         xhr.onreadystatechange = function() {
             if (xhr.readyState == 4) {
                 if (xhr.status == 200) {
-                    const response = JSON.parse(xhr.response);
+                    var response = JSON.parse(xhr.response);
 
                     if (response) {
                         var file_link = document.createElement('a');
@@ -331,9 +331,9 @@ JFactory::getSession()->set('application_layout', 'logs');
 
         var body = new FormData();
 
-        const crud = $('#crud-logs').val();
-        const types = $('#type-logs').val();
-        const persons = $('#actors-logs').val();
+        var crud = $('#crud-logs').val();
+        var types = $('#type-logs').val();
+        var persons = $('#actors-logs').val();
 
         body.append('fnum', String(fnum));
         body.append('crud', JSON.stringify(crud));
@@ -348,7 +348,7 @@ JFactory::getSession()->set('application_layout', 'logs');
     });
 
     function resetFilters() {
-        const log_link = document.querySelector('#em-appli-menu a[href*="layout=logs"]');
+        var log_link = document.querySelector('#em-appli-menu a[href*="layout=logs"]');
         if (log_link) {
             log_link.click();
         }

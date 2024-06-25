@@ -264,7 +264,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
             $('#em-data th').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight) + 'px');
         },2000);
 
-        const dataContainer = document.querySelector('.em-data-container')
+        var dataContainer = document.querySelector('.em-data-container')
         if (dataContainer) {
             DoubleScroll(dataContainer);
         }

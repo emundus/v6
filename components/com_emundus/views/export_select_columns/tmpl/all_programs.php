@@ -301,7 +301,7 @@ JText::script('COM_EMUNDUS_TAG_APPLICANT_APPLICATION_STATUS');
                     label.classList.add('col-md-9');
                     label.innerText = Joomla.JText._(tag.description)?Joomla.JText._(tag.description):tag.description;
 
-                    const container =  document.createElement('div');
+                    var container =  document.createElement('div');
                     container.setAttribute('class', 'em-element other-em-element');
                     container.append(id);
 

@@ -403,7 +403,7 @@ $uids = array();
                         if (searchTerm.length === 0) {
                             renderList(values, searchTerm);
                         } else {
-                            const matches = [];
+                            var matches = [];
                             for (var i = 0; i < values.length; i++)
                                 if (
                                     ~values[i].value.toLowerCase().indexOf(searchTerm.toLowerCase())
@@ -427,7 +427,7 @@ $uids = array();
                     }
                 }
                 editor = new Quill('#editor', options);
-                const editorContent = "<?php echo addslashes($this->body) ?>";
+                var editorContent = "<?php echo addslashes($this->body) ?>";
                 var delta = editor.clipboard.convert(editorContent);
                 editor.setContents(delta);
                 $('#mail_body').val(editor.root.innerHTML);

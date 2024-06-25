@@ -232,7 +232,7 @@ if ($this->open_file_in_modal) {
     <script src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
     <script>
         function clickOpenfile(fnum) {
-            const fnums = <?= json_encode($fnums) ?>;
+            var fnums = <?= json_encode($fnums) ?>;
             var event = new CustomEvent('openSingleApplicationWithFnum', {detail: {fnum: fnum, fnums: fnums}});
             window.dispatchEvent(event);
         }
@@ -258,7 +258,7 @@ if ($this->open_file_in_modal) {
             $('#em-data th').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight) + 'px');
         },2000);
 
-        const dataContainer = document.querySelector('.em-data-container')
+        var dataContainer = document.querySelector('.em-data-container')
         if (dataContainer) {
             DoubleScroll(document.querySelector('.em-data-container'));
         }

@@ -37,7 +37,7 @@ $current_user = JFactory::getUser();
 
 <script>
     window.addEventListener('DOMContentLoaded', () => {
-        const loaders = document.getElementsByClassName('em-page-loader');
+        var loaders = document.getElementsByClassName('em-page-loader');
         for(loader of loaders) {
            loader.style.display = 'none';
         }

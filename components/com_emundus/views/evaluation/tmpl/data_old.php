@@ -185,7 +185,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
         $('#rt-main').children().addClass('mainemundus');
         $('#rt-main').children().children().addClass('mainemundus');
 
-        const dataContainer = document.querySelector('.em-data-container')
+        var dataContainer = document.querySelector('.em-data-container')
         if (dataContainer) {
             DoubleScroll(dataContainer);
         }

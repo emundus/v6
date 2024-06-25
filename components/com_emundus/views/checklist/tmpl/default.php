@@ -667,8 +667,8 @@ $(document).on('change', '.btn-file :file', function() {
 
 $(document).ready(function() {
     // Set sidebar sticky depends on height of header
-    const headerNav = document.getElementById('g-navigation');
-    const sidebar = document.querySelector('.view-checklist #g-sidebar');
+    var headerNav = document.getElementById('g-navigation');
+    var sidebar = document.querySelector('.view-checklist #g-sidebar');
     if (headerNav && sidebar) {
         sidebar.style.top = headerNav.offsetHeight + 8 + 'px';
     }

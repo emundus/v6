@@ -206,7 +206,7 @@ $now = EmundusHelperDate::displayDate(date('Y-m-d H:i:s'), 'DATE_FORMAT_LC2', 0)
                                     }
                                 });
 
-                                const notifications_counter = document.querySelector('a[href*="layout=comment"] span.notifications-counter')
+                                var notifications_counter = document.querySelector('a[href*="layout=comment"] span.notifications-counter')
                                 if (notifications_counter) {
                                     var count = parseInt(notifications_counter.innerText);
                                     count--;
@@ -262,12 +262,12 @@ $now = EmundusHelperDate::displayDate(date('Y-m-d H:i:s'), 'DATE_FORMAT_LC2', 0)
 
                 $('#form').empty();
                 if (result.status) {
-                    const no_comment_text = document.getElementById('no_comment_text');
+                    var no_comment_text = document.getElementById('no_comment_text');
                     if(no_comment_text) {
                         no_comment_text.remove();
                     }
 
-                    const notifications_counter = document.querySelector('a[href*="layout=comment"] span.notifications-counter')
+                    var notifications_counter = document.querySelector('a[href*="layout=comment"] span.notifications-counter')
                     if(notifications_counter) {
                         var count = parseInt(notifications_counter.innerText);
                         count++;

@@ -238,7 +238,7 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
             $('#em-data th').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight) + 'px');
         },2000);
 
-        const dataContainer = document.querySelector('.em-data-container')
+        var dataContainer = document.querySelector('.em-data-container')
         if (dataContainer) {
             DoubleScroll(dataContainer);
         }
