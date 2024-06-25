@@ -1,16 +1,17 @@
 <template>
   <div>
-    <a class="em-pointer em-profile-color em-text-underline" @click="addNewForm">{{ translate('COM_EMUNDUS_ONBOARD_NO_FORM_FOUND_ADD_FORM') }}</a>
 
-    <div class="em-mb-4 em-mt-16 em-text-color">{{ChooseForm}} : </div>
-    <div class="em-mb-4">
-      <select id="select_profile" v-model="$props.profileId" @change="updateProfileCampaign">
+    <div class="em-mb-4 em-text-color">{{ChooseForm}} : </div>
+    <div class="em-mb-24 em-flex-col-start">
+      <select class="em-mb-4" id="select_profile" v-model="$props.profileId" @change="updateProfileCampaign">
         <option v-for="(profile, index) in profiles" :key="index" :value="profile.id">
           {{profile.form_label}}
         </option>
       </select>
+      <a class="em-pointer em-profile-color em-text-underline" @click="formbuilder">{{ translate('COM_EMUNDUS_ONBOARD_EDIT_FORM') }}</a>
     </div>
-    <a class="em-pointer em-profile-color em-text-underline" @click="formbuilder">{{ translate('COM_EMUNDUS_ONBOARD_EDIT_FORM') }}</a>
+
+      <a class="em-pointer em-profile-color em-text-underline" @click="addNewForm">{{ translate('COM_EMUNDUS_ONBOARD_NO_FORM_FOUND_ADD_FORM') }}</a>
 
     <hr/>
     <h5>{{ translate('COM_EMUNDUS_FORM_PAGES_PREVIEW')}}</h5>
@@ -241,6 +242,10 @@ export default {
   min-width: 250px;
   width: max-content;
   max-width: 350px;
+}
+
+select.em-mb-4 {
+  margin-bottom: 4px !important;
 }
 </style>
 

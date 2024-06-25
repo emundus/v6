@@ -23,8 +23,6 @@ jimport('joomla.plugin.plugin');
  */
 class plgAuthenticationEmundus_Oauth2 extends JPlugin
 {
-
-
     /**
      * @var  string  The authorisation url.
      */
@@ -53,19 +51,15 @@ class plgAuthenticationEmundus_Oauth2 extends JPlugin
 
     public function __construct(&$subject, $config)
     {
-        parent::__construct($subject, $config);
+		parent::__construct($subject, $config);
         $this->loadLanguage();
-
-
-        jimport('joomla.log.log');
-        JLog::addLogger(array('text_file' => 'com_emundus.oauth2.php'), JLog::ALL, array('com_emundus'));
 
 		$type = filter_input(INPUT_GET, 'type', FILTER_SANITIZE_STRING);
 	    if (!empty($type)) {
 			$second_configuration_type = $this->params->get('type_2', '');
 
 		    if (!empty($second_configuration_type) && $type === $second_configuration_type) {
-			    // it means we should use the confiration n°2
+			    // it means we should use the configuration n°2
 			    $parameters = ['client_id', 'client_secret', 'scopes', 'auth_url', 'token_url', 'redirect_url', 'sso_account_url', 'emundus_profile', 'email_id', 'logout_url', 'platform_redirect_url', 'attributes', 'debug_mode'];
 
 			    foreach ($parameters as $parameter) {
@@ -137,11 +131,11 @@ class plgAuthenticationEmundus_Oauth2 extends JPlugin
 		                }
 	                }
 
-                    foreach ($this->attributes->column_name as $key => $column) {
+	                foreach ($this->attributes->column_name as $key => $column) {
 		                if ($this->attributes->table_name[$key] == 'jos_users' || (in_array($column, ['firstname', 'lastname']))) {
 			                $response->{$column} = !empty($body->attributes) && isset($body->attributes->{$this->attributes->attribute_name[$key]}) ? $body->attributes->{$this->attributes->attribute_name[$key]} : $body->{$this->attributes->attribute_name[$key]};
-                        }
-                    }
+		                }
+	                }
 					
                     if (!empty($response->username)) {
                         $db = JFactory::getDbo();

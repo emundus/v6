@@ -1,24 +1,24 @@
 
 .values-selection[data-v-2064eced] {
-	max-height: 180px;
-	overflow-y: auto;
+  max-height: 180px;
+  overflow-y: auto;
 }
 .multi-select-filter-card[data-v-2064eced] {
-	position: relative;
+  position: relative;
 }
-.multi-select-filter-card  .toggle-open-close[data-v-2064eced] {
-	position: absolute;
-	top: 4px;
-	right: 4px;
+.multi-select-filter-card .toggle-open-close[data-v-2064eced] {
+  position: absolute;
+  top: 4px;
+  right: 4px;
 }
 span.label[data-v-2064eced] {
-	font-weight: normal !important;
-	display: flex !important;
-	width: -moz-fit-content;
-	width: fit-content;
+  font-weight: normal !important;
+  display: flex !important;
+  width: -moz-fit-content;
+  width: fit-content;
 }
 .recap[data-v-2064eced] {
-	overflow: hidden;
+  overflow: hidden;
 }
 .em-filter-value-checkbox.disabled[data-v-2064eced] {
   pointer-events: none;
@@ -53,21 +53,21 @@ span.label[data-v-b7261814] {
 
 
 .default-filter-card[data-v-565be899] {
-	position: relative;
+  position: relative;
 }
-.default-filter-card  .toggle-open-close[data-v-565be899] {
-	position: absolute;
-	top: 4px;
-	right: 4px;
+.default-filter-card .toggle-open-close[data-v-565be899] {
+  position: absolute;
+  top: 4px;
+  right: 4px;
 }
 span.label[data-v-565be899] {
-	font-weight: normal !important;
-	display: flex !important;
-	width: -moz-fit-content;
-	width: fit-content;
+  font-weight: normal !important;
+  display: flex !important;
+  width: -moz-fit-content;
+  width: fit-content;
 }
 .recap[data-v-565be899] {
-	overflow: hidden;
+  overflow: hidden;
 }
 
 

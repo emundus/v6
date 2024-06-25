@@ -78,6 +78,20 @@ hr.footer-separation {
     flex: 1;
 }
 
+.em-container-footer-cand .em-col-3-footer a img {
+    float: right;
+}
+
+.footer-client.centered-links {
+    position: absolute;
+    left: 20px;
+}
+
+.footer-emundus.centered-links {
+    position: absolute;
+    right: 20px;
+}
+
 .footer-rgpd-links a, .em-col-3-footer a  {
     text-decoration: underline;
 }
@@ -268,6 +282,22 @@ hr.footer-separation {
 @media all and (min-width: 768px) and (max-width: 959px) {
     .footer-emundus {
         white-space: break-spaces;
+    }
+
+}
+
+
+@media all and (max-width: 1366px) {
+    .footer-emundus.centered-links, .footer-client.centered-links {
+        position: initial;
+    }
+}
+
+
+@media all and (max-width: 767px) {
+     .footer-client.centered-links a{
+        display: flex;
+        justify-content: center;
     }
 }
 

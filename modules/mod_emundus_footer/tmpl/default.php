@@ -61,7 +61,7 @@ if($applicant = !EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
 
       <div class="em-flex-row em-footer-container-row">
         <?php if((empty($mod_emundus_footer_texte_col_1) && empty($mod_emundus_footer_texte_col_2)) && !empty($mod_emundus_footer_client_link)) : ?>
-          <div class="footer-client">
+          <div class="footer-client centered-links">
             <a href="<?php echo $mod_emundus_footer_client_link ?>" target="_blank"><img style="width: 250px" src="<?php echo $logo ?>"/></a>
           </div>
         <?php endif; ?>
@@ -95,7 +95,7 @@ if($applicant = !EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
         </ul>
         </div>
           <?php if(empty($mod_emundus_footer_texte_col_1) && empty($mod_emundus_footer_texte_col_2) && $mod_emundus_footer_display_powered_by == 1) : ?>
-          <div class="footer-emundus">
+          <div class="footer-emundus centered-links">
               <p><?= JText::_('MOD_EM_FOOTER_COPYRIGHT') ?><a href="<?= JText::_('MOD_EM_FOOTER_LINK') ?>" target="_blank" class="em-text-underline"><span class="emundus-link">eMundus</span></a></span></p>
           </div>
           <?php endif; ?>

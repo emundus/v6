@@ -108,6 +108,38 @@ array_unshift($tabs, [
 ksort($applications);
 
 $current_tab = 0;
+
+if (!empty($applications) && !empty($title_override) && !empty(str_replace(array(' ', "\t", "\n", "\r", "&nbsp;"), '', htmlentities(strip_tags($title_override))))) {
+    if (!isset($m_email)) {
+        if (!class_exists('EmundusModelEmails')) {
+            require_once(JPATH_ROOT . '/components/com_emundus/models/emails.php');
+        }
+        $m_email = new EmundusModelEmails();
+    }
+
+    foreach ($applications[0]['all']['applications'] as $key => $sub_applications) {
+        foreach ($sub_applications as $a_key => $application) {
+            $title_override_display = $title_override;
+            $post = array(
+                'APPLICANT_ID' => $user->id,
+                'DEADLINE' => strftime("%A %d %B %Y %H:%M", strtotime($application->end_date)),
+                'CAMPAIGN_LABEL' => $application->label,
+                'CAMPAIGN_YEAR' => $application->year,
+                'CAMPAIGN_START' => $application->start_date,
+                'CAMPAIGN_END' => $application->end_date,
+                'CAMPAIGN_CODE' => $application->training,
+                'FNUM' => $application->fnum
+            );
+
+            $tags = $m_email->setTags($user->id, $post, $application->fnum, '', $title_override_display);
+            $title_override_display = preg_replace($tags['patterns'], $tags['replacements'], $title_override_display);
+            $title_override_display = $m_email->setTagsFabrik($title_override_display, array($application->fnum));
+
+            $applications[0]['all']['applications'][$key][$a_key]->label = $title_override_display;
+        }
+    }
+}
+
 ?>
 <div class="mod_emundus_applications___header mod_emundus_applications___tmp_tchooz">
 	<?php if ($mod_em_applications_show_hello_text == 1 && !$is_anonym_user) : ?>
@@ -311,9 +343,10 @@ $current_tab = 0;
         </div>
 	<?php else : ?>
         <h4 id="no_file_tab_message_view" class="em-display-none"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_TAB') ?></h4>
-		<?php foreach ($applications as $key => $group) : ?>
+        <h4 id="no_file_search_message_view" class="em-display-none"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_SEARCH') ?></h4>
+        <?php foreach ($applications as $key => $group) : ?>
 			<?php foreach ($group as $g_key => $sub_group) : ?>
-				<?php if (sizeof($sub_group['applications'][0]) > 0) : ?>
+                <?php if ((!empty($order_by_session) && !empty($sub_group['applications'])) || !empty($sub_group['applications'][0])) : ?>
                     <div id="group_application_tab_<?php echo $key ?>"
                          class="em-mb-44 <?php if ($key != $current_tab) : ?>em-display-none<?php endif; ?>">
                         <?php if (isset($sub_group['label'])) : ?>
@@ -365,12 +398,11 @@ $current_tab = 0;
 											$current_phase = $m_campaign->getCurrentCampaignWorkflow($application->fnum);
 
 											?>
-                                            <div class="hover-and-tile-container">
+                                            <div class="hover-and-tile-container" id="application_content<?php echo $application->fnum ?>">
 	                                            <?php if ($mod_em_campaign_display_hover_offset == 1) : ?>
                                                 <div id="tile-hover-offset-request"></div>
                                                 <?php endif; ?>
                                                 <div class="row em-border-neutral-300 mod_emundus_applications___content_app em-pointer"
-                                                     id="application_content<?php echo $application->fnum ?>"
                                                      onclick="openFile(event,'<?php echo $first_page_url ?>')">
 											        <?php if ($mod_em_campaign_display_svg == 1) : ?>
                                                         <div id="background-shapes" alt="<?= JText::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
@@ -492,9 +524,9 @@ $current_tab = 0;
                                                                     :</label>
                                                                 <p class="em-applicant-default-font em-text-neutral-900">
                                                                     <?php if (empty($application->updated)) : ?>
-                                                                        <?php echo JFactory::getDate(new JDate($application->submitted_date, $site_offset))->format('d/m/Y H:i'); ?>
+                                                                        <?php echo EmundusHelperDate::displayDate($application->submitted_date, 'DATE_FORMAT_EMUNDUS'); ?>
                                                                     <?php else : ?>
-                                                                        <?php echo EmundusHelperDate::displayDate($application->updated, 'DATE_FORMAT_LC2', 0); ?>
+                                                                        <?php echo EmundusHelperDate::displayDate($application->updated, 'DATE_FORMAT_EMUNDUS', 0); ?>
                                                                     <?php endif; ?>
                                                                 </p>
                                                             </div>
@@ -635,7 +667,7 @@ $current_tab = 0;
         <h4 id="no_file_tab_message_list" class="em-display-none"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_TAB') ?></h4>
 		<?php foreach ($applications as $key => $group) : ?>
 			<?php foreach ($group as $g_key => $sub_group) : ?>
-				<?php if (sizeof($sub_group['applications'][0]) > 0) : ?>
+                <?php if ((!empty($order_by_session) && !empty($sub_group['applications'])) || !empty($sub_group['applications'][0])) : ?>
                     <div id="group_application_tab_<?php echo $key ?>"
                          class="em-mb-44 <?php if ($key != $current_tab) : ?>em-display-none<?php endif; ?>">
 
@@ -725,9 +757,9 @@ $current_tab = 0;
                                                         <div>
                                                             <p class="em-applicant-default-font em-text-neutral-900 em-font-size-14">
 																<?php if (empty($application->updated)) : ?>
-																	<?php echo JFactory::getDate(new JDate($application->submitted_date, $site_offset))->format('d/m/Y H:i'); ?>
+																	<?php echo EmundusHelperDate::displayDate($application->submitted_date, 'DATE_FORMAT_EMUNDUS'); ?>
 																<?php else : ?>
-																	<?php echo EmundusHelperDate::displayDate($application->updated, 'd/m/Y H:i', 0); ?>
+																	<?php echo EmundusHelperDate::displayDate($application->updated, 'DATE_FORMAT_EMUNDUS', 0); ?>
 																<?php endif; ?>
                                                             </p>
                                                         </div>
@@ -1021,7 +1053,7 @@ $current_tab = 0;
                 document.querySelectorAll('#application_content' + fnum).forEach((block) => {
                     block.style.display = 'none';
                 })
-            })
+            });
             fnums_to_show.forEach((fnum) => {
                 document.querySelectorAll('#application_content' + fnum).forEach((block) => {
                     if(block.nodeName === 'TR'){
@@ -1030,7 +1062,14 @@ $current_tab = 0;
                         block.style.display = 'block';
                     }
                 })
-            })
+            });
+
+            if (fnums_to_show.length === 0) {
+                document.getElementById('no_file_search_message_view').style.display = 'block';
+            } else {
+                document.getElementById('no_file_search_message_view').style.display = 'none';
+            }
+
         } else {
             for (let application of document.querySelectorAll("div[id^='application_content']")) {
                 if(application.nodeName === 'TR'){
@@ -1039,7 +1078,7 @@ $current_tab = 0;
                     application.style.display = 'block';
                 }
             }
-
+            document.getElementById('no_file_search_message_view').style.display = 'none';
         }
 
     }, 500));
@@ -1282,6 +1321,12 @@ $current_tab = 0;
                         if (selected_tab_session !== null && selected_tab_session == tab) {
                             sessionStorage.removeItem('mod_emundus_applications___selected_tab');
                             this.updateTab(0);
+                        }
+
+                        let tabs =  document.querySelectorAll('div[id^="tab_link_"]');
+                        if(tabs.length <= 1) {
+                            document.getElementById('tab_manage_links').style.display = 'none';
+                            document.getElementById('tab_adding_link').style.display = 'flex';
                         }
                     }
                 });

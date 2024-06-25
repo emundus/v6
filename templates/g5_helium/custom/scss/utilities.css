@@ -138,6 +138,10 @@
         list-style: initial;
     }
 
+    ol {
+        list-style: auto;
+    }
+
     legend {
         margin: 10px 0 20px 0;
     }
@@ -464,6 +468,11 @@
         float: right;
         right: unset;
         background: transparent;
+    }
+
+    .alert-danger .close,
+    .alert-error .close {
+          color: var(--em-alert-error-color);
     }
 
     .alert h4 {

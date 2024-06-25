@@ -13,5 +13,16 @@
         <filename plugin="oauth2">oauth2.php</filename>
     </files>
     <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field name="session_state_required" type="list" default="1"
+                       label="Le paramètre session_state est-il requis ?"
+                       description=""
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+            </fieldset>
+        </fields>
     </config>
 </extension>
