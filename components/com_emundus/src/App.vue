@@ -77,7 +77,6 @@ export default {
     addcampaign,
     campaignedition,
     editgallery,
-    addformnextcampaign,
     addemail,
     formbuilder,
     settings,

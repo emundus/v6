@@ -184,7 +184,7 @@ import Skeleton from '../components/Skeleton.vue';
 
 // Services
 import settingsService from '../services/settings.js';
-import campaignsService from '../services/campaigns.js';
+import campaignsService from '../services/campaign.js';
 import client from '../services/axiosClient';
 import Swal from 'sweetalert2';
 
