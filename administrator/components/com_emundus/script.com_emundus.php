@@ -4612,6 +4612,26 @@ if(in_array($applicant,$exceptions)){
 
 				EmundusHelperUpdate::insertTranslationsTag('BACK_TO_LOGIN', '<br />Déjà un compte ? <a href="connexion">Connectez-vous</a>');
 				EmundusHelperUpdate::insertTranslationsTag('BACK_TO_LOGIN', '<br />Already have an account? <a href="en/connexion">Log in</a>', 'override', null, null, null, 'en-GB');
+
+
+	            $query->clear()
+		            ->select('ff.id,ff.params')
+		            ->from($db->quoteName('#__fabrik_forms','ff'))
+		            ->leftJoin($db->quoteName('#__fabrik_lists','fl').' ON '.$db->quoteName('fl.form_id').' = '.$db->quoteName('ff.id'))
+		            ->where($db->quoteName('fl.db_table_name') . ' LIKE ' . $db->quote('jos_emundus_setup_letters'));
+	            $db->setQuery($query);
+	            $form_letters = $db->loadObject();
+
+				if(!empty($form_letters->id)) {
+					$params = json_decode($form_letters->params, true);
+					$params['plugin_events'] = ['both'];
+					$query->clear()
+						->update($db->quoteName('#__fabrik_forms'))
+						->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+						->where($db->quoteName('id') . ' = ' . $db->quote($form_letters->id));
+					$db->setQuery($query);
+					$db->execute();
+				}
             }
         }
 
