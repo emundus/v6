@@ -114,6 +114,18 @@ $now = $dateTime->format('Y-m-d H:i:s');
             padding: 0 40px !important;
         }
     }
+
+
+    @media all and (min-width: 768px) and (max-width: 1198px) {
+        .justify-end.mod_emundus_flow___buttons {
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .mod_emundus_flow___buttons .btn-primary {
+            margin-right: 0;
+        }
+    }
 </style>
 
 <div class="mod_emundus_flow___container" style="padding: 0 20px">
