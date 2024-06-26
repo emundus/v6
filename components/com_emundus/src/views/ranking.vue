@@ -213,11 +213,12 @@
         </template>
         <template v-slot:files-to-compare-with>
           <ranking :key="subRankingKey"
-                      @other-selected-file="onSelectOtherFile"
-                      :hierarchy_id="hierarchy_id"
-                      :user="user" context="modal"
-                      :showOtherHierarchies="false"
-                      :package-id="packageId"
+            @other-selected-file="onSelectOtherFile"
+            @ranking-updated="getRankings"
+            :hierarchy_id="hierarchy_id"
+            :user="user" context="modal"
+            :showOtherHierarchies="false"
+            :package-id="packageId"
           >
           </ranking>
         </template>
@@ -321,8 +322,8 @@ export default {
         otherRankings: [],
         maxRankValue: 0,
       },
-      defaultFile: null,
-      selectedOtherFile: null,
+      defaultFile: {},
+      selectedOtherFile: {},
       locked: false,
       subRankingKey: 0,
       askedHierarchiesToLockRanking: [],
@@ -490,6 +491,15 @@ export default {
           this.rankings.myRanking = response.data.data;
           this.rankings.nbFiles = response.data.total;
           this.rankings.maxRankValue = response.data.maxRankValue == -1 ? 0 : response.data.maxRankValue;
+
+          if (this.defaultFile && this.defaultFile.id) {
+            this.defaultFile = this.rankings.myRanking.find(f => f.id === this.defaultFile.id);
+          }
+
+
+          if (this.selectedOtherFile && this.selectedOtherFile.id) {
+            this.selectedOtherFile = this.rankings.myRanking.find(f => f.id === this.selectedOtherFile.id);
+          }
         }
       });
     },
@@ -529,7 +539,6 @@ export default {
         });
         this.getRankings();
       } else {
-        this.subRankingKey++;
         rankingService.updateRanking(file.id, file.rank, this.hierarchy_id).then(response => {
           if (!response.status) {
             Swal.fire({
@@ -544,12 +553,10 @@ export default {
           }
 
           this.getRankings().then(() => {
-            if (this.defaultFile && this.defaultFile.id) {
-              this.defaultFile = this.rankings.myRanking.find(f => f.id === this.defaultFile.id);
-            }
+            this.subRankingKey++;
 
-            if (this.selectedOtherFile && this.selectedOtherFile.id) {
-              this.selectedOtherFile = this.rankings.myRanking.find(f => f.id === this.selectedOtherFile.id);
+            if (this.context === 'modal') {
+              this.$emit('ranking-updated', file);
             }
           });
         });

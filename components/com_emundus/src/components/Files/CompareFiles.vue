@@ -140,7 +140,7 @@ export default {
     });
     this.addEventListeners();
 
-    if (this.defaultComparisonFile) {
+    if (this.defaultComparisonFile && this.defaultComparisonFile.id) {
       this.selectedFileToCompareWith = this.defaultComparisonFile;
     }
   },
