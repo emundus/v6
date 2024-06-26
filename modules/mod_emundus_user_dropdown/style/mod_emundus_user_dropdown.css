@@ -242,6 +242,12 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
     color: var(--neutral-0);
 }
 
+#userDropdownMenu li {
+    width: 100%;
+    height: auto !important;
+    margin: 0 !important;
+}
+
 #userDropdownMenu hr {
     margin: var(--m-16) 0;
 }
@@ -297,6 +303,7 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
     line-height: normal;
     letter-spacing: normal;
     font-size: var(--em-applicant-font-size);
+    margin-top: 16px;
 }
 
 #header-c #userDropdownMenu a.edit-button-user:hover,

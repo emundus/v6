@@ -2060,7 +2060,7 @@ button.em-swal-delete-button:hover{
   position: absolute;
   height: 100%;
   width: 100%;
-  border-radius: 16px;
+  border-radius: var(--em-applicant-br-cards);
   transform: rotate(3deg);
   opacity: 0.3;
   transition: transform .3s;
