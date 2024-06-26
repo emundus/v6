@@ -101,6 +101,21 @@ class EmundusControllerForm extends JControllerLegacy {
         exit;
     }
 
+
+    public function getalldecisionforms()
+    {
+        $response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+        $user = JFactory::getUser();
+
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $forms = $this->m_form->getAllFormsLinkedToTable('jos_emundus_final_grade');
+            $response = array('status' => true, 'msg' => JText::_('FORM_RETRIEVED'), 'data' => $forms);
+        }
+
+        echo json_encode((object)$response);
+        exit;
+    }
+
     public function getallgrilleEval() {
         $user = JFactory::getUser();
 	    $tab = array('status' => false, 'msg' => JText::_("ACCESS_DENIED"));
@@ -113,9 +128,8 @@ class EmundusControllerForm extends JControllerLegacy {
 	        $sort = $jinput->getString('sort', '');
 	        $recherche = $jinput->getString('recherche', '');
 
-            $forms = $this->m_form->getAllGrilleEval($filter, $sort, $recherche, $lim, $page);
-
-	        if (count($forms) > 0)
+            $forms = $this->m_form->getAllFormsLinkedToTable('jos_emundus_evaluations');
+            if (count($forms) > 0)
 	        {
 		        // this data formatted is used in onboarding lists
 		        foreach ($forms['datas'] as $key => $form)

@@ -989,6 +989,13 @@ class EmundusModelFormbuilder extends JModelList {
         }
     }*/
 
+    /**
+     * @param $label
+     * @param $fid
+     * @param $repeat_group_show_first
+     * @param $mode string (form || eval || decision)
+     * @return array
+     */
     function createGroup($label, $fid, $repeat_group_show_first = 1, $mode = 'form') {
         $group = [];
 
@@ -1122,7 +1129,7 @@ class EmundusModelFormbuilder extends JModelList {
                         'formid' => $fid
                     );
 
-					if($mode === 'eval') {
+					if ($mode === 'eval' || $mode === 'decision') {
 						require_once (JPATH_SITE . '/components/com_emundus/models/form.php');
 						$m_form = new EmundusModelForm();
 
@@ -1131,7 +1138,7 @@ class EmundusModelFormbuilder extends JModelList {
 							return $program['code'];
 						}, $programs);
 
-						$m_form->associateFabrikGroupsToProgram($fid,$codes,$mode);
+						$m_form->associateFabrikGroupsToProgram($fid, $codes, $mode);
 					}
                 }
             } catch(Exception $e){

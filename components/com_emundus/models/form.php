@@ -147,6 +147,60 @@ class EmundusModelForm extends JModelList {
 		return $data;
     }
 
+
+
+    function getAllFormsLinkedToTable($table) {
+        $data = ['datas' => [], 'count' => 0];
+
+        if (!empty($table)) {
+            $db = $this->getDbo();
+            $query = $db->getQuery(true);
+
+            try {
+                // We need to get the list of fabrik forms that are linked to the jos_emundus_evaluations table
+                $query->clear();
+                $query
+                    ->select([$db->quoteName('ff.id'), $db->quoteName('ff.label'), '"grilleEval" AS type'])
+                    ->from($db->quoteName('#__fabrik_forms', 'ff'))
+                    ->leftJoin($db->quoteName('#__fabrik_lists','fl').' ON '.$db->quoteName('fl.form_id').' = '.$db->quoteName('ff.id'))
+                    ->where($db->quoteName('fl.db_table_name').' = '.$db->quote($table));
+                $db->setQuery($query);
+
+                $forms = $db->loadObjectList();
+
+                if (!empty($forms)) {
+                    require_once (JPATH_ROOT.'/components/com_emundus/models/formbuilder.php');
+                    $m_form_builder = new EmundusModelFormbuilder();
+
+                    $path_to_file = basename(__FILE__) . '/../language/overrides/';
+                    $path_to_files = array();
+                    $Content_Folder = array();
+                    $languages = JLanguageHelper::getLanguages();
+                    foreach ($languages as $language) {
+                        $path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
+                        $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
+                    }
+
+                    foreach ($forms as $form ) {
+                        $label= [];
+                        foreach ($languages as $language) {
+                            $label[$language->sef] = $m_form_builder->getTranslation($form->label,$language->lang_code) ?: $form->label;
+                        }
+                        $form->label=$label;
+                        $form->programs_count = count($this->getProgramsByForm($form->id));
+                    }
+                }
+
+                $data['datas'] = $forms;
+                $data['count'] = sizeof($forms);
+            } catch (Exception $e) {
+                JLog::add('component/com_emundus/models/form | Cannot getting the list of forms : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            }
+        }
+
+        return $data;
+    }
+
     /**
      * TODO: Add filters / recherche etc./.. At the moment, it's not working
      * @param $filter
@@ -2283,7 +2337,7 @@ class EmundusModelForm extends JModelList {
         return $data;
     }
 	
-	public function getProgramsByForm($form_id,$mode = 'eval')
+	public function getProgramsByForm($form_id, $mode = 'eval')
 	{
 		$programs = [];
 		
