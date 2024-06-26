@@ -4613,6 +4613,92 @@ if(in_array($applicant,$exceptions)){
 				EmundusHelperUpdate::insertTranslationsTag('BACK_TO_LOGIN', '<br />Déjà un compte ? <a href="connexion">Connectez-vous</a>');
 				EmundusHelperUpdate::insertTranslationsTag('BACK_TO_LOGIN', '<br />Already have an account? <a href="en/connexion">Log in</a>', 'override', null, null, null, 'en-GB');
             }
+
+            if (version_compare($cache_version, '1.40.0', '<=') || $firstrun) {
+                // install decision form column
+
+                $query->clear()
+                    ->select('id')
+                    ->from($db->quoteName('#__fabrik_groups'))
+                    ->where($db->quoteName('name') . ' LIKE ' . $db->quote('GROUP_PROGRAM_DETAIL'));
+                $db->setQuery($query);
+                $group_program_detail = $db->loadResult();
+
+                if (!empty($group_program_detail)) {
+                    EmundusHelperUpdate::addColumn('jos_emundus_setup_programmes', 'decision_form', 'INT', 11, 1);
+                    EmundusHelperUpdate::insertTranslationsTag('ELEMENT_PROGRAM_FORM_DECISION', 'Formulaire de décision');
+                    EmundusHelperUpdate::insertTranslationsTag('ELEMENT_PROGRAM_FORM_DECISION', 'Decision form', 'override', null, null, null, 'en-GB');
+
+                    $datas = [
+                        'name' => 'decision_form',
+                        'group_id' => $group_program_detail,
+                        'plugin' => 'databasejoin',
+                        'label' => 'ELEMENT_PROGRAM_FORM_DECISION',
+                    ];
+                    $params = [
+                        'join_db_name' => 'jos_fabrik_lists',
+                        'join_key_column' => 'form_id',
+                        'join_val_column' => "label",
+                        'join_val_column_concat' => "{thistable}.label",
+                        'database_join_where_sql' => "WHERE {thistable}.db_table_name = 'jos_emundus_final_grade'"
+                    ];
+                    $eid = EmundusHelperUpdate::addFabrikElement($datas, $params, false)['id'];
+
+                    if (!empty($eid)) {
+                        $datas = [
+                            'element_id' => $eid,
+                            'join_from_table' => '',
+                            'table_join' => 'jos_fabrik_lists',
+                            'table_key' => 'decision_form',
+                            'table_join_key' => 'form_id',
+                            'join_type' => 'left',
+                            'group_id' => $group_program_detail
+                        ];
+                        $params = [
+                            'join-label' => 'label',
+                            'type' => 'element',
+                            'pk' => "`jos_fabrik_lists`.`id`"
+                        ];
+                        EmundusHelperUpdate::addFabrikJoin($datas, $params);
+
+                        $query->clear()
+                            ->update($db->quoteName('#__fabrik_elements'))
+                            ->set($db->quoteName('hidden') . ' = 1')
+                            ->where($db->quoteName('name') . ' = ' . $db->quote('fabrik_group_id'));
+                        $db->setQuery($query);
+                        $db->execute();
+
+                        $query->clear()
+                            ->select('id,fabrik_decision_group_id')
+                            ->from($db->quoteName('#__emundus_setup_programmes'))
+                            ->where($db->quoteName('fabrik_group_id') . ' IS NOT NULL');
+                        $db->setQuery($query);
+                        $programs = $db->loadAssocList();
+
+                        foreach ($programs as $program) {
+                            if (!empty($program['fabrik_decision_group_id'])) {
+                                $fabrik_groups = explode(',', $program['fabrik_decision_group_id']);
+
+                                $query->clear()
+                                    ->select('form_id')
+                                    ->from($db->quoteName('#__fabrik_formgroup'))
+                                    ->where($db->quoteName('group_id') . ' IN (' . implode(',', $db->quote($fabrik_groups)) . ')');
+                                $db->setQuery($query);
+                                $decision_form_id = $db->loadResult();
+
+                                if (!empty($decision_form_id)) {
+                                    $query->clear()
+                                        ->update($db->quoteName('#__emundus_setup_programmes'))
+                                        ->set($db->quoteName('decision_form') . ' = ' . $db->quote($decision_form_id))
+                                        ->where($db->quoteName('id') . ' = ' . $db->quote($program['id']));
+                                    $db->setQuery($query);
+                                    $db->execute();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         return $succeed;
