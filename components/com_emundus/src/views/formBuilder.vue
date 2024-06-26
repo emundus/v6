@@ -92,56 +92,58 @@
         <transition name="slide-fade" mode="out-in">
           <aside v-if="rightPanel.tabs.includes(showInRightPanel)" class="right-panel em-flex-column em-h-100">
             <transition name="fade" mode="out-in">
-              <div id="form-hierarchy" v-if="showInRightPanel === 'hierarchy' && rightPanel.tabs.includes('hierarchy')"
-                   class="em-w-100">
-                <form-builder-pages
-                    :pages="pages"
-                    :selected="parseInt(selectedPage)"
+              <div>
+                <div id="form-hierarchy" v-if="showInRightPanel === 'hierarchy' && rightPanel.tabs.includes('hierarchy')"
+                     class="em-w-100">
+                  <form-builder-pages
+                      :pages="pages"
+                      :selected="parseInt(selectedPage)"
+                      :profile_id="parseInt(profile_id)"
+                      @select-page="selectPage($event)"
+                      @add-page="getPages(currentPage.id)"
+                      @delete-page="selectedPage = pages[0].id;"
+                      @open-page-create="principalContainer = 'create-page';"
+                      @reorder-pages="onReorderedPages"
+                      @open-create-model="onOpenCreateModel"
+                  ></form-builder-pages>
+                  <hr>
+                  <form-builder-documents
+                      ref="formBuilderDocuments"
+                      :profile_id="parseInt(profile_id)"
+                      :campaign_id="parseInt(campaign_id)"
+                      @show-documents="setSectionShown('documents')"
+                      @open-create-document="onOpenCreateDocument"
+                  ></form-builder-documents>
+                </div>
+                <form-builder-element-properties
+                    v-if="showInRightPanel === 'element-properties'"
+                    @close="onCloseElementProperties"
+                    :element="selectedElement"
                     :profile_id="parseInt(profile_id)"
-                    @select-page="selectPage($event)"
-                    @add-page="getPages(currentPage.id)"
-                    @delete-page="selectedPage = pages[0].id;"
-                    @open-page-create="principalContainer = 'create-page';"
-                    @reorder-pages="onReorderedPages"
-                    @open-create-model="onOpenCreateModel"
-                ></form-builder-pages>
-                <hr>
-                <form-builder-documents
-                    ref="formBuilderDocuments"
+                ></form-builder-element-properties>
+                <form-builder-section-properties
+                    v-if="showInRightPanel === 'section-properties'"
+                    @close="onCloseSectionProperties"
+                    :section_id="selectedSection.group_id"
                     :profile_id="parseInt(profile_id)"
-                    :campaign_id="parseInt(campaign_id)"
-                    @show-documents="setSectionShown('documents')"
-                    @open-create-document="onOpenCreateDocument"
-                ></form-builder-documents>
+                ></form-builder-section-properties>
+                <form-builder-create-model
+                    v-if="showInRightPanel === 'create-model'"
+                    :page="selectedPage"
+                    @close="showInRightPanel = 'hierarchy';"
+                ></form-builder-create-model>
+                <form-builder-create-document
+                    v-if="showInRightPanel === 'create-document' && rightPanel.tabs.includes('create-document')"
+                    ref="formBuilderCreateDocument"
+                    :key="formBuilderCreateDocumentKey"
+                    :profile_id="parseInt(profile_id)"
+                    :current_document="selectedDocument ? selectedDocument : null"
+                    :mandatory="createDocumentMandatory"
+                    :mode="createDocumentMode"
+                    @close="showInRightPanel = 'hierarchy'"
+                    @documents-updated="onUpdateDocument"
+                ></form-builder-create-document>
               </div>
-              <form-builder-element-properties
-                  v-if="showInRightPanel === 'element-properties'"
-                  @close="onCloseElementProperties"
-                  :element="selectedElement"
-                  :profile_id="parseInt(profile_id)"
-              ></form-builder-element-properties>
-              <form-builder-section-properties
-                  v-if="showInRightPanel === 'section-properties'"
-                  @close="onCloseSectionProperties"
-                  :section_id="selectedSection.group_id"
-                  :profile_id="parseInt(profile_id)"
-              ></form-builder-section-properties>
-              <form-builder-create-model
-                  v-if="showInRightPanel === 'create-model'"
-                  :page="selectedPage"
-                  @close="showInRightPanel = 'hierarchy';"
-              ></form-builder-create-model>
-              <form-builder-create-document
-                  v-if="showInRightPanel === 'create-document' && rightPanel.tabs.includes('create-document')"
-                  ref="formBuilderCreateDocument"
-                  :key="formBuilderCreateDocumentKey"
-                  :profile_id="parseInt(profile_id)"
-                  :current_document="selectedDocument ? selectedDocument : null"
-                  :mandatory="createDocumentMandatory"
-                  :mode="createDocumentMode"
-                  @close="showInRightPanel = 'hierarchy'"
-                  @documents-updated="onUpdateDocument"
-              ></form-builder-create-document>
             </transition>
           </aside>
         </transition>
@@ -255,7 +257,7 @@ export default {
     if (data && data.mode && data.mode.value) {
       this.mode = data.mode.value;
 
-      if (this.mode === 'eval' || this.mode == 'models') {
+      if (this.mode !== 'forms') {
         this.rightPanel.tabs = this.rightPanel.tabs.filter(tab => tab !== 'hierarchy' && tab !== 'create-document');
         this.leftPanel.tabs = this.leftPanel.tabs.filter(tab => tab.title != 'Documents');
         this.form_id = this.profile_id;
