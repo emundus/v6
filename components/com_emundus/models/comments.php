@@ -248,7 +248,7 @@ class EmundusModelComments extends JModelLegacy
      * @param $current_user
      * @return void
      */
-    public function getComments($file_id, $current_user, $is_applicant = false, $comment_ids = []): array
+    public function getComments($file_id, $current_user, $is_applicant = false, $comment_ids = [], $parent_id = null, $opened = null): array
     {
         $comments = [];
 
@@ -262,11 +262,19 @@ class EmundusModelComments extends JModelLegacy
                 ->where('ec.ccid = ' . $this->db->quote($file_id) . ' OR ec.fnum = ' . $this->db->quote($fnum));
 
             if ($is_applicant) {
-                $query->where('ec.visible_to_applicant = 1');
+                $query->andWhere('ec.visible_to_applicant = 1');
             }
 
             if (!empty($comment_ids)) {
-                $query->where('ec.id IN (' . implode(',', $comment_ids) . ')');
+                $query->andWhere('ec.id IN (' . implode(',', $comment_ids) . ')');
+            }
+
+            if ($parent_id !== null) {
+                $query->andWhere('ec.parent_id = ' . $this->db->quote($parent_id));
+            }
+
+            if (isset($opened)) {
+                $query->andWhere('ec.opened = ' . $this->db->quote($opened));
             }
 
             try {
