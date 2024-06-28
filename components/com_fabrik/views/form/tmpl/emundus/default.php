@@ -27,8 +27,20 @@ $m_users = new EmundusModelUsers();
 $profile_form = $m_users->getProfileForm();
 
 $this->display_comments = false;
+$is_applicant = 1;
 $allow_to_comment = $eMConfig->get('allow_applicant_to_comment', 0);
 if ($allow_to_comment) {
+    // check if form is an applicant form, there should be a column fnum in the table
+    $db = JFactory::getDbo();
+    $query = 'SHOW COLUMNS FROM `'. $form->db_table_name . '` LIKE "fnum"';
+
+    $db->setQuery($query);
+    $result = $db->loadObject();
+
+    if (!empty($result)) {
+        $this->display_comments = true;
+    }
+
     $session = JFactory::getSession();
     $emundus_user = $session->get('emundusUser');
     $current_user_profile = $emundus_user->profile;
@@ -37,8 +49,8 @@ if ($allow_to_comment) {
         return $profile->id;
     }, $applicant_profiles);
 
-    if (in_array($current_user_profile, $applicant_profiles_ids)) {
-        $this->display_comments = true;
+    if (!in_array($current_user_profile, $applicant_profiles_ids)) {
+        $is_applicant = 0;
     }
 }
 
@@ -77,7 +89,7 @@ endif;
                     <?php if($this->display_comments) {
                         ?>
                         <div class="fabrik-element-emundus-container flex flex-row justify-items-start items-start mr-5">
-                            <span class="material-icons-outlined cursor-pointer comment-icon" data-target-type="forms" data-target-id="<?= $form->id ?>">comment</span>
+                            <span class="material-icons-outlined cursor-pointer comment-icon" id="'forms-'<?= $form->id ?>" data-target-type="forms" data-target-id="<?= $form->id ?>">comment</span>
                         </div>
                         <?php
                     }
@@ -144,7 +156,7 @@ endif;
                     if($this->display_comments) {
                         ?>
                         <div class="fabrik-element-emundus-container flex flex-row justify-items-start items-start mr-5">
-                            <span class="material-icons-outlined cursor-pointer comment-icon" data-target-type="groups" data-target-id="<?= $group->id ?>">comment</span>
+                            <span class="material-icons-outlined cursor-pointer comment-icon" id="groups-<?= $group->id ?>" data-target-type="groups" data-target-id="<?= $group->id ?>">comment</span>
                         </div>
                         <?php
                     }
@@ -210,9 +222,12 @@ endif;
 
 
 <?php
-
 $user = JFactory::getUser();
-$fnum = JFactory::getSession()->get('emundusUser')->fnum;
+$app = JFactory::getApplication();
+$fnum = $app->input->getString('rowid', '');
+if (empty($fnum)) {
+    $fnum = JFactory::getSession()->get('emundusUser')->fnum;
+}
 
 if ($this->display_comments) {
     JText::script('COM_EMUNDUS_COMMENTS_ADD_COMMENT');
@@ -287,7 +302,7 @@ if ($this->display_comments) {
                  user="<?= $user->id ?>"
                  ccid="<?= $ccid ?>"
                  access='<?= json_encode($user_comment_access); ?>'
-                 is_applicant="1"
+                 is_applicant="<?= $is_applicant ?>"
                  current_form="<?= $form->id ?>"
                  currentLanguage="<?= $current_lang->getTag() ?>"
                  shortLang="<?= $short_lang ?>"
