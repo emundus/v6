@@ -323,8 +323,9 @@ class EmundusModelRanking extends JModelList
                 $ccids = $this->getAllFilesRankerCanAccessTo($user_id, $hierarchy['id']);
 
                 $query = $this->db->getQuery(true);
-                $query->select('DISTINCT esc.id, esc.label, esc.start_date, esc.end_date')
+                $query->select('DISTINCT esc.id, esc.label, esc.start_date, esc.end_date, esp.id as programme_id, esp.label as programme_label, esp.programmes as group_id')
                     ->from($this->db->quoteName('#__emundus_setup_campaigns', 'esc'))
+                    ->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON ' . $this->db->quoteName('esp.code') . ' = ' . $this->db->quoteName('esc.training'))
                     ->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'cc') . ' ON ' . $this->db->quoteName('esc.id') . ' = ' . $this->db->quoteName('cc.campaign_id'))
                     ->where($this->db->quoteName('cc.id') . ' IN (' . implode(',', $ccids) . ')')
                     ->andWhere($this->db->quoteName('esc.published') . ' = 1');

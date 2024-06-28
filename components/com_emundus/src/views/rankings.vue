@@ -5,8 +5,22 @@
     </div>
 
     <nav id="ranking-navigation" class="mt-4 mb-4">
-      <ul class="flex flex-row list-none overflow-auto pt-4">
-        <li v-for="rankingPackage in packages" :key="rankingPackage.id"
+      <ul v-if="packagesGroups.length > 1" id="ranking-navigation-packages-groups" class="flex flex-row list-none overflow-auto pt-4">
+        <li v-for="group in packagesGroups" :key="group.id"
+            class="ranking-navigation-item cursor-pointer shadow rounded-t-lg px-2.5 py-3 text-center"
+            :class="{
+              'em-bg-main-500 em-text-neutral-300': selectedGroup === group.id,
+              'em-white-bg': selectedGroup !== group.id
+            }"
+            @click="selectedGroup = group.id; selectedPackage = selectedPackages[0].id"
+            :title="group.label"
+        >
+          <span>{{ group.label }}</span>
+        </li>
+      </ul>
+
+      <ul id="ranking-navigation-packages" class="flex flex-row list-none overflow-auto pt-4">
+        <li v-for="rankingPackage in selectedPackages" :key="rankingPackage.id"
             class="ranking-navigation-item cursor-pointer shadow rounded-t-lg px-2.5 py-3 text-center"
             :class="{
               'em-bg-main-500 em-text-neutral-300': selectedPackage === rankingPackage.id,
@@ -82,6 +96,8 @@ export default {
   data() {
     return {
       packages: [],
+      packagesGroups: [],
+      selectedGroup: null,
       selectedPackage: null
     }
   },
@@ -93,6 +109,17 @@ export default {
       rankingService.getPackages().then(response => {
         this.packages = response.data;
 
+        this.packages.forEach((item) => {
+          if (item.group_id) {
+            if (!this.packagesGroups.find(group => group.id === item.group_id)) {
+              this.packagesGroups.push({
+                id: item.group_id,
+                label: item.group_id
+              });
+            }
+          }
+        });
+
         this.selectedPackage = this.packages[0].id;
       }).catch(error => {
         console.log(error);
@@ -103,6 +130,9 @@ export default {
     }
   },
   computed: {
+    selectedPackages() {
+      return this.selectedGroup !== null ? this.packages.filter(item => item.group_id === this.selectedGroup) : this.packages;
+    },
     selectedPackageItem() {
       return this.packages.find(item => item.id === this.selectedPackage);
     },
