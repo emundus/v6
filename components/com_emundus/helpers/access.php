@@ -157,7 +157,7 @@ class EmundusHelperAccess {
                 }
 
 				if (!empty($groups) && count($groups) > 0) {
-					return EmundusHelperAccess::canAccessGroup($groups, $action_id, $crud, $fnum);
+                    return EmundusHelperAccess::canAccessGroup($groups, $action_id, $crud, $fnum);
 				} else {
 					return false;
 				}
