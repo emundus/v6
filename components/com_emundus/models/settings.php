@@ -280,14 +280,13 @@ class EmundusModelsettings extends JModelList {
      *
      * @since 1.0
      */
-    function updateStatus($status,$label,$color) {
+    function updateStatus($status, $label, $color) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'translations.php');
+        require_once (JPATH_SITE . '/components/com_emundus/models/translations.php');
         $m_translations = new EmundusModelTranslations;
-
-        $lang_to = $m_translations->getDefaultLanguage()->lang_code;
+        $lang_to = JFactory::getLanguage()->getTag();
 
         $results = [];
 
@@ -315,7 +314,7 @@ class EmundusModelsettings extends JModelList {
             $db->execute();
 
             return $results;
-        } catch (Exception $e){
+        } catch (Exception $e) {
             JLog::add('component/com_emundus/models/settings | Cannot update status : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }

@@ -396,7 +396,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                         <!-- TAGS ENABLED -->
 						<?php if ($mod_em_campaign_order == 'start_date' && $order == 'end_date') : ?>
                             <div class="mod_emundus_campaign__header_filter em-mr-8 em-border-neutral-400 em-neutral-800-color em-white-bg">
-                                <span class="em-ml-8"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_END_DATE_NEAR') ?></span>
+                                <span><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_END_DATE_NEAR') ?></span>
                                 <a class="em-flex-column em-ml-8 em-text-neutral-900 em-pointer"
                                    onclick="deleteSort(['order_date','order_time'])">
                                     <span class="material-icons-outlined">close</span>
@@ -405,7 +405,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 						<?php endif; ?>
 						<?php if ($mod_em_campaign_order == 'end_date' && $order == 'start_date') : ?>
                             <div class="mod_emundus_campaign__header_filter em-mr-8 em-border-neutral-400 em-neutral-800-color em-white-bg">
-                                <span class="em-ml-8"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_START_DATE_NEAR') ?></span>
+                                <span ><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_START_DATE_NEAR') ?></span>
                                 <a class="em-flex-column em-ml-8 em-text-neutral-900 em-pointer"
                                    onclick="deleteSort(['order_date','order_time'])">
                                     <span class="material-icons-outlined">close</span>

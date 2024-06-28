@@ -479,7 +479,6 @@ export default {
           this.tmpComment = null;
         });
       } else {
-        console.log('can not update comment.');
         this.abortUpdateComment();
         this.loading = false;
       }

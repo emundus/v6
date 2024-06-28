@@ -164,9 +164,9 @@ class EmundusControllerCampaign extends JControllerLegacy {
                     $config = JFactory::getConfig();
                     $offset = $config->get('offset');
                     $now_date_time = new DateTime('now', new DateTimeZone($offset));
-                    $now = $now_date_time->format('U');
-                    $start_date = strtotime($campaign->start_date);
-                    $end_date = strtotime($campaign->end_date);
+                    $now = $now_date_time->format('Y-m-d H:i:s');
+                    $start_date = date('Y-m-d H:i:s',strtotime($campaign->start_date));
+                    $end_date = date('Y-m-d H:i:s',strtotime($campaign->end_date));
 
                     if ($now < $start_date) {
                         $campaign_time_state_label = JText::_('COM_EMUNDUS_CAMPAIGN_YET_TO_COME');

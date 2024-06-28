@@ -189,7 +189,7 @@ $user = $this->userid;
     });
 
     document.getElementById('download-all-phase-pdf').addEventListener('click', function (e) {
-        const fnum = e.target.getAttribute('data-fnum');
+        var fnum = e.target.getAttribute('data-fnum');
         if (fnum) {
             // check if function  exists
             if (typeof export_pdf === 'function') {

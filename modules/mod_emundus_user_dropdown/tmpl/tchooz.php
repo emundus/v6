@@ -282,7 +282,7 @@ if ($user != null)
                     </div>
                     <div class="em-user-dropdown-button" aria-haspopup="true" aria-expanded="false">
                         <span class="em-user-dropdown-icon"
-                              data-initials="<?php echo substr($user->firstname, 0, 1) . substr($user->lastname, 0, 1); ?>"
+                              data-initials="<?php echo strtoupper(substr($user->firstname, 0, 1) . substr($user->lastname, 0, 1)); ?>"
                               alt="<?php echo JText::_('PROFILE_ICON_ALT') ?>"></span>
                     </div>
 
@@ -306,7 +306,7 @@ if ($user != null)
                         </div>
 					<?php else : ?>
                         <span class="em-user-dropdown-icon em-user-dropdown-icon-big"
-                              data-initials="<?php echo substr($user->firstname, 0, 1) . substr($user->lastname, 0, 1); ?>"
+                              data-initials="<?php echo strtoupper(substr($user->firstname, 0, 1) . substr($user->lastname, 0, 1)); ?>"
                               alt="<?php echo JText::_('PROFILE_ICON_ALT') ?>"></span>
 					<?php endif; ?>
                     <li class="dropdown-header em-text-align-center em-font-weight-500 em-text-neutral-900"><?= $user->firstname . ' ' . $user->lastname; ?></li>
@@ -330,7 +330,7 @@ if ($user != null)
 			if (!empty($user->emProfiles) && sizeof($user->emProfiles) > 1 && (!$only_applicant))
 			{
 				echo '<h5 class="mb-2">' . JText::_('SELECT_PROFILE') . '</h5>';
-				echo '<div class="select">';
+				echo '<div class="select em-mb-16 ">';
 				echo '<select class="profile-select" id="profile" name="profiles" onchange="postCProfile()"> ';
 				foreach ($user->emProfiles as $profile)
 				{
@@ -344,13 +344,13 @@ if ($user != null)
 						echo '<option  value="' . $profile->id . "." . '"' . (($user->profile == $profile->id) ? 'selected="selected"' : "") . '>' . trim($profile->label) . '</option>';
 					}
 				}
-				echo '</select></div><br/>';
+				echo '</select></div>';
 			}
 			?>
 
 			<?php if ($show_update == '1' && !$is_anonym_user) : ?>
                 <li><a class="edit-button-user em-flex-row em-flex-important em-flex-center"
-                       href="<?= $link_edit_profile ?>" style="margin-top: 0"><span
+                       href="<?= $link_edit_profile ?>"><span
                                 class="material-icons-outlined mr-2">person_outline</span><?= JText::_('COM_EMUNDUS_USER_MENU_PROFILE_LABEL') ?>
                     </a></li>
 			<?php endif; ?>
@@ -380,10 +380,8 @@ if ($user != null)
 				}
 			} ?>
 
-            <hr style="width: 100%">
-
 			<?php if ($show_logout == '1') : ?>
-				<?= '<li><a class="logout-button-user em-flex-important em-flex-row em-flex-center" href="' . JURI::base() . 'index.php?option=com_users&task=user.logout&' . JSession::getFormToken() . '=1"><span class="material-icons-outlined mr-2">logout</span>' . JText::_('COM_EMUNDUS_USER_MENU_LOGOUT_ACTION') . '</a></li>'; ?>
+				<?= '   <hr style="width: 100%"><li><a class="logout-button-user em-flex-important em-flex-row em-flex-center" href="' . JURI::base() . 'index.php?option=com_users&task=user.logout&' . JSession::getFormToken() . '=1"><span class="material-icons-outlined mr-2">logout</span>' . JText::_('COM_EMUNDUS_USER_MENU_LOGOUT_ACTION') . '</a></li>'; ?>
 			<?php endif; ?>
 
         </ul>

@@ -161,7 +161,7 @@ class EmundusHelperMenu {
 		if(!in_array($default_link, ['/','index.php','']) && $default_link !== $menu) {
 			$menu = $default_link;
 		} else {
-			$menu = $sef.'/'.$menu;
+			$menu = !empty($sef) ? '/'.$sef.'/'.$menu : '/'.$menu;
 		}
 
 		return $menu;
