@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension group="fabrik_cron" method="upgrade" type="plugin" version="30">
+	<name>plg_cron_logspurge</name>
+	<author>eMundus</author>
+	<creationDate>May 2024</creationDate>
+	<copyright>Copyright (C) 2024 emundus.fr - All rights reserved.</copyright>
+	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+	<authorEmail>dev@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>1.39.0</version>
+	<description>PLG_CRON_LOGSPURGE_DESC</description>
+	<files>
+		<filename plugin="emunduslogsandmessagespurge">emunduslogsandmessagespurge.php</filename>
+		<folder>forms</folder>
+		<filename>index.html</filename>
+		<folder>language</folder>
+	</files>
+</extension>

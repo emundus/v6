@@ -40,10 +40,10 @@ $applicant_profile_ids = array_map(function($profile) {
 $is_applicant = in_array($emundus_user->profile, $applicant_profile_ids);
 
 $user_comment_access = [
-    'c' => EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $fnum) || $is_applicant,
-    'r' => EmundusHelperAccess::asAccessAction(10, 'r', $this->_user->id, $fnum) || $is_applicant,
-    'u' => EmundusHelperAccess::asAccessAction(10, 'u', $this->_user->id, $fnum),
-    'd' => EmundusHelperAccess::asAccessAction(10, 'd', $this->_user->id, $fnum),
+    'c' => EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $this->fnum) || $is_applicant,
+    'r' => EmundusHelperAccess::asAccessAction(10, 'r', $this->_user->id, $this->fnum) || $is_applicant,
+    'u' => EmundusHelperAccess::asAccessAction(10, 'u', $this->_user->id, $this->fnum),
+    'd' => EmundusHelperAccess::asAccessAction(10, 'd', $this->_user->id, $this->fnum),
 ];
 ?>
 
@@ -66,6 +66,7 @@ $user_comment_access = [
      component="comments"
      user="<?= $this->_user->id ?>"
      ccid="<?= $this->ccid ?>"
+     fnum="<?= $this->fnum ?>"
      access='<?= json_encode($user_comment_access); ?>'
      is_applicant="<?= $is_applicant; ?>"
      current_form="<?= 0 ?>"

@@ -7,6 +7,8 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
+use Joomla\CMS\Component\ComponentHelper;
+
 defined('_JEXEC') or die;
 
 // Include the login functions only once
@@ -38,6 +40,9 @@ $return           = ModLoginHelper::getReturnUrl($params, $type);
 $twofactormethods = JAuthenticationHelper::getTwoFactorMethods();
 $user             = JFactory::getUser();
 $layout           = $params->get('layout', 'default');
+
+$eMConfig = ComponentHelper::getParams('com_emundus');
+$forgottenLink = $eMConfig->get('forgotten_password_link','index.php?option=com_users&view=reset');
 
 /*Logged users must load the logout sublayout
 if (!$user->guest)

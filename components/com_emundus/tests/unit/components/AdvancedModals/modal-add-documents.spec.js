@@ -1,6 +1,6 @@
 import { mount, createLocalVue } from '@vue/test-utils';
 import '../../../mocks/matchMedia.mock';
-import Editor from '../../../../src/components/editor';
+import EditorQuill from '../../../../src/components/EditorQuill';
 import ModalAddDocuments from '../../../../src/components/AdvancedModals/ModalAddDocuments';
 import translate from '../../../mocks/mixins/translate';
 import VModal from 'vue-js-modal';
@@ -8,7 +8,7 @@ import VModal from 'vue-js-modal';
 const localVue = createLocalVue();
 localVue.mixin(translate);
 localVue.use(VModal);
-localVue.use(Editor);
+localVue.use(EditorQuill);
 
 describe('ModalAddDocuments.vue', () => {
     const wrapper = mount(ModalAddDocuments, {

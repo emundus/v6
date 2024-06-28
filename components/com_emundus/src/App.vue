@@ -28,6 +28,7 @@
     <Comments
         v-else-if="component === 'comments'"
         :ccid="datas.ccid.value"
+        :fnum="datas.fnum && datas.fnum.value ? datas.fnum.value : ''"
         :user="datas.user.value"
         :is-applicant="datas.is_applicant && datas.is_applicant.value == 1"
         :current-form="datas.current_form && datas.current_form.value"
@@ -58,7 +59,7 @@ import fileService from "./services/file.js";
 import list_v2 from "./views/list.vue";
 import addcampaign from "./views/addCampaign"
 import addemail from "./views/addEmail"
-import addformnextcampaign from "./views/addFormNextCampaign"
+import campaignedition from "./views/CampaignEdition"
 import formbuilder from "./views/formBuilder"
 import settings from "./views/globalSettings"
 import messagescoordinator from "./components/Messages/MessagesCoordinator";
@@ -93,7 +94,7 @@ export default {
     ApplicationSingle,
 		Attachments,
     addcampaign,
-    addformnextcampaign,
+    campaignedition,
     addemail,
     formbuilder,
     settings,

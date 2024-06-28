@@ -25,7 +25,7 @@
          }"
       >
         <div class="file-comment-header flex flex-col mb-3">
-          <p v-if="comment.target_id > 0" class="comment-target-label text-sm em-gray-color cursor-pointer !mb-3" @click="replyToComment(comment.id)">
+          <p v-if="comment.target_id > 0" class="comment-target-label text-sm em-gray-color cursor-pointer !mb-3" @click="goToCommentTarget(comment)">
             {{ getCommentTargetLabel(comment.target_id, comment.target_type) }}
           </p>
 
@@ -33,9 +33,9 @@
             <div class="file-comment-header-left flex flex-row cursor-pointer items-center"
                  @click="replyToComment(comment.id)">
               <div class="flex flex-row items-center">
-                <div class="profile-picture h-8 w-8 rounded-full border-2 mr-2 flex flex-row justify-center items-center">
+                <div class="profile-picture h-8 w-8 rounded-full border-2 mr-2 flex flex-row justify-center items-center" :class="{'bg-neutral-300' : !comment.profile_picture}">
                   <div v-if="comment.profile_picture" class="image h-full w-full rounded-full" :style="'background-image: url(' + comment.profile_picture + ');background-size: cover;background-position: center;'"></div>
-                  <span v-else>{{ comment.firstname.charAt(0) }}{{ comment.lastname.charAt(0) }}</span>
+                  <span v-else class="text-sm">{{ comment.firstname.charAt(0).toUpperCase() }}{{ comment.lastname.charAt(0).toUpperCase() }}</span>
                 </div>
                 <div class="flex flex-col mr-3">
                   <span class="em-text-neutral-500 text-xs">{{ comment.updated ? comment.updated : comment.date }}</span>
@@ -222,6 +222,10 @@ export default {
     user: {
       type: String,
       required: true,
+    },
+    fnum: {
+      type: String,
+      default: '', // soon deprecated
     },
     ccid: {
       type: Number,
@@ -424,6 +428,36 @@ export default {
         this.visible_to_applicant = openedComment.visible_to_applicant == 1;
       }
     },
+    goToCommentTarget(comment) {
+      if (comment.id) {
+        // find the target element
+        const target = this.targetableElements[comment.target_type].find((element) => element.id === comment.target_id);
+
+        if (target) {
+          let form_id = 0;
+          switch(comment.target_type) {
+            case 'elements':
+              form_id = target.element_form_id;
+              break;
+            case 'groups':
+              form_id = target.form_id;
+              break;
+            case 'forms':
+              form_id = target.id;
+              break;
+          }
+
+          if (form_id > 0 && this.fnum) {
+            // open a new tab with the target element
+            if (!this.isApplicant) {
+              window.open(`/index.php?option=com_fabrik&view=form&formid=` + form_id + `&usekey=fnum&rowid=` + this.fnum + '&r=2#' + comment.target_type + '-' + comment.target_id, '_blank');
+            } else {
+
+            }
+          }
+        }
+      }
+    },
     deleteComment(commentId) {
       const comment = this.comments.find((comment) => comment.id === commentId);
       if (commentId > 0 && (this.access.d || comment.user_id === this.user)) {
@@ -479,7 +513,6 @@ export default {
           this.tmpComment = null;
         });
       } else {
-        console.log('can not update comment.');
         this.abortUpdateComment();
         this.loading = false;
       }

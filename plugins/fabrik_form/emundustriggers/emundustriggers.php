@@ -81,7 +81,7 @@ class PlgFabrik_FormEmundustriggers extends plgFabrik_Form
         $formModel = $this->getModel();
 
         JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onBeforeLoad', ['formModel' => $formModel]]);
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onBeforeLoad', ['formModel' => $formModel, 'plugin_options' => $this->getParams()]]);
 
         return true;
     }

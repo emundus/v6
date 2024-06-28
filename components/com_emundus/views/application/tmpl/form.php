@@ -116,10 +116,11 @@ $user = $this->userid;
                     <input type="hidden" id="fnum_hidden" value="<?php echo $this->fnum ?>">
                 </div>
             </div>
-            <?php if (EmundusHelperAccess::asAccessAction(10, 'c', $user, $this->fnum)): ?>
+            <?php
+            if (EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $this->fnum)): ?>
                 <?php
-                    $coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user);
-                    $sysadmin_access = EmundusHelperAccess::isAdministrator($user);
+                    $coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id);
+                    $sysadmin_access = EmundusHelperAccess::isAdministrator($this->_user->id);
                     $xmlDoc = new DOMDocument();
                     if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
                         $release_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
@@ -139,10 +140,10 @@ $user = $this->userid;
                     }
 
                     $user_comment_access = [
-                        'c' => EmundusHelperAccess::asAccessAction(10, 'c', $user, $this->fnum),
-                        'r' => EmundusHelperAccess::asAccessAction(10, 'r', $user, $this->fnum),
-                        'u' => EmundusHelperAccess::asAccessAction(10, 'u', $user, $this->fnum),
-                        'd' => EmundusHelperAccess::asAccessAction(10, 'd', $user, $this->fnum),
+                        'c' => EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $this->fnum),
+                        'r' => EmundusHelperAccess::asAccessAction(10, 'r', $this->_user->id, $this->fnum),
+                        'u' => EmundusHelperAccess::asAccessAction(10, 'u', $this->_user->id, $this->fnum),
+                        'd' => EmundusHelperAccess::asAccessAction(10, 'd', $this->_user->id, $this->fnum),
                     ];
                 ?>
                 <aside id="aside-comment-section" class="fixed right-0 em-white-bg shadow ease-out closed">
@@ -189,7 +190,7 @@ $user = $this->userid;
     });
 
     document.getElementById('download-all-phase-pdf').addEventListener('click', function (e) {
-        const fnum = e.target.getAttribute('data-fnum');
+        var fnum = e.target.getAttribute('data-fnum');
         if (fnum) {
             // check if function  exists
             if (typeof export_pdf === 'function') {

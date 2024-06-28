@@ -419,7 +419,7 @@ class EmundusModelMessenger extends JModelList
         return $moved;
     }
 
-    function notifyByMail($applicant_fnum, $notify_applicant = 0) {
+    function notifyByMail($applicant_fnum, $notify_applicant = 0, $message = '') {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
@@ -436,6 +436,7 @@ class EmundusModelMessenger extends JModelList
         $notify_groups = $eMConfig->get('messenger_notify_groups', '');
         $notify_users = explode(',', $eMConfig->get('messenger_notify_users', ''));
         $notify_to_users_programs = $eMConfig->get('messenger_notify_users_programs', 0);
+        $add_message_notif = $eMConfig->get('messenger_add_message_notif', 0);
         $fnumTagsInfos = $m_files->getFnumTagsInfos($applicant_fnum);
 
         if($notify_applicant)
@@ -612,17 +613,23 @@ class EmundusModelMessenger extends JModelList
                     $fnumListCampaign = '<ul>';
                     $fnumListProgramme = '<ul>';
                     if (!empty($userLink)) {
-                        $fnumList .= '<li><a href="'.JURI::root().$userLink->path.'#'.$applicant_fnum.'|open">'.$applicant_fnum.'</a></li>';
-                        $fnumListCampaign .= '<li><a href="'.JURI::root().$userLink->path.'#'.$applicant_fnum.'|open">'.$applicant_fnum.'</a>'.' ('.$fnumTagsInfos['campaign_label'].')'.'</li>';
-                        $fnumListProgramme .= '<li><a href="'.JURI::root().$userLink->path.'#'.$applicant_fnum.'|open">'.$applicant_fnum.'</a>'.' ('.$fnumTagsInfos['training_programme'].')'.'</li>';
+                        $fnumList .= '<li><a href="'.JURI::root().$userLink->path.'#'.$applicant_fnum.'|open">'.$applicant_fnum.'</a>';
+                        $fnumListCampaign .= '<li><a href="'.JURI::root().$userLink->path.'#'.$applicant_fnum.'|open">'.$applicant_fnum.'</a> ('.$fnumTagsInfos['campaign_label'].')';
+                        $fnumListProgramme .= '<li><a href="'.JURI::root().$userLink->path.'#'.$applicant_fnum.'|open">'.$applicant_fnum.'</a> ('.$fnumTagsInfos['training_programme'].')';
                     } else {
-                        $fnumList .= '<li>'.$applicant_fnum.'</li>';
-                        $fnumListCampaign .= '<li>'.$applicant_fnum.' ('.$fnumTagsInfos['campaign_label'].')</li>';
-                        $fnumListProgramme .= '<li>'.$applicant_fnum.' ('.$fnumTagsInfos['training_programme'].')</li>';
+                        $fnumList .= '<li>'.$applicant_fnum;
+                        $fnumListCampaign .= '<li>'.$applicant_fnum.' ('.$fnumTagsInfos['campaign_label'].')';
+                        $fnumListProgramme .= '<li>'.$applicant_fnum.' ('.$fnumTagsInfos['training_programme'].')';
                     }
-                    $fnumList .= '</ul>';
-                    $fnumListCampaign .= '</ul>';
-                    $fnumListProgramme .= '</ul>';
+                    if ($add_message_notif && !empty($message)) {
+                        $fnumList .= '<br />"'.$message.'"</li></ul>';
+                        $fnumListCampaign .= '<br />"'.$message.'"</li></ul>';
+                        $fnumListProgramme .= '<br />"'.$message.'"</li></ul>';
+                    } else {
+                        $fnumList .= '</li></ul>';
+                        $fnumListCampaign .= '</li></ul>';
+                        $fnumListProgramme .= '</li></ul>';
+                    }
 
                     $post = array(
                         'FNUMS' => $fnumList,
@@ -630,6 +637,7 @@ class EmundusModelMessenger extends JModelList
                         'FNUMS_TRAININGS' => $fnumListProgramme,
                         'APPLICANT_NAME' => $fnumTagsInfos['applicant_name'],
                         'NAME' => $user_info->name,
+                        'USER_NAME' => $user_info->name,
                         'SITE_URL' => JURI::root(),
                     );
 

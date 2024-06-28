@@ -4,12 +4,15 @@ function addLoader(container = 'body') {
         loaderElement.id = 'em-dimmer';
         loaderElement.classList.add('em-page-loader');
 
-        window.document.querySelector(container).insertAdjacentElement('afterend', loaderElement);
+        let containerElement = window.document.querySelector(container);
+        if(containerElement) {
+            containerElement.insertAdjacentElement('afterend', loaderElement);
+        }
     }
 }
 
 function removeLoader() {
-    const loader = document.getElementById('em-dimmer');
+    var loader = document.getElementById('em-dimmer');
     if (loader!== null) {
        loader.remove();
     }

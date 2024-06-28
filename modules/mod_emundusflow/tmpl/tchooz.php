@@ -121,7 +121,7 @@ $now = $dateTime->format('Y-m-d H:i:s');
 <div class="mod_emundus_flow___container mt-4" style="padding: 0 20px">
     <div class="flex justify-between mod_emundus_flow___intro">
         <div class="flex items-center">
-            <h1 class="em-mb-0-important"><?php echo $campaign_name ?></h1>
+	                 <h1 class="em-mb-0-important"><?php echo $campaign_name; ?></h1>
             <?php
             $color = '#0A53CC';
             $background = '#C8E1FE';
@@ -160,7 +160,7 @@ $now = $dateTime->format('Y-m-d H:i:s');
         <?php if ($show_deadline == 1) : ?>
         <div class="flex items-center">
             <p class="em-text-neutral-600 em-font-size-16"> <?php echo JText::_('MOD_EMUNDUS_FLOW_END_DATE'); ?></p>
-            <span class="ml-1.5" style="white-space: nowrap"><?php echo JFactory::getDate(new JDate($deadline, $site_offset))->format('d/m/Y H:i'); ?></span>
+            <span class="ml-1.5" style="white-space: nowrap"><?php echo EmundusHelperDate::displayDate($deadline,'DATE_FORMAT_EMUNDUS') ?></span>
         </div>
         <?php endif; ?>
 

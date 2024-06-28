@@ -20,10 +20,10 @@ JFactory::getSession()->set('application_layout', 'logs');
     <input type="hidden" id="fnum_hidden" value="<?php echo $this->fnum ?>">
 
     <div class="row">
-        <div class="panel panel-default widget em-container-comment <?php if ($this->_user->applicant == 1) : ?>bg-transparent<?php else : ?>bg-neutral-100<?php endif; ?>">
+        <div class="panel panel-default widget em-container-logs <?php if ($this->_user->applicant == 1) : ?>bg-transparent<?php else : ?>bg-neutral-100<?php endif; ?>">
 
 			<?php if ($this->_user->applicant == 0) : ?>
-            <div class="panel-heading em-container-comment-heading">
+            <div class="panel-heading em-container-logs-heading">
 
                 <h3 class="panel-title">
                 	<span class="glyphicon glyphicon-list"></span>
@@ -31,14 +31,17 @@ JFactory::getSession()->set('application_layout', 'logs');
                 </h3>
 
                 <div class="btn-group pull-right">
-                    <button id="em-prev-file" class="btn btn-info btn-xxl"><i class="small arrow left icon"></i></button>
-                    <button id="em-next-file" class="btn btn-info btn-xxl"><i class="small arrow right icon"></i></button>
+                    <button id="em-prev-file" class="btn btn-info btn-xxl"><span
+                                class="material-icons">arrow_back</span></button>
+                    <button id="em-next-file" class="btn btn-info btn-xxl"><span
+                                class="material-icons">arrow_forward</span></button>
+
                 </div>
 
             </div>
 			<?php endif; ?>
 
-            <br class="panel-body em-container-comment-body">
+            <br class="panel-body em-container-logs-body">
 
 	        <?php if ($this->_user->applicant == 0) : ?>
                 <div class="view-type flex items-center justify-end mr-4">
@@ -154,7 +157,7 @@ JFactory::getSession()->set('application_layout', 'logs');
 </div>
 
 <script type="text/javascript">
-    let offset = 100;
+    var offset = 100;
 
     $('#crud-logs').chosen({width:'100%'});
     $('#type-logs').chosen({width:'100%'});
@@ -169,7 +172,7 @@ JFactory::getSession()->set('application_layout', 'logs');
             dataType: 'json',
             success: function(results) {
                 if(results.status) {
-                    const typeLogs = $('#type-logs');
+                    var typeLogs = $('#type-logs');
 
                     results.data.forEach(log => {
                         typeLogs.append('<option value="' + log.id + '">' + Joomla.JText._(log.label) + '</option>');           /// append data
@@ -178,7 +181,7 @@ JFactory::getSession()->set('application_layout', 'logs');
                 } else {
                    $('#filters-logs').remove();
                    $('#log-filter-btn').remove();
-                   $('.em-container-comment-heading').after('<b style="color:red">' + Joomla.JText._("COM_EMUNDUS_NO_ACTION_FOUND") + '</b>');
+                   $('.em-container-logs-heading').after('<b style="color:red">' + Joomla.JText._("COM_EMUNDUS_NO_ACTION_FOUND") + '</b>');
                 }
             }, error: function(jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR.responseText, textStatus, errorThrown);
@@ -207,7 +210,7 @@ JFactory::getSession()->set('application_layout', 'logs');
             dataType: 'json',
             success: function(results) {
                 if(results.status) {
-                    const actorsLog = $('#actors-logs');
+                    var actorsLog = $('#actors-logs');
 
                     results.data.forEach((user) => {
                         actorsLog.append('<option value="' + user.uid + '">' + user.name + '</option>');           /// append data
@@ -224,14 +227,14 @@ JFactory::getSession()->set('application_layout', 'logs');
         });
 
        $('#log-filter-btn').on('click', function() {
-            let crud = $('#crud-logs').val();
+            var crud = $('#crud-logs').val();
 
             if (!crud) {
                 crud = ['c','r', 'u', 'd'];
             }
 
-            const types = $('#type-logs').val();
-            const persons = $('#actors-logs').val();
+            var types = $('#type-logs').val();
+            var persons = $('#actors-logs').val();
 
            $.ajax({
                 type: 'post',
@@ -247,7 +250,7 @@ JFactory::getSession()->set('application_layout', 'logs');
                     $('#log-count-results').remove();
 
                     // add loading icon
-                    const logList = $('#logs_list');
+                    var logList = $('#logs_list');
                     logList.empty();
                     logList.before('<div id="loading"><img src="'+loading+'" alt="loading"/></div>');
 
@@ -262,11 +265,11 @@ JFactory::getSession()->set('application_layout', 'logs');
                         $('#export-logs').after('<p id="log-count-results" style="font-weight: bold" class="em-main-500-color em-p-8-12 em-float-right">' + results.res.length + Joomla.JText._("COM_EMUNDUS_LOGS_FILTERS_FOUND_RESULTS") + '</p>');
                         $('#loading').remove();
 
-                        let tr = '';
+                        var tr = '';
                         if (results.res.length < 100) {
                             $('.show-more').hide();
                         }
-                        for (let i = 0; i < results.res.length; i++) {
+                        for (var i = 0; i < results.res.length; i++) {
                             tr = '<tr>' +
                                 '<td>'+ results.res[i].date + '</td>' +
                                 '<td>'+ results.res[i].ip_from + '</td>' +
@@ -295,10 +298,10 @@ JFactory::getSession()->set('application_layout', 'logs');
    $(document).on('click', '#show-more', function(e) {
        if(e.handle === true) {
            e.handle = false;
-           const fnum = "<?php echo $this->fnum; ?>";
-           const crud =$('#crud-logs').val();
-           const types =$('#type-logs').val();
-           const persons =$('#actors-logs').val();
+           var fnum = "<?php echo $this->fnum; ?>";
+           var crud =$('#crud-logs').val();
+           var types =$('#type-logs').val();
+           var persons =$('#actors-logs').val();
 
            $.ajax({
                type:'POST',
@@ -312,11 +315,11 @@ JFactory::getSession()->set('application_layout', 'logs');
                 }),
                 success: function(result) {
                     if (result.status) {
-                        let tr = ''
+                        var tr = ''
                         if (result.res.length < 100) {
                             $('.show-more').hide();
                         }
-                        for (let i = 0; i < result.res.length; i++) {
+                        for (var i = 0; i < result.res.length; i++) {
                             tr = '<tr>' +
                                 '<td>'+ result.res[i].date + '</td>' +
                                 '<td>'+ result.res[i].ip_from + '</td>' +
@@ -345,10 +348,10 @@ JFactory::getSession()->set('application_layout', 'logs');
         xhr.onreadystatechange = function() {
             if (xhr.readyState == 4) {
                 if (xhr.status == 200) {
-                    const response = JSON.parse(xhr.response);
+                    var response = JSON.parse(xhr.response);
 
                     if (response) {
-                        let file_link = document.createElement('a');
+                        var file_link = document.createElement('a');
                         file_link.id = 'file-link';
                         file_link.href = response;
                         file_link.download = fnum + '_logs.csv';
@@ -368,11 +371,11 @@ JFactory::getSession()->set('application_layout', 'logs');
             }
         };
 
-        let body = new FormData();
+        var body = new FormData();
 
-        const crud = $('#crud-logs').val();
-        const types = $('#type-logs').val();
-        const persons = $('#actors-logs').val();
+        var crud = $('#crud-logs').val();
+        var types = $('#type-logs').val();
+        var persons = $('#actors-logs').val();
 
         body.append('fnum', String(fnum));
         body.append('crud', JSON.stringify(crud));
@@ -395,7 +398,7 @@ JFactory::getSession()->set('application_layout', 'logs');
     });
 
     function resetFilters() {
-        const log_link = document.querySelector('#em-appli-menu a[href*="layout=logs"]');
+        var log_link = document.querySelector('#em-appli-menu a[href*="layout=logs"]');
         if (log_link) {
             log_link.click();
         }

@@ -133,7 +133,6 @@ import formService from '../../services/form';
 import formBuilderService from '../../services/formbuilder';
 import campaignService from '../../services/campaign';
 import globalMixin from "../../mixins/mixin";
-import editor from '../editor.vue';
 import IncrementalSelect from "../IncrementalSelect";
 import formBuilderMixin from "../../mixins/formbuilder";
 import Swal from 'sweetalert2';
@@ -159,8 +158,7 @@ export default {
 		}
   },
   components: {
-    IncrementalSelect,
-    editor
+    IncrementalSelect
   },
   mixins: [globalMixin, formBuilderMixin],
   data() {

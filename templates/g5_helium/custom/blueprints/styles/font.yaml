@@ -11,27 +11,27 @@ form:
     size-h1:
       type: input.text
       label: H1 font size
-      default: '24px'
+      default: '32px'
     size-h2:
       type: input.text
       label: H2 font size
-      default: '22px'
+      default: '24px'
     size-h3:
       type: input.text
       label: H3 font size
-      default: '20px'
+      default: '18px'
     size-h4:
       type: input.text
       label: H4 font size
-      default: '18px'
+      default: '16px'
     size-h5:
       type: input.text
       label: H5 font size
-      default: '16px'
+      default: '12px'
     size-h6:
       type: input.text
       label: H6 font size
-      default: '14px'
+      default: '10px'
     family-text:
       type: input.fonts
       label: Body Font

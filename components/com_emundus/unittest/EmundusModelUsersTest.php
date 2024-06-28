@@ -8,6 +8,7 @@
  */
 
 use PHPUnit\Framework\TestCase;
+use Joomla\CMS\Language\Text;
 ini_set( 'display_errors', false );
 error_reporting(E_ALL);
 define('_JEXEC', 1);
@@ -97,4 +98,195 @@ class EmundusModelUsersTest extends TestCase
 		$this->assertObjectHasAttribute('label', $profile, 'Profile details should contain label');
 		$this->assertObjectHasAttribute('class', $profile, 'Profile details should contain class');
 	}
+
+    /**
+     * @covers EmundusModelUsers::getUserGroupsLabelById
+     * Function getUserGroupsLabelById return an array of group(s) details
+     * It should return the label of the group(s) the user is in
+     * @return void
+     */
+	public function testgetUserGroupsLabelById() {
+
+		$user_id = $this->h_sample->createSampleUser(2, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$nonApplicantIds = $this->m_users->getNonApplicantId($user_id);
+		$this->m_users->affectToGroups($nonApplicantIds, [1]);
+
+		$this->assertEmpty($this->m_users->getUserGroupsLabelById(0), 'Passing an incorrect user id should return null');
+		$groups = $this->m_users->getUserGroupsLabelById($user_id);
+
+		foreach ($groups as $groupLabel)
+		{
+			$this->assertNotEmpty($groupLabel, 'Group(s) details should contain label');
+		}
+	}
+
+    public function testrepairEmundusUser() {
+        $this->assertEmpty($this->m_users->repairEmundusUser(0), 'Passing an empty user id should return false');
+        $this->assertEmpty($this->m_users->repairEmundusUser(999999), 'Passing an incorrect user id should return false');
+
+        $user_id = $this->h_sample->createSampleUser(2, 'userthatwillbebroken' . rand(0, 99999) . '@emundus.test.fr');
+        $this->assertNotEmpty($user_id, 'A user should be created');
+        $this->assertTrue($this->m_users->repairEmundusUser($user_id), 'Passing a user id that has an emundus_users line should return true as the function should still be executed correctly');
+
+        // Delete the emundus_users line
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->clear()
+            ->delete($db->quoteName('#__emundus_users'))
+            ->where($db->quoteName('user_id') . ' = ' . $db->quote($user_id));
+        $db->setQuery($query);
+        $db->execute();
+
+        $this->assertTrue($this->m_users->repairEmundusUser($user_id), 'Passing a user id that has a missing emundus_users line should return true as the account should be repaired');
+
+        $users = $this->m_users->getUserById($user_id);
+        $this->assertNotEmpty($users, 'The user should be found in the database');
+        $this->assertEquals($user_id, $users[0]->user_id, 'The user id should be the same');
+        $this->assertEquals('Test', $users[0]->firstname, 'The user id should be the same');
+        $this->assertEquals('USER', $users[0]->lastname, 'The user id should be the same');
+    }
+
+	/**
+     * @covers EmundusModelUsers::getColumnsFromProfileForm
+     * Function getColumnsFromProfileForm return an array of columns form details
+     * It should return an id, name, plugin, label, group_id and a list of params
+     * @return void
+     */
+    public function testgetColumnsFromProfileForm() {
+
+        $columns = $this->m_users->getColumnsFromProfileForm();
+        foreach ($columns as $column)
+        {
+            $this->assertObjectHasAttribute('id', $column, 'Columns form details should contain id');
+            $this->assertObjectHasAttribute('name', $column, 'Columns form details should contain name');
+            $this->assertObjectHasAttribute('plugin', $column, 'Columns form details should contain plugin');
+            $this->assertObjectHasAttribute('label', $column, 'Columns form details should contain label');
+            $this->assertObjectHasAttribute('group_id', $column, 'Columns form details should contain group form id');
+            $this->assertObjectHasAttribute('params', $column, 'Columns form details should contain params');
+
+            $this->assertObjectNotHasAttribute('hidden', $column, 'Columns form details should not contain hidden attribute');
+            $this->assertObjectNotHasAttribute('published', $column, 'Columns form details should not contain published attribute');
+        }
+    }
+
+    /**
+     * @covers EmundusModelUsers::getJoomlaUserColumns
+     * Function getJoomlaUserColumns return an array of joomla user columns
+     * It should return an id, name, plugin, label for each element
+     * @return void
+     */
+    public function testgetJoomlaUserColumns() {
+
+        $columns = $this->m_users->getJoomlaUserColumns();
+        foreach ($columns as $column)
+        {
+            $this->assertObjectHasAttribute('id', $column, 'Joomla user columns details should contain id');
+            $this->assertObjectHasAttribute('name', $column, 'Joomla user columns details should contain name');
+            $this->assertObjectHasAttribute('plugin', $column, 'Joomla user columns details should contain plugin');
+            $this->assertObjectHasAttribute('label', $column, 'Joomla user columns details should contain label');
+
+            $this->assertObjectNotHasAttribute('value', $column, 'Joomla user columns details should not contain value attribute');
+        }
+    }
+
+    /**
+     * @covers EmundusModelUsers::getAllInformationsToExport
+     * Function getAllInformationsToExport return an array of user data and columns data
+     * It should return an array of 2 array (each element of both array containing an array too)
+     * @return void
+     * @throws Exception
+     */
+    public function testgetAllInformationsToExport()
+    {
+        $user_id = $this->h_sample->getSampleUser();
+
+        $this->assertEmpty($this->m_users->getAllInformationsToExport(0), 'Passing an incorrect user id should return null');
+        $data = $this->m_users->getAllInformationsToExport($user_id);
+        $this->assertNotEmpty($data, 'Passing a correct user id should return an array of data');
+        $this->assertCount(2, $data, 'Data array should contain 2 elements');
+
+        foreach ($data as $key => $dataType) {
+            foreach ($dataType as $element) {
+
+                $this->assertObjectHasAttribute('id', $element, 'Data array details should contain id');
+                $this->assertObjectHasAttribute('name', $element, 'Data array details should contain name');
+                $this->assertObjectHasAttribute('plugin', $element, 'Data array details should contain plugin');
+                $this->assertObjectHasAttribute('label', $element, 'Data array details should contain label');
+
+                $this->assertObjectNotHasAttribute('hidden', $element, 'Data array form details should not contain hidden attribute');
+                $this->assertObjectNotHasAttribute('published', $element, 'Data array form details should not contain published attribute');
+
+                if ($key === 'j_columns') {
+                    $this->assertObjectNotHasAttribute('group_id', $element, 'user_data array details should not contain group form id !');
+                    $this->assertObjectHasAttribute('value', $element, 'user_data array details should contain value');
+                }
+                else
+                {
+                    $this->assertObjectHasAttribute('group_id', $element, 'column array details should contain group form id !');
+                    $this->assertObjectNotHasAttribute('value', $element, 'column array details should not contain value');
+                }
+            }
+        }
+    }
+
+    /**
+     * @covers EmundusModelUsers::getUserDetails
+     * @return void
+     * It should return an array of all columns (user data and columns data)
+     * @throws Exception
+     */
+    public function testgetUserDetails()
+    {
+        $user_id = $this->h_sample->getSampleUser();
+
+        $this->assertEmpty($this->m_users->getUserDetails(0), 'Passing an incorrect user id should return null');
+        $data = $this->m_users->getUserDetails($user_id);
+        $dataBefore = $this->m_users->getAllInformationsToExport($user_id);
+        $numberColumns = 0;
+        $array_label = array();
+
+        // Count the number of columns  we should have
+        foreach ($dataBefore as $dataType) {
+            foreach ($dataType as $element) {
+                $array_label[] = $element->label;
+                $numberColumns += 1;
+            }
+        }
+        foreach ($array_label as $name) {
+            $this->assertArrayHasKey($name, $data, "Key '$name' not found in data array");
+        }
+
+        $this->assertCount($numberColumns, $data, 'Not the number of columns expected');
+
+    }
+
+	/**
+	 * @covers EmundusModelUsers::getUsersByIds
+	 * Function getUsersByIds return an array of user(s) details
+	 * It should return id, name, email, username, registerDate, params etc... but not password
+	 * @return void
+	 */
+	public function testgetUsersByIds() {
+
+		$user1_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr' );
+		$user2_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr' );
+
+		$this->assertEmpty($this->m_users->getUsersByIds(0), 'Passing an incorrect user id should return null');
+		$users_array = array($user1_id, $user2_id);
+		$data = $this->m_users->getUsersByIds($users_array);
+		$this->assertNotEmpty($data, 'Passing correct users id should return an array of data');
+		$this->assertCount(count($data), $data, 'Data array should contain as many elements as the number of users id passed');
+
+		foreach ($data as $user_details) {
+			$this->assertObjectHasAttribute('id', $user_details, 'User details should contain id');
+			$this->assertObjectHasAttribute('name', $user_details, 'User details should contain name');
+			$this->assertObjectHasAttribute('email', $user_details, 'User details should contain email');
+			$this->assertObjectHasAttribute('username', $user_details, 'User details should contain groups');
+			$this->assertObjectHasAttribute('registerDate', $user_details, 'User details should contain profile');
+			$this->assertObjectHasAttribute('params', $user_details, 'User details should contain columns');
+
+			$this->assertObjectNotHasAttribute('password', $user_details, 'User details should not contain password');
+		}
+	}
 }
+

@@ -15,8 +15,9 @@ if ($d->display_comments) {
   ?>
 
     <div class="control-group fabrik-element-emundus-container flex !flex-row justify-items-start items-start <?php echo $d->class;?>" <?php echo $d->style;?>>
+        <span id="elements-<?= $d->element->element_fabrik_id ?>" style="margin-top: -180px"></span>
         <span class="material-icons-outlined cursor-pointer comment-icon mr-5" data-target-type="elements" data-target-id="<?= $d->element->element_fabrik_id ?>">comment</span>
-        <div>
+        <div class="w-full">
             <?php echo $d->row;?>
         </div>
     </div>

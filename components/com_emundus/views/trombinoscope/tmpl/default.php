@@ -134,14 +134,14 @@ if (!empty($this->htmlLetters)) {
 
 
     $('.trombi_format').change(function() {
-        const selected_format = $(this).val();
+        var selected_format = $(this).val();
 
-        const templ = <?= json_encode($this->templ); ?>;
+        var templ = <?= json_encode($this->templ); ?>;
 
         $('#selected_format').val(selected_format);
-        const default_tmpl = templ[selected_format].body;
-        const header = templ[selected_format].header;
-        const footer = templ[selected_format].footer;
+        var default_tmpl = templ[selected_format].body;
+        var header = templ[selected_format].header;
+        var footer = templ[selected_format].footer;
 
         $('#trombi_tmpl').val(default_tmpl);
         $('#trombi_header').val(header);
@@ -163,24 +163,24 @@ if (!empty($this->htmlLetters)) {
         tinyMCE.execCommand('mceToggleEditor', false, 'trombi_tmpl');
         tinyMCE.execCommand('mceToggleEditor', false, 'trombi_tmpl');
 
-        let string_fnums;
+        var string_fnums;
         if ('<?= $this->string_fnums; ?>' === 'all') {
             string_fnums = '["all"]';
         } else {
             string_fnums = JSON.stringify(<?= $this->string_fnums; ?>);
         }
 
-        const selected_grid_width = $('#trombi_grid_width').val();
-        const selected_grid_height = $('#trombi_grid_height').val();
-        const selected_margin = $('#trombi_margin').val();
-        const selected_tmpl = $('#trombi_tmpl').val();
-        const header_height = $('#trombi_header_height').val();
+        var selected_grid_width = $('#trombi_grid_width').val();
+        var selected_grid_height = $('#trombi_grid_height').val();
+        var selected_margin = $('#trombi_margin').val();
+        var selected_tmpl = $('#trombi_tmpl').val();
+        var header_height = $('#trombi_header_height').val();
 
-        const format = $('#selected_format').val();
+        var format = $('#selected_format').val();
 
         $('#string_generate').val(0);
-        const string_generate = $('#string_generate').val();
-        const selected_border = $('#trombi_border').val();
+        var string_generate = $('#string_generate').val();
+        var selected_border = $('#trombi_border').val();
 
         $('#trombi_generate').prop('disabled', false);
 
@@ -201,7 +201,7 @@ if (!empty($this->htmlLetters)) {
                 headerHeight: header_height
             },
             success: function (data) {
-                const html_content = data.html_content;
+                var html_content = data.html_content;
 
                 $('#div-preview').html(html_content);
                 $('#data_for_pdf').html(html_content);
