@@ -497,12 +497,16 @@ div#frame.outline {
   }
 }
 
+.view-login #g-navigation {
+  background: transparent;
+}
+
 #g-navigation {
   width: 100%;
   position: sticky;
   max-height: 100px;
   height: 72px;
-  background: transparent;
+  background: var(--neutral-0);
   top: 0;
 
   .g-container {
@@ -519,6 +523,11 @@ div#frame.outline {
     transition: all 0.3s ease-in-out;
     max-height: 40px;
     left: 70px;
+
+    .g-content {
+      position: fixed;
+      top: 14px;
+    }
   }
 }
 
