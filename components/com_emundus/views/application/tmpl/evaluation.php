@@ -116,6 +116,15 @@ else {
     function onLoadIframe(iframe) {
         document.querySelector('.em-loader').classList.add('hidden');
         resizeIframe(iframe);
+
+        var iframe = $('#iframe').contents();
+
+        iframe.find("body").click(function(){
+            if (!$('ul.dropdown-menu.open').hasClass('just-open')) {
+                $('ul.dropdown-menu.open').hide();
+                $('ul.dropdown-menu.open').removeClass('open');
+            }
+        });
     }
 
     function resizeIframe(obj) {

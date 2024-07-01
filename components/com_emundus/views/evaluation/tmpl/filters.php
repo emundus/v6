@@ -50,7 +50,7 @@ if ($this->use_module_for_filters === null) {
             });
 
             $('select.testSelAll').on('sumo:closed', function (event) {
-                let newValues = [];
+                var newValues = [];
                 [...event.target.options].forEach((option) => {
                     if (option.selected) {
                         newValues.push(option.value);
@@ -58,7 +58,7 @@ if ($this->use_module_for_filters === null) {
 
                 });
 
-                let differences = newValues
+                var differences = newValues
                     .filter(newValue => !data[event.target.name].includes(newValue))
                     .concat(data[event.target.name].filter(oldVal => !newValues.includes(oldVal)));
 

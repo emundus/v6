@@ -1281,6 +1281,11 @@ class EmundusModelCampaign extends JModelList {
                             $data['published'] = 0;
                         }
                     }
+					if($key == 'start_date' || $key == 'end_date'){
+						$dateStr = str_replace(' ', 'T', $val);
+						$date = new DateTime($dateStr);
+						$data[$key] = $date->format('Y-m-d H:i:s');
+					}
                 }
                 $i++;
             }
