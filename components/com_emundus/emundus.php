@@ -60,6 +60,12 @@ JText::script('COM_EMUNDUS_EX');
 JText::script('COM_EMUNDUS_ADD');
 JText::script('COM_EMUNDUS_THESIS_DELETE');
 JText::script('COM_EMUNDUS_APPLICATION_TAG');
+JText::script('COM_EMUNDUS_APPLICATION_DELETE_TAG');
+JText::script('COM_EMUNDUS_APPLICATION_DELETE_TAG_CONFIRM');
+JText::script('COM_EMUNDUS_APPLICATION_DELETE_TAG_SUCCESS');
+JText::script('COM_EMUNDUS_APPLICATION_DELETE_COMMENT');
+JText::script('COM_EMUNDUS_APPLICATION_DELETE_COMMENT_CONFIRM');
+JText::script('COM_EMUNDUS_APPLICATION_DELETE_COMMENT_SUCCESS');
 JText::script('COM_EMUNDUS_ACCESS_FILE');
 JText::script('COM_EMUNDUS_ACCESS_ATTACHMENT');
 JText::script('COM_EMUNDUS_ACCESS_TAGS');
@@ -97,6 +103,9 @@ JText::script('COM_EMUNDUS_ATTACHMENT');
 JText::script('COM_EMUNDUS_ASSESSMENT');
 JText::script('COM_EMUNDUS_COMMENT');
 JText::script('COM_EMUNDUS_COMMENTS');
+JText::script('COM_EMUNDUS_FILES_CANNOT_GET_COMMENTS');
+JText::script('COM_EMUNDUS_FILES_CANNOT_SAVE_COMMENT');
+JText::script('COM_EMUNDUS_FILES_COMMENT_EMPTY');
 JText::script('COM_EMUNDUS_ACCESS_COMMENT_FILE_CREATE');
 JText::script('COM_EMUNDUS_EXCEL_GENERATION');
 JText::script('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE');
@@ -690,11 +699,7 @@ if(!in_array($name,['settings','campaigns','emails','form'])) {
     } else {
         $document->addScript('media/com_emundus/js/lib/tinymce.min.js');
     }
-    $document->addScript('media/com_emundus/lib/jquery-1.12.4.min.js');
-    $document->addScript('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
     $document->addScript('media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
-    //TODO : Stop use chosen replace by an other js native library
-    //$document->addScript('media/com_emundus/lib/chosen/chosen.jquery.min.js' );
     $document->addScript('media/jui/js/chosen.jquery.min.js');
     $document->addScript('media/com_emundus/js/em_files.js?' . $hash);
     $document->addScript('media/com_emundus/js/mixins/exports.js?' . $hash);

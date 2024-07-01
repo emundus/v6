@@ -139,10 +139,10 @@ JText::script('COM_EMUNDUS_TAG_APPLICANT_APPLICATION_STATUS');
     </div>
 
 <script>
-    let current_tab = 0;
+    var current_tab = 0;
 
     function programSelect() {
-        let course = document.getElementById('program').options[document.getElementById('program').selectedIndex].value;
+        var course = document.getElementById('program').options[document.getElementById('program').selectedIndex].value;
         if (course !== '') {
             var httpRequest = new XMLHttpRequest();
             httpRequest.responseType = 'json';
@@ -301,7 +301,7 @@ JText::script('COM_EMUNDUS_TAG_APPLICANT_APPLICATION_STATUS');
                     label.classList.add('col-md-9');
                     label.innerText = Joomla.JText._(tag.description)?Joomla.JText._(tag.description):tag.description;
 
-                    const container =  document.createElement('div');
+                    var container =  document.createElement('div');
                     container.setAttribute('class', 'em-element other-em-element');
                     container.append(id);
 
@@ -312,8 +312,6 @@ JText::script('COM_EMUNDUS_TAG_APPLICANT_APPLICATION_STATUS');
                         setWidth = id.clientWidth;
                     }
                 });
-                console.log(setWidth);
-                console.log(document.getElementsByClassName('em-element-id'));
                 document.getElementsByClassName('em-element-id')[0].style["min-width"] = setWidth;
             }
         };

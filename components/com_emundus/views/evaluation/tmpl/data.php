@@ -232,7 +232,7 @@ if ($this->open_file_in_modal) {
     <script src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
     <script>
         function clickOpenfile(fnum) {
-            const fnums = <?= json_encode($fnums) ?>;
+            var fnums = <?= json_encode($fnums) ?>;
             var event = new CustomEvent('openSingleApplicationWithFnum', {detail: {fnum: fnum, fnums: fnums}});
             window.dispatchEvent(event);
         }
@@ -258,7 +258,7 @@ if ($this->open_file_in_modal) {
             $('#em-data th').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight) + 'px');
         },2000);
 
-        const dataContainer = document.querySelector('.em-data-container')
+        var dataContainer = document.querySelector('.em-data-container')
         if (dataContainer) {
             DoubleScroll(document.querySelector('.em-data-container'));
         }
@@ -269,8 +269,8 @@ if ($this->open_file_in_modal) {
 
 
 <script>
-    const selectDropdownContainer = document.querySelector('#selectAll_evaluation');
-    const countFiles = document.querySelector('#countCheckedCheckbox');
+    var selectDropdownContainer = document.querySelector('#selectAll_evaluation');
+    var countFiles = document.querySelector('#countCheckedCheckbox');
 
     if (selectDropdownContainer) {
         selectDropdownContainer.style.display = 'none';
@@ -312,7 +312,7 @@ if ($this->open_file_in_modal) {
     }
 
     function selectAllFiles(){
-        let allCheck = $('.em-check-all-all#em-check-all-all').is(':checked');
+        var allCheck = $('.em-check-all-all#em-check-all-all').is(':checked');
 
         if(allCheck === true) {
             $('.em-check-all-page#em-check-all-page').prop('checked', false);
@@ -360,8 +360,8 @@ if ($this->open_file_in_modal) {
     })
 
     $(document).on('change', '.em-check-all-page,.selectPage #em-check-all', function(e) {
-        let pageCheckAll = $('.selectPage #em-check-all').is(':checked');
-        let is_checked = false;
+        var pageCheckAll = $('.selectPage #em-check-all').is(':checked');
+        var is_checked = false;
 
         if(e.target.id === 'em-check-all'){
             if(pageCheckAll === false){
@@ -371,7 +371,7 @@ if ($this->open_file_in_modal) {
             }
         }
 
-        let pageCheck = $('.em-check-all-page#em-check-all-page').is(':checked');
+        var pageCheck = $('.em-check-all-page#em-check-all-page').is(':checked');
 
         if(e.target.id === 'em-check-all-page'){
             if(pageCheck === false){
@@ -385,8 +385,8 @@ if ($this->open_file_in_modal) {
             $('.em-check-all-all#em-check-all-all').prop('checked', false);
             $('.em-check').prop('checked', true);
 
-            let countCheckedCheckbox = $('.em-check').not('#em-check-all.em-check,#em-check-all-all.em-check').filter(':checked').length;
-            let files = countCheckedCheckbox === 1 ? Joomla.JText._('COM_EMUNDUS_FILES_FILE') : Joomla.JText._('COM_EMUNDUS_FILES_FILES');
+            var countCheckedCheckbox = $('.em-check').not('#em-check-all.em-check,#em-check-all-all.em-check').filter(':checked').length;
+            var files = countCheckedCheckbox === 1 ? Joomla.JText._('COM_EMUNDUS_FILES_FILE') : Joomla.JText._('COM_EMUNDUS_FILES_FILES');
 
             if (countCheckedCheckbox !== 0) {
                 displayCount();
@@ -416,8 +416,8 @@ if ($this->open_file_in_modal) {
     })
 
     $(document).on('change', '.em-check', function(e) {
-        let countCheckedCheckbox = $('.em-check').not('#em-check-all.em-check,#em-check-all-all.em-check').filter(':checked').length;
-        let files = countCheckedCheckbox === 1 ? Joomla.JText._('COM_EMUNDUS_FILES_FILE') : Joomla.JText._('COM_EMUNDUS_FILES_FILES');
+        var countCheckedCheckbox = $('.em-check').not('#em-check-all.em-check,#em-check-all-all.em-check').filter(':checked').length;
+        var files = countCheckedCheckbox === 1 ? Joomla.JText._('COM_EMUNDUS_FILES_FILE') : Joomla.JText._('COM_EMUNDUS_FILES_FILES');
 
         if (countCheckedCheckbox !== 0) {
             displayCount();
@@ -432,7 +432,7 @@ if ($this->open_file_in_modal) {
     document.addEventListener('scroll', function(e) {
         if(window.scrollY > document.querySelector('.em-data-container table thead').offsetHeight) {
             document.querySelector('.em-data-container table thead').style.position = 'relative';
-            let containerResult = document.querySelector('.container-result').offsetHeight;
+            var containerResult = document.querySelector('.container-result').offsetHeight;
             document.querySelector('.em-data-container table thead').style.top = (window.scrollY - containerResult - 4) + 'px';
         } else {
             document.querySelector('.em-data-container table thead').style.position = 'static';

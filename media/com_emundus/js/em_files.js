@@ -41,7 +41,7 @@ $.ajaxQ = (function(){
 })();
 
 function search() {
-    const controller = $('#view').val();
+    var controller = $('#view').val();
 
     if (controller !== null && typeof controller !== 'undefined') {
         addLoader();
@@ -365,7 +365,7 @@ function doesSomeoneElseEditFile(fnum) {
 }
 
 async function checkIfSomeoneIsEditing(fnum) {
-    const response = await doesSomeoneElseEditFile(fnum);
+    var response = await doesSomeoneElseEditFile(fnum);
 
     if (response.status && response.data) {
         var text = '';
@@ -395,7 +395,7 @@ async function checkIfSomeoneIsEditing(fnum) {
 function hideItems(selectors){
     if (selectors.length > 0) {
         selectors.forEach(function (selector) {
-            const selectedEl = document.querySelector(selector);
+            var selectedEl = document.querySelector(selector);
 
             if (selectedEl) {
                 selectedEl.classList.add('em-hide');
@@ -421,25 +421,27 @@ function openFiles(fnum, page = 0, vue = false) {
     var cid = parseInt(fnum.fnum.substr(14, 7));
     var sid = parseInt(fnum.fnum.substr(21, 7));
 
-    $('#em-assoc-files .panel-body').empty();
+    if(document.getElementById('em-assoc-files')) {
+        $('#em-assoc-files .panel-body').empty();
 
-    $.ajax({
-        type: 'get',
-        url: 'index.php?option=com_emundus&view=application&fnum=' + fnum.fnum + '&Itemid=' + itemId + '&format=raw&layout=assoc_files',
-        dataType: 'html',
-        success: function (result) {
-            if (result) {
-                $('#em-assoc-files .panel-body').append(result);
-                document.getElementById('em-assoc-files').show();
-            } else {
-                document.getElementById('em-assoc-files').hide();
+        $.ajax({
+            type: 'get',
+            url: 'index.php?option=com_emundus&view=application&fnum=' + fnum.fnum + '&Itemid=' + itemId + '&format=raw&layout=assoc_files',
+            dataType: 'html',
+            success: function (result) {
+                if (result) {
+                    $('#em-assoc-files .panel-body').append(result);
+                    $('#em-assoc-files').show();
+                } else {
+                    $('#em-assoc-files').hide();
+                }
+
+            },
+            error: function (jqXHR) {
+                console.log(jqXHR.responseText);
             }
-
-        },
-        error: function (jqXHR) {
-            console.log(jqXHR.responseText);
-        }
-    });
+        });
+    }
 
     $.ajax({
         type: 'get',
@@ -553,7 +555,7 @@ function openFiles(fnum, page = 0, vue = false) {
                                 $('#em-files-filters').hide();
                                 $('.main-panel .panel.panel-default').hide();
 
-                                const appBlock = $('#em-appli-block');
+                                var appBlock = $('#em-appli-block');
                                 appBlock.empty();
                                 appBlock.append(result);
                                 $('#accordion .panel.panel-default').show();
@@ -725,13 +727,13 @@ function back() {
 
 function getAllLetters() {
     return new Promise(function(resolve, reject) {
-        const xhr = new XMLHttpRequest();
+        var xhr = new XMLHttpRequest();
 
         xhr.open('POST', 'index.php?option=com_emundus&controller=files&task=getAllLetters');
 
         xhr.onload = function() {
             if (xhr.status === 200) {
-                const result = JSON.parse(xhr.responseText);
+                var result = JSON.parse(xhr.responseText);
                 var letters = result.letters;
 
                 resolve(letters);
@@ -749,13 +751,13 @@ function getAllLetters() {
 
 function getProgramCampaigns(code) {
     return new Promise(function(resolve, reject) {
-        const xhr = new XMLHttpRequest();
+        var xhr = new XMLHttpRequest();
 
         xhr.open('GET', 'index.php?option=com_emundus&controller=files&task=getProgramCampaigns&code=' + code);
 
         xhr.onload = function() {
             if (xhr.status === 200) {
-                const result = JSON.parse(xhr.responseText);
+                var result = JSON.parse(xhr.responseText);
 
                 resolve(result);
             } else {
@@ -776,7 +778,7 @@ function setFiltersSumo(event){
         event.handle = true;
 
         var id = event.currentTarget.id;
-        const my_element = $('#' + id);
+        var my_element = $('#' + id);
         console.log(my_element);
         if (!id.includes('elements-')) {
             var multi = false;
@@ -864,7 +866,7 @@ function runAction(action, url = '', option = '') {
         case 9:
             var fnums = getUserCheckArray();
 
-            const nbFiles = countFilesBeforeAction(checkInput, 9, 'c');
+            var nbFiles = countFilesBeforeAction(checkInput, 9, 'c');
             nbFiles.then((nbFiles) => {
                 sendMailQueue(fnums, nbFiles);
             });
@@ -1095,7 +1097,7 @@ function runAction(action, url = '', option = '') {
                         })
                     } else {
                         addLoader();
-                        const nbFiles = countFilesBeforeAction(checkInput, 13, 'u');
+                        var nbFiles = countFilesBeforeAction(checkInput, 13, 'u');
                         // wait for nbFiles promise to resolve
                         nbFiles.then(function(nbFiles) {
                             if (nbFiles > 0) {
@@ -1213,8 +1215,8 @@ function runAction(action, url = '', option = '') {
         case 16:
             // TODO : make this work
 
-            const iframeFastMails = document.querySelector('#iframe-fast-emails');
-            const fastMailForm = iframeFastMails.contentWindow.document.querySelector('#adminForm');
+            var iframeFastMails = document.querySelector('#iframe-fast-emails');
+            var fastMailForm = iframeFastMails.contentWindow.document.querySelector('#adminForm');
             fastMailForm.submit();
             break;
 
@@ -1275,11 +1277,11 @@ function runAction(action, url = '', option = '') {
         // Generate trombinoscope
         case 31:
             addLoader();
-            const iframe = document.querySelector('#iframe-trombinoscope');
-            const gridWidthSelect = iframe.contentWindow.document.querySelector('#trombi_grid_width');
-            const gridHeightSelect = iframe.contentWindow.document.querySelector('#trombi_grid_height');
+            var iframe = document.querySelector('#iframe-trombinoscope');
+            var gridWidthSelect = iframe.contentWindow.document.querySelector('#trombi_grid_width');
+            var gridHeightSelect = iframe.contentWindow.document.querySelector('#trombi_grid_height');
 
-            const trombinoscopeData = {
+            var trombinoscopeData = {
                 selected_grid_width: gridWidthSelect.options[gridWidthSelect.selectedIndex].value,
                 selected_grid_height: gridHeightSelect.options[gridHeightSelect.selectedIndex].value,
                 selected_margin: iframe.contentWindow.document.querySelector('#trombi_margin').value,
@@ -1630,7 +1632,7 @@ const checkElement = async selector => {
 $(document).ready(function() {
     $('#check').removeClass('em-check-all-all');
 
-    const headerNav = document.querySelector('#g-navigation .g-container');
+    var headerNav = document.querySelector('#g-navigation .g-container');
 
     // Fix actions and filters to sticky
     if (headerNav) {
@@ -1678,7 +1680,7 @@ $(document).ready(function() {
                 fnums_list.push(fnums_json[0].fnum);
                 fnums_list = fnums_list.join(',');
             } else {
-                for(const value of fnums_json){
+                for(var value of fnums_json){
                     if(value.fnum !== 'em-check-all'){
                         fnums_list.push(value.fnum);
                     }
@@ -1785,7 +1787,7 @@ $(document).ready(function() {
                 swal_actions_class = 'em-actions-none'
                 verb = 'c';
 
-                html = '<iframe src="'+url+'" style="width:'+window.getWidth()*0.8+'px; height:'+window.getHeight()*0.8+'px; border:none"></iframe>';
+                html = '<iframe src="'+url+'" style="width:'+$(window).width()*0.8+'px; height:'+$(window).height()*0.8+'px; border:none"></iframe>';
 
                 removeLoader();
                 break;
@@ -2627,7 +2629,7 @@ $(document).ready(function() {
 
                                         $('#filt_save').chosen({width: "100%"});
                                     } else {
-                                        const errorFilterElement = document.getElementById('err-filter');
+                                        var errorFilterElement = document.getElementById('err-filter');
 
                                         if (errorFilterElement) {
                                             errorFilterElement.style.display = 'block';
@@ -3283,7 +3285,7 @@ $(document).ready(function() {
                                     if(result.status) {
                                         if(result.filter !== null && typeof result.filter !== 'undefined') {
                                             var models = result.filter;
-                                            const filterSavePdf = $('#filt_save_pdf');
+                                            var filterSavePdf = $('#filt_save_pdf');
 
                                             models.forEach(model => {
                                                 filterSavePdf.append('<option value="' + model.id + '">' + model.name + '</option>');
@@ -3316,7 +3318,7 @@ $(document).ready(function() {
 
                                 if(model != 0) {
                                     let programSelector = $('#em-export-prg');
-                                    const selectedProgram = programSelector.val();
+                                    var selectedProgram = programSelector.val();
 
                                     if (selectedProgram == 0) {
                                         removeLoader();
@@ -3327,7 +3329,7 @@ $(document).ready(function() {
                                         filtSavePdf.trigger('liszt:updated');
 
                                         setTimeout(() => {
-                                            const errorTxt = document.getElementById('model-err-pdf');
+                                            var errorTxt = document.getElementById('model-err-pdf');
 
                                             if (errorTxt) {
                                                 errorTxt.remove();
@@ -4301,7 +4303,7 @@ $(document).ready(function() {
                 swal_popup_class = 'em-w-auto';
                 swal_confirm_button = 'COM_EMUNDUS_TROMBI_GENERATE';
                 title = 'COM_EMUNDUS_TROMBINOSCOPE';
-                html = '<iframe id="iframe-trombinoscope" src="'+url+'" style="width:'+window.getWidth()*0.8+'px;height:'+window.getHeight()*0.8+'px;border:none;"></iframe>';
+                html = '<iframe id="iframe-trombinoscope" src="'+url+'" style="width:'+$(window).width()*0.8+'px;height:'+$(window).height()*0.8+'px;border:none;"></iframe>';
                 break;
 
             // TODO: Synthesis (fast pdf generation from a model)
@@ -4366,7 +4368,7 @@ $(document).ready(function() {
                         fnums: fnums
                     },
                     success: function(result) {
-                        const dataWrapper = document.getElementById('data');
+                        var dataWrapper = document.getElementById('data');
 
                         if (dataWrapper) {
                             dataWrapper.innerHTML = result;
@@ -4376,7 +4378,7 @@ $(document).ready(function() {
                         }
                     },
                     error: function (jqXHR) {
-                        const dataWrapper = document.getElementById('data');
+                        var dataWrapper = document.getElementById('data');
                         if (dataWrapper) {
                             dataWrapper.classList.remove('em-loader');
                             dataWrapper.innerHTML = '<p class="alert alert-error">' + Joomla.JText._('COM_EMUNDUS_ONBOARD_ERROR_MESSAGE') +'</p>';
@@ -4632,7 +4634,7 @@ $(document).ready(function() {
         }
     });
 
-    const handledIds = ['del-filter', 'em-close-file', 'em-mini-file', 'em-next-file', 'em-prev-file', 'em-see-files', 'em-delete-files', 'add-filter'];
+    var handledIds = ['del-filter', 'em-close-file', 'em-mini-file', 'em-next-file', 'em-prev-file', 'em-see-files', 'em-delete-files', 'add-filter'];
     $(document).on('click', 'button', function(e) {
         if (e.handle != true && handledIds.indexOf(this.id) != -1) {
             e.handle = true;
@@ -4950,12 +4952,12 @@ $(document).ready(function() {
             dataType: 'html',
             data: ({id: id}),
             success: function (result) {
-                const urlUsed = new URL(window.location.origin + '/' + url);
+                var urlUsed = new URL(window.location.origin + '/' + url);
 
                 var fnumUsed = urlUsed.searchParams.get('fnum');
 
                 checkIfSomeoneIsEditing(fnumUsed);
-                const appBlock = $('#em-appli-block');
+                var appBlock = $('#em-appli-block');
 
                 if (appBlock) {
                     appBlock.empty();
@@ -5170,7 +5172,7 @@ $(document).ready(function() {
         $('.modal-dialog').addClass('modal-lg');
         $(".modal-body").empty();
 
-        $(".modal-body").append('<iframe src="'+url+'" style="width:'+window.getWidth()*0.8+'px; height:'+window.getHeight()*0.8+'px; border:none"></iframe>');
+        $(".modal-body").append('<iframe src="'+url+'" style="width:'+$(window).width()*0.8+'px; height:'+$(window).height()*0.8+'px; border:none"></iframe>');
     });
 
 
@@ -5980,7 +5982,7 @@ $(document).ready(function() {
         var groups = document.querySelectorAll('#emundus_table_' + id + ' [id^=emundus_checkall_grp_]')
         var elements = document.querySelectorAll('#emundus_table_' + id + ' [id^=emundus_elm_]')
 
-        for(const group of groups){
+        for(var group of groups){
             if(is_checked) {
                 group.checked = true;
             } else {
@@ -5988,7 +5990,7 @@ $(document).ready(function() {
             }
         }
 
-        for(const element of elements){
+        for(var element of elements){
             var eclass = element.className.split('_')[0];
 
             if(is_checked) {
@@ -6084,7 +6086,7 @@ function updateProfileForm(profile){
 
 
 async function sendMailQueue(fnums, nbFiles = 0) {
-    const steps = [1, 2];
+    var steps = [1, 2];
     let currentStep;
     let body = '';
     let data = {};
@@ -6222,7 +6224,7 @@ async function sendMailQueue(fnums, nbFiles = 0) {
                 break;
         }
 
-        const swalOptions = {
+        var swalOptions = {
             position: 'center',
             title: Joomla.JText._(title),
             html: html,
@@ -6247,7 +6249,7 @@ async function sendMailQueue(fnums, nbFiles = 0) {
             swalOptions.type = type;
         }
 
-        const result = await Swal.fire(swalOptions);
+        var result = await Swal.fire(swalOptions);
 
         if (result.value) {
             currentStep++;
@@ -6380,7 +6382,7 @@ function sendMail(data)
 }
 
 function DoubleScroll(element) {
-    const id = Math.random();
+    var id = Math.random();
     if (element.scrollWidth > element.offsetWidth) {
         createScrollbarForElement(element, id);
     }

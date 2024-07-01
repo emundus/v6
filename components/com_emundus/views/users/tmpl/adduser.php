@@ -181,15 +181,15 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php');
 
         renderingSelects();
 
-        let loginField = $('#login_field');
+        var loginField = $('#login_field');
 
-        let sameLogin = $('#same_login_email');
+        var sameLogin = $('#same_login_email');
 		if(sameLogin.is(':checked')){
             loginField.hide();
         }
 
         $(document).on('change', '#same_login_email', function() {
-            let loginField = $('#login_field');
+            var loginField = $('#login_field');
             if ($(this).is(':checked')) {
                 loginField.hide();
                 $('#login').val($('#mail').val());
@@ -204,7 +204,7 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php');
 			if ($(this).is(':checked')) {
 
                 // Select the div where the search results will show.
-                let ldapResult = $('#ldapresult');
+                var ldapResult = $('#ldapresult');
 
 				// If the LDAP registration option is selected, we need to modify the window with the LDAP registration interface.
 				$('#ldap-form').show();
@@ -215,7 +215,7 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php');
 				// The LDAP elements to dipslay and use for the user cards.
 				// Due to the fact that we need the translated text and we dont know what the info to display will be in advance.
 				// We have to create an object containing the translated value and the real value.
-				let ldapElements = [
+				var ldapElements = [
 				<?php
 					foreach (explode(',',$this->ldapElements) as $elt) {
 						echo '["'.$elt.'","'.JText::_(strtoupper($elt)).'"],';
@@ -248,7 +248,7 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php');
 									var otherElts = [];
 
 									// For each LDAP element defined by our param.
-									for (let i = 0; i < ldapElements.length; i++) {
+									for (var i = 0; i < ldapElements.length; i++) {
 										// Initialize the required objects as well as the other elements.
 										// The first 4 elements defined in the params are always required and in the exact order below.
 										if (i === 0) {
@@ -269,7 +269,7 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php');
 											lname.value = user[ldapElements[i][0]];
 											lname.label = ldapElements[i][1]
 										} else {
-											let elt = {};
+											var elt = {};
 
 											// If there is no value for the element then we should display --- instead of 'undefined'
 											if (typeof user[ldapElements[i][0]] == 'undefined') {
@@ -284,7 +284,7 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php');
 										}
 									}
 
-									let cardColor = '',
+									var cardColor = '',
                                         cardInfo = '',
                                         addUser = '';
 									if (user.exists) {
@@ -302,7 +302,7 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php');
                                         addUser = '<a class="create-user" href="#" >';
                                     }
 
-									let userCard = addUser+'<div class="media col-md-3 '+cardColor+'" id="ldap-user-'+username.value+'" style="margin:0 10px 10px 10px; height:200px;">'+
+									var userCard = addUser+'<div class="media col-md-3 '+cardColor+'" id="ldap-user-'+username.value+'" style="margin:0 10px 10px 10px; height:200px;">'+
 													'<div class="media-left" style="text-align:center; float:left;">'+
 														cardInfo+
 													'</div>'+
@@ -330,10 +330,10 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php');
 
 									e.preventDefault();
 									// Get user login name
-									let uid = $(this).find('.uid').text();
+									var uid = $(this).find('.uid').text();
 
 									// using the login name: find the user card
-									let userCard = $('#ldap-user-'+uid.replace( /(:|\.|\[|\]|,|=|@)/g, "\\$1" ));
+									var userCard = $('#ldap-user-'+uid.replace( /(:|\.|\[|\]|,|=|@)/g, "\\$1" ));
 
 									// The "create user" form is filled out using the values found in the user card.
 									// This is better than sending an Ajax because if the "create user" form is extended then we don't need to modify this code.
@@ -381,7 +381,7 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php');
 
 				$('#s').on('keyup', function(e) {
 					delay(function() {
-						let input = $('#s')[0];
+						var input = $('#s')[0];
 						if (input.value.length > 3) {
 							searchLDAP();
 						}
@@ -453,10 +453,10 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php');
             if(value == null){
                 value = document.getElementById('profiles').value;
             }
-            let main_profile_value = $('#profiles option[value="'+value+'"]').attr('pub');
-            let sub_profiles_values = getSelectValues(document.getElementById('oprofiles'));
-            let other_profiles_published = false;
-            let other_profiles_no_published = false;
+            var main_profile_value = $('#profiles option[value="'+value+'"]').attr('pub');
+            var sub_profiles_values = getSelectValues(document.getElementById('oprofiles'));
+            var other_profiles_published = false;
+            var other_profiles_no_published = false;
 
             sub_profiles_values.forEach((profile) => {
                 if($('#oprofiles option[value="'+profile+'"]')[0].attributes.pub.value == 1){

@@ -153,7 +153,6 @@ if (is_array($this->elements) && count($this->elements) > 0) {
 <script>
     function copyid() {
         /* Get the text field */
-        console.log(this);
         var copyText = document.getElementById("myInput");
 
         /* Select the text field */

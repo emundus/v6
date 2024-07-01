@@ -2384,10 +2384,20 @@ class EmundusHelperFiles
             $str = '<br><hr>';
 			$str .= '<p><em style="font-size: 14px">' . JText::_('COM_EMUNDUS_EVALUATION_EVALUATED_ON') . ' : ' . JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')) . ' - ' . $fnumInfo['name'] . '</em></p>';
             $str .= '<h2>' . JText::_('COM_EMUNDUS_EVALUATION_EVALUATOR') . ': ' . $evaluator_name . '</h2>';
-			$str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
 
-			foreach ($elements as $element)
-			{
+            $element_groups = [];
+            foreach ($elements as $element)
+            {
+                if (!in_array($element->group_id, $element_groups) && JText::_(trim($element->group_label)) !== 'Hidden group') {
+                    if(sizeof($element_groups) != 0) {
+                        $str .= '</table>';
+                    }
+
+                    $element_groups[] = $element->group_id;
+                    $str .= '<h3 class="group">' . JText::_(trim($element->group_label)) . '</h3>';
+                    $str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
+                }
+
 				if ($element->table_join == null)
 				{
 					$k = $element->tab_name . '___' . $element->element_name;
@@ -3729,6 +3739,17 @@ class EmundusHelperFiles
 
 							    $quick_search_where .= $this->writeQueryWithOperator($scope, $filter['value'], 'LIKE');
 						    }
+
+                            // if filter value is a concat of firstname and lastname
+                            // in this case, we split the value and search for each part
+                            $pattern_fullname = '/^([a-zA-Z]+) ([a-zA-Z]+)$/';
+                            if (preg_match($pattern_fullname, $filter['value'])) {
+                                $quick_search_where .= ' OR ';
+                                $quick_search_where .= $this->writeQueryWithOperator('CONCAT(eu.firstname, " ", eu.lastname)', $filter['value'], 'LIKE');
+
+                                $quick_search_where .= ' OR ';
+                                $quick_search_where .= $this->writeQueryWithOperator('CONCAT(eu.lastname, " ", eu.firstname)', $filter['value'], 'LIKE');
+                            }
 					    } else if (in_array($filter['scope'], $scopes)) {
 						    $at_least_one = true;
 						    if ($index > 0) {

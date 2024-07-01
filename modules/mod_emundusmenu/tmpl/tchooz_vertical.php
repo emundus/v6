@@ -155,6 +155,11 @@ defined('_JEXEC') or die;
     /*** END ***/
 
     /*** Back button ***/
+
+    .g-main-nav .g-standard {
+        position: static;
+    }
+
     .g-main-nav .g-standard .g-go-back{
         display: block;
         border-bottom: solid 1px #e0e0e5;
@@ -196,19 +201,6 @@ defined('_JEXEC') or die;
         padding: 15px;
         border-radius: 5px;
         background: var(--neutral-0);
-    }
-    .message-tooltip-block::after{
-        content: "";
-        position: absolute;
-        height: 0;
-        width: 0;
-        right: 100%;
-        top: 10px;
-        border: 10px solid transparent;
-        border-right-color: transparent;
-        border-right-style: solid;
-        border-right-width: 10px;
-        border-right: 10px solid var(--neutral-0);
     }
 
     .g-main-nav .g-standard .g-sublevel .g-menu-item a.g-menu-item-container:hover   {
@@ -489,7 +481,7 @@ defined('_JEXEC') or die;
     const originalMargin = parseInt(jQuery("[id^=tooltip-]:first").css('margin-top'),10);
 
     function enableTooltip(menu){
-        if(jQuery(".image-title").css("display") != 'none') {
+        if(jQuery(".grey-navbar-icons").css("opacity") != '0') {
             if(typeof jQuery("#sublevel_list_" + menu)[0] != 'undefined'){
                 jQuery("#tooltip-" + menu).css('margin-left', '200px');
                 jQuery("#tooltip-" + menu).css('display', 'block');
