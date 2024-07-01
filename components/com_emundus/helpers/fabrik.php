@@ -300,37 +300,38 @@ die("<script>
             {
                 $plugins = [
                     'curl_code' => [
-                        1 => '$student_id=\'{jos_emundus_final_grade___student_id}\';$student=JUser::getInstance($student_id);echo \'<h2>\'.$student->name.\'</h2>\';
-                                require_once (JPATH_ROOT.\'/components/com_emundus/helpers/access.php\');
-                                $app = JFactory::getApplication();
-                                $db = JFactory::getDBO();
-                                $user =  JFactory::getUser();
-                                $fnum = \'{jos_emundus_final_grade___fnum}\';
-                                $r = $app->input->getInt(\'r\', 0);
-                                $rowid = $app->input->getInt(\'rowid\', 0);
-                                $formid = $app->input->getInt(\'formid\', 39);
-                                //$val = $app->input->get(\'r\', 0, filter);
+                        0 => '$student_id=\'{jos_emundus_final_grade___student_id}\';
+                        $student=JUser::getInstance($student_id);
+                        echo \'<h2>\'.$student->name.\'</h2>\';
+                        require_once (JPATH_ROOT.\'/components/com_emundus/helpers/access.php\');
+                        $app = JFactory::getApplication();
+                        $db = JFactory::getDBO();
+                        $user =  JFactory::getUser();
+                        $fnum = \'{jos_emundus_final_grade___fnum}\';
+                        $r = $app->input->getInt(\'r\', 0);
+                        $rowid = $app->input->getInt(\'rowid\', 0);
+                        $formid = $app->input->getInt(\'formid\', 39);
                                 
-                                $r = JRequest::getVar(\'r\', 0, \'GET\', \'none\', 0);
-                                $rowid = JRequest::getVar(\'rowid\', 0, \'GET\', \'none\', 0);
+                        $r = JRequest::getVar(\'r\', 0, \'GET\', \'none\', 0);
+                        $rowid = JRequest::getVar(\'rowid\', 0, \'GET\', \'none\', 0);
                                 
-                                if (!EmundusHelperAccess::asAccessAction(29, \'u\', $user->id, $fnum)) { 
-                                  $url = \'index.php?option=com_fabrik&c=form&view=details&formid=\'.$formid.\'&tmpl=component&iframe=1&rowid=\'.$rowid.\'&r=1\';
-                                  if($r != 1){
-                                    $app->redirect($url);
-                                  }
-                                } 
+                        if (!EmundusHelperAccess::asAccessAction(29, \'u\', $user->id, $fnum)) { 
+                            $url = \'index.php?option=com_fabrik&c=form&view=details&formid=\'.$formid.\'&tmpl=component&iframe=1&rowid=\'.$rowid.\'&r=1\';
+                            if ($r != 1){
+                                $app->redirect($url);
+                            }
+                        } 
                                 
-                                $query = \"SELECT id FROM jos_emundus_final_grade WHERE fnum like \".$db->Quote($fnum);
-                                $db->setQuery($query);
+                        $query = "SELECT id FROM jos_emundus_final_grade WHERE fnum like ".$db->Quote($fnum);
+                        $db->setQuery($query);
                                 
-                                $id = $db->loadResult();
-                                if($id > 0 && $r != 1){
-                                  $url = \'index.php?option=com_fabrik&c=form&view=form&formid=\'.$formid.\'&tmpl=component&iframe=1&rowid=\'.$id.\'&r=1\';
-                                  $app->redirect($url);
-                                }',
-                        2 => "",
-                        3 => "echo '<script src=\"https://cdn.jsdelivr.net/npm/sweetalert2@8\"></script>';
+                        $id = $db->loadResult();
+                        if ($id > 0 && $r != 1) {
+                            $url = \'index.php?option=com_fabrik&c=form&view=form&formid=\'.$formid.\'&tmpl=component&iframe=1&rowid=\'.$id.\'&r=1\';
+                            $app->redirect($url);
+                        }',
+                        1 => "",
+                        2 => "echo '<script src=\"https://cdn.jsdelivr.net/npm/sweetalert2@8\"></script>';
                             echo '<script
                                         src=\"https://code.jquery.com/jquery-3.3.1.slim.js\"
                                         integrity=\"sha256-fNXJFIlca05BIO2Y5zh1xrShK3ME+/lYZ0j+ChxX2DA=\"
@@ -363,7 +364,7 @@ die("<script>
                                     })
                                   });
                                   </script>\");",
-                        4 =>        "echo '<script src=\"https://cdn.jsdelivr.net/npm/sweetalert2@8\"></script>';
+                        3 => "echo '<script src=\"https://cdn.jsdelivr.net/npm/sweetalert2@8\"></script>';
                             echo '<script
                                         src=\"https://code.jquery.com/jquery-3.3.1.slim.js\"
                                         integrity=\"sha256-fNXJFIlca05BIO2Y5zh1xrShK3ME+/lYZ0j+ChxX2DA=\"
@@ -389,23 +390,13 @@ die("<script>
 
                     ],
                     'only_process_curl' => [
-                        1 => "onBeforeLoad",
-                        2 => "onBeforeCalculations",
-                        3 => "onAfterProcess",
-                        4 => "onError"
+                        'onBeforeLoad',
+                        'onBeforeCalculations',
+                        'onAfterProcess',
+                        'onError'
                     ],
-                    'form_php_file' => [
-                        1 => '-1',
-                        2 => "emundus-final_grade.php",
-                        3 => "-1",
-                        4 => '-1'
-                    ],
-                    'form_php_require_once' => [
-                        1 => '0',
-                        2 => '0',
-                        3 => '0',
-                        4 => '0'
-                    ],
+                    'form_php_file' => ['-1',  'emundus-final_grade.php', '-1', '-1'],
+                    'form_php_require_once' => ['0', '0', '0', '0'],
                     'process-jplugins' => '2',
                     'plugins' => array('php', 'php', 'php', 'php'),
                     'plugin_state' => array('1', '1', '1', '1'),
