@@ -1178,9 +1178,8 @@ class EmundusModelForm extends JModelList {
                 $m_formbuilder->createElement('id', $group['group_id'],'internalid','id','',1,0);
                 $m_formbuilder->createElement('time_date',$group['group_id'],'date','time date','',1, 0);
                 $m_formbuilder->createElement('fnum',$group['group_id'],'field','fnum','{jos_emundus_final_grade___fnum}',1,0,1,1,0,44);
-                $m_formbuilder->createElement('user',$group['group_id'],'databasejoin','user','{$my->id}',1,0);
+                $m_formbuilder->createElement('user',$group['group_id'],'user','user','',1,0);
                 $m_formbuilder->createElement('student_id', $group['group_id'],'field','student_id','{jos_emundus_final_grade___student_id}',1,0);
-                $m_formbuilder->createElement('campaign_id', $group['group_id'],'databasejoin','Campagne','{jos_emundus_final_grade___campaign_id}',1,0);
             }
 
             $db = JFactory::getDbo();
@@ -2437,7 +2436,7 @@ class EmundusModelForm extends JModelList {
 		return $programs;
 	}
 
-	public function associateFabrikGroupsToProgram($form_id,$programs,$mode = 'eval')
+	public function associateFabrikGroupsToProgram($form_id, $programs, $mode = 'eval')
 	{
 		$associated = false;
 
@@ -2456,12 +2455,15 @@ class EmundusModelForm extends JModelList {
 
 				if (!empty($fabrik_groups))
 				{
+
 					switch ($mode) {
 						case 'decision':
 							$column = 'fabrik_decision_group_id';
+                            $form_column = 'decision_form';
 							break;
 						default:
 							$column = 'fabrik_group_id';
+                            $form_column = 'evaluation_form';
 							break;
 					}
 
@@ -2471,7 +2473,7 @@ class EmundusModelForm extends JModelList {
 						$query->clear()
 							->update($db->quoteName('#__emundus_setup_programmes'))
 							->set($db->quoteName($column) . ' = ' . $db->quote(implode(',', $fabrik_groups)))
-							->set($db->quoteName('evaluation_form') . ' = ' . $db->quote($form_id))
+							->set($db->quoteName($form_column) . ' = ' . $db->quote($form_id))
 							->where($db->quoteName('code') . ' LIKE ' . $db->quote($program));
 						$db->setQuery($query);
 						$associated = $db->execute();

@@ -1266,6 +1266,34 @@ class EmundusHelperEvents {
 				$db->execute();
 			}
 
+            $decision_form = $params['data']['jos_emundus_setup_programmes___decision_form_raw'];
+
+            if (is_array($decision_form)) {
+                $decision_form = $decision_form[0];
+            }
+
+            if (!empty($decision_form)) {
+                require_once (JPATH_SITE.'/components/com_emundus/models/form.php');
+                $m_form = new EmundusModelForm();
+
+                $programs = $m_form->getProgramsByForm($decision_form, 'decision');
+                $codes = array_map(function($program) {
+                    return $program['code'];
+                }, $programs);
+
+                $codes[] = $code;
+                $codes = array_unique($codes);
+
+                $m_form->associateFabrikGroupsToProgram($decision_form, $codes, 'decision');
+            } else {
+                $query->clear()
+                    ->update($db->quoteName('#__emundus_setup_programmes'))
+                    ->set($db->quoteName('fabrik_decision_group_id') . ' = ' . $db->quote(''))
+                    ->where($db->quoteName('code') . ' LIKE ' . $db->quote($code));
+                $db->setQuery($query);
+                $db->execute();
+            }
+
 			if(!empty($code))
 			{
 				$eMConfig            = JComponentHelper::getParams('com_emundus');
