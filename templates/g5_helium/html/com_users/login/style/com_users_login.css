@@ -401,7 +401,6 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
 @media screen and (min-width: 768px) and (max-width: 959px) {
 
     .background-shaped-top {
-        top: 174px;
         right: 106px;
     }
 
@@ -453,7 +452,6 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
     }
 
     .background-shaped-top {
-        top: 163px;
         right: 106px;
     }
 
@@ -475,8 +473,7 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
 @media all and (min-width: 1200px) and (max-width: 1650px) {
 
     .background-shaped-top {
-        top: 164px;
-        left: 75.5vw;
+        left: 76.7vw;
     }
 }
 
