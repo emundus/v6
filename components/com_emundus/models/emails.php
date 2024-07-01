@@ -1531,6 +1531,7 @@ class EmundusModelEmails extends JModelList {
         // log email to admin user if user_id_from is empty
         $row['user_id_from'] = !empty($row['user_id_from']) ? $row['user_id_from'] : 62;
         $row['email_cc'] = !empty($row['email_cc']) ? $row['email_cc'] : '';
+        $row['email_to'] = !empty($row['email_to']) ? $row['email_to'] : '';
 
         require_once(JPATH_SITE.'/components/com_emundus/helpers/date.php');
         $h_date = new EmundusHelperDate();
