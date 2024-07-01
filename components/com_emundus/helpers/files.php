@@ -3928,6 +3928,8 @@ class EmundusHelperFiles
                                         if (!empty($fnums_with_all_tags)) {
                                             $where['q'] .= $filter['operator'] === 'NOT IN' ? ' AND jecc.fnum NOT IN (' : ' AND jecc.fnum IN (';
                                             $where['q'] .= implode(',', $fnums_with_all_tags) . ')';
+                                        } else {
+                                            $where['q'] .= ' AND 1=2';
                                         }
                                     } else {
                                         if ($filter['operator'] === 'NOT IN') {
@@ -3967,18 +3969,19 @@ class EmundusHelperFiles
                                     }
 
                                     if ($filter['andorOperator'] === 'AND' && is_array($filter['value']) && sizeof($filter['value']) > 1) {
-                                        $where['q'] .= $filter['operator'] === 'NOT IN' ? ' AND (jecc.fnum NOT IN (' : ' AND (jecc.fnum IN (';
-
                                         $first = true;
+                                        $subquery = '';
                                         foreach ($filter['value'] as $value) {
                                             if ($first) {
                                                 $first = false;
                                             } else {
-                                                $where['q'] .= ' INTERSECT ';
+                                                $subquery .= ' INTERSECT ';
                                             }
 
-                                            $where['q'] .= '(SELECT jos_emundus_group_assoc.fnum
+                                            $subquery .= '(SELECT DISTINCT jos_emundus_group_assoc.fnum
 										        FROM jos_emundus_group_assoc
+										        LEFT JOIN jos_emundus_campaign_candidature as ecc on ecc.fnum = jos_emundus_group_assoc.fnum
+										        LEFT JOIN jos_emundus_setup_campaigns as esc on esc.id = ecc.campaign_id
 										        WHERE ' . $this->writeQueryWithOperator('jos_emundus_group_assoc.group_id', $value, 'IN') . '
 										        OR esc.training IN (
 									            SELECT jos_emundus_setup_groups_repeat_course.course
@@ -3986,7 +3989,15 @@ class EmundusHelperFiles
 									            WHERE ' . $this->writeQueryWithOperator('jos_emundus_setup_groups_repeat_course.parent_id', $value, 'IN') . '))';
                                         }
 
-                                        $where['q'] .= '))';
+                                        $db->setQuery($subquery);
+                                        $fnums_with_group_assocs = $db->loadColumn();
+
+                                        if (!empty($fnums_with_group_assocs)) {
+                                            $where['q'] .= $filter['operator'] === 'NOT IN' ? ' AND (jecc.fnum NOT IN (' : ' AND (jecc.fnum IN (';
+                                            $where['q'] .= implode(',', $fnums_with_group_assocs) . '))';
+                                        } else {
+                                            $where['q'] .= ' AND 1=2';
+                                        }
                                     } else {
                                         if ($filter['operator'] === 'NOT IN') {
                                             // not in necessits a different approach, because ther is a one to many relationship
@@ -4045,6 +4056,8 @@ class EmundusHelperFiles
                                         if (!empty($user_assoc_fnums)) {
                                             $where['q'] .= $filter['operator'] === 'NOT IN' ? ' AND jecc.fnum NOT IN (' : ' AND jecc.fnum IN (';
                                             $where['q'] .= implode(',', $user_assoc_fnums) . ')';
+                                        } else {
+                                            $where['q'] .= ' AND 1=2';
                                         }
                                     } else {
                                         if ($filter['operator'] === 'NOT IN') {
