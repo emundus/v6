@@ -523,6 +523,11 @@ div#frame.outline {
     transition: all 0.3s ease-in-out;
     max-height: 40px;
     left: 70px;
+
+    .g-content {
+      position: fixed;
+      top: 14px;
+    }
   }
 }
 
