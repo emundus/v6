@@ -4836,18 +4836,13 @@ class EmundusModelFiles extends JModelLegacy
     public function exportZip($fnums, $form_post = 1, $attachment = 1, $assessment = 1, $decision = 1, $admission = 1, $form_ids = null, $attachids = null, $options = null, $acl_override = false, $current_user = null) {
         $eMConfig = JComponentHelper::getParams('com_emundus');
 
-        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
-        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'export.php');
-        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+        require_once(JPATH_SITE. '/components/com_emundus/helpers/access.php');
+        require_once(JPATH_SITE. '/components/com_emundus/helpers/export.php');
+        require_once(JPATH_SITE. '/components/com_emundus/models/emails.php');
 
         $m_emails = new EmundusModelEmails;
 
         $zip = new ZipArchive();
-        if (count($fnums) > 1) {
-            if ($fnums[0] == 'em-check-all') {
-                unset($fnums[0]);
-            }
-        }
         $nom = date("Y-m-d").'_'.rand(1000,9999).'_x'.(count($fnums)).'.zip';
 
         $path = JPATH_SITE.DS.'tmp'.DS.$nom;
