@@ -489,6 +489,14 @@ a.em-blue-400-color:hover {
     display:flex;
     flex-direction:column;
     gap:var(--p-12);
+
+    #tile-hover-offset-procedure {
+        display: none;
+    }
+
+    #background-shapes {
+        display: none;
+    }
 }
 
 .mod_emundus_campaign__pinned_campaign{
