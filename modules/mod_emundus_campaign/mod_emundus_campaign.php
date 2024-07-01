@@ -134,36 +134,28 @@ if($user->guest || in_array($e_user->profile,$app_prof))
     } elseif (empty($order)) {
         $session->set('order_time', $mod_em_campaign_order_type);
     }
-    if (isset($group_by) && !empty($group_by))
-    {
+
+    if (!empty($group_by)) {
         $session->set('group_by', $group_by);
-    }
-    elseif (empty($group_by))
-    {
+    } else {
         $session->set('group_by', $mod_em_campaign_groupby);
     }
-    if (isset($codes) && !empty($codes))
-    {
+
+    if (!empty($codes)) {
         $session->set('code', $codes);
-    }
-    elseif (empty($codes))
-    {
+    } else {
         $session->clear('code');
     }
-    if (isset($categories_filt) && !empty($categories_filt))
-    {
+
+    if (!empty($categories_filt)) {
         $session->set('category', $categories_filt);
-    }
-    elseif (empty($categories_filt))
-    {
+    } else {
         $session->clear('category');
     }
-    if (isset($reseaux_filt) && !empty($reseaux_filt))
-    {
+
+    if (!empty($reseaux_filt)) {
         $session->set('reseau', $reseaux_filt);
-    }
-    elseif (empty($reseaux_filt))
-    {
+    } else {
         $session->clear('reseau');
     }
 
