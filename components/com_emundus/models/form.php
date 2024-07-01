@@ -1180,6 +1180,7 @@ class EmundusModelForm extends JModelList {
                 $m_formbuilder->createElement('fnum',$group['group_id'],'field','fnum','{jos_emundus_final_grade___fnum}',1,0,1,1,0,44);
                 $m_formbuilder->createElement('user',$group['group_id'],'user','user','',1,0);
                 $m_formbuilder->createElement('student_id', $group['group_id'],'field','student_id','{jos_emundus_final_grade___student_id}',1,0);
+                $m_formbuilder->createElement('final_grade', $group['group_id'],'databasejoin','DECISION','',1,0);
             }
 
             $db = JFactory::getDbo();

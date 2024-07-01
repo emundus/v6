@@ -17,7 +17,8 @@ $db = JFactory::getDBO();
 $jinput	= JFactory::getApplication()->input->post;
 
 $fnum = $jinput->get('jos_emundus_final_grade___fnum');
-$status = $jinput->get('jos_emundus_final_grade___final_grade')[0];
+$final_grade = $jinput->get('jos_emundus_final_grade___final_grade', []);
+$status = !empty($final_grade) ? $final_grade[0] : null;
 
 if (isset($status) && !empty($fnum)) {
 	require_once(JPATH_SITE.'/components/com_emundus/models/files.php');

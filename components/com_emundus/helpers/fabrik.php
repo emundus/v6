@@ -363,50 +363,24 @@ die("<script>
                                       }
                                     })
                                   });
-                                  </script>\");",
-                        3 => "echo '<script src=\"https://cdn.jsdelivr.net/npm/sweetalert2@8\"></script>';
-                            echo '<script
-                                        src=\"https://code.jquery.com/jquery-3.3.1.slim.js\"
-                                        integrity=\"sha256-fNXJFIlca05BIO2Y5zh1xrShK3ME+/lYZ0j+ChxX2DA=\"
-                                        crossorigin=\"anonymous\">
-                                  </script>';
-                                  
-                            echo '<script>window.parent.ScrollToTop();</script>';
-                            
-                            die(\"<script>
-                                  $(document).ready(function () {
-                                    Swal.fire({
-                                      position: 'top',
-                                      type: 'error',
-                                      title: '\".JText::_('COM_EMUNDUS_DECISION_ERROR').\"',
-                                      showConfirmButton: false,
-                                      timer: 1500,
-                                      onClose: () => {
-                                        history.go(-1);
-                                      }
-                                    })
-                                  });
-                        </script>\");"
-
+                                  </script>\");"
                     ],
                     'only_process_curl' => [
                         'onBeforeLoad',
                         'onBeforeCalculations',
-                        'onAfterProcess',
-                        'onError'
+                        'onAfterProcess'
                     ],
-                    'form_php_file' => ['-1',  'emundus-final_grade.php', '-1', '-1'],
-                    'form_php_require_once' => ['0', '0', '0', '0'],
+                    'form_php_file' => ['-1',  'emundus-final_grade.php', '-1'],
+                    'form_php_require_once' => ['0', '0', '0'],
                     'process-jplugins' => '2',
-                    'plugins' => array('php', 'php', 'php', 'php'),
-                    'plugin_state' => array('1', '1', '1', '1'),
-                    'plugin_locations' => array('front', 'both', 'both', 'both'),
-                    'plugin_events' => array('both', 'both', 'both', 'both'),
+                    'plugins' => array('php', 'php', 'php'),
+                    'plugin_state' => array('1', '1', '1'),
+                    'plugin_locations' => array('front', 'both', 'both'),
+                    'plugin_events' => array('both', 'both', 'both'),
                     'plugin_description' => [
                         'header + reload last record',
                         'final grade',
-                        'Sweet',
-                        'Error'
+                        'Sweet'
                     ],
                 ];
             } else {
