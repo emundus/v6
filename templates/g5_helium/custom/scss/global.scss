@@ -5994,6 +5994,7 @@ fieldset[disabled] .multiselect {
   border-bottom-right-radius: 5px;
   z-index: 50;
   -webkit-overflow-scrolling: touch;
+  box-shadow: 0 0 4px var(--neutral-500);
 }
 
 .multiselect__content {
