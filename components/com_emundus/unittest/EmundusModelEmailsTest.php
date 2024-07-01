@@ -209,7 +209,8 @@ class EmundusModelEmailsTest extends TestCase
 
 	public function testgetMessagesToFromUser()
 	{
-		$user_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$email_address = 'userunittest' . rand(0, 1000) . '@emundus.test.fr';
+		$user_id = $this->h_sample->createSampleUser(9, $email_address);
 		$program = $this->h_sample->createSampleProgram();
 		$campaign_id = $this->h_sample->createSampleCampaign($program);
 		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
@@ -225,6 +226,7 @@ class EmundusModelEmailsTest extends TestCase
 			'type'          => 1,
 			'email_id'      => 1,
 			'email_cc' => '',
+			'email_to' => $email_address,
 		];
 		$this->m_emails->logEmail($log,$fnum);
 

@@ -4337,7 +4337,9 @@ if(in_array($applicant,$exceptions)){
 						->where($db->quoteName('id') . ' = ' . $db->quote($registration_form->id));
 					$db->setQuery($query);
 					$db->execute();
-				}	
+				}
+
+                EmundusHelperUpdate::addColumn('jos_messages', 'email_to', 'TEXT');
 			}
 		}
 

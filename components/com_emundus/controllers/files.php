@@ -1185,20 +1185,20 @@ class EmundusControllerFiles extends JControllerLegacy
 	        $m_files  = new EmundusModelFiles();
 
 	        $fnums_post = $jinput->getVar('fnums', null);
-	        $fnums_array = ($fnums_post == 'all')? 'all' :(array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
+	        $fnums_array = ($fnums_post == 'all') ? 'all' : (array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
 
 	        if ($fnums_array == 'all') {
 		        $fnums = $m_files->getAllFnums();
 	        } else {
 		        $fnums = array();
-		        foreach ($fnums_array as $key => $value) {
+		        foreach ($fnums_array as $value) {
 			        $fnums[] = $value;
 		        }
 	        }
 
-	        $validFnums = array();
+	        $validFnums = [];
 	        foreach ($fnums as $fnum) {
-		        if (EmundusHelperAccess::asAccessAction(6, 'c', $this->_user->id, $fnum)) {
+		        if (is_numeric($fnum) && EmundusHelperAccess::asAccessAction(6, 'c', $this->_user->id, $fnum)) {
 			        $validFnums[] = $fnum;
 		        }
 	        }
