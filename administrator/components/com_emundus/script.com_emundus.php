@@ -4698,6 +4698,39 @@ if(in_array($applicant,$exceptions)){
                         }
                     }
                 }
+
+                // update emundus setup config
+                $query->clear()
+                    ->select('value')
+                    ->from('#__emundus_setup_config')
+                    ->where('namekey = ' . $db->quote('onboarding_lists'));
+
+                $db->setQuery($query);
+                $onboarding_lists = $db->loadResult();
+                $onboarding_lists = json_decode($onboarding_lists, true);
+
+                $found = false;
+                if (!empty($onboarding_lists['forms']['tabs'])) {
+                    foreach ($onboarding_lists['forms']['tabs'] as $tab) {
+                        if (!empty($tab['key']) && $tab['key'] == 'form_decisions') {
+                            $found = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (!$found) {
+                    $new_tab_form_decision = '{"title":"COM_EMUNDUS_FORM_MY_DECISION_FORMS","key":"form_decisions","controller":"form","getter":"getalldecisionforms","actions":[{"action":"createformdecision","label":"COM_EMUNDUS_ONBOARD_ADD_DECISION_FORM","controller":"form","name":"add"},{"action":"/index.php?option=com_emundus&view=form&layout=formbuilder&prid=%id%&mode=decision","label":"COM_EMUNDUS_ONBOARD_MODIFY","controller":"form","type":"redirect","name":"edit"}],"filters":[]}';
+                    $onboarding_lists['forms']['tabs'][] = json_decode($new_tab_form_decision, true);
+
+                    $query->clear()
+                        ->update('#__emundus_setup_config')
+                        ->set('value = ' . $db->quote(json_encode($onboarding_lists)))
+                        ->where('namekey = ' . $db->quote('onboarding_lists'));
+
+                    $db->setQuery($query);
+                    $db->execute();
+                }
             }
         }
 

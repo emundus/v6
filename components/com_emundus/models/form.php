@@ -1166,6 +1166,50 @@ class EmundusModelForm extends JModelList {
 		return $form_id;
 	}
 
+    public function createFormDecision() {
+        require_once (JPATH_ROOT . '/components/com_emundus/models/formbuilder.php');
+        $m_formbuilder = new EmundusModelFormbuilder();
+        $form_id = $m_formbuilder->createFabrikForm('DECISION', ['fr' => 'Nouveau formulaire de décision', 'en' => 'New decision form'], ['fr' => 'Introduction', 'en' => 'Evaluation'], 'decision');
+
+        if (!empty($form_id)) {
+            $group = $m_formbuilder->createGroup(array('fr' => 'Hidden group', 'en' => 'Hidden group'), $form_id, -1);
+            if (!empty($group)) {
+                // Create hidden group
+                $m_formbuilder->createElement('id', $group['group_id'],'internalid','id','',1,0);
+                $m_formbuilder->createElement('time_date',$group['group_id'],'date','time date','',1, 0);
+                $m_formbuilder->createElement('fnum',$group['group_id'],'field','fnum','{jos_emundus_final_grade___fnum}',1,0,1,1,0,44);
+                $m_formbuilder->createElement('user',$group['group_id'],'databasejoin','user','{$my->id}',1,0);
+                $m_formbuilder->createElement('student_id', $group['group_id'],'field','student_id','{jos_emundus_final_grade___student_id}',1,0);
+                $m_formbuilder->createElement('campaign_id', $group['group_id'],'databasejoin','Campagne','{jos_emundus_final_grade___campaign_id}',1,0);
+            }
+
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->clear()
+                ->select('*')
+                ->from($db->quoteName('#__fabrik_lists'))
+                ->where($db->quoteName('db_table_name') . ' LIKE ' . $db->quote('jos_emundus_final_grade'));
+
+            $db->setQuery($query);
+            $list = $db->loadAssoc();
+
+            if (!empty($list)) {
+                $list_id = $m_formbuilder->copyList($list, $form_id);
+
+                if (empty($list_id)) {
+                    JLog::add('component/com_emundus/models/form | Error when create a list for decision form, could not copy list based on jos_emundus_final_grade', JLog::WARNING, 'com_emundus.error');
+                }
+            } else {
+                JLog::add('component/com_emundus/models/form | Error when create a list for decision form, could not find list with jos_emundus_final_grade', JLog::WARNING, 'com_emundus.error');
+            }
+        } else {
+            JLog::add('component/com_emundus/models/form | Error when create a form for decision form', JLog::WARNING, 'com_emundus.error');
+        }
+
+        return $form_id;
+    }
+
     public function createMenuType($menutype, $title) {
         $menutype_table = JTableNested::getInstance('MenuType');
 
