@@ -1605,6 +1605,8 @@ form.fabrikForm .currencyElement select .chzn-single, form.fabrikForm .currencyE
           border-top-left-radius: 0 !important;
           border-bottom-left-radius: 0 !important;
           border-color: var(--em-form-bc);
+          background-image: none !important;
+          float: right;
         }
 form.fabrikForm .currencyElement select .chzn-single span,form.fabrikForm .currencyElement .chzn-container .chzn-single span{
             font-size: 16px;
@@ -1612,9 +1614,9 @@ form.fabrikForm .currencyElement select .chzn-single span,form.fabrikForm .curre
           }
 form.fabrikForm .currencyElement select .chzn-single div,form.fabrikForm .currencyElement .chzn-container .chzn-single div{
             height: auto;
-            width: 8px;
+            width: unset;
             position: static;
-            margin-right: 4px;
+            margin-top: -4px;
           }
 form.fabrikForm .currencyElement select .chzn-single div b,form.fabrikForm .currencyElement .chzn-container .chzn-single div b{
               border: solid var(--neutral-900);
@@ -1627,9 +1629,10 @@ form.fabrikForm .currencyElement select .chzn-single div b,form.fabrikForm .curr
               padding: 3px;
             }
 form.fabrikForm .currencyElement select .chzn-drop, form.fabrikForm .currencyElement .chzn-container .chzn-drop {
+          position: relative;
           width: -moz-max-content;
           width: max-content;
-          margin-top: 6px;
+          margin-top: var(--em-form-height);
         }
 form.fabrikForm .currencyElement select .chzn-drop .chzn-search,form.fabrikForm .currencyElement .chzn-container .chzn-drop .chzn-search{
             padding: 4px;

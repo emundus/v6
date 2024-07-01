@@ -37,7 +37,7 @@ $current_user = JFactory::getUser();
 
 <script>
     window.addEventListener('DOMContentLoaded', () => {
-        const loaders = document.getElementsByClassName('em-page-loader');
+        var loaders = document.getElementsByClassName('em-page-loader');
         for(loader of loaders) {
            loader.style.display = 'none';
         }
@@ -49,7 +49,7 @@ $current_user = JFactory::getUser();
     function activation() {
        document.getElementsByClassName('em-page-loader')[0].style.display = 'block';
        return new Promise(function(resolve, reject) {
-           let formData = new FormData();
+           var formData = new FormData();
            formData.append('email', document.getElementById('email').value);
            fetch(window.location.origin + '/index.php?option=com_emundus&controller=users&task=activation', {
                body: formData,

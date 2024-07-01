@@ -391,6 +391,7 @@ JText::script('COM_EMUNDUS_YOUR_FILE_HAS_BEEN_SENT');
 //Export ZIP
 JText::script('COM_EMUNDUS_EXPORTS_ZIP_GENERATION');
 JText::script('COM_EMUNDUS_EXPORTS_CREATE_ZIP');
+JText::script('COM_EMUNDUS_EXPORTS_CONCAT_ATTACHMENTS_WITH_FORMS');
 
 //WHO'S WHO
 JText::script('COM_EMUNDUS_TROMBI_GENERATE');
@@ -699,11 +700,7 @@ if(!in_array($name,['settings','campaigns','emails','form'])) {
     } else {
         $document->addScript('media/com_emundus/js/lib/tinymce.min.js');
     }
-    $document->addScript('media/com_emundus/lib/jquery-1.12.4.min.js');
-    $document->addScript('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
     $document->addScript('media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
-    //TODO : Stop use chosen replace by an other js native library
-    //$document->addScript('media/com_emundus/lib/chosen/chosen.jquery.min.js' );
     $document->addScript('media/jui/js/chosen.jquery.min.js');
     $document->addScript('media/com_emundus/js/em_files.js?' . $hash);
     $document->addScript('media/com_emundus/js/mixins/exports.js?' . $hash);

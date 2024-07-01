@@ -217,8 +217,8 @@
 <?php endif;?>
 
 <script type="text/javascript">
-	const fnum = "<?= $this->fnum?>";
-	const iconArray = [
+	var fnum = "<?= $this->fnum?>";
+	var iconArray = [
         {icon: "block", class: "em-red-500-color"},
         {icon: "check_box_outline_blank", class: ""},
         {icon: "check_box", class: "em-green-500-color"},
@@ -249,8 +249,8 @@
 			}
             // set inner text  of span icon refresh
 			$(this).children('span').text('refresh');
-			let type = $(this).parents('table').attr('id').split('-');
-			let accessId = $(this).attr('id');
+			var type = $(this).parents('table').attr('id').split('-');
+			var accessId = $(this).attr('id');
             $.ajax({
                 type:'post',
                 url:'/index.php?option=com_emundus&controller=application&task=updateaccess',
@@ -258,8 +258,8 @@
                 data:{access_id: $(this).attr('id'), fnum:fnum, state: state, type: type[0]},
                 success: function(result)
                 {
-                    const element = document.getElementById(accessId)
-                    const span = element.querySelector('span');
+                    var element = document.getElementById(accessId)
+                    var span = element.querySelector('span');
 
                     // remove all classes that are not material-icons-outlined
                     span.classList.forEach((className) => {
@@ -313,7 +313,7 @@
 		if(e.handle !== true)
 		{
 			e.handle = true;
-			let r = confirm("<?= JText::_("COM_EMUNDUS_ACCESS_ARE_YOU_SURE_YOU_WANT_TO_REMOVE_THIS_ACCESS")?>");
+			var r = confirm("<?= JText::_("COM_EMUNDUS_ACCESS_ARE_YOU_SURE_YOU_WANT_TO_REMOVE_THIS_ACCESS")?>");
 
             if(r) {
                 $.ajax({
@@ -323,7 +323,7 @@
                     success: function(result)
                     {
                         if(result.status) {
-                            const url = "index.php?option=com_emundus&view=application&format=raw&layout=share&fnum=<?= $this->fnum; ?>";
+                            var url = "index.php?option=com_emundus&view=application&format=raw&layout=share&fnum=<?= $this->fnum; ?>";
 
                             $.ajax({
                                 type: "get",
