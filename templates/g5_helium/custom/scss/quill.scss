@@ -18,7 +18,7 @@ div[itemprop="articleBody"], div[itemprop="blogPost"], .single-campaign, .mod_em
 }
 
 
-$selectors: "div[itemprop="articleBody"], div[itemprop="blogPost"], .ql-editor, .single-campaign, .mod_emundus_campaign__intro, .view-details .fabrikDetails, .em-container-mail-content.em-container-mail-content-body";
+$selectors: "div[itemprop="articleBody"], div[itemprop="blogPost"], .ql-editor, .single-campaign, .mod_emundus_campaign__intro, .view-details .fabrikDetails, .em-container-mail-content .em-container-mail-content-body .email-container";
 
 .ql-container {
   box-sizing: border-box;
