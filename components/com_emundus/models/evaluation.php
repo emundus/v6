@@ -2146,7 +2146,11 @@ class EmundusModelEvaluation extends JModelList {
                                         $fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, $groupParams->repeat_group_button == 1);
                                     } else if ($elt['plugin'] == 'date') {
                                         $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name'], $params->date_form_format);
-                                    } else if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown" || $elt['plugin'] == "radiobutton") {
+                                    }
+                                    else {
+                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
+                                    }
+                                    if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown" || $elt['plugin'] == "radiobutton") {
 
                                         foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
                                             if ($elt['plugin'] == "checkbox") {
