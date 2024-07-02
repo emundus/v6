@@ -280,6 +280,27 @@
 						<option value="1">JYES</option>
 					</field>
 
+					<field showon="mod_em_campaign_layout:tchooz_single_campaign" type="list" name="mod_em_campaign_go_back_link" label="MOD_EM_CAMPAIGN_GO_BACK_LINK" description="MOD_EM_CAMPAIGN_GO_BACK_LINK_DESC" default="1">
+						<option value="1">MOD_EM_CAMPAIGN_GO_BACK_LINK_PREVIOUS_PAGE</option>
+						<option value="2">MOD_EM_CAMPAIGN_GO_BACK_LINK_CAMPAIGNS_LIST</option>
+						<option value="3">MOD_EM_CAMPAIGN_GO_BACK_LINK_URL</option>
+					</field>
+
+					<field  showon="mod_em_campaign_go_back_link:2"
+							name="mod_em_campaign_go_back_campaigns_link"
+							type="sql"
+							label="MOD_EM_CAMPAIGN_GO_BACK_LINK_CAMPAIGNS_LIST_MENU"
+							query="select id,title from #__menu where published = 1"
+							key_field="id"
+							value_field="title"
+					/>
+
+					<field name="mod_em_campaign_go_back_external_url"
+						   showon="mod_em_campaign_go_back_link:3"
+						   type="text"
+						   label="MOD_EM_CAMPAIGN_GO_BACK_EXTERNAL_URL" description="MOD_EM_CAMPAIGN_GO_BACK_EXTERNAL_URL_DESC"
+					/>
+
 				</fieldset>
 
 			<fieldset name="other" label="Autres (Depreciated)">
