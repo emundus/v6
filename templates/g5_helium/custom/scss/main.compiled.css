@@ -37276,6 +37276,7 @@ button.swal2-cancel.goback-btn:hover,
         border: solid var(--em-alert-error-border-width) var(--em-alert-error-border-color);
         background-color: var(--em-alert-error-bgc);
         color: var(--em-alert-error-color);
+        margin-bottom: 28px;
     }
 .fabrikMainError .material-icons, .alert.alert-error .material-icons {
             color: var(--em-alert-error-icon-color);
