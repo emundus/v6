@@ -4668,6 +4668,32 @@ if(in_array($applicant,$exceptions)){
 			];
 			EmundusHelperUpdate::updateOverrideTag('JGLOBAL_AUTH_INVALID_PASS', $old_values, $new_values);
 			EmundusHelperUpdate::updateOverrideTag('JGLOBAL_AUTH_NO_USER', $old_values, $new_values);
+
+			EmundusHelperUpdate::installExtension('eMundus - Update profile', 'emundusupdateprofile','{"name":"eMundus - Update profile","type":"plugin","creationDate":"April 2024","author":"eMundus","copyright":"Copyright (C) 2024 eMundus.fr - All rights reserved.","authorEmail":"laura.grandin@emundus.fr","authorUrl":"www.emundus.fr","version":"2.0.0","description":"PLG_FORM_EMUNDUSUPDATEPROFILE_DESCRIPTION","group":"","filename":"emundusupdateprofile"}','plugin',1,'fabrik_form');
+
+			$query->clear()
+				->select('ff.id,ff.params')
+				->from($db->quoteName('#__emundus_setup_formlist','esf'))
+				->leftJoin($db->quoteName('#__fabrik_forms','ff').' ON '.$db->quoteName('ff.id').' = '.$db->quoteName('esf.form_id'))
+				->where($db->quoteName('esf.type') . ' = ' . $db->quote('profile'));
+			$db->setQuery($query);
+			$profile_form = $db->loadObject();
+
+			if(!empty($profile_form->id)) {
+				$params = json_decode($profile_form->params, true);
+				unset($params['form_php_file']);
+				unset($params['only_process_curl']);
+				unset($params['curl_code']);
+				$params['plugins'] = ['emundusupdateprofile'];
+				$params['emundusupdateprofile_field_alias'] = 'mon-profil';
+
+				$query->clear()
+					->update($db->quoteName('#__fabrik_forms'))
+					->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+					->where($db->quoteName('id') . ' = ' . $db->quote($profile_form->id));
+				$db->setQuery($query);
+				$db->execute();
+			}
 		}
 
 		return $succeed;
