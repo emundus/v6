@@ -966,6 +966,12 @@
     }
   }
 
+  .pull-right.em-repeat-table {
+    float: inherit;
+    display: flex;
+    justify-content: flex-end;
+  }
+
   /** BACKEND/VUE FORMS **/
   .com_emundus {
     /** INPUT **/

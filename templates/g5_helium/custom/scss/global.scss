@@ -4639,7 +4639,22 @@ screen and (max-height: 769px) {
     display: flex;
     flex-direction: row;
 
-    thead, tbody {
+    tbody {
+      width: auto;
+
+      tr {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+
+        input {
+          width: 100%;
+        }
+      }
+    }
+
+    thead {
       width: min-content;
 
       tr {
@@ -5479,6 +5494,7 @@ screen and (max-height: 769px) {
   .view-form .fabrikGroup .repeatGroupTable {
     display: flex;
     flex-direction: row;
+    justify-content: center;
 
     thead, tbody {
       width: 100%;
