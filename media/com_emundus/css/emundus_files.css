@@ -2837,6 +2837,20 @@ a.copy-0:focus {
 
 @media all and (min-width: 768px) and (max-width: 959px) {
 
+    /* FILES BOARD */
+    .files-board .h-full {
+        display: flex;
+        flex-direction: column;
+
+        .panel-body.em-containerFilter-body {
+            position: initial;
+        }
+        .col-md-3.side-panel {
+            position: initial;
+            height: auto !important;
+        }
+    }
+
     .g-back-office-emundus-tableau.files-board #g-main-mainbody .platform-content {
         padding: 0 !important;
     }
