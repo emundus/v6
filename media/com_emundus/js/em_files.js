@@ -2394,7 +2394,7 @@ $(document).ready(function() {
                                                                     $('#em-export-prg').append(html);// add option to list
                                                                 }
                                                                 $('#em-export-prg').val(code);
-                                                                $('#em-export-prg').trigger("chosen:updated");
+                                                                $('#em-export-prg').chosen('destroy').chosen({width: "100%"});
 
 
                                                                 getProgramCampaigns(code).then(function(result) {
@@ -2404,7 +2404,7 @@ $(document).ready(function() {
                                                                             $('#em-export-camp').append('<option value="'+camp+'">'+camplabel+'</option>');// add option to list
                                                                         }
                                                                         $('#em-export-camp').val(camp);
-                                                                        $('#em-export-camp').trigger("chosen:updated");
+                                                                        $('#em-export-camp').chosen('destroy').chosen({width: "100%"});
 
                                                                         $('#camp').show();
                                                                     }
@@ -2430,6 +2430,12 @@ $(document).ready(function() {
                                                                                 $('#th-adm').show();
                                                                                 $('#admelement').show();
                                                                             }
+
+                                                                            document.getElementById('list-element-export').style.display = 'block';
+                                                                            document.getElementById('oelts').style.display = 'block';
+                                                                            document.getElementById('methode').style.display = 'block';
+
+                                                                            document.getElementsByClassName('em-swal-confirm-button')[0].style.opacity = 1;
                                                                         }
                                                                     },
                                                                     error: function(jqXHR) {
