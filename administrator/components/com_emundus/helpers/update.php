@@ -3670,6 +3670,17 @@ class EmundusHelperUpdate
 		}
 		//
 
+		// Check if we have a favicon
+		$current_favicon = EmundusHelperUpdate::getYamlVariable('favicon', JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml');
+		$current_favicon = str_replace('gantry-media:/', 'images', $current_favicon);
+
+		if (!file_exists($current_favicon)) {
+			$current_favicon = 'gantry-media://custom/default_favicon.ico';
+
+			EmundusHelperUpdate::updateYamlVariable('favicon', $current_favicon, JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml');
+		}
+		//
+
 		return true;
 	}
 
