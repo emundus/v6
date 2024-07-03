@@ -1435,7 +1435,8 @@ function setProgram(progCode) {
  */
 async function countFilesBeforeAction(fnums, action, verb) {
     if (fnums !== 'all') {
-        return Object.keys(JSON.parse(fnums)).length;
+        let filterFnums = Object.values(JSON.parse(fnums)).filter(fnum => fnum !== "em-check-all");
+        return filterFnums.length;
     } else {
         let form = new FormData();
         form.append('fnums', fnums);
@@ -3152,7 +3153,7 @@ $(document).ready(function () {
                     break;
 
                 // Export PDF;
-                case 8 :
+                case 8:
                     title = 'COM_EMUNDUS_EXPORTS_CREATE_PDF';
                     swal_container_class = 'em-export'
                     swal_popup_class = 'em-w-100 em-h-100'
@@ -3953,9 +3954,7 @@ $(document).ready(function () {
                     break;
 
                 // Export to Aurion
-                case
-                33
-                :
+                case 33:
                     title = 'COM_EMUNDUS_AURION_EXPORT';
                     verb = 'c';
 
@@ -4057,16 +4056,12 @@ $(document).ready(function () {
                     break;
 
                 // Send an email
-                case
-                9
-                :
+                case 9:
                     multipleSteps = true;
                     break;
 
                 // Add comments
-                case
-                10
-                :
+                case 10:
                     title = 'COM_EMUNDUS_COMMENTS_ADD_COMMENT';
                     verb = 'c';
                     html = '<form>' +
@@ -4080,9 +4075,7 @@ $(document).ready(function () {
                     break;
 
                 // Define access on file(s)
-                case
-                11
-                :
+                case 11:
                     addLoader();
 
                     fnums = getUserCheckArray();
@@ -4113,9 +4106,7 @@ $(document).ready(function () {
                     break;
 
                 // Update status of file(s)
-                case
-                13
-                :
+                case 13:
                     addLoader();
 
                     nbFiles = await countFilesBeforeAction(checkInput, id, verb);
@@ -4146,9 +4137,7 @@ $(document).ready(function () {
                     break;
 
                 // Add/delete tags of file(s)
-                case
-                14
-                :
+                case 14:
                     addLoader();
 
                     title = 'COM_EMUNDUS_APPLICATION_ADD_TAGS';
@@ -4247,9 +4236,7 @@ $(document).ready(function () {
                     });
                     break;
 
-                case
-                27
-                :
+                case 27:
                     title = 'COM_EMUNDUS_ACCESS_LETTERS';
                     swal_confirm_button = 'GENERATE_DOCUMENT';
                     swal_popup_class = 'em-w-auto';
@@ -4276,9 +4263,7 @@ $(document).ready(function () {
                     break;
 
                 // Update publication of file(s)
-                case
-                28
-                :
+                case 28:
                     addLoader();
 
                     nbFiles = await countFilesBeforeAction(checkInput, id, verb);
@@ -4308,9 +4293,7 @@ $(document).ready(function () {
                     break;
 
                 // Trombinoscope (letter for a group of files)
-                case
-                31
-                :
+                case 31:
                     swal_popup_class = 'em-w-auto';
                     swal_confirm_button = 'COM_EMUNDUS_TROMBI_GENERATE';
                     title = 'COM_EMUNDUS_TROMBINOSCOPE';
@@ -4318,9 +4301,7 @@ $(document).ready(function () {
                     break;
 
                 // TODO: Synthesis (fast pdf generation from a model)
-                case
-                35
-                :
+                case 35:
                     /// first --> get fnums
 
                     $('.modal-body').append('<div id="chargement" style="padding:15px">' +
@@ -4367,9 +4348,7 @@ $(document).ready(function () {
                     })
 
                     break;
-                case
-                18
-                :
+                case 18:
                     fnums = getUserCheckArray();
 
                     swal_popup_class = 'em-w-auto';
