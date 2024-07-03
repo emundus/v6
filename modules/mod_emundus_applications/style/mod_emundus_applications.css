@@ -770,7 +770,7 @@ circle.circle {
     z-index: 2;
     width: 70%;
     height: 255px;
-    top: -14px;
+    top: -37px;
     right: -25px;
     pointer-events: none;
     transition: transform .3s;
@@ -884,7 +884,7 @@ circle.circle {
     }
 
     .mod_emundus_applications___content_app #background-shapes {
-        top: -38px;
+        top: -62px;
         right: -13px;
     }
 
