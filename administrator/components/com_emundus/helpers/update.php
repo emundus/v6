@@ -634,7 +634,8 @@ class EmundusHelperUpdate
 				->from($db->quoteName('#__falang_content'))
 				->where($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))
 				->andWhere($db->quoteName('reference_table') . ' = ' . $db->quote($reference_table))
-				->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote($reference_field));
+				->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote($reference_field))
+				->andWhere($db->quoteName('language_id') . ' = ' . $db->quote($lang_id));
 			$db->setQuery($query);
 			$translation_id = $db->loadResult();
 
@@ -3412,26 +3413,11 @@ class EmundusHelperUpdate
 		$db->setQuery($query);
 		$db->execute();
 
-		$query->clear()
-			->update($db->quoteName('#__falang_content'))
-			->set($db->quoteName('value') . ' = ' . $db->quote($back_button->content))
-			->where($db->quoteName('reference_id') . ' = ' . $db->quote($back_button->id))
-			->where($db->quoteName('reference_table') . ' = ' . $db->quote('modules'))
-			->where($db->quoteName('reference_field') . ' = ' . $db->quote('content'))
-			->where($db->quoteName('language_id') . ' = 2');
-		$db->setQuery($query);
-		$db->execute();
+		EmundusHelperUpdate::insertFalangTranslation(2, $back_button->id, 'modules', 'content', $back_button->content, true);
 
 		$back_button->content = str_replace('Retour à la page d\'accueil','Back to homepage',$back_button->content);
-		$query->clear()
-			->update($db->quoteName('#__falang_content'))
-			->set($db->quoteName('value') . ' = ' . $db->quote($back_button->content))
-			->where($db->quoteName('reference_id') . ' = ' . $db->quote($back_button->id))
-			->where($db->quoteName('reference_table') . ' = ' . $db->quote('modules'))
-			->where($db->quoteName('reference_field') . ' = ' . $db->quote('content'))
-			->where($db->quoteName('language_id') . ' = 1');
-		$db->setQuery($query);
-		$db->execute();
+
+		EmundusHelperUpdate::insertFalangTranslation(1, $back_button->id, 'modules', 'content', $back_button->content, true);
 		//
 
 		// Remove appli emundus yaml assets
