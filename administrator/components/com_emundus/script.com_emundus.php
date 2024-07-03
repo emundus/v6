@@ -4694,6 +4694,19 @@ if(in_array($applicant,$exceptions)){
 				$db->setQuery($query);
 				$db->execute();
 			}
+
+			$query->clear()
+				->select('id')
+				->from($db->quoteName('#__menu'))
+				->where($db->quoteName('link') . ' LIKE ' . $db->quote('index.php?option=com_emundus&view=users'))
+				->where($db->quoteName('menutype') . ' LIKE ' . $db->quote('coordinatormenu'))
+				->where($db->quoteName('type') . ' LIKE ' . $db->quote('component'));
+			$db->setQuery($query);
+			$users_menu = $db->loadResult();
+
+			if(!empty($users_menu)) {
+				EmundusHelperUpdate::insertFalangTranslation(1, $users_menu, 'menu', 'title', 'Users', true);
+			}
 		}
 
 		return $succeed;

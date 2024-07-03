@@ -929,6 +929,8 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 
 <script type="text/javascript">
+    var $ = jQuery.noConflict();
+
     window.addEventListener('DOMContentLoaded', (event) => {
         let selected_tab_session = sessionStorage.getItem('mod_emundus_applications___selected_tab');
         let selected_view = sessionStorage.getItem('mod_emundus_applications___selected_view');

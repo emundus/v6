@@ -9,6 +9,8 @@
  */
 
 // No direct access
+use Gotenberg\Gotenberg;
+use Gotenberg\Stream;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
