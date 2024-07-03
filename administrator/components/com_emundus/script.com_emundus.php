@@ -4667,6 +4667,7 @@ if(in_array($applicant,$exceptions)){
 				'en-GB' => 'This email address/password combination is incorrect'
 			];
 			EmundusHelperUpdate::updateOverrideTag('JGLOBAL_AUTH_INVALID_PASS', $old_values, $new_values);
+			EmundusHelperUpdate::updateOverrideTag('JGLOBAL_AUTH_NO_USER', $old_values, $new_values);
 		}
 
 		return $succeed;
