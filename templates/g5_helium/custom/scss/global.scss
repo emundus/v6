@@ -3191,6 +3191,10 @@ ul.unstyled.em-linkForgot li a {
   }
 }
 
+#g-main-mainbody #application-modal #modal-applicationform .em-flex-row.em-flex-center.em-gap-16.em-border-bottom-neutral-300.sticky-tab {
+  z-index: 10;
+}
+
 .files-board.com_emundus, .view-list.com_fabrik {
   *:not(.material-icons):not(.material-icons-outlined):not(.glyphicon):not(.fas):not(i.icon):not(i.mce-ico) {
     font-family: var(--em-coordinator-font);
