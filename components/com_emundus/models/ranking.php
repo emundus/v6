@@ -1212,7 +1212,6 @@ class EmundusModelRanking extends JModelList
                     ->select($this->db->quoteName('id') . ', ' . $this->db->quoteName('rank') . ', ' . $this->db->quoteName('locked'))
                     ->from($this->db->quoteName('#__emundus_ranking'))
                     ->where($this->db->quoteName('ccid') . ' = ' . $this->db->quote($id))
-                    ->andWhere($this->db->quoteName('user_id') . ' = ' . $this->db->quote($user_id))
                     ->andWhere($this->db->quoteName('hierarchy_id') . ' = ' . $this->db->quote($hierarchy_id));
 
                 if (!empty($package_id)) {
