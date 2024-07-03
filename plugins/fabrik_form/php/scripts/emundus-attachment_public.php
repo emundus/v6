@@ -112,7 +112,7 @@ try {
 	$db->setQuery($query);
 	$upload = $db->loadObject();
 
-	if (!empty($upload->id) == 0) {
+	if (empty($upload)) {
 		JLog::add("PLUGIN emundus-attachment_public [".$key_id."]: ".Text::_("ERROR_FILE_NOT_FOUND"), JLog::ERROR, 'com_emundus');
 		die(Text::_("ERROR_FILE_NOT_FOUND"));
 	}

@@ -3737,32 +3737,34 @@ class EmundusHelperUpdate
 		$db->setQuery($query);
 		$menutypes = $db->loadColumn();
 
-		foreach ($menutypes as $key => $menutype) {
-			$menutypes[$key] = $db->quote($menutype);
-		}
+        if (!empty($menutypes)) {
+            foreach ($menutypes as $key => $menutype) {
+                $menutypes[$key] = $db->quote($menutype);
+            }
 
-		$query->clear()
-			->select('id,params')
-			->from($db->quoteName('#__menu'))
-			->where($db->quoteName('menutype') . ' IN (' . implode(',',$menutypes) . ')')
-			->where($db->quoteName('link') . ' LIKE ' . $db->quote('index.php?option=com_fabrik&view=form&formid=%'));
-		$db->setQuery($query);
-		$menus = $db->loadObjectList();
+            $query->clear()
+                ->select('id,params')
+                ->from($db->quoteName('#__menu'))
+                ->where($db->quoteName('menutype') . ' IN (' . implode(',',$menutypes) . ')')
+                ->where($db->quoteName('link') . ' LIKE ' . $db->quote('index.php?option=com_fabrik&view=form&formid=%'));
+            $db->setQuery($query);
+            $menus = $db->loadObjectList();
 
-		foreach ($menus as $menu) {
-			$params = json_decode($menu->params, true);
+            foreach ($menus as $menu) {
+                $params = json_decode($menu->params, true);
 
-			if($params['pageclass_sfx'] == '') {
-				$params['pageclass_sfx'] = 'applicant-form';
+                if($params['pageclass_sfx'] == '') {
+                    $params['pageclass_sfx'] = 'applicant-form';
 
-				$query->clear()
-					->update($db->quoteName('#__menu'))
-					->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
-					->where($db->quoteName('id') . ' = ' . $db->quote($menu->id));
-				$db->setQuery($query);
-				$db->execute();
-			}
-		}
+                    $query->clear()
+                        ->update($db->quoteName('#__menu'))
+                        ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+                        ->where($db->quoteName('id') . ' = ' . $db->quote($menu->id));
+                    $db->setQuery($query);
+                    $db->execute();
+                }
+            }
+        }
 
 		return true;
 	}

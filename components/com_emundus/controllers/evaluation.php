@@ -638,8 +638,9 @@ class EmundusControllerEvaluation extends JControllerLegacy
 									    'user_id_from' => $from_id,
 									    'user_id_to' => $file['applicant_id'],
 									    'subject' => $subject,
-									    'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$to.'</i><br>'.$body,
-									    'email_id' => $trigger_email_id
+									    'message' => $body,
+									    'email_id' => $trigger_email_id,
+                                        'email_to' => $file['email']
 								    );
 								    $m_email->logEmail($message, $file['fnum']);
 								    $msg .= JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT').' : '.$to.'<br>';
@@ -696,8 +697,9 @@ class EmundusControllerEvaluation extends JControllerLegacy
 								    'user_id_from' => $from_id,
 								    'user_id_to' => $recipient['id'],
 								    'subject' => $subject,
-								    'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$to.'</i><br>'.$body,
-								    'email_id' => $trigger_email_id
+								    'message' => $body,
+								    'email_id' => $trigger_email_id,
+                                    'email_to' => $recipient['email']
 							    ];
 							    $m_email->logEmail($message, $fnum['fnum']);
 							    $msg .= JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT').' : '.$to.'<br>';
