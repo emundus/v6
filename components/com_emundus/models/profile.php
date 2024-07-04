@@ -242,6 +242,37 @@ class EmundusModelProfile extends JModelList {
         return $profile;
     }
 
+    /**
+     * @param $form_id
+     * @param $fnum
+     * @return int
+     */
+    public function getMenuItemForFormId($form_id, $fnum) {
+        $menu_id = 0;
+
+        if (!empty($form_id) && !empty($fnum)) {
+            $profile = $this->getProfileByFnum($fnum);
+
+            if (!empty($profile)) {
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+
+                $query->select('id')
+                    ->from('#__menu')
+                    ->where('menutype like ' . $db->quote('menu-profile' .  $profile))
+                    ->andwhere('link LIKE "%view=form&formid=' . $form_id .  '%"');
+                try {
+                    $db->setQuery($query);
+                    $menu_id = $db->loadResult();
+                } catch (Exception $e) {
+
+                }
+            }
+        }
+
+        return $menu_id;
+    }
+
     function getCurrentProfile($aid) {
         $query = 'SELECT eu.*,  esp.*
 						FROM #__emundus_users AS eu
