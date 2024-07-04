@@ -203,12 +203,29 @@ $user = $this->userid;
 </script>
 
 <style>
+    #aside-comment-section #comments {
+        height: calc(100vh - 112px);
+    }
+
+    #aside-comment-section #comments-list-container {
+        max-height: 50vh;
+        overflow-y: auto;
+    }
+
     #aside-comment-section {
         top: 112px;
         height: calc(100vh - 112px);
         transition: all .3s;
         width: 425px;
         border-left: 4px solid var(--em-profile-color);
+
+        #filter-comments {
+            flex-direction: column;
+
+            select {
+                margin-top: var(--em-spacing-2);
+            }
+        }
 
         .close-comment, .open-comment {
             left: -52px;
