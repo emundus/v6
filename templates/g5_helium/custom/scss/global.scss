@@ -3107,6 +3107,10 @@ ul.unstyled.em-linkForgot li a {
 
 .g-back-office-emundus-tableau.indicateurs-page #g-container-main .g-container {
   left: 30px;
+
+  &.g-flushed {
+    padding: inherit !important;
+  }
 }
 
 .g-back-office-emundus-tableau.indicateurs-page #g-container-main {
