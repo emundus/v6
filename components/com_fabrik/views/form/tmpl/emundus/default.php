@@ -257,6 +257,8 @@ if ($this->display_comments) {
     JText::script('COM_EMUNDUS_COMMENTS_CLOSED_THREAD');
     JText::script('COM_EMUNDUS_COMMENTS_EDITED');
     JText::script('COM_EMUNDUS_COMMENTS_NO_COMMENTS');
+    JText::script('COM_EMUNDUS_COMMENTS_ADD_GLOBAL_COMMENT');
+    JText::script('COM_EMUNDUS_COMMENTS_VISIBLE_ALL_OPT');
 
     require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
     $ccid = EmundusHelperFiles::getIdFromFnum($fnum);
