@@ -4783,6 +4783,17 @@ if(value == 1) {
 			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_ERROR_404_BUTTON', 'Retour à la page d\'accueil');
 			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_ERROR_404_BUTTON', 'Back to home page', 'override', null, null, null, 'en-GB');
 
+			$error_particle = file_get_contents(JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/error.yaml');
+			if($error_particle == 'null') {
+				$error_particle = "enabled: '1'
+title: 'Oups !'
+image: /media/com_emundus/images/tchoozy/complex-illustrations/page-not-found.svg
+description: COM_EMUNDUS_ERROR_404
+css:
+  class: ''
+button: COM_EMUNDUS_ERROR_404_BUTTON";
+				file_put_contents(JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/error.yaml', $error_particle);
+			}
 			EmundusHelperUpdate::updateYamlVariable('description','COM_EMUNDUS_ERROR_404',JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/error.yaml');
 			EmundusHelperUpdate::updateYamlVariable('button','COM_EMUNDUS_ERROR_404_BUTTON',JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/error.yaml');
 
