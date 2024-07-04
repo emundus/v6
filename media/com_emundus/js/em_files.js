@@ -2290,7 +2290,7 @@ $(document).ready(function () {
                                 // '<label for="upper-case" class="em-mb-0-important">'+Joomla.JText._('COM_EMUNDUS_TO_UPPER_CASE')+'</label></div>' +
                                 // TODO: use GROUP CONCAT method by default, change wording and order of methods
 
-                                let defaultMethod = 0;
+                                let defaultMethod = 2;
                                 if ($('#view').val() == 'evaluation') {
                                     defaultMethod = 1;
                                 }
