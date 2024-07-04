@@ -6326,7 +6326,7 @@ function sendMail(data) {
                         var sent_to = '<p>' + Joomla.JText._('SEND_TO') + '</p><ul class="list-group" id="em-mails-sent">';
                         sent_to += '<li class="list-group-item alert-success">' + result.sent[0] + '</li>';
                         result.sent.shift();
-                        sent_to += '<li class="list-group-item alert-success" title="'+result.sent.join(', ')+'">+' + (result.sent.length) + '</li>';
+                        sent_to += '<li class="list-group-item alert-success" sended="'+result.sent.join(', ')+'">+' + (result.sent.length) + '</li>';
                     }
 
                     addLoader();

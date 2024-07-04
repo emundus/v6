@@ -2033,11 +2033,11 @@ label[for="em-file_to_upload"]:hover {
     border-radius: var(--em-coordinator-br);
 }
 
-#em-mails-sent .list-group-item[title]:hover::after {
-    content: attr(title);
+#em-mails-sent .list-group-item[sended]:hover::after {
+    content: attr(sended);
     position: absolute;
     top: 45px;
-    left: -100%;
+    right: 0;
     border-radius: var(--em-coordinator-br);
     background: white;
     padding: 6px;
