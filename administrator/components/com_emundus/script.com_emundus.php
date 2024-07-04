@@ -4832,7 +4832,7 @@ if(value == 1) {
 					$query->clear()
 						->update($db->quoteName('#__fabrik_forms'))
 						->set($db->quoteName('submit_button_label') . ' = ' . $db->quote('COM_EMUNDUS_SEND_REFERENCE_REQUEST'))
-						->where($db->quoteName('id') . ' = ' . $reference_form);
+						->where($db->quoteName('id') . ' = ' . $reference_form->id);
 					$db->setQuery($query);
 					$db->execute();
 				}
