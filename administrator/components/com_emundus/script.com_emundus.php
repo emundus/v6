@@ -4811,6 +4811,91 @@ if(value == 1) {
 			EmundusHelperUpdate::addYamlVariable('priority', '0', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
 			EmundusHelperUpdate::addYamlVariable('name', 'Menu', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
 			//
+
+			// References translations
+			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_SEND_REFERENCE_REQUEST', 'Envoyer la demande de référence');
+			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_SEND_REFERENCE_REQUEST', 'Send the request for individual assessment', 'override', null, null, null, 'en-GB');
+
+			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_EMAIL_REFERENCE_TIP', 'La lettre de recommandation sera envoyée à l\'adresse suivante');
+			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_EMAIL_REFERENCE_TIP', 'The recommendation letter will be sent to this address', 'override', null, null, null, 'en-GB');
+
+			$query->clear()
+				->select('ff.id,ff.submit_button_label')
+				->from($db->quoteName('#__fabrik_lists','fl'))
+				->leftJoin($db->quoteName('#__fabrik_forms','ff').' ON '.$db->quoteName('ff.id').' = '.$db->quoteName('fl.form_id'))
+				->where($db->quoteName('fl.db_table_name') . ' LIKE ' . $db->quote('jos_emundus_references'));
+			$db->setQuery($query);
+			$reference_forms = $db->loadObjectList();
+
+			foreach ($reference_forms as $reference_form) {
+				if($reference_form->submit_button_label == 'Send the request for individual assessment') {
+					$query->clear()
+						->update($db->quoteName('#__fabrik_forms'))
+						->set($db->quoteName('submit_button_label') . ' = ' . $db->quote('COM_EMUNDUS_SEND_REFERENCE_REQUEST'))
+						->where($db->quoteName('id') . ' = ' . $reference_form);
+					$db->setQuery($query);
+					$db->execute();
+				}
+
+				$query->clear()
+					->select('fe.id,fe.params')
+					->from($db->quoteName('#__fabrik_formgroup','ffg'))
+					->leftJoin($db->quoteName('#__fabrik_elements','fe').' ON '.$db->quoteName('fe.group_id').' = '.$db->quoteName('ffg.group_id'))
+					->where($db->quoteName('ffg.form_id') . ' = ' . $reference_form->id)
+					->where($db->quoteName('fe.name') . ' LIKE ' . $db->quote('Email_1'));
+				$db->setQuery($query);
+				$email_1 = $db->loadObject();
+
+				if(!empty($email_1->id)) {
+					$params = json_decode($email_1->params,true);
+					if($params['rollover'] == 'The recommendation letter will be sent to this address.') {
+						$params['rollover'] = 'COM_EMUNDUS_EMAIL_REFERENCE_TIP';
+
+						$query->clear()
+							->update($db->quoteName('#__fabrik_elements'))
+							->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+							->where($db->quoteName('id') . ' = ' . $email_1->id);
+						$db->setQuery($query);
+						$db->execute();
+					}
+				}
+			}
+
+			$query->clear()
+				->select('fe.id,fe.label,fe.params')
+				->from($db->quoteName('#__fabrik_formgroup','ffg'))
+				->leftJoin($db->quoteName('#__fabrik_elements','fe').' ON '.$db->quoteName('fe.group_id').' = '.$db->quoteName('ffg.group_id'))
+				->where($db->quoteName('ffg.form_id') . ' = 68')
+				->where($db->quoteName('fe.name') . ' LIKE ' . $db->quote('filename'));
+			$db->setQuery($query);
+			$fileupload_referent = $db->loadObject();
+
+			if(!empty($fileupload_referent->id)) {
+				$query->clear();
+				$params = json_decode($fileupload_referent->params,true);
+				if(empty($params['rollover'])) {
+					$params['rollover'] = '.pdf';
+					$query->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)));
+				}
+				if($fileupload_referent->label == 'FILE (.pdf)') {
+					$query->set($db->quoteName('label') . ' = ' . $db->quote('FILE'));
+				}
+				if(empty($params['rollover']) || $fileupload_referent->label == 'FILE (.pdf)') {
+					$query->update($db->quoteName('#__fabrik_elements'))
+						->where($db->quoteName('id') . ' = ' . $fileupload_referent->id);
+					$db->setQuery($query);
+					$db->execute();
+				}
+			}
+
+			$query->clear()
+				->update($db->quoteName('#__fabrik_forms'))
+				->set($db->quoteName('submit_button_label') . ' = ' . $db->quote('SUBMIT'))
+				->where($db->quoteName('id') . ' = 68')
+				->where($db->quoteName('submit_button_label') . ' = ' . $db->quote('Upload'));
+			$db->setQuery($query);
+			$db->execute();
+			//
 		}
 
 		return $succeed;

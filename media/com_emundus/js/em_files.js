@@ -6317,10 +6317,17 @@ function sendMail(data) {
 
             if (result.status) {
                 if (result.sent.length > 0) {
-                    var sent_to = '<p>' + Joomla.JText._('SEND_TO') + '</p><ul class="list-group" id="em-mails-sent">';
-                    result.sent.forEach(function (element) {
-                        sent_to += '<li class="list-group-item alert-success">' + element + '</li>';
-                    });
+                    if(result.sent.length < 3) {
+                        var sent_to = '<p>' + Joomla.JText._('SEND_TO') + '</p><ul class="list-group" id="em-mails-sent">';
+                        result.sent.forEach(function (element) {
+                            sent_to += '<li class="list-group-item alert-success">' + element + '</li>';
+                        });
+                    } else {
+                        var sent_to = '<p>' + Joomla.JText._('SEND_TO') + '</p><ul class="list-group" id="em-mails-sent">';
+                        sent_to += '<li class="list-group-item alert-success">' + result.sent[0] + '</li>';
+                        result.sent.shift();
+                        sent_to += '<li class="list-group-item alert-success" title="'+result.sent.join(', ')+'">+' + (result.sent.length) + '</li>';
+                    }
 
                     addLoader();
 
