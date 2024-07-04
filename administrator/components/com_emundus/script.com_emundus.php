@@ -4715,6 +4715,32 @@ if(in_array($applicant,$exceptions)){
 
 			EmundusHelperUpdate::updateYamlVariable('description','COM_EMUNDUS_ERROR_404',JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/error.yaml');
 			EmundusHelperUpdate::updateYamlVariable('button','COM_EMUNDUS_ERROR_404_BUTTON',JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/error.yaml');
+
+			// Fix 404 styles
+			EmundusHelperUpdate::addYamlVariable('location', 'gantry-assets://custom/scss/custom.scss', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css', true, true);
+			EmundusHelperUpdate::addYamlVariable('inline', '', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+			EmundusHelperUpdate::addYamlVariable('extra', '{  }', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+			EmundusHelperUpdate::addYamlVariable('priority', '0', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+			EmundusHelperUpdate::addYamlVariable('name', 'Custom', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+
+			EmundusHelperUpdate::addYamlVariable('location', 'modules/mod_falang/style/mod_falang_emundus.css', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css', true, true);
+			EmundusHelperUpdate::addYamlVariable('inline', '', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+			EmundusHelperUpdate::addYamlVariable('extra', '{  }', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+			EmundusHelperUpdate::addYamlVariable('priority', '0', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+			EmundusHelperUpdate::addYamlVariable('name', 'Falang', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+
+			EmundusHelperUpdate::addYamlVariable('location', 'modules/mod_emundus_footer/css/mod_emundus_footer.css', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css', true, true);
+			EmundusHelperUpdate::addYamlVariable('inline', '', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+			EmundusHelperUpdate::addYamlVariable('extra', '{  }', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+			EmundusHelperUpdate::addYamlVariable('priority', '0', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+			EmundusHelperUpdate::addYamlVariable('name', 'Footer', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+
+			EmundusHelperUpdate::addYamlVariable('location', 'modules/mod_emundusmenu/style/mod_emundusmenu.css', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css', true, true);
+			EmundusHelperUpdate::addYamlVariable('inline', '', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+			EmundusHelperUpdate::addYamlVariable('extra', '{  }', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+			EmundusHelperUpdate::addYamlVariable('priority', '0', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+			EmundusHelperUpdate::addYamlVariable('name', 'Menu', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+			//
 		}
 
 		return $succeed;
