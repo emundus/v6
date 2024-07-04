@@ -3681,6 +3681,27 @@ class EmundusHelperUpdate
 		}
 		//
 
+		// Check that registration form is on auto-login
+		$query->clear()
+			->select('id,params')
+			->from($db->quoteName('#__fabrik_forms'))
+			->where($db->quoteName('label') . ' LIKE ' . $db->quote('FORM_REGISTRATION'));
+		$db->setQuery($query);
+		$registration_form = $db->loadObject();
+
+		if (!empty($registration_form)) {
+			$params                     = json_decode($registration_form->params, true);
+			$params['juser_auto_login'] = ["1"];
+
+			$query->clear()
+				->update($db->quoteName('#__fabrik_forms'))
+				->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+				->where($db->quoteName('id') . ' = ' . $db->quote($registration_form->id));
+			$db->setQuery($query);
+			$db->execute();
+		}
+		//
+
 		return true;
 	}
 
