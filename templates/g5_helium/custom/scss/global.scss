@@ -3726,6 +3726,21 @@ div#em-appli-block {
     color: var(--night-blue);
   }
 
+  .em-container-tag-body .list-group-item div div {
+    width: 100%;
+
+    .em-tags-action .sticker {
+      width: fit-content;
+      max-width: 100%;
+
+      span:nth-child(2) {
+        padding-right: 10px;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+    }
+  }
+
   .edit-comment-container button.delete-comment,
   .em-container-tag-body button.btn-danger[title="Supprimer"],
   .em-container-tag-body button.btn-danger[title="Delete"] {
