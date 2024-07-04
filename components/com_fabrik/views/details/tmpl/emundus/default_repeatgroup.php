@@ -55,7 +55,7 @@ if (!$group->newGroup) :
 				?>
 			</div><!-- end fabrikSubGroupElements -->
 		</div><!-- end fabrikSubGroup -->
-    <?php
+		<?php
         $i++;
-	endforeach;
+    endforeach;
 endif;

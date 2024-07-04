@@ -1,6 +1,6 @@
 import { mount, createLocalVue } from '@vue/test-utils';
 import '../../../mocks/matchMedia.mock';
-import EditorQuill from '../../../../src/components/EditorQuill';
+import EditorQuill from '../../../../src/components/editorQuill';
 import ModalAddDocuments from '../../../../src/components/AdvancedModals/ModalAddDocuments';
 import translate from '../../../mocks/mixins/translate';
 import VModal from 'vue-js-modal';

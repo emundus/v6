@@ -148,7 +148,7 @@ import axios from "axios";
 const qs = require("qs");
 import Translation from "../translation";
 import Swal from "sweetalert2";
-import EditorQuill from "../components/editorQuill";
+import EditorQuill from "@/components/editorQuill";
 
 export default {
   name: "modalAddDocuments",

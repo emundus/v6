@@ -144,7 +144,8 @@
     <p v-else id="empty-comments" class="text-center m-4">{{ translate('COM_EMUNDUS_COMMENTS_NO_COMMENTS') }}</p>
 
     <div id="add-comment-container">
-      <textarea @keyup.enter="addComment" v-model="newCommentText" class="p-2"
+      <label for="new-comment">{{ translate('COM_EMUNDUS_COMMENTS_ADD_GLOBAL_COMMENT') }}</label>
+      <textarea id="new-comment" @keyup.enter="addComment" v-model="newCommentText" class="p-2"
                 :placeholder="translate('COM_EMUNDUS_COMMENTS_ADD_COMMENT_PLACEHOLDER')"></textarea>
       <div v-if="!isApplicant" class="flex flex-row items-center">
         <div class="flex flex-row items-center mr-2">
