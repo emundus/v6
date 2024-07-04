@@ -6276,6 +6276,7 @@ class EmundusModelApplication extends JModelList
         }
 
         if (!empty($emails)) {
+            JPluginHelper::importPlugin('emundus');
             $query = $this->_db->getQuery(true);
 
             $query->select('fnum,applicant_id,campaign_id')
