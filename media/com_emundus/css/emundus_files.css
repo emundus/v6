@@ -2838,12 +2838,14 @@ a.copy-0:focus {
 @media all and (min-width: 768px) and (max-width: 959px) {
 
     /* FILES BOARD */
-    .files-board .h-full {
+    .files-board .span12 {
         display: flex;
         flex-direction: column;
 
         .panel-body.em-containerFilter-body {
             position: initial;
+            min-height: auto;
+            height: auto;
         }
         .col-md-3.side-panel {
             position: initial;
