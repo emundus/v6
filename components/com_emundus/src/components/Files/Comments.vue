@@ -454,6 +454,11 @@ export default {
               window.open(`/index.php?option=com_fabrik&view=form&formid=` + form_id + `&usekey=fnum&rowid=` + this.fnum + '&r=2#' + comment.target_type + '-' + comment.target_id, '_blank');
             } else {
 
+              commentsService.getMenuItemForFormId(this.ccid, form_id).then((response) => {
+                if (response.status) {
+                  window.open(`/index.php?option=com_fabrik&view=form&formid=` + form_id + `&Itemid=` + response.data, '_blank');
+                }
+              });
             }
           }
         }

@@ -182,4 +182,27 @@ class EmundusControllerComments extends JControllerLegacy
 
         $this->sendJsonResponse($response);
     }
+
+    public function getMenuItemForFormId()
+    {
+        $response = ['status' => false, 'code' => 403, 'message' => Text::_('ACCESS_DENIED')];
+        $ccid = $this->app->input->getInt('ccid', 0);
+        $form_id = $this->app->input->getInt('form_id', 0);
+
+        if (!empty($ccid) && !empty($form_id)) {
+            $fnum = EmundusHelperFiles::getFnumFromId($ccid);
+
+            if (EmundusHelperAccess::asAccessAction(10, 'r', $this->user->id, $fnum)) {
+                require_once(JPATH_ROOT . '/components/com_emundus/models/profile.php');
+                $m_profile = new EmundusModelProfile();
+
+                $response['status'] = true;
+                $response['code'] = 200;
+                $response['message'] = '';
+                $response['data'] = $m_profile->getMenuItemForFormId($form_id, $fnum);
+            }
+        }
+
+        $this->sendJsonResponse($response);
+    }
 }
