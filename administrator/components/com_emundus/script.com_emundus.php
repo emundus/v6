@@ -4389,7 +4389,7 @@ if(in_array($applicant,$exceptions)){
 					'label'                => 'SETUP_GROUPS_FILTER_STATUS',
 					'show_in_list_summary' => 1
 				];
-				EmundusHelperUpdate::addFabrikElement($datas);
+				$filter_status_elt = EmundusHelperUpdate::addFabrikElement($datas)['id'];
 
 				$datas      = [
 					'name'                 => 'status',
@@ -4423,8 +4423,78 @@ if(in_array($applicant,$exceptions)){
 				];
 				EmundusHelperUpdate::addFabrikJoin($datas, $params);
 
-				EmundusHelperUpdate::insertTranslationsTag('SETUP_GROUPS_FILTER_STATUS', 'Restreindre l\'accès à certains statuts');
-				EmundusHelperUpdate::insertTranslationsTag('SETUP_GROUPS_FILTER_STATUS', 'Restricting access to certain statuses', 'override', null, null, null, 'en-GB');
+				$query->clear()
+					->select('id')
+					->from($db->quoteName('#__fabrik_jsactions'))
+					->where($db->quoteName('element_id') . ' = ' . $filter_status_elt)
+					->where($db->quoteName('action') . ' = ' . $db->quote('load'));
+				$db->setQuery($query);
+				$js_action_load = $db->loadResult();
+
+				if(empty($js_action_load)) {
+					$status_load_jsaction = [
+						'action' => 'load',
+						'params' => '{"js_e_event":"","js_e_trigger":"fabrik_trigger_group_group139","js_e_condition":"","js_e_value":"","js_published":"1"}',
+						'code'   => "var value = this.get(&#039;value&#039;);
+const fab = this.form.elements;
+let {
+    jos_emundus_setup_groups___status
+} = fab;
+
+if(value == 1) {
+  showFabrikElt(jos_emundus_setup_groups___status);
+} else {
+  hideFabrikElt(jos_emundus_setup_groups___status);
+}"
+					];
+
+					$query->clear()
+						->insert($db->quoteName('#__fabrik_jsactions'))
+						->set($db->quoteName('element_id') . ' = ' . $filter_status_elt)
+						->set($db->quoteName('action') . ' = ' . $db->quote($status_load_jsaction['action']))
+						->set($db->quoteName('code') . ' = ' . $db->quote($status_load_jsaction['code']))
+						->set($db->quoteName('params') . ' = ' . $db->quote($status_load_jsaction['params']));
+					$db->setQuery($query);
+					$db->execute();
+				}
+
+				$query->clear()
+					->select('id')
+					->from($db->quoteName('#__fabrik_jsactions'))
+					->where($db->quoteName('element_id') . ' = ' . $filter_status_elt)
+					->where($db->quoteName('action') . ' = ' . $db->quote('change'));
+				$db->setQuery($query);
+				$js_action_change = $db->loadResult();
+
+				if(empty($js_action_change)) {
+					$status_change_jsaction = [
+						'action' => 'change',
+						'params' => '{"js_e_event":"","js_e_trigger":"fabrik_trigger_group_group139","js_e_condition":"","js_e_value":"","js_published":"1"}',
+						'code'   => "var value = this.get(&#039;value&#039;);
+const fab = this.form.elements;
+let {
+    jos_emundus_setup_groups___status
+} = fab;
+
+if(value == 1) {
+  showFabrikElt(jos_emundus_setup_groups___status);
+} else {
+  hideFabrikElt(jos_emundus_setup_groups___status,true);
+}"
+					];
+
+					$query->clear()
+						->insert($db->quoteName('#__fabrik_jsactions'))
+						->set($db->quoteName('element_id') . ' = ' . $filter_status_elt)
+						->set($db->quoteName('action') . ' = ' . $db->quote($status_change_jsaction['action']))
+						->set($db->quoteName('code') . ' = ' . $db->quote($status_change_jsaction['code']))
+						->set($db->quoteName('params') . ' = ' . $db->quote($status_change_jsaction['params']));
+					$db->setQuery($query);
+					$db->execute();
+				}
+
+				EmundusHelperUpdate::insertTranslationsTag('SETUP_GROUPS_FILTER_STATUS', 'Restreindre le changement de statut');
+				EmundusHelperUpdate::insertTranslationsTag('SETUP_GROUPS_FILTER_STATUS', 'Restricting changes of status', 'override', null, null, null, 'en-GB');
 
 				EmundusHelperUpdate::insertTranslationsTag('SETUP_GROUPS_AVAILABLE_STATUS', 'Statuts');
 				EmundusHelperUpdate::insertTranslationsTag('SETUP_GROUPS_AVAILABLE_STATUS', 'Statuses', 'override', null, null, null, 'en-GB');
