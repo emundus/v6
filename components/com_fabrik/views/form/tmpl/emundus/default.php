@@ -26,19 +26,21 @@ $pageClass = $this->params->get('pageclass_sfx', '');
 
 $fnum = Factory::getApplication()->input->getString('fnum','');
 
-require_once JPATH_SITE . '/components/com_emundus/models/application.php';
-$m_application = new EmundusModelApplication();
-$this->locked_elements = $m_application->getLockedElements($this->form->id, $fnum);
-$this->collaborators = $m_application->getSharedFileUsers(null, $fnum);
+if (!empty($fnum)) {
+    require_once(JPATH_SITE . '/components/com_emundus/models/application.php');
+    $m_application = new EmundusModelApplication();
+    $this->locked_elements = $m_application->getLockedElements($this->form->id, $fnum);
+    $this->collaborators = $m_application->getSharedFileUsers(null, $fnum);
 
-$this->collaborator = false;
-$e_user = Factory::getSession()->get('emundusUser', null);
-if(!empty($e_user->fnums)) {
-	$fnumInfos = $e_user->fnums[$fnum];
-	$this->collaborator = $fnumInfos->applicant_id != $e_user->id;
+    $this->collaborator = false;
+    $e_user = Factory::getSession()->get('emundusUser', null);
+    if(!empty($e_user->fnums)) {
+        $fnumInfos = $e_user->fnums[$fnum];
+        $this->collaborator = $fnumInfos->applicant_id != $e_user->id;
+    }
 }
 
-require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+require_once(JPATH_SITE .'/components/com_emundus/models/users.php');
 $m_users = new EmundusModelUsers();
 $profile_form = $m_users->getProfileForm();
 
