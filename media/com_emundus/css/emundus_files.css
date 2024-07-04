@@ -2837,6 +2837,10 @@ a.copy-0:focus {
 
 @media all and (min-width: 768px) and (max-width: 959px) {
 
+    .files-board.gantry #g-container-main .g-container {
+        width: 90vw;
+    }
+
     /* FILES BOARD */
     .files-board .span12 {
         display: flex;
