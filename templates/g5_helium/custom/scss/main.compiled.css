@@ -1752,6 +1752,11 @@ form.fabrikForm .fabrikGroupRepeater.pull-right.btn-group .deleteGroup.btn.btn-s
           border: none;
           background-color: transparent;
         }
+.pull-right.em-repeat-table {
+    float: inherit;
+    display: flex;
+    justify-content: flex-end;
+  }
 /** BACKEND/VUE FORMS **/
 /** INPUT **/
 .com_emundus input:not([type='radio']):not([type='checkbox']):not([type='file']), .com_emundus select {
@@ -12193,6 +12198,10 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .border-t-yellow-950\/95 {
   border-top-color: rgb(66 32 6 / 0.95);
 }
+.bg-\[\#FEF6EE\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(254 246 238 / var(--tw-bg-opacity));
+}
 .bg-neutral-100 {
   --tw-bg-opacity: 1;
   background-color: rgb(245 245 245 / var(--tw-bg-opacity));
@@ -16685,6 +16694,10 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .ordinal {
   --tw-ordinal: ordinal;
   font-variant-numeric: var(--tw-ordinal) var(--tw-slashed-zero) var(--tw-numeric-figure) var(--tw-numeric-spacing) var(--tw-numeric-fraction);
+}
+.text-\[\#EF681F\] {
+  --tw-text-opacity: 1;
+  color: rgb(239 104 31 / var(--tw-text-opacity));
 }
 .text-black {
   --tw-text-opacity: 1;
@@ -37447,6 +37460,7 @@ button.swal2-cancel.goback-btn:hover,
         border: solid var(--em-alert-error-border-width) var(--em-alert-error-border-color);
         background-color: var(--em-alert-error-bgc);
         color: var(--em-alert-error-color);
+        margin-bottom: 28px;
     }
 .fabrikMainError .material-icons, .alert.alert-error .material-icons {
             color: var(--em-alert-error-icon-color);
@@ -37910,7 +37924,7 @@ body {
     background-image: var(--display-demonstration);
     background-size: 250px;
     background-repeat: no-repeat;
-    background-position: top -6px right 30px;
+    background-position: top 50% right -40px;
     width: 100%;
     padding-right: 28%;
     min-height: 150px;
@@ -37966,8 +37980,8 @@ body {
 @media screen and (min-width: 768px) and (max-width: 959px) {
 
     /* Accueil */
-    .homepage #g-container-main .g-container {
-        background-image : none;
+    .homepage #g-container-main .g-container .mod_emundus_campaign__intro {
+        background-position: top 50% right -40px;
     }
 
     /* Connexion */

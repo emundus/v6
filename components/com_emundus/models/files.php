@@ -9,6 +9,8 @@
  */
 
 // No direct access
+use Gotenberg\Gotenberg;
+use Gotenberg\Stream;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
@@ -3081,22 +3083,34 @@ class EmundusModelFiles extends JModelLegacy
      * @param $fnums
      * @return bool|mixed
      */
-    public function getFilesByFnums($fnums, $attachment_ids = null)
+    public function getFilesByFnums($fnums, $attachment_ids = null, $return_as_object = false)
     {
 		$files = false;
 
 		if (!empty($fnums)) {
 			$db = $this->getDbo();
-			if(!empty($attachment_ids)) {
-				$query = 'select fu.* from #__emundus_uploads as fu where fu.fnum in ("'.implode('","', $fnums).'") and fu.attachment_id in ("'.implode('","', $attachment_ids).'") order by fu.fnum';
-			} else {
-				$query = 'select fu.* from #__emundus_uploads as fu where fu.fnum in ("'.implode('","', $fnums).'") order by fu.fnum';
-			}
+            $query = $db->getQuery(true);
+
+            $query->select('fu.*')
+                ->from($db->quoteName('#__emundus_uploads', 'fu'))
+                ->leftJoin($db->quoteName('#__emundus_setup_attachments', 'esa') . ' ON ' . $db->quoteName('esa.id') . ' = ' . $db->quoteName('fu.attachment_id'))
+                ->where($db->quoteName('fu.fnum') . ' IN (' . implode(',', $fnums) . ')');
+
+            if (!empty($attachment_ids)) {
+                $query->andWhere($db->quoteName('fu.attachment_id') . ' IN (' . implode(',', $attachment_ids) . ')');
+            }
+
+            $query->order('fu.fnum, esa.ordering ASC');
 
 			try {
 				$db->setQuery($query);
-				$files = $db->loadAssocList();
-			} catch(Exception $e) {
+
+                if ($return_as_object) {
+                    $files = $db->loadObjectList();
+                } else {
+                    $files = $db->loadAssocList();
+                }
+            } catch(Exception $e) {
 				echo $e;
 				JLog::add('Failed to get files by fnum ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
 			}
@@ -4713,8 +4727,9 @@ class EmundusModelFiles extends JModelLegacy
                                     'user_id_from' => $from_id,
                                     'user_id_to' => $file['applicant_id'],
                                     'subject' => $subject,
-                                    'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$to.'</i><br>'.$body,
+                                    'message' => $body,
 	                                'email_id' => $trigger_email_id,
+                                    'email_to' => $to
                                 );
 	                            $logged = $m_email->logEmail($message, $file['fnum']);
                                 $msg .= JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT').' : '.$to.'<br>';
@@ -4784,8 +4799,9 @@ class EmundusModelFiles extends JModelLegacy
                                 'user_id_from' => $from_id,
                                 'user_id_to' => $recipient['id'],
                                 'subject' => $subject,
-                                'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$to.'</i><br>'.$body,
+                                'message' => $body,
 	                            'email_id' => $trigger_email_id,
+                                'email_to' => $to
                             );
                             $m_email->logEmail($message, $file['fnum']);
                             $msg .= JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT').' : '.$to.'<br>';
@@ -4911,12 +4927,12 @@ class EmundusModelFiles extends JModelLegacy
 		return $status;
 	}
 
-    public function exportZip($fnums, $form_post = 1, $attachment = 1, $assessment = 1, $decision = 1, $admission = 1, $form_ids = null, $attachids = null, $options = null, $acl_override = false, $current_user = null) {
+    public function exportZip($fnums, $form_post = 1, $attachment = 1, $assessment = 1, $decision = 1, $admission = 1, $form_ids = null, $attachids = null, $options = null, $acl_override = false, $current_user = null, $params = []) {
         $eMConfig = JComponentHelper::getParams('com_emundus');
 
-        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
-        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'export.php');
-        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+        require_once(JPATH_SITE. '/components/com_emundus/helpers/access.php');
+        require_once(JPATH_SITE. '/components/com_emundus/helpers/export.php');
+        require_once(JPATH_SITE. '/components/com_emundus/models/emails.php');
 
         $m_emails = new EmundusModelEmails;
 
@@ -4930,6 +4946,8 @@ class EmundusModelFiles extends JModelLegacy
         if (file_exists($path)) {
             unlink($path);
         }
+
+        $concat_attachments_with_form = $params['concat_attachments_with_form'] ?? false;
 
         foreach ($fnums as $fnum) {
 
@@ -4973,11 +4991,13 @@ class EmundusModelFiles extends JModelLegacy
                     }
 
                     if ($form_post || !empty($forms_to_export)) {
-                        $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum],$fnumsInfo[$fnum]['applicant_id'], $fnum, $form_post, $forms_to_export, $options);
+                        if ($concat_attachments_with_form) {
+                            $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum],$fnumsInfo[$fnum]['applicant_id'], $fnum, $form_post, $forms_to_export, $options, null, null, false);
+                        } else {
+                            $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum],$fnumsInfo[$fnum]['applicant_id'], $fnum, $form_post, $forms_to_export, $options);
+                        }
                     }
                 }
-
-
 
                 if ($assessment) {
                     $files_list[] = EmundusHelperExport::getEvalPDF($fnum, $options);
@@ -4991,9 +5011,30 @@ class EmundusModelFiles extends JModelLegacy
                     $admission_file = EmundusHelperExport::getAdmissionPDF($fnum, $options);
                 }
 
-                if (count($files_list) > 0) {
-                    foreach ($files_list as $key => $file_list){
-                        if(empty($file_list)){
+                if ($concat_attachments_with_form) {
+                    if ($attachment || !empty($attachids)) {
+                        $attachment_to_export = array();
+                        if (!empty($attachids)) {
+                            foreach ($attachids as $aids) {
+                                $detail = explode("|", $aids);
+                                if ($detail[1] == $fnumsInfo[$fnum]['training'] && ($detail[2] == $fnumsInfo[$fnum]['campaign_id'] || $detail[2] == "0")) {
+                                    $attachment_to_export[] = $detail[0];
+                                }
+                            }
+                        }
+
+                        if ($attachment || !empty($attachment_to_export)) {
+                            $files = $this->getFilesByFnums([$fnum], $attachment_to_export, true);
+                        }
+
+                        $tmpArray = [];
+                        EmundusHelperExport::getAttachmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id']);
+                    }
+                }
+
+                if (!empty($files_list)) {
+                    foreach ($files_list as $key => $file_list) {
+                        if (empty($file_list)) {
                             unset($files_list[$key]);
                         }
                     }
@@ -5013,7 +5054,9 @@ class EmundusModelFiles extends JModelLegacy
                             }
                         }
                         $pdf->Output($dossier . $application_pdf, 'F');
-                    } else {
+                    }
+                    else
+                    {
                         $gotenberg_url = $eMConfig->get('gotenberg_url', '');
 
                         if (!empty($gotenberg_url)) {
@@ -5062,7 +5105,7 @@ class EmundusModelFiles extends JModelLegacy
                     $zip->addFile($admission_file, $filename);
                 }
 
-                if ($attachment || !empty($attachids)) {
+                if (($attachment || !empty($attachids)) && !$concat_attachments_with_form) {
                     $attachment_to_export = array();
                     if (!empty($attachids)) {
                         foreach($attachids as $aids){

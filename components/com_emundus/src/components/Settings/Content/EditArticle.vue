@@ -39,7 +39,7 @@
       </div>
 
       <div class="form-group controls">
-        <editor-quill :height="'30em'" :text="form.content" :enable_variables="false" :id="'editor'" :key="dynamicComponent" v-model="form.content" @focusout="saveContent"></editor-quill>
+        <editor-quill :height="'30em'" :text="form.content" :enable_variables="false" :id="'editor'" :key="dynamicComponent" v-model="form.content" @input="debounce(() => {saveContent();}, 1500)();"></editor-quill>
       </div>
     </div>
 

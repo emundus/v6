@@ -427,18 +427,12 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                                                                 <?php if (empty($visible_status)) : ?>
                                                                     <div class="flex items-center mod_emundus_applications___status_<?= $application->class; ?> flex"
                                                                          id="application_status_<?php echo $application->fnum ?>">
-                                                                        <span class="label label-<?= $application->class; ?>"><?= $application->value; ?></span>
-                                                                        <?php if($application->applicant_id !== $user->id) : ?>
-                                                                            <span class="material-icons-outlined ml-3">people</span>
-                                                                        <?php endif; ?>
+                                                                        <span class="mod_emundus_applications___status_label label label-<?= $application->class; ?>"><?= $application->value; ?></span>
                                                                     </div>
                                                                 <?php elseif (in_array($application->status, $visible_status)) : ?>
                                                                     <div class="flex items-center mod_emundus_applications___status_<?= $application->class; ?> flex"
                                                                          id="application_status_<?php echo $application->fnum ?>">
-                                                                        <span class="label label-<?= $application->class; ?>"><?= $application->value; ?></span>
-	                                                                    <?php if($application->applicant_id !== $user->id) : ?>
-                                                                            <span class="material-icons-outlined ml-3">people</span>
-	                                                                    <?php endif; ?>
+                                                                        <span class="mod_emundus_applications___status_label label label-<?= $application->class; ?>"><?= $application->value; ?></span>
                                                                     </div>
                                                                 <?php endif; ?>
                                                                 <?php if (!empty($application->order_status)): ?>
@@ -822,18 +816,12 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 														<?php if (empty($visible_status)) : ?>
                                                             <div class="mod_emundus_applications___status_<?= $application->class; ?> flex items-center"
                                                                  id="application_status_<?php echo $application->fnum ?>">
-                                                                <span class="label label-<?= $application->class; ?>"><?= $application->value; ?></span>
-	                                                            <?php if($application->applicant_id !== $user->id) : ?>
-                                                                    <span class="material-icons-outlined ml-3">people</span>
-	                                                            <?php endif; ?>
+                                                                <span class="mod_emundus_applications___status_label label label-<?= $application->class; ?>"><?= $application->value; ?></span>
                                                             </div>
 														<?php elseif (in_array($application->status, $visible_status)) : ?>
                                                             <div class="mod_emundus_applications___status_<?= $application->class; ?> flex items-center"
                                                                  id="application_status_<?php echo $application->fnum ?>">
-                                                                <span class="label label-<?= $application->class; ?>"><?= $application->value; ?></span>
-	                                                            <?php if($application->applicant_id !== $user->id) : ?>
-                                                                    <span class="material-icons-outlined ml-3">people</span>
-	                                                            <?php endif; ?>
+                                                                <span class="mod_emundus_applications___status_label label label-<?= $application->class; ?>"><?= $application->value; ?></span>
                                                             </div>
 														<?php endif; ?>
 														<?php if (!empty($application->order_status)): ?>
@@ -985,6 +973,8 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 
 <script type="text/javascript">
+    var $ = jQuery.noConflict();
+
     window.addEventListener('DOMContentLoaded', (event) => {
         let selected_tab_session = sessionStorage.getItem('mod_emundus_applications___selected_tab');
         let selected_view = sessionStorage.getItem('mod_emundus_applications___selected_view');

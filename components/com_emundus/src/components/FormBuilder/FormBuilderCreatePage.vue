@@ -85,7 +85,7 @@
 		</div>
 		<div class="actions em-flex-space-between em-flex-row em-w-100">
 			<button class="em-secondary-button em-w-auto em-white-bg" @click="close(false)">{{ translate('COM_EMUNDUS_FORM_BUILDER_CANCEL') }}</button>
-			<button class="em-primary-button em-w-auto em-ml-8" @click="createPage">{{ translate('COM_EMUNDUS_FORM_BUILDER_PAGE_CREATE_SAVE') }}</button>
+			<button class="em-primary-button em-w-auto em-ml-8" :disabled="loading" @click="createPage">{{ translate('COM_EMUNDUS_FORM_BUILDER_PAGE_CREATE_SAVE') }}</button>
 		</div>
 	</div>
 </template>
@@ -158,6 +158,8 @@ export default {
 			});
 		},
 		createPage() {
+      this.loading = true;
+
 			let model_form_id = -1;
 			if (this.selected > 0) {
 				const found_model = this.models.find((model) => {

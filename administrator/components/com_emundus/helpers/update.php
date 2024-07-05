@@ -652,7 +652,8 @@ class EmundusHelperUpdate
 				->from($db->quoteName('#__falang_content'))
 				->where($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))
 				->andWhere($db->quoteName('reference_table') . ' = ' . $db->quote($reference_table))
-				->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote($reference_field));
+				->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote($reference_field))
+				->andWhere($db->quoteName('language_id') . ' = ' . $db->quote($lang_id));
 			$db->setQuery($query);
 			$translation_id = $db->loadResult();
 
@@ -3437,26 +3438,11 @@ class EmundusHelperUpdate
 		$db->setQuery($query);
 		$db->execute();
 
-		$query->clear()
-			->update($db->quoteName('#__falang_content'))
-			->set($db->quoteName('value') . ' = ' . $db->quote($back_button->content))
-			->where($db->quoteName('reference_id') . ' = ' . $db->quote($back_button->id))
-			->where($db->quoteName('reference_table') . ' = ' . $db->quote('modules'))
-			->where($db->quoteName('reference_field') . ' = ' . $db->quote('content'))
-			->where($db->quoteName('language_id') . ' = 2');
-		$db->setQuery($query);
-		$db->execute();
+		EmundusHelperUpdate::insertFalangTranslation(2, $back_button->id, 'modules', 'content', $back_button->content, true);
 
 		$back_button->content = str_replace('Retour à la page d\'accueil','Back to homepage',$back_button->content);
-		$query->clear()
-			->update($db->quoteName('#__falang_content'))
-			->set($db->quoteName('value') . ' = ' . $db->quote($back_button->content))
-			->where($db->quoteName('reference_id') . ' = ' . $db->quote($back_button->id))
-			->where($db->quoteName('reference_table') . ' = ' . $db->quote('modules'))
-			->where($db->quoteName('reference_field') . ' = ' . $db->quote('content'))
-			->where($db->quoteName('language_id') . ' = 1');
-		$db->setQuery($query);
-		$db->execute();
+
+		EmundusHelperUpdate::insertFalangTranslation(1, $back_button->id, 'modules', 'content', $back_button->content, true);
 		//
 
 		// Remove appli emundus yaml assets
@@ -3709,6 +3695,38 @@ class EmundusHelperUpdate
 		}
 		//
 
+		// Check if we have a favicon
+		$current_favicon = EmundusHelperUpdate::getYamlVariable('favicon', JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml');
+		$current_favicon = str_replace('gantry-media:/', 'images', $current_favicon);
+
+		if (!file_exists($current_favicon)) {
+			$current_favicon = 'gantry-media://custom/default_favicon.ico';
+
+			EmundusHelperUpdate::updateYamlVariable('favicon', $current_favicon, JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml');
+		}
+		//
+
+		// Check that registration form is on auto-login
+		$query->clear()
+			->select('id,params')
+			->from($db->quoteName('#__fabrik_forms'))
+			->where($db->quoteName('label') . ' LIKE ' . $db->quote('FORM_REGISTRATION'));
+		$db->setQuery($query);
+		$registration_form = $db->loadObject();
+
+		if (!empty($registration_form)) {
+			$params                     = json_decode($registration_form->params, true);
+			$params['juser_auto_login'] = ["1"];
+
+			$query->clear()
+				->update($db->quoteName('#__fabrik_forms'))
+				->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+				->where($db->quoteName('id') . ' = ' . $db->quote($registration_form->id));
+			$db->setQuery($query);
+			$db->execute();
+		}
+		//
+
 		return true;
 	}
 
@@ -3762,32 +3780,34 @@ class EmundusHelperUpdate
 		$db->setQuery($query);
 		$menutypes = $db->loadColumn();
 
-		foreach ($menutypes as $key => $menutype) {
-			$menutypes[$key] = $db->quote($menutype);
-		}
+        if (!empty($menutypes)) {
+            foreach ($menutypes as $key => $menutype) {
+                $menutypes[$key] = $db->quote($menutype);
+            }
 
-		$query->clear()
-			->select('id,params')
-			->from($db->quoteName('#__menu'))
-			->where($db->quoteName('menutype') . ' IN (' . implode(',',$menutypes) . ')')
-			->where($db->quoteName('link') . ' LIKE ' . $db->quote('index.php?option=com_fabrik&view=form&formid=%'));
-		$db->setQuery($query);
-		$menus = $db->loadObjectList();
+            $query->clear()
+                ->select('id,params')
+                ->from($db->quoteName('#__menu'))
+                ->where($db->quoteName('menutype') . ' IN (' . implode(',',$menutypes) . ')')
+                ->where($db->quoteName('link') . ' LIKE ' . $db->quote('index.php?option=com_fabrik&view=form&formid=%'));
+            $db->setQuery($query);
+            $menus = $db->loadObjectList();
 
-		foreach ($menus as $menu) {
-			$params = json_decode($menu->params, true);
+            foreach ($menus as $menu) {
+                $params = json_decode($menu->params, true);
 
-			if($params['pageclass_sfx'] == '') {
-				$params['pageclass_sfx'] = 'applicant-form';
+                if($params['pageclass_sfx'] == '') {
+                    $params['pageclass_sfx'] = 'applicant-form';
 
-				$query->clear()
-					->update($db->quoteName('#__menu'))
-					->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
-					->where($db->quoteName('id') . ' = ' . $db->quote($menu->id));
-				$db->setQuery($query);
-				$db->execute();
-			}
-		}
+                    $query->clear()
+                        ->update($db->quoteName('#__menu'))
+                        ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+                        ->where($db->quoteName('id') . ' = ' . $db->quote($menu->id));
+                    $db->setQuery($query);
+                    $db->execute();
+                }
+            }
+        }
 
 		return true;
 	}
