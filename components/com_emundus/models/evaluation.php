@@ -2231,6 +2231,14 @@ class EmundusModelEvaluation extends JModelList {
                                     foreach ($idFabrik as $id) {
                                         if (isset($fabrikValues[$id][$fnum])) {
                                             if (in_array($id, $textarea_elements)) {
+                                                /**
+                                                 * In order to make it work use this format in the word file :
+                                                 * ${textarea_<fabrik_id>}
+                                                 * ${<fabrik_id>}
+                                                 * ${/textarea_<fabrik_id>}
+                                                 * Documentation : https://phpword.readthedocs.io/en/latest/templates-processing.html#cloneblock
+                                                 */
+
                                                 $html = $fabrikValues[$id][$fnum]['val'];
                                                 $section = $phpWord->addSection();
                                                 \PhpOffice\PhpWord\Shared\Html::addHtml($section, $html);
