@@ -24,7 +24,12 @@ $display_required_icon = $eMConfig->get('display_required_icon', 1);
 
 $pageClass = $this->params->get('pageclass_sfx', '');
 
-$fnum = Factory::getApplication()->input->getString('fnum','');
+$user = JFactory::getUser();
+$app = JFactory::getApplication();
+$fnum = $app->input->getString('rowid', '');
+if (empty($fnum)) {
+    $fnum = JFactory::getSession()->get('emundusUser')->fnum;
+}
 
 if (!empty($fnum)) {
     require_once(JPATH_SITE . '/components/com_emundus/models/application.php');
