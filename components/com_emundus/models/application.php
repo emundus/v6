@@ -1885,7 +1885,7 @@ class EmundusModelApplication extends JModelList
 	                                                    }
                                                     } elseif ($elements[$j]->plugin == 'emundus_phonenumber') {
                                                         $elt = substr($r_elt, 2, strlen($r_elt));
-                                                    } 
+                                                    }
 													elseif ($elements[$j]->plugin == 'iban') {
 														$elt = $r_elt;
 
@@ -5228,7 +5228,13 @@ class EmundusModelApplication extends JModelList
         if ($fileExists) {
             // create preview based on filetype
             if ($extension == 'pdf') {
-                $preview['content'] = '<iframe src="/index.php?option=com_emundus&task=getfile&u=images/emundus/files/'. $user . '/' . $fileName . '" style="width:100%;height:100%;" border="0"></iframe>';
+                $config = JFactory::getConfig();
+                if ($config->get('sef') == 0) {
+                    $preview['content'] = '<iframe src="index.php?option=com_emundus&task=getfile&u=images/emundus/files/'. $user . '/' . $fileName . '" style="width:100%;height:100%;" border="0"></iframe>';
+                }
+                else{
+                    $preview['content'] = '<iframe src="/index.php?option=com_emundus&task=getfile&u=images/emundus/files/'. $user . '/' . $fileName . '" style="width:100%;height:100%;" border="0"></iframe>';
+                }
             } else if ($extension == 'txt') {
                 $content = file_get_contents($filePath);
                 $preview['overflowY'] = true;

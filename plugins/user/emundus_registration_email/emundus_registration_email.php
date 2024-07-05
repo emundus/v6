@@ -313,7 +313,7 @@ class plgUserEmundus_registration_email extends JPlugin {
         // WARNING: This requires making a root level menu item in the backoffice going to com_users&task=edit on the slug /activation.
         // TODO: Possibly use JRoute to make this work without needing a menu item?
         if ($config->get('sef') == 0) {
-            $activation_url_rel = '/index.php?option=com_users&task=edit&emailactivation=1&u='.$userID.'&'.$md5Token.'=1';
+            $activation_url_rel = 'index.php?option=com_users&task=edit&emailactivation=1&u='.$userID.'&'.$md5Token.'=1';
         } else {
             $activation_url_rel = '/activation?emailactivation=1&u='.$userID.'&'.$md5Token.'=1';
         }
