@@ -1671,11 +1671,6 @@ class EmundusModelUsers extends JModelList {
         if (!empty($uid)) {
             try {
                 $db = $this->getDbo();
-                /*$query = "SELECT esg.id, esg.label
-                      from #__emundus_groups as g
-                      left join #__emundus_setup_groups as esg on g.group_id = esg.id
-                      where g.user_id = " .$uid;*/
-
                 $query = $db->getQuery(true);
 
                 $query->select('esg.id, esg.label')
@@ -1689,12 +1684,8 @@ class EmundusModelUsers extends JModelList {
                 } else {
                     $user_groups = $db->loadAssocList('id', 'label');
                 }
-
-                if(empty($user_groups)) {
-                    var_dump($query->__toString());
-                }
             } catch(Exception $e) {
-                var_dump($e->getMessage());exit;
+                JLog::add('Failed to get user groups ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
             }
         }
 
