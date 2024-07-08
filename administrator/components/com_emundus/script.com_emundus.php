@@ -4853,19 +4853,19 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 					->from($db->quoteName('#__fabrik_formgroup','ffg'))
 					->leftJoin($db->quoteName('#__fabrik_elements','fe').' ON '.$db->quoteName('fe.group_id').' = '.$db->quoteName('ffg.group_id'))
 					->where($db->quoteName('ffg.form_id') . ' = ' . $reference_form->id)
-					->where($db->quoteName('fe.name') . ' LIKE ' . $db->quote('Email_1'));
+					->where($db->quoteName('fe.name') . ' IN (' . implode(',',$db->quote(['Email_1','Email_2','Email_3'])) . ')');
 				$db->setQuery($query);
-				$email_1 = $db->loadObject();
+				$emails_fields = $db->loadObjectList();
 
-				if(!empty($email_1->id)) {
-					$params = json_decode($email_1->params,true);
-					if($params['rollover'] == 'The recommendation letter will be sent to this address.') {
+				foreach ($emails_fields as $email_field) {
+					$params = json_decode($email_field->params, true);
+					if ($params['rollover'] == 'The recommendation letter will be sent to this address.' || empty($params['rollover'])) {
 						$params['rollover'] = 'COM_EMUNDUS_EMAIL_REFERENCE_TIP';
 
 						$query->clear()
 							->update($db->quoteName('#__fabrik_elements'))
 							->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
-							->where($db->quoteName('id') . ' = ' . $email_1->id);
+							->where($db->quoteName('id') . ' = ' . $email_field->id);
 						$db->setQuery($query);
 						$db->execute();
 					}
