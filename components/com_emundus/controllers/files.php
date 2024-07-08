@@ -1489,6 +1489,7 @@ class EmundusControllerFiles extends JControllerLegacy
 			}
 		}
 
+	    $not_already_handled_fnums = [];
 		if ($methode != 2 || $failed_with_old_method) {
 			$not_already_handled_fnums = $fnums;
 			if ($start > 0) {
