@@ -3,13 +3,12 @@
     <div class="w-full flex justify-end">
       <button v-if="canExport" class="em-primary-button w-fit" @click="openExportView">{{ translate('COM_EMUNDUS_RANKING_EXPORT_RANKINGS_BTN') }}</button>
     </div>
-
-    <nav id="ranking-navigation" class="mt-4 mb-4">
-      <ul v-if="packagesGroups.length > 1" id="ranking-navigation-packages-groups" class="flex flex-row list-none overflow-auto pt-4">
+    <div>
+      <ul v-if="packagesGroups.length > 1" id="ranking-navigation-packages-groups" class="flex flex-row list-none overflow-auto">
         <li v-for="group in packagesGroups" :key="group.id"
             class="ranking-navigation-item cursor-pointer shadow rounded-t-lg px-2.5 py-3 text-center"
             :class="{
-              'em-bg-main-500 em-text-neutral-300': selectedGroup === group.id,
+              'em-bg-main-500 em-text-neutral-300 opacity-80': selectedGroup === group.id,
               'em-white-bg': selectedGroup !== group.id
             }"
             @click="selectedGroup = group.id; selectedPackage = selectedPackages[0].id"
@@ -19,37 +18,42 @@
         </li>
       </ul>
 
-      <ul id="ranking-navigation-packages" class="flex flex-row list-none overflow-auto pt-4">
-        <li v-for="rankingPackage in selectedPackages" :key="rankingPackage.id"
-            class="ranking-navigation-item cursor-pointer shadow rounded-t-lg px-2.5 py-3 text-center"
-            :class="{
+      <div class="p-4 shadow rounded">
+        <nav id="ranking-navigation">
+          <ul id="ranking-navigation-packages" class="flex flex-row list-none overflow-auto">
+            <li v-for="rankingPackage in selectedPackages" :key="rankingPackage.id"
+                class="ranking-navigation-item cursor-pointer shadow rounded-t-lg px-2.5 py-3 text-center"
+                :class="{
               'em-bg-main-500 em-text-neutral-300': selectedPackage === rankingPackage.id,
               'em-white-bg': selectedPackage !== rankingPackage.id
             }"
-            @click="selectedPackage = rankingPackage.id"
-            :title="rankingPackage.label"
-        >
-          <span>{{ rankingPackage.label }}</span>
-        </li>
-      </ul>
-    </nav>
-    <div v-if="selectedPackage !== null">
-      <h3>{{ selectedPackageItem.label }}</h3>
+                @click="selectedPackage = rankingPackage.id"
+                :title="rankingPackage.label"
+            >
+              <span>{{ rankingPackage.label }}</span>
+            </li>
+          </ul>
+        </nav>
+        <div v-if="selectedPackage !== null" class="p-4 shadow rounded em-white-bg">
+          <h3>{{ selectedPackageItem.label }}</h3>
 
-      <div class="package-dates mt-2">
-        <p v-if="selectedPackageItem.start_date" :id="'package-start-date-' +  selectedPackageItem.id"> {{ translate('COM_EMUNDUS_RANKING_PACKAGE_START_DATE') }} <strong>{{ selectedPackageItem.start_date }}</strong></p>
-        <p v-if="selectedPackageItem.end_date" :id="'package-end-date-' +  selectedPackageItem.id"> {{ translate('COM_EMUNDUS_RANKING_PACKAGE_END_DATE') }} <strong>{{ selectedPackageItem.end_date }}</strong></p>
+          <div class="package-dates mt-2">
+            <p v-if="selectedPackageItem.start_date" :id="'package-start-date-' +  selectedPackageItem.id"> {{ translate('COM_EMUNDUS_RANKING_PACKAGE_START_DATE') }} <strong>{{ selectedPackageItem.start_date }}</strong></p>
+            <p v-if="selectedPackageItem.end_date" :id="'package-end-date-' +  selectedPackageItem.id"> {{ translate('COM_EMUNDUS_RANKING_PACKAGE_END_DATE') }} <strong>{{ selectedPackageItem.end_date }}</strong></p>
+          </div>
+
+          <ranking
+              :key="'classement-' + selectedPackage"
+              :user="user"
+              :hierarchy_id="hierarchy_id"
+              :fileTabsStr="fileTabsStr"
+              :specificTabs="specificTabs"
+              :packageId="selectedPackage"
+          >
+          </ranking>
+        </div>
       </div>
 
-      <ranking
-          :key="'classement-' + selectedPackage"
-          :user="user"
-          :hierarchy_id="hierarchy_id"
-          :fileTabsStr="fileTabsStr"
-          :specificTabs="specificTabs"
-          :packageId="selectedPackage"
-      >
-      </ranking>
     </div>
 
     <modal id="export-modal" name="export-modal" v-if="packages.length > 0">

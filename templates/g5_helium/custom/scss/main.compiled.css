@@ -3843,9 +3843,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
   padding-top: 1px;
   padding-bottom: 1px;
 }
-.pt-4 {
-  padding-top: var(--em-spacing-4);
-}
 .pt-6 {
   padding-top: var(--em-spacing-6);
 }
@@ -3923,6 +3920,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .antialiased {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+.opacity-80 {
+  opacity: 0.8;
 }
 .shadow {
   --tw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
