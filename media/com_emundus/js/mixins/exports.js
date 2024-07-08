@@ -41,7 +41,7 @@ function export_excel(fnums, letter) {
     });
     objJson = JSON.stringify(objJson);
 
-    var methode = $('#em-export-methode:checked').val();
+    var methode = $('input[name=em-export-methode]:checked').val();
 
     var options = {};
     i = 0;

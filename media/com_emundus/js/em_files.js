@@ -2254,8 +2254,8 @@ $(document).ready(function () {
 
                                 $('#data').append('<div id="main" class="em-grid-2 em-mt-16"><div id="list-element-export" style="display: none"></div><div id="oelts" style="display:none;"></div></div>');
 
-                                var defaults = '<div class="em-flex-row em-pointer em-mb-8" id="list-element-export-button"><p>' + Joomla.JText._('COM_EMUNDUS_CHOOSEN_FORM_ELEM') + '</p></div>' +
-                                    '<div class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 em-mt-16" id="em-export-elts">' +
+                                var defaults = '<div class="em-flex-row em-pointer" id="list-element-export-button"><label><strong>' + Joomla.JText._('COM_EMUNDUS_CHOOSEN_FORM_ELEM') + '</strong></label></div>' +
+                                    '<div class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 mt-1" id="em-export-elts">' +
                                     '<ul id="em-export" class="em-m-8"></ul>' +
                                     '</div>';
 
@@ -2296,15 +2296,15 @@ $(document).ready(function () {
                                 }
 
                                 $('#data').append('<div id="methode" style="display: none" class="em-grid-2 em-mt-16">' +
-                                    '<div><p>' + Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_OPTION') + '</p>' +
-                                    '<div id="exp" class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 em-mt-16">' +
-                                    '<div id="exp1"><form style="margin-left:15px; margin-bottom:6px">' +
-                                    '<input type="radio" name="em-export-methode" id="em-export-methode" value="0"' + (defaultMethod === 0 ? ' checked' : '') + '>' + Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_AGGREGATE_DISTINCT') +
-                                    '<br/><input type="radio" name="em-export-methode" id="em-export-methode" value="2"' + (defaultMethod === 2 ? ' checked' : '') + '>' + Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_AGGREGATE') +
-                                    '<br/><input type="radio" name="em-export-methode" id="em-export-methode" value="1"' + (defaultMethod === 1 ? ' checked' : '') + '>' + Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_LEFTJOIN') + '<br>' +
+                                    '<div><label><strong>' + Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_OPTION') + '</strong></label>' +
+                                    '<div id="exp" class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 mt-1 mb-4">' +
+                                    '<div id="exp1"><form class="flex flex-col gap-2">' +
+                                    '<div class="flex items-baseline"><input type="radio" name="em-export-methode" id="em-export-methode_group_concat_distinct" value="0"' + (defaultMethod === 0 ? ' checked' : '') + '><label for="em-export-methode_group_concat_distinct">' + Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_AGGREGATE_DISTINCT') +'</label></div>'+
+                                    '<div class="flex items-baseline"><input type="radio" name="em-export-methode" id="em-export-methode_group_concat" value="2"' + (defaultMethod === 2 ? ' checked' : '') + '><label for="em-export-methode_group_concat">' + Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_AGGREGATE') + '</label></div>' +
+                                    '<div class="flex items-baseline"><input type="radio" name="em-export-methode" id="em-export-methode_left_join" value="1"' + (defaultMethod === 1 ? ' checked' : '') + '><label for="em-export-methode_left_join">' + Joomla.JText._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_LEFTJOIN') + '</label></div>' +
                                     '</form></div></div></div>' +
-                                    '<div><p>' + Joomla.JText._('COM_EMUNDUS_CHOOSE_OTHER_OPTION') + '</p>' +
-                                    '<div id="forms" class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 em-mt-16">' +
+                                    '<div><label><strong>' + Joomla.JText._('COM_EMUNDUS_CHOOSE_OTHER_OPTION') + '</strong></label>' +
+                                    '<div id="forms" class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 mt-1">' +
                                     '<div id="forms1">' +
                                     '<div class="em-flex-row em-mb-4"><input class="em-ex-check0" type="checkbox" value="form-title" name="form-title" id="form-title" style="max-height: 20px;"/>' +
                                     '<label for="form-title" class="em-mb-0-important">' + Joomla.JText._('COM_EMUNDUS_FORM_TITLE') + '</label></div>' +
@@ -5465,7 +5465,7 @@ $(document).ready(function () {
 
             var proglabel = $("#em-export-prg option:selected").text();
             var camplabel = $("#em-export-camp option:selected").text();
-            var exp_methode = $('#em-export-methode:checked').val();
+            var exp_methode = $('input[name=em-export-methode]:checked').val();
 
             var baseElements = [];
             var baseEltNodes = document.getElementById("em-export").querySelectorAll('li');
@@ -5603,7 +5603,7 @@ $(document).ready(function () {
                     }
 
                     /// set option d'extraction to default checked value
-                    $('#em-export-methode').attr('checked', true)
+                    $('input[name=em-export-methode]').attr('checked', true)
 
                     $.ajax({
                         type: 'POST',
