@@ -219,7 +219,7 @@
             </div>
             <div v-else-if="selectedOtherFile">
               <span> {{ translate('COM_EMUNDUS_CLASSEMENT_RANKING_SELECT_LABEL') }} </span>
-              <span>{{ defaultFile.rank > 0 ? defaultFile.rank : translate('COM_EMUNDUS_CLASSEMENT_NOT_RANKED') }}</span>
+              <span>{{ selectedOtherFile.rank > 0 ? selectedOtherFile.rank : translate('COM_EMUNDUS_CLASSEMENT_NOT_RANKED') }}</span>
             </div>
           </div>
         </template>
