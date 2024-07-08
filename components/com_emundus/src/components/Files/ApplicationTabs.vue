@@ -1,7 +1,7 @@
 <template>
   <div id="application-tabs">
-    <div class="flex flex-row items-center justify-center sticky-tab gap-1 w-100 overflow-auto">
-      <div v-for="tab in tabs" v-if="access[tab.access].r" class="cursor-pointer shadow rounded-t-lg px-2.5 py-3" @click="selected = tab.name"
+    <div class="flex flex-row sticky-tab gap-1 w-100 overflow-auto px-4">
+      <div v-for="tab in accessibleTabs" :key="tab.name" class="cursor-pointer shadow rounded-t-lg px-2.5 py-3" @click="selected = tab.name"
            :class="selected === tab.name ? 'em-bg-main-500 em-text-neutral-300' : ''">
         <span class="em-font-size-14 whitespace-nowrap">{{ translate(tab.label) }}</span>
       </div>
@@ -126,6 +126,12 @@ export default {
       return this.tabs.filter((tab) => {
         return tab.url;
       });
+    },
+    accessibleTabs()
+    {
+      return this.tabs.filter((tab) => {
+        return this.access[tab.access].r;
+      })
     }
   }
 }
