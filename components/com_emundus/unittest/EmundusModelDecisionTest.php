@@ -17,7 +17,6 @@ define('JPATH_BASE', dirname(__DIR__) . '/../../');
 include_once ( JPATH_BASE . 'includes/defines.php' );
 include_once ( JPATH_BASE . 'includes/framework.php' );
 include_once(JPATH_SITE.'/components/com_emundus/unittest/helpers/samples.php');
-include_once (JPATH_SITE . '/components/com_emundus/models/decision.php');
 
 jimport('joomla.user.helper');
 jimport( 'joomla.application.application' );
@@ -39,7 +38,6 @@ class EmundusModelDecisionTest extends TestCase
     public function __construct(?string $name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
-        $this->m_decision = new EmundusModelDecision();
     }
 
 	public function testFoo()

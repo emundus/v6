@@ -36,7 +36,7 @@ JText::script('PLG_ELEMENT_PHONE_NUMBER_UNSUPPORTED');
 
 		<input id="renderCountryCode" name="<?php echo $displayData->attributes['name'].'[country_code]'; ?>" tabindex="-1" class="input-medium fabrikinput input-readonly" readonly="readonly">
 
-		<input id="inputValue" name="<?php echo $displayData->attributes['name'].'[num_tel]'; ?>" class="input-medium fabrikinput" maxlength="16"
+		<input id="inputValue" autocomplete="tel" name="<?php echo $displayData->attributes['name'].'[num_tel]'; ?>" class="input-medium fabrikinput" maxlength="16"
 			   value="<?php echo $displayData->attributes['inputValue']; ?>" autocomplete="off"
 		>
 

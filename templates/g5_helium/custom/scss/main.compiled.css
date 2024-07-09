@@ -1781,6 +1781,19 @@ form.fabrikForm .fabrikGroupRepeater.pull-right.btn-group .deleteGroup.btn.btn-s
         border-color: var(--em-form-bc-focus);
         background-color: var(--em-form-bgc-focus);
       }
+/** MULTISELECT **/
+.com_emundus .multiselect .multiselect__input:focus {
+        outline: unset !important;
+      }
+.com_emundus .multiselect .multiselect__single {
+        color: var(--neutral-900);
+      }
+.com_emundus .multiselect .multiselect__content .multiselect__element .multiselect__option span {
+              color: var(--neutral-900);
+            }
+.com_emundus .multiselect .multiselect__content .multiselect__element .multiselect__option:not(.multiselect__option--group) {
+              padding-left: var(--em-spacing-4);
+            }
 input[type="text"],
   input[type="password"],
   input[type="datetime"],
@@ -3555,6 +3568,18 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .mt-px {
   margin-top: 1px;
 }
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.line-clamp-4 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+}
 .block {
   display: block;
 }
@@ -3624,12 +3649,21 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .h-10 {
   height: var(--em-spacing-10);
 }
+.h-14 {
+  height: 3.5rem;
+}
+.h-20 {
+  height: 5rem;
+}
 .h-full {
   height: 100%;
 }
 .h-max {
   height: -moz-max-content;
   height: max-content;
+}
+.min-h-\[100px\] {
+  min-height: 100px;
 }
 .w-0 {
   width: 0px;
@@ -6290,6 +6324,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .gap-3 {
   gap: var(--em-spacing-3);
 }
+.gap-8 {
+  gap: var(--em-spacing-8);
+}
 .gap-x-6 {
   -moz-column-gap: var(--em-spacing-6);
        column-gap: var(--em-spacing-6);
@@ -6913,6 +6950,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .border-0 {
   border-width: 0px;
 }
+.border-b {
+  border-bottom-width: 1px;
+}
 .border-t {
   border-top-width: 1px;
 }
@@ -6923,6 +6963,10 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .border-neutral-300 {
   --tw-border-opacity: 1;
   border-color: rgb(212 212 212 / var(--tw-border-opacity));
+}
+.border-neutral-400 {
+  --tw-border-opacity: 1;
+  border-color: rgb(163 163 163 / var(--tw-border-opacity));
 }
 .border-yellow-100 {
   --tw-border-opacity: 1;
@@ -15859,6 +15903,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .p-6 {
   padding: var(--em-spacing-6);
+}
+.p-8 {
+  padding: var(--em-spacing-8);
 }
 .px-0 {
   padding-left: 0px;
@@ -37016,7 +37063,7 @@ h2 {
   font-family: var(--em-applicant-font-title);
   font-size: var(--em-applicant-h2);
   font-style: normal;
-  line-height: 26.4px;
+  line-height: 30.5px;
   font-weight: var(--em-font-weight-500);
 }
 h3 {
@@ -37292,7 +37339,7 @@ button.swal2-confirm.save-btn.sauvegarder.save_continue {
         font-family: var(--em-coordinator-font);
         background: var(--em-primary-color) !important;
         border: 1px solid var(--em-primary-color) !important;
-        border-radius: var(--em-coordinator-br);
+        border-radius: var(--em-coordinator-br) !important;
         color: var(--neutral-0) !important;
         font-weight: inherit;
     }
@@ -37991,6 +38038,9 @@ small {
 .after\:bg-red-800::after {
   content: var(--tw-content);
   background-color: var(--red-800);
+}
+.hover\:no-underline:hover {
+  text-decoration-line: none;
 }
 @media (min-width: 1024px) {
   .lg\:mb-3 {

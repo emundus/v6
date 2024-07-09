@@ -114,6 +114,18 @@ $now = $dateTime->format('Y-m-d H:i:s');
             padding: 0 40px !important;
         }
     }
+
+
+    @media all and (min-width: 768px) and (max-width: 1198px) {
+        .justify-end.mod_emundus_flow___buttons {
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .mod_emundus_flow___buttons .btn-primary {
+            margin-right: 0;
+        }
+    }
 </style>
 
 <div class="mod_emundus_flow___container" style="padding: 0 20px">
@@ -148,7 +160,7 @@ $now = $dateTime->format('Y-m-d H:i:s');
             <a href="<?php echo JURI::base() ?>component/emundus/?task=pdf&amp;fnum=<?= $current_application->fnum ?>" target="_blank" title="<?php echo JText::_('PRINT') ?>">
                 <button class="btn-tertiary mod_emundus_flow___print">
                     <span class="material-icons-outlined" style="font-size: 19px">print</span>
-                    <p><?php echo JText::_('PRINT') ?></p>
+                    <p><?php echo JText::_('MOD_EMUNDUS_FLOW_PRINT') ?></p>
                 </button>
             </a>
         </div>

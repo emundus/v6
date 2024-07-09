@@ -444,6 +444,7 @@
 		<field name="expert_fabrikformid" type="text" default="110" label="COM_EMUNDUS_EXPERT_FIELD" description="COM_EMUNDUS_EXPERT_FIELD_DESC" />
 		<field name="expert_document_id" type="text" default="36" label="COM_EMUNDUS_EXPERT_DOCUMENT_FIELD" description="COM_EMUNDUS_EXPERT_DOCUMENT_FIELD_DESC" />
 		<field name="default_email_tmpl" type="text" default="expert" label="COM_EMUNDUS_EXPERT_DEFAULT_EMAIL_TMPL_FIELD" description="COM_EMUNDUS_EXPERT_DEFAULT_EMAIL_TMPL_FIELD_DESC" />
+		<field name="default_email_tmpl_vote" type="text" default="" label="COM_EMUNDUS_VOTE_DEFAULT_EMAIL_TMPL_FIELD" description="COM_EMUNDUS_VOTE_DEFAULT_EMAIL_TMPL_FIELD_DESC" />
 		<field name="email_check_dns" menu="hide" type="list" default="1" label="COM_EMUNDUS_EMAIL_CHECK_DNS" description="COM_EMUNDUS_EMAIL_CHECK_DNS_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>

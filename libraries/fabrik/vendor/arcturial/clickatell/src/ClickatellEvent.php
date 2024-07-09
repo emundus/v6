@@ -13,6 +13,8 @@
 
 namespace Clickatell;
 
+use Clickatell\TransportInterface;
+
 /**
  * This is a wrapper class that is useful for when you want to track commands
  * for audit or debug purposes.

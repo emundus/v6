@@ -5,7 +5,7 @@
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '9a05be7d0a62ed4bb15e5ad88dd6cb5d22002c42',
+        'reference' => 'dd155dc4059f95b19844a92ebe43aef89aae9850',
         'name' => '__root__',
         'dev' => true,
     ),
@@ -16,7 +16,7 @@
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '9a05be7d0a62ed4bb15e5ad88dd6cb5d22002c42',
+            'reference' => 'dd155dc4059f95b19844a92ebe43aef89aae9850',
             'dev_requirement' => false,
         ),
         'arcturial/clickatell' => array(

@@ -44,6 +44,10 @@
             ],
             "description": "Standalone PHP library to integrate with the Clickatell SMS gateway",
             "homepage": "http://www.cainsvault.com",
+            "support": {
+                "issues": "https://github.com/arcturial/clickatell/issues",
+                "source": "https://github.com/arcturial/clickatell/tree/master"
+            },
             "install-path": "../arcturial/clickatell"
         },
         {
@@ -666,6 +670,10 @@
                 "network",
                 "subnet"
             ],
+            "support": {
+                "issues": "https://github.com/markrogoyski/ipv4-subnet-calculator-php/issues",
+                "source": "https://github.com/markrogoyski/ipv4-subnet-calculator-php/tree/master"
+            },
             "install-path": "../markrogoyski/ipv4-subnet-calculator"
         },
         {
@@ -1139,6 +1147,10 @@
                 "bitly",
                 "restapi"
             ],
+            "support": {
+                "issues": "https://github.com/phplicengine/bitly/issues",
+                "source": "https://github.com/phplicengine/bitly/tree/master"
+            },
             "install-path": "../phplicengine/bitly"
         },
         {
@@ -1349,6 +1361,10 @@
                 }
             ],
             "description": "A polyfill for getallheaders.",
+            "support": {
+                "issues": "https://github.com/ralouphie/getallheaders/issues",
+                "source": "https://github.com/ralouphie/getallheaders/tree/develop"
+            },
             "install-path": "../ralouphie/getallheaders"
         },
         {
@@ -1519,6 +1535,10 @@
                 "payment processing",
                 "stripe"
             ],
+            "support": {
+                "issues": "https://github.com/stripe/stripe-php/issues",
+                "source": "https://github.com/stripe/stripe-php/tree/v4.3.0"
+            },
             "install-path": "../stripe/stripe-php"
         },
         {
@@ -1914,6 +1934,10 @@
                 "sms",
                 "twilio"
             ],
+            "support": {
+                "issues": "https://github.com/twilio/twilio-php/issues",
+                "source": "https://github.com/twilio/twilio-php/tree/5.42.2"
+            },
             "install-path": "../twilio/sdk"
         }
     ],

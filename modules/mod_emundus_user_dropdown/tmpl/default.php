@@ -52,7 +52,7 @@ if($user != null) {
         border-bottom: 1px solid #fff;
     }
 
-    #userDropdownMenu li>a:hover,
+    #userDropdownMenu div>a:hover,
     #userDropdownMenu .active>a {
         background: #<?= $secondary_color; ?>;
     }

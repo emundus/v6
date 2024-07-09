@@ -13,8 +13,9 @@
 
 namespace Clickatell;
 
+use Clickatell\TransportInterface;
 use Clickatell\Response;
-use Exception;
+use \Exception;
 
 /**
  * The response class is a representation of an API response. It provides some

@@ -1675,7 +1675,7 @@ footer#g-footer > .g-container {
 }
 
 .view-list:not(.g-back-office-emundus-tableau) #g-container-main {
-  padding-left: 80px;
+  padding-left: 20px;
 }
 
 .view-list:not(.g-back-office-emundus-tableau) #g-container-main .g-container {
@@ -3170,6 +3170,7 @@ ul.unstyled.em-linkForgot li a {
 }
 
 .com_emundus.view-campaigns,
+.com_emundus.view-gallery,
 .com_emundus.layout-addnextcampaign,
 .com_emundus.view-emails,
 .com_emundus.view-form{
@@ -5395,7 +5396,7 @@ screen and (max-height: 769px) {
   footer#g-footer .footer-rgpd {
     flex-direction: row;
 
-    .footer-rgpd-links p {
+    .footer-rgpd-links li {
       text-align: center;
     }
   }

@@ -268,7 +268,7 @@ class com_emundusInstallerScript
 					$datas    = [
 						'title'    => 'eMundus - Back button',
 						'note'     => 'Back button available on login and register views',
-						'content'  => '<p><a class="em-back-button em-pointer" href="/"><span class="material-icons em-mr-4">navigate_before</span>Retour à la page d\'accueil</a></p>',
+						'content'  => '<p><a class="em-back-button em-pointer" href="/"><span class="material-icons em-mr-4" aria-hidden="true">navigate_before</span>Retour à la page d\'accueil</a></p>',
 						'position' => 'header-a',
 						'module'   => 'mod_custom',
 						'access'   => 9,
@@ -3861,6 +3861,396 @@ structure:
 						EmundusHelperUpdate::updateComponentParameter('com_emundus', 'automated_task_user', $user_created);
 					}
 				}
+
+
+				$columns      = [
+					[
+						'name'    => 'created_at',
+						'type'    => 'datetime',
+						'null'    => 0
+					],
+					[
+						'name'    => 'created_by',
+						'type'    => 'integer',
+						'length'  => 10,
+						'null'    => 0,
+					],
+					[
+						'name'    => 'updated_at',
+						'type'    => 'datetime',
+						'null'    => 1,
+					],
+					[
+						'name'    => 'updated_by',
+						'type'    => 'integer',
+						'length'  => 10,
+						'null'    => 1,
+					],
+					[
+						'name'    => 'campaign_id',
+						'type'    => 'integer',
+						'length'  => 10,
+						'null'    => 0,
+					],
+					[
+						'name'    => 'list_id',
+						'type'    => 'integer',
+						'length'  => 10,
+						'null'    => 0,
+					],
+					[
+						'name'    => 'is_voting',
+						'type'    => 'tinyint',
+						'length'  => 3,
+						'null'    => 0,
+						'default' => 0,
+					],
+					[
+						'name'    => 'voting_access',
+						'type'    => 'int',
+						'default' => 1,
+						'null'    => 0,
+					],
+					[
+						'name'    => 'max',
+						'type'    => 'integer',
+						'length'  => 10,
+					],
+					[
+						'name'    => 'title',
+						'type'    => 'varchar',
+						'length'  => 255,
+						'null'    => 1,
+					],
+					[
+						'name'    => 'subtitle',
+						'type'    => 'varchar',
+						'length'  => 255,
+						'null'    => 1,
+					],
+					[
+						'name'    => 'subtitle_icon',
+						'type'    => 'varchar',
+						'length'  => 50,
+						'null'    => 1,
+					],
+					[
+						'name'    => 'image',
+						'type'    => 'integer',
+						'length'  => 10,
+						'null'    => 1,
+					],
+					[
+						'name'    => 'tags',
+						'type'    => 'varchar',
+						'length'  => 255,
+						'null'    => 1,
+					],
+					[
+						'name'    => 'resume',
+						'type'    => 'varchar',
+						'length'  => 255,
+						'null'    => 1,
+					],
+					[
+						'name'    => 'banner',
+						'type'    => 'integer',
+						'length'  => 10,
+						'null'    => 1,
+					],
+					[
+						'name'    => 'logo',
+						'type'    => 'integer',
+						'length'  => 10,
+						'null'    => 1,
+					],
+					[
+						'name'    => 'start_date',
+						'type'    => 'datetime',
+						'null'    => 1,
+					],
+					[
+						'name'    => 'end_date',
+						'type'    => 'datetime',
+						'null'    => 1,
+					],
+					[
+						'name'    => 'published',
+						'type'    => 'tinyint',
+						'length'  => 3,
+						'default' => 0,
+						'null'    => 0,
+					]
+				];
+				$foreign_keys = [
+					[
+						'name'           => 'jos_fabrik_lists_fk_list_id',
+						'from_column'    => 'list_id',
+						'ref_table'      => 'jos_fabrik_lists',
+						'ref_column'     => 'id',
+						'update_cascade' => true,
+						'delete_cascade' => true,
+					]
+				];
+				$setup_gallery = EmundusHelperUpdate::createTable('jos_emundus_setup_gallery', $columns, $foreign_keys, 'Configuration des galeries de dossiers');
+
+				$columns      = [
+					[
+						'name'    => 'parent_id',
+						'type'    => 'int',
+						'null'    => 0
+					],
+					[
+						'name'    => 'title',
+						'type'    => 'varchar',
+						'length'  => 255,
+						'null'    => 0,
+					],
+					[
+						'name'    => 'fields',
+						'type'    => 'text',
+						'null'    => 1,
+					],
+				];
+				$foreign_keys = [
+					[
+						'name'           => 'jos_emundus_setup_gallery_fk_parent_id',
+						'from_column'    => 'parent_id',
+						'ref_table'      => 'jos_emundus_setup_gallery',
+						'ref_column'     => 'id',
+						'update_cascade' => true,
+						'delete_cascade' => true,
+					]
+				];
+				$setup_gallery_tabs = EmundusHelperUpdate::createTable('jos_emundus_setup_gallery_detail_tabs', $columns, $foreign_keys, 'Onglets de la vue détails du catalogue');
+
+				$columns      = [
+					[
+						'name'    => 'time_date',
+						'type'    => 'datetime',
+						'null'    => 0
+					],
+					[
+						'name'    => 'ccid',
+						'type'    => 'int',
+						'null'    => 1,
+					],
+					[
+						'name'    => 'user',
+						'type'    => 'int',
+						'null'    => 1,
+					],
+					[
+						'name'    => 'firstname',
+						'type'    => 'varchar(255)',
+						'null'    => 1,
+					],
+					[
+						'name'    => 'lastname',
+						'type'    => 'varchar(255)',
+						'null'    => 1,
+					],
+					[
+						'name'    => 'email',
+						'type'    => 'varchar(255)',
+						'null'    => 1,
+					],
+					[
+						'name'    => 'ip',
+						'type'    => 'varchar(20)',
+						'null'    => 1,
+					],
+				];
+				$foreign_keys = [
+					[
+						'name'           => 'jos_emundus_cmapaign_candidature_fk_ccid',
+						'from_column'    => 'ccid',
+						'ref_table'      => 'jos_emundus_campaign_candidature',
+						'ref_column'     => 'id',
+						'update_cascade' => true,
+						'delete_cascade' => true,
+					]
+				];
+				$vote_table = EmundusHelperUpdate::createTable('jos_emundus_vote', $columns, $foreign_keys, 'Vote des dossiers');
+				if(!$vote_table['status']) {
+					EmundusHelperUpdate::addColumn('jos_emundus_vote', 'time_date', 'DATETIME',null,0);
+					EmundusHelperUpdate::addColumn('jos_emundus_vote', 'ccid', 'INT');
+					EmundusHelperUpdate::addColumn('jos_emundus_vote', 'user', 'INT');
+					EmundusHelperUpdate::addColumn('jos_emundus_vote', 'firstname', 'VARCHAR', 255);
+					EmundusHelperUpdate::addColumn('jos_emundus_vote', 'lastname', 'VARCHAR', 255);
+					EmundusHelperUpdate::addColumn('jos_emundus_vote', 'email', 'VARCHAR', 255);
+					EmundusHelperUpdate::addColumn('jos_emundus_vote', 'ip', 'VARCHAR', 20);
+				}
+
+				$column_existing = $db->setQuery('SHOW COLUMNS FROM jos_emundus_vote WHERE ' . $db->quoteName('Field') . ' = ' . $db->quote('thematique'))->loadResult();
+				if (!empty($column_existing)) {
+					$db->setQuery('ALTER TABLE jos_emundus_vote MODIFY thematique INT NULL');
+					$db->execute();
+				}
+
+				$column_existing = $db->setQuery('SHOW COLUMNS FROM jos_emundus_vote WHERE ' . $db->quoteName('Field') . ' = ' . $db->quote('fnum'))->loadResult();
+				if (!empty($column_existing)) {
+					$db->setQuery('ALTER TABLE jos_emundus_vote MODIFY fnum VARCHAR(28) NULL');
+					$db->execute();
+				}
+
+				$db->setQuery('ALTER TABLE jos_emundus_vote MODIFY ' . $db->quoteName('user') . ' INT NULL');
+				$db->execute();
+
+				$datas = [
+					'menutype'     => 'onboardingmenu',
+					'title'        => 'Catalogues',
+					'alias'        => 'gallery',
+					'path'         => 'gallery',
+					'link'         => 'index.php?option=com_emundus&view=gallery',
+					'type'         => 'component',
+					'access' 	   => 6,
+					'component_id' => JComponentHelper::getComponent('com_emundus')->id,
+					'params'       => [
+						'menu_show' => 1,
+						'menu_image_css' => 'collections'
+					]
+				];
+				EmundusHelperUpdate::addJoomlaMenu($datas,1,0);
+
+				$datas = [
+					'menutype'     => 'onboardingmenu',
+					'title'        => 'Modifier un catalogue',
+					'alias'        => 'edit-gallery',
+					'path'         => 'edit-gallery',
+					'link'         => 'index.php?option=com_emundus&view=gallery&layout=edit',
+					'type'         => 'component',
+					'access' 	   => 6,
+					'component_id' => JComponentHelper::getComponent('com_emundus')->id,
+					'params'       => [
+						'menu_show' => 0
+					]
+				];
+				EmundusHelperUpdate::addJoomlaMenu($datas,1,0);
+
+				$query = $db->getQuery(true);
+
+				$query->select($db->quoteName('value'))
+					->from($db->quoteName('#__emundus_setup_config'))
+					->where($db->quoteName('namekey') . ' LIKE ' . $db->quote('onboarding_lists'));
+				$db->setQuery($query);
+				$onboarding_lists = $db->loadResult();
+
+				if(!empty($onboarding_lists))
+				{
+					$onboarding_lists = json_decode($onboarding_lists, true);
+
+					if(!array_key_exists('gallery',$onboarding_lists)) {
+						$onboarding_lists['gallery'] = [];
+						$onboarding_lists['gallery']['title'] = 'COM_EMUNDUS_ONBOARD_GALLERY';
+						$onboarding_lists['gallery']['tabs'] = [];
+						$onboarding_lists['gallery']['tabs'][0]['title'] = 'COM_EMUNDUS_ONBOARD_GALLERY';
+						$onboarding_lists['gallery']['tabs'][0]['key'] = 'gallery';
+						$onboarding_lists['gallery']['tabs'][0]['controller'] = 'gallery';
+						$onboarding_lists['gallery']['tabs'][0]['getter'] = 'getall';
+						$onboarding_lists['gallery']['tabs'][0]['actions'] = [];
+						$onboarding_lists['gallery']['tabs'][0]['actions'][0]['action'] = 'creategallery';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][0]['label'] = 'COM_EMUNDUS_ONBOARD_ADD_GALLERY';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][0]['controller'] = 'gallery';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][0]['name'] = 'add';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][1]['action'] = 'duplicategallery';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][1]['label'] = 'COM_EMUNDUS_ONBOARD_ACTION_DUPLICATE';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][1]['controller'] = 'gallery';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][1]['name'] = 'duplicate';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][2]['action'] = 'edit-gallery?gid=%id%';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][2]['label'] = 'COM_EMUNDUS_ONBOARD_MODIFY';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][2]['controller'] = 'gallery';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][2]['type'] = 'redirect';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][2]['name'] = 'edit';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][3]['action'] = 'deletegallery';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][3]['label'] = 'COM_EMUNDUS_ONBOARD_ACTION_DELETE';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][3]['controller'] = 'gallery';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][3]['name'] = 'delete';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][3]['confirm'] = 'COM_EMUNDUS_ONBOARD_CAMPDELETE';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][3]['showon']['key'] = 'nb_files';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][3]['showon']['operator'] = '<';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][3]['showon']['value'] = '1';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][4]['action'] = 'unpublishgallery';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][4]['label'] = 'COM_EMUNDUS_ONBOARD_ACTION_UNPUBLISH';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][4]['controller'] = 'gallery';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][4]['name'] = 'unpublish';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][4]['showon']['key'] = 'published';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][4]['showon']['operator'] = '=';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][4]['showon']['value'] = '1';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][5]['action'] = 'publishgallery';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][5]['label'] = 'COM_EMUNDUS_ONBOARD_ACTION_PUBLISH';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][5]['controller'] = 'gallery';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][5]['name'] = 'publish';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][5]['showon']['key'] = 'published';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][5]['showon']['operator'] = '=';
+						$onboarding_lists['gallery']['tabs'][0]['actions'][5]['showon']['value'] = '0';
+						$onboarding_lists['gallery']['tabs'][0]['filters'] = [];
+						$onboarding_lists['gallery']['tabs'][0]['filters'][0]['label'] = 'COM_EMUNDUS_ONBOARD_FILTER_ALL';
+						$onboarding_lists['gallery']['tabs'][0]['filters'][0]['getter'] = '';
+						$onboarding_lists['gallery']['tabs'][0]['filters'][0]['controller'] = 'gallery';
+						$onboarding_lists['gallery']['tabs'][0]['filters'][0]['key'] = 'filter';
+						$onboarding_lists['gallery']['tabs'][0]['filters'][0]['values'] = [];
+						$onboarding_lists['gallery']['tabs'][0]['filters'][0]['values'][0]['label'] = 'COM_EMUNDUS_ONBOARD_FILTER_ALL';
+						$onboarding_lists['gallery']['tabs'][0]['filters'][0]['values'][0]['value'] = 'all';
+						$onboarding_lists['gallery']['tabs'][0]['filters'][0]['values'][1]['label'] = 'COM_EMUNDUS_ONBOARD_FILTER_PUBLISH';
+						$onboarding_lists['gallery']['tabs'][0]['filters'][0]['values'][1]['value'] = 'Publish';
+						$onboarding_lists['gallery']['tabs'][0]['filters'][0]['values'][2]['label'] = 'COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH';
+						$onboarding_lists['gallery']['tabs'][0]['filters'][0]['values'][2]['value'] = 'Unpublish';
+						$onboarding_lists['gallery']['tabs'][0]['filters'][0]['default'] = 'Publish';
+
+						$query->clear()
+							->update($db->quoteName('#__emundus_setup_config'))
+							->set($db->quoteName('value') . ' = ' . $db->quote(json_encode($onboarding_lists)))
+							->where($db->quoteName('namekey') . ' LIKE ' . $db->quote('onboarding_lists'));
+						$db->setQuery($query);
+						$db->execute();
+					}
+				}
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTING_GO_DETAILS', 'Ce projet m\'intéresse');
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTING_GO_DETAILS', 'This project interests me', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_HEART', 'Mon coup de coeur');
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_HEART', 'My favourite', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE', 'Je donne mon coup de coeur !');
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE', 'I give my favourite!', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_TEXT', '<p>Vous vous apprêtez à voter pour ce projet.</p><p>Êtes-vous sûre de votre choix ? (une fois le coup de coeur attribué, vous ne pourrez plus le retirer)</p>');
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_TEXT', '<p>You are about to vote for this project.</p><p>Are you sure of your choice? (once the "coup de coeur" has been awarded, you will not be able to withdraw it)</p>', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_YES', 'Oui, je vote !');
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_YES', 'Yes, I vote!', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_GO_BACK', 'Retour aux projets');
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_GO_BACK', 'Back to projects', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_HOME_LINK', '/projets-selectionnes-2');
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_HOME_LINK', '/projets-selectionnes-2', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_NO', 'Non, retour aux projets');
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_NO', 'No, back to projects', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_ERROR_PLEASE_COMPLETE_EMAIL', 'Veuillez saisir une adresse email afin de soumettre votre vote');
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_ERROR_PLEASE_COMPLETE_EMAIL', 'Please enter an email address to submit your vote', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_ALREADY_VOTED', 'Coup de coeur attribué à ce projet !');
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_ALREADY_VOTED', 'You have voted for this project!', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_ALREADY_VOTED_FOR_OTHER', 'Vous avez déjà donné votre coup de coeur');
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_ALREADY_VOTED_FOR_OTHER', 'You\'ve already given us your favourite', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_SUCCESS_TITLE', 'Vote soumis !');
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_SUCCESS_TITLE', 'Vote submitted!', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_SUCCESS_TEXT', 'Votre vote a bien été pris en compte ! Merci de votre participation.');
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_SUCCESS_TEXT', 'Your vote has been taken into account! Thank you for your participation.', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_ERROR_TITLE', 'Une erreur est survenue');
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_ERROR_TITLE', 'An error has occurred', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_ERROR_TEXT', 'Votre vote n\'as pas pu être pris en compte. Veuillez réessayer plus tard.');
+				EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_ERROR_TEXT', 'Your vote could not be taken into account. Please try again later.', 'override', null, null, null, 'en-GB');
 			}
 
 			if (version_compare($cache_version, '1.38.2', '<=') || $firstrun) {

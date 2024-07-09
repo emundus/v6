@@ -2,8 +2,8 @@
 namespace Clickatell\Api;
 
 use Clickatell\Decoder;
-use PHPUnit_Framework_TestCase;
-use ReflectionClass;
+use \PHPUnit_Framework_TestCase;
+use \ReflectionClass;
 
 class ClickatellHttpTest extends PHPUnit_Framework_TestCase
 {

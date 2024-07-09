@@ -73,9 +73,6 @@ class plgAuthenticationEmundus_Oauth2 extends JPlugin
         $this->domain = $this->params->get('domain');
         $this->tokenUrl = $this->params->get('token_url');
         $this->logoutUrl = $this->params->get('logout_url');
-
-        jimport('joomla.log.log');
-        JLog::addLogger(array('text_file' => 'com_emundus.oauth2.php'), JLog::ALL, array('com_emundus'));
     }
 
     /**
@@ -281,10 +278,10 @@ class plgAuthenticationEmundus_Oauth2 extends JPlugin
             $result = $oauth2->authenticate();
         } catch (Exception $e) {
             $app = JFactory::getApplication();
-
-            JLog::add('Error when try to connect with oauth2 : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
-
-            $app->enqueueMessage(JText::_('PLG_AUTHENTICATION_EMUNDUS_OAUTH2_CONNECT_DOWN'), 'error');
+            JLog::add('Error when try to connect with oauth2 : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.oauth2');
+            $app->enqueueMessage(JText::_('PLG_AUTHENTICATION_EMUNDUS_OAUTH2_CONNECT_DOWN') . $e->getMessage() . ' params : ' . json_encode(array(
+                'redirect_uri' => $this->params->get('redirect_url'),
+            )), 'error');
             $app->redirect(JRoute::_('connexion'));
         }
 

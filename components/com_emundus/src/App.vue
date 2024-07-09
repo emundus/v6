@@ -44,6 +44,7 @@ import formbuilder from "./views/formBuilder"
 import settings from "./views/globalSettings"
 import messagescoordinator from "./components/Messages/MessagesCoordinator";
 import messages from "./components/Messages/Messages";
+import editgallery from "./views/editGallery"
 
 import settingsService from "./services/settings.js";
 import ApplicationSingle from "@/components/Files/ApplicationSingle.vue";
@@ -75,6 +76,7 @@ export default {
 		Attachments,
     addcampaign,
     campaignedition,
+    editgallery,
     addemail,
     formbuilder,
     settings,

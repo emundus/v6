@@ -1,4 +1,8 @@
+<<<<<<<< HEAD:libraries/fabrik/vendor/symfony/polyfill-php72/LICENSE
+Copyright (c) 2015-present Fabien Potencier
+========
 Copyright (c) 2018-present Fabien Potencier and Trevor Rowbotham <trevor.rowbotham@pm.me>
+>>>>>>>> master:libraries/fabrik/vendor/symfony/polyfill-intl-idn/LICENSE
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
