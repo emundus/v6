@@ -126,7 +126,7 @@ class EmundusModelsettings extends JModelList {
 
         $query->select('*')
             ->from($db->quoteName('#__emundus_setup_action_tag'))
-            ->order($db->quoteName('label'));
+            ->order($db->quoteName('ordering') . ',' . $db->quoteName('label'));
 
         try {
             $db->setQuery($query);
@@ -199,6 +199,35 @@ class EmundusModelsettings extends JModelList {
             JLog::add('component/com_emundus/models/settings | Cannot create a tag : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
+    }
+
+    /**
+     * @param $orderedTags
+     * @return bool
+     */
+    function updateTagsOrder($orderedTags) {
+        $updated = false;
+
+        if (!empty($orderedTags)) {
+            $db = $this->getDbo();
+            $query = $db->getQuery(true);
+
+            try {
+                foreach ($orderedTags as $order => $tag_id) {
+                    $query->clear()
+                        ->update('#__emundus_setup_action_tag')
+                        ->set($db->quoteName('ordering') . ' = ' . $db->quote($order))
+                        ->where($db->quoteName('id') . ' = ' . $db->quote($tag_id));
+
+                    $db->setQuery($query);
+                    $updated = $db->execute();
+                }
+            } catch (Exception $e) {
+                JLog::add('component/com_emundus/models/settings | Cannot update tags order : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+            }
+        }
+
+        return $updated;
     }
 
     /**
