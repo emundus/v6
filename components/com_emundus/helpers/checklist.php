@@ -35,29 +35,34 @@ class EmundusHelperChecklist {
      * @return string
      */
     function setAttachmentName(string $file, string $lbl, array $fnumInfos): string {
-
+        $filename = '';
         $file_array = explode(".", $file);
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $applicant_file_name = $eMConfig->get('applicant_file_name', null);
+        $keep_original_file_name = $eMConfig->get('keep_original_file_name', null);
 
-        if (!empty($applicant_file_name)) {
-            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
-            $m_emails = new EmundusModelEmails;
-
-            $tags = $m_emails->setTags($fnumInfos['applicant_id'], null, $fnumInfos['fnum'], '', $applicant_file_name);
-            $application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $applicant_file_name);
-            $application_form_name = $m_emails->setTagsFabrik($application_form_name, array($fnumInfos['fnum']));
-
-            // Format filename
-            $application_form_name = $m_emails->stripAccents($application_form_name);
-            $application_form_name = preg_replace('/[^A-Za-z0-9 _.-]/','', $application_form_name);
-            $application_form_name = preg_replace('/\s/', '_', $application_form_name);
-            $application_form_name = strtolower($application_form_name);
-            $filename = $application_form_name.'_'.trim($lbl, ' _').'-'.rand().'.'.end($file_array);
-
+        if ($keep_original_file_name) {
+            $filename = $file;
         } else {
-            $filename = $fnumInfos['applicant_id'].'-'.$fnumInfos['id'].'-'.trim($lbl, ' _').'-'.rand().'.'.end($file_array);
+            if (!empty($applicant_file_name)) {
+                require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+                $m_emails = new EmundusModelEmails;
+
+                $tags = $m_emails->setTags($fnumInfos['applicant_id'], null, $fnumInfos['fnum'], '', $applicant_file_name);
+                $application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $applicant_file_name);
+                $application_form_name = $m_emails->setTagsFabrik($application_form_name, array($fnumInfos['fnum']));
+
+                // Format filename
+                $application_form_name = $m_emails->stripAccents($application_form_name);
+                $application_form_name = preg_replace('/[^A-Za-z0-9 _.-]/','', $application_form_name);
+                $application_form_name = preg_replace('/\s/', '_', $application_form_name);
+                $application_form_name = strtolower($application_form_name);
+                $filename = $application_form_name.'_'.trim($lbl, ' _').'-'.rand().'.'.end($file_array);
+
+            } else {
+                $filename = $fnumInfos['applicant_id'].'-'.$fnumInfos['id'].'-'.trim($lbl, ' _').'-'.rand().'.'.end($file_array);
+            }
         }
 
         return $filename;
