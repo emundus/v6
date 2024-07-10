@@ -1307,7 +1307,8 @@ class EmundusModelRanking extends JModelList
                             ->select($this->db->quoteName('er.rank') . ', ' . $this->db->quoteName('er.id') . ', ' . $this->db->quoteName('er.locked') . ', ' . $this->db->quoteName('cc.status'))
                             ->from($this->db->quoteName('#__emundus_ranking', 'er'))
                             ->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'cc') . ' ON ' . $this->db->quoteName('cc.id') . ' = ' . $this->db->quoteName('er.ccid'))
-                            ->where($this->db->quoteName('er.hierarchy_id') . ' = ' . $this->db->quote($hierarchy_id))
+                            ->where($this->db->quoteName('er.ccid') . ' IN (' . implode(',', $ids_user_can_rank) . ')')
+                            ->andWhere($this->db->quoteName('er.hierarchy_id') . ' = ' . $this->db->quote($hierarchy_id))
                             ->andWhere($this->db->quoteName('er.rank') . ' >= ' . $this->db->quote($new_rank))
                             ->order($this->db->quoteName('er.rank') . ' ASC');
 
