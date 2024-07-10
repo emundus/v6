@@ -2164,7 +2164,7 @@ class EmundusModelEvaluation extends JModelList {
                                     if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown" || $elt['plugin'] == "radiobutton") {
 
                                         foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
-                                            if ($elt['plugin'] == "checkbox") {
+                                            if ($elt['plugin'] == "checkbox" || (!empty($params->multiple) && $params->multiple == 1)) {
                                                 $val = json_decode($val['val']);
                                             } else {
                                                 $val = explode(',', $val['val']);
