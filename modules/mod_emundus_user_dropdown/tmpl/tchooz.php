@@ -512,10 +512,17 @@ if ($user != null)
             var redirect_url = document.getElementById("switch_profile_redirect").value;
 
             var url = window.location.origin.toString() + '/' + redirect_url;
-
+            <?php
+            $config = JFactory::getConfig();
+            $switch = '/index.php?option=com_emundus&task=switchprofile';
+            $tchoozy = '/media/com_emundus/images/tchoozy/facial-expressions/sad-face.svg';
+            if ($config->get('sef') == 0) {
+                $switch = 'index.php?option=com_emundus&task=switchprofile';
+                $tchoozy = 'media/com_emundus/images/tchoozy/facial-expressions/sad-face.svg';
+            } ?>
             jQuery.ajax({
                 type: 'POST',
-                url: '/index.php?option=com_emundus&task=switchprofile',
+                url: '<?= $switch; ?>',
                 data: ({
                     profnum: current_fnum
                 }),

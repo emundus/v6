@@ -1382,13 +1382,20 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
         let iframeElementHover = divHover.querySelector('div#background-shapes');
         if (iframeElementHover !== null) {
-
+        <?php
+            $config = JFactory::getConfig();
+            $fondFonce = '/modules/mod_emundus_campaign/assets/fond-fonce.svg';
+            $fondClair = '/modules/mod_emundus_campaign/assets/fond-clair.svg';
+            if ($config->get('sef') == 0) {
+                $fondFonce = 'modules/mod_emundus_campaign/assets/fond-fonce.svg';
+                $fondClair = 'modules/mod_emundus_campaign/assets/fond-clair.svg';
+            } ?>
             divHover.addEventListener('mouseenter', function () {
-                iframeElementHover.style.maskImage = 'url("/modules/mod_emundus_campaign/assets/fond-fonce.svg")';
+                iframeElementHover.style.maskImage = 'url("'.<?= $fondFonce; ?>.'")';
             });
 
             divHover.addEventListener('mouseleave', function () {
-                iframeElementHover.style.maskImage = 'url("/modules/mod_emundus_campaign/assets/fond-clair.svg")';
+                iframeElementHover.style.maskImage = 'url("'.<?= $fondClair; ?>.'")';
             });
         }
     })
