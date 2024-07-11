@@ -35,6 +35,14 @@
     }
 ?>
 
+<?php if ($d->attributes['description_input'] == 1) : ?>
+    <div id="<?= $d->attributes['name'] . '_description_block'; ?>">
+        <label for="<?= $d->attributes['name'] . '_description'; ?>"
+               id="<?= $d->attributes['name'] . '_description_label'; ?>" id="label-description-document"><?php echo JText::_('DESCRIPTION_DOCUMENT') ?></label>
+        <input class="input-document-description" type="text" id="<?= $d->attributes['name'] . '_description'; ?>"/>
+    </div>
+<?php endif; ?>
+
 <div id="div_<?php echo $d->attributes['name']; ?>" class="fabrik_element___emundus_file_upload_parent">
     <span class="fabrik_element___file_upload_formats">
         <?= JText::_('PLG_ELEMENT_FILEUPLOAD_ALLOWED_TYPES')  . ' : ' . $allowed_types ?>. <?= JText::_('PLG_ELEMENT_FIELD_MAXSIZE_TIP') . $d->attributes['max_size_txt']; ?>. <?= JText::sprintf('PLG_ELEMENT_FIELD_MAXNB_TIP', $nb_max); ?>.
