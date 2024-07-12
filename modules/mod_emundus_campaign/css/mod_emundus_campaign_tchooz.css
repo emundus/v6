@@ -21,6 +21,26 @@
     font-family: var(--em-applicant-font);
     font-size: var(--em-applicant-font-size);
 }
+.mod_emundus_campaign__list_content_head a.btn.btn-primary {
+    color:var(--neutral-0);
+    background:var(--em-primary-color);
+    border: 1px solid var(--em-primary-color);
+}
+.mod_emundus_campaign__list_content_head a.btn.btn-secondary {
+    color: var(--em-secondary-color);
+    background: transparent;
+    border: 1px solid var(--em-secondary-color);
+}
+
+.mod_emundus_campaign__list_content_head a.btn.btn-primary:hover {
+    color:var(--em-primary-color);
+    background:transparent;
+}
+.mod_emundus_campaign__list_content_head a.btn.btn-secondary:hover {
+    color:var(--neutral-0);
+    background:var(--em-secondary-color);
+}
+
 
 .mod_emundus_campaign__intro{
     width: 72%;
@@ -134,6 +154,10 @@
     padding: var(--p-24);
     height: 345px;
     background: var(--neutral-0);
+}
+
+.mod_emundus_campaign__pinned_campaign div.mod_emundus_campaign__list_content--fc, div.mod_emundus_campaign__list_content--fc {
+    height:fit-content;
 }
 
 .mod_emundus_campaign__list_content--default {
@@ -314,6 +338,21 @@ a.em-blue-400-color:hover {
     min-height: 46px;
     font-family: var(--em-applicant-font-title) !important;
     font-size: 18px;
+}
+
+.mod_emundus_campaign__list_content_buttons {
+    width:50%;
+    align-self:end;
+    display:flex;
+    justify-content:space-between;
+}
+.mod_emundus_campaign__list_content_buttons--pinned {
+    width:initial;
+    align-self:initial;
+}
+
+.mod_emundus_campaign__list_content_buttons > div {
+    width:49%;
 }
 /*
 .mod_emundus_campaign__date *{
@@ -543,6 +582,20 @@ p[id*="mod_emundus_campaign__tchoozy_tab_desc"] {
     grid-template-columns: repeat(3, minmax(354px, 1fr));
 }
 
+.mod_emundus_campaign__list_items--line{
+    display:flex;
+    flex-direction:column;
+    gap:var(--p-12);
+
+    #tile-hover-offset-procedure {
+        display: none;
+    }
+
+    #background-shapes {
+        display: none;
+    }
+}
+
 .mod_emundus_campaign__pinned_campaign{
     display: grid;
     align-items: flex-start;
@@ -590,6 +643,22 @@ p[id*="mod_emundus_campaign__tchoozy_tab_desc"] {
     }
 }
 
+.em-campaign-tags {
+    margin-top:-8px;
+    list-style:none;
+    display:flex;
+    gap:5px;
+}
+
+.em-campaign-tags > .em-campaign-tag {
+    background-color: var(--em-secondary-color);
+    color: #ffffff;
+    font-size: 15px;
+    border-radius: var(--em-status-br);
+    font-weight: 400;
+    padding: 6px 10px;
+}
+
 @media (max-width: 479px) {
 
     .mod_emundus_campaign__header_filter__values {
@@ -616,6 +685,11 @@ p[id*="mod_emundus_campaign__tchoozy_tab_desc"] {
 
     .mod_emundus_campaign__list_items {
         grid-template-columns: repeat(1,1fr);
+    }
+
+    .mod_emundus_campaign__list_content_buttons {
+        width:initial;
+        align-self:initial;
     }
 
     .mod_emundus_campaign__grid {
@@ -652,6 +726,11 @@ p[id*="mod_emundus_campaign__tchoozy_tab_desc"] {
 
     .mod_emundus_campaign__list_content .em-font-size-16 {
         flex-basis: auto !important;
+    }
+
+    .mod_emundus_campaign__list_content_buttons {
+        width:initial;
+        align-self:initial;
     }
 
     .mod_emundus_campaign__grid {
@@ -705,6 +784,11 @@ p[id*="mod_emundus_campaign__tchoozy_tab_desc"] {
         flex-basis: auto !important;
     }
 
+    .mod_emundus_campaign__list_content_buttons {
+        width:initial;
+        align-self:initial;
+    }
+
     .mod_emundus_campaign__grid {
         grid-template-columns: 94% !important;
     }
@@ -716,6 +800,7 @@ p[id*="mod_emundus_campaign__tchoozy_tab_desc"] {
     .mod_emundus_campaign__buttons {
         flex-direction: column !important;
     }
+
 
     .mod_emundus_campaign__buttons button:nth-child(2) {
         margin-top: var(--m-16);

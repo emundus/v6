@@ -34,7 +34,6 @@
             </li>
           </ul>
         </div>
-        <br>
         <div v-if="selectedMenu === 'addEmail'" class="warning-message-program mb-1">
           <p class="em-red-500-color flex flex-row"><span class="material-icons-outlined em-mr-8 em-red-500-color">warning_amber</span>{{ translate('COM_EMUNDUS_ONBOARD_PROGRAM_WARNING') }}
           </p>

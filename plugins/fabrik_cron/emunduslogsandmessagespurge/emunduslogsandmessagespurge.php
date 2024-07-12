@@ -75,17 +75,29 @@ class PlgFabrik_Cronemunduslogsandmessagespurge extends PlgFabrik_Cron{
 
 		if ($export)
 		{
-			$zip_filename = JPATH_SITE . '/tmp/backup_logs_and_messages_' . date('Y-m-d_H-i-s') . '.zip';
-			$zip          = new ZipArchive();
-			if ($zip->open($zip_filename, ZipArchive::CREATE) === true)
+			$filename_logs     = $m_logs->exportLogsBeforeADate($now);
+			$filename_messages = $m_messages->exportMessagesBeforeADate($now);
+
+			if(!empty($filename_messages) || !empty($filename_logs))
 			{
-				$filename_logs     = $m_logs->exportLogsBeforeADate($now);
-				$filename_messages = $m_messages->exportMessagesBeforeADate($now);
-				$zip->addFile($filename_logs, basename($filename_logs));
-				$zip->addFile($filename_messages, basename($filename_messages));
-				$zip->close();
-				unlink($filename_messages);
-				unlink($filename_logs);
+				$zip_filename = JPATH_SITE . '/tmp/backup_logs_and_messages_' . date('Y-m-d_H-i-s') . '.zip';
+				$zip          = new ZipArchive();
+				if ($zip->open($zip_filename, ZipArchive::CREATE) === true)
+				{
+					if (!empty($filename_logs) && file_exists($filename_logs))
+					{
+						$zip->addFile($filename_logs, basename($filename_logs));
+						unlink($filename_logs);
+					}
+
+					if (!empty($filename_messages) && file_exists($filename_messages))
+					{
+						$zip->addFile($filename_messages, basename($filename_messages));
+						unlink($filename_messages);
+					}
+
+					$zip->close();
+				}
 			}
 		}
 

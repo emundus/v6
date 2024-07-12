@@ -735,7 +735,8 @@ class EmundusModelCampaign extends JModelList {
                 $query->select('COUNT(id)')
                     ->from($this->_db->quoteName('#__emundus_campaign_candidature'))
                     ->where($this->_db->quoteName('status') . ' IN (' . $limit->steps . ')')
-                    ->andWhere($this->_db->quoteName('campaign_id') . ' = ' . $id);
+                    ->andWhere($this->_db->quoteName('campaign_id') . ' = ' . $id)
+                    ->andWhere($this->_db->quoteName('published').' = 1');
 
                 try {
                     $this->_db->setQuery($query);
@@ -1326,6 +1327,11 @@ class EmundusModelCampaign extends JModelList {
                             $data['published'] = 0;
                         }
                     }
+					if($key == 'start_date' || $key == 'end_date'){
+						$dateStr = str_replace(' ', 'T', $val);
+						$date = new DateTime($dateStr);
+						$data[$key] = $date->format('Y-m-d H:i:s');
+					}
                 }
                 $i++;
             }

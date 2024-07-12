@@ -74,7 +74,7 @@ class EmundusHelperDate {
                 $date_time = new DateTime($date);
             }
 
-            $display_date = HtmlHelper::date($date_time->format('Y-m-d H:i:s'), Text::_($format));
+            $display_date = HtmlHelper::date($date_time->format('Y-m-d H:i:s'), Text::_($format,false,false));
         }
 
         return $display_date;

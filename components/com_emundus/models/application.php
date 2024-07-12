@@ -1836,7 +1836,18 @@ class EmundusModelApplication extends JModelList
                                                         if (strlen($index) > 0) {
                                                             $elt = JText::_($params->sub_options->sub_labels[$index]);
                                                         } elseif (!empty($params->dropdown_populate)) {
-                                                            $elt = $r_elt;
+                                                            try {
+                                                                $options = eval($params->dropdown_populate);
+                                                                $elt = $r_elt;
+                                                                foreach ($options as $option) {
+                                                                    if ($option->value == $r_elt) {
+                                                                        $elt = $option->text;
+                                                                        break;
+                                                                    }
+                                                                }
+                                                            } catch (Exception $e) {
+                                                                $elt = $r_elt;
+                                                            }
                                                         } else {
                                                             $elt = "";
                                                         }
@@ -1874,7 +1885,7 @@ class EmundusModelApplication extends JModelList
 	                                                    }
                                                     } elseif ($elements[$j]->plugin == 'emundus_phonenumber') {
                                                         $elt = substr($r_elt, 2, strlen($r_elt));
-                                                    } 
+                                                    }
 													elseif ($elements[$j]->plugin == 'iban') {
 														$elt = $r_elt;
 
@@ -2075,7 +2086,18 @@ class EmundusModelApplication extends JModelList
                                                 if (strlen($index) > 0) {
                                                     $elt = JText::_($params->sub_options->sub_labels[$index]);
                                                 } elseif (!empty($params->dropdown_populate)) {
-                                                    $elt = $element->content;
+                                                    try {
+                                                        $options = eval($params->dropdown_populate);
+                                                        $elt = $element->content;
+                                                        foreach ($options as $option) {
+                                                            if ($option->value == $element->content) {
+                                                                $elt = $option->text;
+                                                                break;
+                                                            }
+                                                        }
+                                                    } catch (Exception $e) {
+                                                        $elt = $element->content;
+                                                    }
                                                 } elseif ($params->multiple == 1) {
                                                     $elt = $elt = "<ul><li>" . implode("</li><li>", json_decode(@$element->content)) . "</li></ul>";
                                                 } else {
@@ -2453,7 +2475,18 @@ class EmundusModelApplication extends JModelList
                                                     if (strlen($index) > 0) {
                                                         $elt = JText::_($params->sub_options->sub_labels[$index]);
                                                     } elseif (!empty($params->dropdown_populate)) {
-                                                        $elt = $r_elt;
+                                                        try {
+                                                            $options = eval($params->dropdown_populate);
+                                                            $elt = $r_elt;
+                                                            foreach ($options as $option) {
+                                                                if ($option->value == $r_elt) {
+                                                                    $elt = $option->text;
+                                                                    break;
+                                                                }
+                                                            }
+                                                        } catch (Exception $e) {
+                                                            $elt = $r_elt;
+                                                        }
                                                     } else {
                                                         $elt = "";
                                                     }
@@ -2643,7 +2676,18 @@ class EmundusModelApplication extends JModelList
                                                     if (strlen($index) > 0) {
                                                         $elt = JText::_($params->sub_options->sub_labels[$index]);
                                                     } elseif (!empty($params->dropdown_populate)) {
-                                                        $elt = $r_elt;
+                                                        try {
+                                                            $options = eval($params->dropdown_populate);
+                                                            $elt = $r_elt;
+                                                            foreach ($options as $option) {
+                                                                if ($option->value == $r_elt) {
+                                                                    $elt = $option->text;
+                                                                    break;
+                                                                }
+                                                            }
+                                                        } catch (Exception $e) {
+                                                            $elt = $r_elt;
+                                                        }
                                                     } else {
                                                         $elt = "";
                                                     }
@@ -2698,7 +2742,7 @@ class EmundusModelApplication extends JModelList
                                                         if (!empty($params) && $params->use_wysiwyg == 1) {
                                                             $forms .= '<div style="width: 100%; padding: 4px 8px;color: #000000;border: solid 1px #A4A4A4;font-size: 12px">' . preg_replace('/<br\s*\/?>/','',JText::_($elt)) . '</div>';
                                                         } else {
-                                                            $forms .= '<div style="width: 100%; padding: 4px 8px;color: #000000;border: solid 1px #A4A4A4;font-size: 12px">' . JText::_($elt) . '</div>';
+                                                            $forms .= '<div style="width: 100%; padding: 4px 8px;color: #000000;border: solid 1px #A4A4A4;font-size: 12px;word-break:break-word; hyphens:auto;">' . JText::_($elt) . '</div>';
                                                         }
                                                         $forms .= '</div>';
                                                         $forms .= '<table class="pdf-forms">';
@@ -2856,7 +2900,18 @@ class EmundusModelApplication extends JModelList
                                                 } elseif ($params->multiple == 1) {
                                                     $elt = implode(", ", json_decode(@$element->content));
                                                 } elseif (!empty($params->dropdown_populate)) {
-                                                    $elt = $r_elt;
+                                                    try {
+                                                        $options = eval($params->dropdown_populate);
+                                                        $elt = $element->content;
+                                                        foreach ($options as $option) {
+                                                            if ($option->value == $element->content) {
+                                                                $elt = $option->text;
+                                                                break;
+                                                            }
+                                                        }
+                                                    } catch (Exception $e) {
+                                                        $elt = $element->content;
+                                                    }
                                                 } else {
                                                     $elt = "";
                                                 }
@@ -2911,7 +2966,7 @@ class EmundusModelApplication extends JModelList
                                                 if (!empty($params) && $params->use_wysiwyg == 1) {
                                                     $forms .= '<div style="width: 100%; padding: 4px 8px;color: #000000;border: solid 1px #A4A4A4;font-size: 12px">' . preg_replace('/<br\s*\/?>/','',JText::_($elt)) . '</div>';
                                                 } else {
-                                                    $forms .= '<div style="width: 100%; padding: 4px 8px;color: #000000;border: solid 1px #A4A4A4;font-size: 12px">' . JText::_($elt) . '</div>';
+                                                    $forms .= '<div style="width: 100%; padding: 4px 8px;color: #000000;border: solid 1px #A4A4A4;font-size: 12px;word-break:break-word; hyphens:auto;">' . JText::_($elt) . '</div>';
                                                 }
 	                                            $forms .= '</div>';
 	                                            $forms .= '<table class="pdf-forms">';
@@ -5030,117 +5085,119 @@ class EmundusModelApplication extends JModelList
      *
      * @return (array) containing status of update and file content update
      */
-    public function updateAttachment($data) {
+    public function updateAttachment($data)
+    {
         $return = [
             "update" => false
         ];
 
-        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
+        if (!empty($data['id']) && !empty($data['user']) && !empty($data['fnum'])) {
+            $is_validated   = array(1 => 'VALID', 0 => 'INVALID', 2 => 'COM_EMUNDUS_ATTACHMENTS_WARNING', -2 => 'COM_EMUNDUS_ATTACHMENTS_WAITING');
+            $can_be_viewed  = array(1 => 'JYES', 0 => 'JNO');
+            $can_be_deleted = array(1 => 'JYES', 0 => 'JNO');
 
-        if (isset($data['file'])) {
-            // replace content of current attachment
-            $content = file_get_contents($data['file']['tmp_name']);
-            $attachment = $this->getUploadByID($data['id']);
-            $updated = file_put_contents(EMUNDUS_PATH_REL . $attachment['user_id'] . "/" . $attachment['filename'], $content);
-
-            $return['file_update'] = $updated ? true : false;
-        }
-
-        // get old data
-        $oldData = $this->getUploadByID($data['id']);
-
-        // update attachments fields in database
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
-        $query->update($db->quoteName('#__emundus_uploads'));
-
-        if (isset($data['description'])) {
-            $query->set($db->quoteName('description') . ' = ' . $db->quote($data['description']));
-        }
-
-        if (isset($data['is_validated'])) {
-            $query->set($db->quoteName('is_validated') . ' = ' . $db->quote($data['is_validated']));
-        }
-
-        if (isset($data['can_be_viewed'])){
-            $query->set($db->quoteName('can_be_viewed') . ' = ' . $db->quote($data['can_be_viewed']));
-        }
-
-        if (isset($data['can_be_deleted'])){
-            $query->set($db->quoteName('can_be_deleted') . ' = ' . $db->quote($data['can_be_deleted']));
-        }
-
-        $query->set($db->quoteName('modified') . ' = ' . $db->quote(date("Y-m-d H:i:s")))
-            ->set($db->quoteName('modified_by') . ' = ' . $db->quote($data['user']))
-            ->where($db->quoteName('id') . ' = ' . $db->quote($data['id']));
-
-        try {
-            $db->setQuery($query);
-            $db->execute();
-            $return['update'] = true;
-
-            // get new data
-            $newData = $this->getUploadByID($data['id']);
-
-            $logger = array();
-
-            // included keys
-            $includedKeys = ['description','can_be_deleted','can_be_viewed','is_validated'];
-
-            $is_validated = array(1=>'VALID',0=>'INVALID',2=> 'COM_EMUNDUS_ATTACHMENTS_WARNING',-2=>'COM_EMUNDUS_ATTACHMENTS_WAITING');
-            $can_be_viewed = array(1=>'JYES',0=>'JNO');
-            $can_be_deleted = array(1=>'JYES',0=>'JNO');
-
-            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
-            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-
-            $mFile = new EmundusModelFiles();
-            $applicant_id = ($mFile->getFnumInfos($data['fnum']))['applicant_id'];
-
-            $attachmentParams = $this->getAttachmentByID($newData['attachment_id']);
-
-            if(empty($_FILES)) {
-                // find the difference(s)
-                foreach ($oldData as $key => $value) {
-                    // by default : null = "invalid" or -2
-                    if($key === 'is_validated' and is_null($value)) {
-                        $value = -2;            # recheck !!!
-                    }
-
-                    $logsStd = new stdClass();
-                    if ($oldData[$key] !== $newData[$key] and in_array($key, $includedKeys)) {
-                        $logsStd->description = '<b>' . '[' . $attachmentParams['value'] . ']' . '</b>';
-
-                        $logsStd->element = '<u>' . JText::_($key) . '</u>';
-
-                        // set old data
-                        if(in_array($oldData[$key],array_keys($$key))) { $logsStd->old = JText::_($$key[$oldData[$key]]); }
-                        else { $logsStd->old = $oldData[$key]; }
-
-                        // set new data
-                        if(in_array($oldData[$key],array_keys($$key))) { $logsStd->new = JText::_($$key[$newData[$key]]); }
-                        else { $logsStd->new = $newData[$key]; }
-
-                        $logger[] = $logsStd;
-                    } else {
-                        continue;
-                    }
-                    $logsParams = array('updated' => $logger);
-                }
-                EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $data['fnum'], 4, 'u', 'COM_EMUNDUS_ACCESS_ATTACHMENT_UPDATE',json_encode($logsParams,JSON_UNESCAPED_UNICODE));
-            } else {
-                // add new document LOGS
-                $logsStd = new stdClass();
-
-                /* get attachment type by $data['id'] */
-                $logsStd->element = '[' . $attachmentParams['value'] . ']';
-                $logsStd->details = $_FILES['file']['name'];
-                $logsParams = array('created' => [$logsStd]);
-                EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $data['fnum'], 4, 'c', 'COM_EMUNDUS_ACCESS_ATTACHMENT_CREATE',json_encode($logsParams,JSON_UNESCAPED_UNICODE));
+            if (isset($data['file'])) {
+                $content    = file_get_contents($data['file']['tmp_name']);
+                $attachment = $this->getUploadByID($data['id']);
+                $updated    = file_put_contents(EMUNDUS_PATH_REL . $attachment['user_id'] . "/" . $attachment['filename'], $content);
+                $return['file_update'] = (bool)$updated;
             }
-        } catch (Exception $e) {
-            // log error
-            $return['update'] = false;
+
+            $oldData = $this->getUploadByID($data['id']);
+
+            $query = $this->_db->getQuery(true);
+            $query->update($this->_db->quoteName('#__emundus_uploads'));
+
+            if (isset($data['description'])) {
+                $query->set($this->_db->quoteName('description') . ' = ' . $this->_db->quote($data['description']));
+            }
+
+            if (isset($data['is_validated'])) {
+                if (in_array($data['is_validated'], array_keys($is_validated))) {
+                    $query->set($this->_db->quoteName('is_validated') . ' = ' . $this->_db->quote($data['is_validated']));
+                }
+            }
+
+            if (isset($data['can_be_viewed'])) {
+                if (in_array($data['can_be_viewed'], array_keys($can_be_viewed))) {
+                    $query->set($this->_db->quoteName('can_be_viewed') . ' = ' . $this->_db->quote($data['can_be_viewed']));
+                }
+            }
+
+            if (isset($data['can_be_deleted'])) {
+                if (in_array($data['can_be_deleted'], array_keys($can_be_deleted))) {
+                    $query->set($this->_db->quoteName('can_be_deleted') . ' = ' . $this->_db->quote($data['can_be_deleted']));
+                }
+            }
+
+            $query->set($this->_db->quoteName('modified') . ' = ' . $this->_db->quote(date("Y-m-d H:i:s")))
+                ->set($this->_db->quoteName('modified_by') . ' = ' . $this->_db->quote($data['user']))
+                ->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($data['id']));
+
+            try {
+                $this->_db->setQuery($query);
+                $return['update'] = $this->_db->execute();
+
+                if ($return['update']) {
+                    $newData = $this->getUploadByID($data['id']);
+                    $logger = array();
+
+                    $includedKeys = ['description', 'can_be_deleted', 'can_be_viewed', 'is_validated'];
+
+                    require_once(JPATH_SITE . '/components/com_emundus/models/logs.php');
+                    require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
+
+                    $m_files = new EmundusModelFiles();
+                    $applicant_id = ($m_files->getFnumInfos($data['fnum']))['applicant_id'];
+                    $attachmentParams = $this->getAttachmentByID($newData['attachment_id']);
+
+                    if (empty($_FILES)) {
+                        // find the difference(s)
+                        foreach ($oldData as $key => $value) {
+                            // by default : null = "invalid" or -2
+                            if ($key === 'is_validated' and is_null($value)) {
+                                $value = -2;            # recheck !!!
+                            }
+
+                            $logsStd = new stdClass();
+                            if ($oldData[$key] !== $newData[$key] and in_array($key, $includedKeys)) {
+                                $logsStd->description = '<b>' . '[' . $attachmentParams['value'] . ']' . '</b>';
+                                $logsStd->element = '<u>' . JText::_($key) . '</u>';
+
+                                // check if a var with same name as the key exists
+                                $column_values = ${$key};
+                                if (!empty($column_values) && in_array($oldData[$key], array_keys($column_values))) {
+                                    $logsStd->old = JText::_($column_values[$oldData[$key]]);
+                                    $logsStd->new = JText::_($column_values[$newData[$key]]);
+                                }
+                                else {
+                                    $logsStd->old = $oldData[$key];
+                                    $logsStd->new = $newData[$key];
+                                }
+
+                                $logger[] = $logsStd;
+                            }
+                            else {
+                                continue;
+                            }
+
+                            $logsParams = array('updated' => $logger);
+                        }
+                        EmundusModelLogs::log($this->_user->id, $applicant_id, $data['fnum'], 4, 'u', 'COM_EMUNDUS_ACCESS_ATTACHMENT_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+                    }
+                    else {
+                        $logsStd = new stdClass();
+
+                        $logsStd->element = '[' . $attachmentParams['value'] . ']';
+                        $logsStd->details = $_FILES['file']['name'];
+                        $logsParams       = array('created' => [$logsStd]);
+                        EmundusModelLogs::log($this->_user->id, $applicant_id, $data['fnum'], 4, 'c', 'COM_EMUNDUS_ACCESS_ATTACHMENT_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+                    }
+                }
+            }
+            catch (Exception $e) {
+                JLog::add('Failed to update attachment ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            }
         }
 
         return $return;
@@ -5171,7 +5228,13 @@ class EmundusModelApplication extends JModelList
         if ($fileExists) {
             // create preview based on filetype
             if ($extension == 'pdf') {
-                $preview['content'] = '<iframe src="/index.php?option=com_emundus&task=getfile&u=images/emundus/files/'. $user . '/' . $fileName . '" style="width:100%;height:100%;" border="0"></iframe>';
+                $config = JFactory::getConfig();
+                if ($config->get('sef') == 0) {
+                    $preview['content'] = '<iframe src="index.php?option=com_emundus&task=getfile&u=images/emundus/files/'. $user . '/' . $fileName . '" style="width:100%;height:100%;" border="0"></iframe>';
+                }
+                else{
+                    $preview['content'] = '<iframe src="/index.php?option=com_emundus&task=getfile&u=images/emundus/files/'. $user . '/' . $fileName . '" style="width:100%;height:100%;" border="0"></iframe>';
+                }
             } else if ($extension == 'txt') {
                 $content = file_get_contents($filePath);
                 $preview['overflowY'] = true;

@@ -910,7 +910,8 @@ foreach ($parsed_data as $row_id => $insert_row) {
                     $message = array(
                         'user_id_to' => $uid,
                         'subject' => $email->subject,
-                        'message' => $body
+                        'message' => $body,
+                        'email_to' => $user->email
                     );
                     $m_emails->logEmail($message);
                 }

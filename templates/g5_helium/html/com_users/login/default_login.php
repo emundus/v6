@@ -23,10 +23,16 @@ if(!empty($this->campaign)){
 } else {
 	JFactory::getSession()->clear('login_campaign_id');
 }
+$config = JFactory::getConfig();
+if ($config->get('sef') == 0) {
+    echo '<iframe id="background-shapes2" class="background-shaped-top" src="modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_("MOD_EM_FORM_IFRAME") ?>"></iframe>
+<iframe id="background-shapes2" class="background-shaped-bottom" src="modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_("MOD_EM_FORM_IFRAME") ?>"></iframe>';
+}
+else{
+    echo '<iframe id="background-shapes2" class="background-shaped-top" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_("MOD_EM_FORM_IFRAME") ?>"></iframe>
+    <iframe id="background-shapes2" class="background-shaped-bottom" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_("MOD_EM_FORM_IFRAME") ?>"></iframe>';
+}
 ?>
-<iframe id="background-shapes2" class="background-shaped-top" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
-<iframe id="background-shapes2" class="background-shaped-bottom" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
-
 <div class="login<?php echo $this->pageclass_sfx; ?>">
     <?php if ($this->params->get('show_page_heading')) : ?>
         <div class="page-header">

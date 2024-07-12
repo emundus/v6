@@ -343,9 +343,10 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
         </div>
 	<?php else : ?>
         <h4 id="no_file_tab_message_view" class="em-display-none"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_TAB') ?></h4>
-		<?php foreach ($applications as $key => $group) : ?>
+        <h4 id="no_file_search_message_view" class="em-display-none"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_SEARCH') ?></h4>
+        <?php foreach ($applications as $key => $group) : ?>
 			<?php foreach ($group as $g_key => $sub_group) : ?>
-				<?php if (sizeof($sub_group['applications'][0]) > 0) : ?>
+                <?php if ((!empty($order_by_session) && !empty($sub_group['applications'])) || !empty($sub_group['applications'][0])) : ?>
                     <div id="group_application_tab_<?php echo $key ?>"
                          class="em-mb-44 <?php if ($key != $current_tab) : ?>em-display-none<?php endif; ?>">
                         <?php if (isset($sub_group['label'])) : ?>
@@ -397,12 +398,11 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 											$current_phase = $m_campaign->getCurrentCampaignWorkflow($application->fnum);
 
 											?>
-                                            <div class="hover-and-tile-container">
+                                            <div class="hover-and-tile-container" id="application_content<?php echo $application->fnum ?>">
 	                                            <?php if ($mod_em_campaign_display_hover_offset == 1) : ?>
                                                 <div id="tile-hover-offset-request"></div>
                                                 <?php endif; ?>
                                                 <div class="row em-border-neutral-300 mod_emundus_applications___content_app em-pointer"
-                                                     id="application_content<?php echo $application->fnum ?>"
                                                      onclick="openFile(event,'<?php echo $first_page_url ?>')">
 											        <?php if ($mod_em_campaign_display_svg == 1) : ?>
                                                         <div id="background-shapes" alt="<?= JText::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
@@ -418,12 +418,12 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                                                                 <?php if (empty($visible_status)) : ?>
                                                                     <div class="mod_emundus_applications___status_<?= $application->class; ?> flex"
                                                                          id="application_status_<?php echo $application->fnum ?>">
-                                                                        <span class="label label-<?= $application->class; ?>"><?= $application->value; ?></span>
+                                                                        <span class="mod_emundus_applications___status_label label label-<?= $application->class; ?>"><?= $application->value; ?></span>
                                                                     </div>
                                                                 <?php elseif (in_array($application->status, $visible_status)) : ?>
                                                                     <div class="mod_emundus_applications___status_<?= $application->class; ?> flex"
                                                                          id="application_status_<?php echo $application->fnum ?>">
-                                                                        <span class="label label-<?= $application->class; ?>"><?= $application->value; ?></span>
+                                                                        <span class="mod_emundus_applications___status_label label label-<?= $application->class; ?>"><?= $application->value; ?></span>
                                                                     </div>
                                                                 <?php endif; ?>
                                                                 <?php if (!empty($application->order_status)): ?>
@@ -524,9 +524,9 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                                                                     :</label>
                                                                 <p class="em-applicant-default-font em-text-neutral-900">
                                                                     <?php if (empty($application->updated)) : ?>
-                                                                        <?php echo JFactory::getDate(new JDate($application->submitted_date, $site_offset))->format('d/m/Y H:i'); ?>
+                                                                        <?php echo EmundusHelperDate::displayDate($application->submitted_date, 'DATE_FORMAT_EMUNDUS'); ?>
                                                                     <?php else : ?>
-                                                                        <?php echo EmundusHelperDate::displayDate($application->updated, 'DATE_FORMAT_LC2', 0); ?>
+                                                                        <?php echo EmundusHelperDate::displayDate($application->updated, 'DATE_FORMAT_EMUNDUS', 0); ?>
                                                                     <?php endif; ?>
                                                                 </p>
                                                             </div>
@@ -667,7 +667,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
         <h4 id="no_file_tab_message_list" class="em-display-none"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_TAB') ?></h4>
 		<?php foreach ($applications as $key => $group) : ?>
 			<?php foreach ($group as $g_key => $sub_group) : ?>
-				<?php if (sizeof($sub_group['applications'][0]) > 0) : ?>
+                <?php if ((!empty($order_by_session) && !empty($sub_group['applications'])) || !empty($sub_group['applications'][0])) : ?>
                     <div id="group_application_tab_<?php echo $key ?>"
                          class="em-mb-44 <?php if ($key != $current_tab) : ?>em-display-none<?php endif; ?>">
 
@@ -757,9 +757,9 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                                                         <div>
                                                             <p class="em-applicant-default-font em-text-neutral-900 em-font-size-14">
 																<?php if (empty($application->updated)) : ?>
-																	<?php echo JFactory::getDate(new JDate($application->submitted_date, $site_offset))->format('d/m/Y H:i'); ?>
+																	<?php echo EmundusHelperDate::displayDate($application->submitted_date, 'DATE_FORMAT_EMUNDUS'); ?>
 																<?php else : ?>
-																	<?php echo EmundusHelperDate::displayDate($application->updated, 'd/m/Y H:i', 0); ?>
+																	<?php echo EmundusHelperDate::displayDate($application->updated, 'DATE_FORMAT_EMUNDUS', 0); ?>
 																<?php endif; ?>
                                                             </p>
                                                         </div>
@@ -781,12 +781,12 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 														<?php if (empty($visible_status)) : ?>
                                                             <div class="mod_emundus_applications___status_<?= $application->class; ?> em-flex-row"
                                                                  id="application_status_<?php echo $application->fnum ?>">
-                                                                <span class="label label-<?= $application->class; ?>"><?= $application->value; ?></span>
+                                                                <span class="mod_emundus_applications___status_label label label-<?= $application->class; ?>"><?= $application->value; ?></span>
                                                             </div>
 														<?php elseif (in_array($application->status, $visible_status)) : ?>
                                                             <div class="mod_emundus_applications___status_<?= $application->class; ?> em-flex-row"
                                                                  id="application_status_<?php echo $application->fnum ?>">
-                                                                <span class="label label-<?= $application->class; ?>"><?= $application->value; ?></span>
+                                                                <span class="mod_emundus_applications___status_label label label-<?= $application->class; ?>"><?= $application->value; ?></span>
                                                             </div>
 														<?php endif; ?>
 														<?php if (!empty($application->order_status)): ?>
@@ -929,6 +929,8 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 
 <script type="text/javascript">
+    var $ = jQuery.noConflict();
+
     window.addEventListener('DOMContentLoaded', (event) => {
         let selected_tab_session = sessionStorage.getItem('mod_emundus_applications___selected_tab');
         let selected_view = sessionStorage.getItem('mod_emundus_applications___selected_view');
@@ -1053,7 +1055,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                 document.querySelectorAll('#application_content' + fnum).forEach((block) => {
                     block.style.display = 'none';
                 })
-            })
+            });
             fnums_to_show.forEach((fnum) => {
                 document.querySelectorAll('#application_content' + fnum).forEach((block) => {
                     if(block.nodeName === 'TR'){
@@ -1062,7 +1064,14 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                         block.style.display = 'block';
                     }
                 })
-            })
+            });
+
+            if (fnums_to_show.length === 0) {
+                document.getElementById('no_file_search_message_view').style.display = 'block';
+            } else {
+                document.getElementById('no_file_search_message_view').style.display = 'none';
+            }
+
         } else {
             for (let application of document.querySelectorAll("div[id^='application_content']")) {
                 if(application.nodeName === 'TR'){
@@ -1071,7 +1080,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                     application.style.display = 'block';
                 }
             }
-
+            document.getElementById('no_file_search_message_view').style.display = 'none';
         }
 
     }, 500));
@@ -1314,6 +1323,12 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                         if (selected_tab_session !== null && selected_tab_session == tab) {
                             sessionStorage.removeItem('mod_emundus_applications___selected_tab');
                             this.updateTab(0);
+                        }
+
+                        let tabs =  document.querySelectorAll('div[id^="tab_link_"]');
+                        if(tabs.length <= 1) {
+                            document.getElementById('tab_manage_links').style.display = 'none';
+                            document.getElementById('tab_adding_link').style.display = 'flex';
                         }
                     }
                 });

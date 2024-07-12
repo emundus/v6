@@ -37,10 +37,20 @@ function watch(elementId, attachId) {
                 var result = JSON.parse(xhr.responseText);
 
                 if (result != null) {
+                    var descriptionInput = document.querySelector('input#'+elementId+'_description');
+                    if(typeof descriptionInput !== 'undefined') {
+                        descriptionInput.value = '';
+                    }
+
                     if (result.limitObtained) {
                         div.querySelector('div .btn-upload').hide();
                         div.querySelector('input#'+elementId).hide();
                         divCtrlGroup.querySelector('.control-label').style.cursor = 'default';
+
+                        var descriptionElt = document.querySelector('div#'+elementId+'_description_block');
+                        if(typeof descriptionElt !== 'undefined') {
+                            descriptionElt.style.display = 'none';
+                        }
                     } else {
                         div.querySelector('div .btn-upload').show();
                         div.querySelector('input#'+elementId).show();
@@ -249,6 +259,11 @@ var FbFileUpload = {
         myFormData.append('size', size);
         myFormData.append('encrypt', encrypt);
 
+        var descriptionInput = document.querySelector('input#'+elementId+'_description');
+        if(typeof descriptionInput !== 'undefined') {
+            myFormData.append('description', descriptionInput.value);
+        }
+
         var file = [];
         for (var i = 0; i < input.files.length; i++) {
             file = input.files[i];
@@ -420,6 +435,11 @@ var FbFileUpload = {
                     if (res.status) {
                         div_parent.querySelector('div.btn-upload').show();
                         div_parent.querySelector('input#'+elementId).show();
+
+                        var descriptionElt = document.querySelector('div#'+elementId+'_description_block');
+                        if(typeof descriptionElt !== 'undefined') {
+                            descriptionElt.style.display = 'block';
+                        }
 
                         file.parentElement.parentElement.remove();
 
