@@ -599,7 +599,6 @@ a.btn.btn-success:not(.btn-xs) {
     margin-bottom: 0;
 }
 .mod_emundus_application_swal_manage_tabs_actions{
-    border-top: solid 1px var(--neutral-300);
     margin-top:var(--m-8) !important;
     padding: var(--p-8) var(--p-12);
     display: flex !important;
@@ -771,7 +770,7 @@ circle.circle {
     z-index: 2;
     width: 70%;
     height: 255px;
-    top: -14px;
+    top: -37px;
     right: -25px;
     pointer-events: none;
     transition: transform .3s;
@@ -859,7 +858,7 @@ circle.circle {
 
     /* Peps */
     .hover-and-tile-container #tile-hover-offset-request {
-        width: 444px;
+        width: 436px;
     }
 
     .mod_emundus_applications___content_app #background-shapes {
@@ -881,11 +880,11 @@ circle.circle {
 
     /* Peps */
     .hover-and-tile-container #tile-hover-offset-request {
-        width: 348px;
+        width: 317px;
     }
 
     .mod_emundus_applications___content_app #background-shapes {
-        top: -38px;
+        top: -62px;
         right: -13px;
     }
 

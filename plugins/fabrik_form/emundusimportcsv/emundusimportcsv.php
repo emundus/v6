@@ -689,7 +689,8 @@ class PlgFabrik_FormEmundusimportcsv extends plgFabrik_Form {
                                 $message = array(
                                     'user_id_to' => $user_id,
                                     'subject' => $email->subject,
-                                    'message' => $body
+                                    'message' => $body,
+                                    'email_to' => $email_row[$row_id]
                                 );
                                 $m_emails->logEmail($message);
                             }

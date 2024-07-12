@@ -193,7 +193,8 @@ class PlgFabrik_FormEmundussetstatus extends plgFabrik_Form {
 											'user_id_from' => $from_id,
 											'user_id_to' => $file['applicant_id'],
 											'subject' => $subject,
-											'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body
+											'message' => $body,
+                                            'email_to' => $to
 										);
 										$m_email->logEmail($message);
 										JLog::add(str_replace('\n', '', $to.' '.$body), JLog::INFO, 'com_emundusSetStatus');
@@ -245,7 +246,8 @@ class PlgFabrik_FormEmundussetstatus extends plgFabrik_Form {
 										'user_id_from' => $from_id,
 										'user_id_to' => $recipient['id'],
 										'subject' => $subject,
-										'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body
+										'message' => $body,
+                                        'email_to' => $to
 									);
 									$m_email->logEmail($message);
 									JLog::add(str_replace('\n', '', $to.' '.$body), JLog::INFO, 'com_emundusSetStatus');

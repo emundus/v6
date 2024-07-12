@@ -90,7 +90,8 @@ if (count($recipients) > 0) {
                 'user_id_from' => $user->id,
                 'user_id_to' => $referent->id,
                 'subject' => $subject,
-                'message' => $body
+                'message' => $body,
+                'email_to' => $recipient
             );
             $emails->logEmail($message);
         }

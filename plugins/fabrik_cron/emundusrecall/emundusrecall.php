@@ -187,8 +187,9 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron {
                         'user_id_from' => $from_id,
                         'user_id_to' => $to_id,
                         'subject' => $subject,
-                        'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body,
+                        'message' => $body,
                         'email_id' => $reminder_mail_id,
+                        'email_to' => $to
                     );
                     $m_emails->logEmail($message, $applicant->fnum);
                     $this->log .= '\n' . JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.' :: '.$body;
