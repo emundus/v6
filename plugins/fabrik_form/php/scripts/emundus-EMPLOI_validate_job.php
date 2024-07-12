@@ -96,7 +96,8 @@ if (isset($recipient) && !empty($recipient)) {
             'user_id_from' => $from_id,
             'user_id_to' => $deposant->id,
             'subject' => $subject,
-            'message' => $body
+            'message' => $body,
+            'email_to' => $recipient
         );
         $emails->logEmail($message);
     }

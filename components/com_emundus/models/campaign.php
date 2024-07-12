@@ -731,7 +731,8 @@ class EmundusModelCampaign extends JModelList {
                 $query->select('COUNT(id)')
                     ->from($this->_db->quoteName('#__emundus_campaign_candidature'))
                     ->where($this->_db->quoteName('status') . ' IN (' . $limit->steps . ')')
-                    ->andWhere($this->_db->quoteName('campaign_id') . ' = ' . $id);
+                    ->andWhere($this->_db->quoteName('campaign_id') . ' = ' . $id)
+                    ->andWhere($this->_db->quoteName('published').' = 1');
 
                 try {
                     $this->_db->setQuery($query);

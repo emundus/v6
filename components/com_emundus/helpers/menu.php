@@ -142,9 +142,8 @@ class EmundusHelperMenu {
 
 		$activeLanguage = Factory::getLanguage()->getTag();
 		$languages = LanguageHelper::getLanguages('lang_code');
-		$defaultLanguage = ComponentHelper::getParams('com_languages')->get('site', 'fr-FR');
 		$sef = '';
-		if (isset($languages[$activeLanguage]) && $activeLanguage !== $defaultLanguage)
+		if (isset($languages[$activeLanguage]))
 		{
 			$sef = $languages[$activeLanguage]->sef;
 		}
