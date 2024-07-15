@@ -10,6 +10,7 @@
 // No direct access
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
+use Joomla\CMS\Language\Text;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -934,7 +935,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $trigger_emails = $m_email->getEmailTrigger($state, $code, $to_applicant);
 
-        echo json_encode((object)(array('status' => !empty($trigger_emails), 'msg' => JText::_('COM_EMUNDUS_APPLICATION_MAIL_CHANGE_STATUT_INFO'))));
+        echo json_encode((object)(array('status' => !empty($trigger_emails), 'msg' => JText::sprintf('COM_EMUNDUS_APPLICATION_MAIL_CHANGE_STATUT_INFO', sizeof($validFnums)))));
         exit;
     }
 
@@ -1181,6 +1182,8 @@ class EmundusControllerFiles extends JControllerLegacy
 	        $formids    = $jinput->getVar('formids', null);
 	        $attachids  = $jinput->getVar('attachids', null);
 	        $options    = $jinput->getVar('options', null);
+            $params = $jinput->getString('params', null);
+            $params = !empty($params) ? json_decode($params, true) : [];
 
 	        $m_files  = new EmundusModelFiles();
 
@@ -1205,7 +1208,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
 
 	        if (extension_loaded('zip')) {
-                $name = $m_files->exportZip($validFnums, $forms, $attachment, $assessment, $decision, $admission, $formids, $attachids, $options, false, $current_user);
+                $name = $m_files->exportZip($validFnums, $forms, $attachment, $assessment, $decision, $admission, $formids, $attachids, $options, false, $current_user, $params);
 	        } else {
 		        $name = $this->export_zip_pcl($validFnums);
 	        }
@@ -1486,6 +1489,7 @@ class EmundusControllerFiles extends JControllerLegacy
 			}
 		}
 
+	    $not_already_handled_fnums = [];
 		if ($methode != 2 || $failed_with_old_method) {
 			$not_already_handled_fnums = $fnums;
 			if ($start > 0) {
@@ -1600,6 +1604,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
 				$nbcol = 6;
 				$date_elements = [];
+				$iban_elements = [];
 				foreach ($ordered_elements as $fLine) {
 					if ($fLine->element_name != 'fnum' && $fLine->element_name != 'code' && $fLine->element_label != 'Programme' && $fLine->element_name != 'campaign_id') {
 						if (count($opts) > 0 && $fLine->element_name != "date_time" && $fLine->element_name != "date_submitted") {
@@ -1627,6 +1632,15 @@ class EmundusControllerFiles extends JControllerLegacy
 								$textarea_elements[$fLine->tab_name.'___'.$fLine->element_name] = $params->use_wysiwyg;
 							}
 
+							if ($fLine->element_plugin == 'iban') {
+								$params = json_decode($fLine->element_attribs);
+								$elt_name = $fLine->tab_name.'___'.$fLine->element_name;
+								if(!empty($fLine->table_join) && $fLine->table_join_key == 'parent_id') {
+									$elt_name = $fLine->table_join.'___'.$fLine->element_name;
+								}
+								$iban_elements[$elt_name] = $params->encrypt_datas;
+							}
+
 							$line .= preg_replace('#<[^>]+>#', ' ', JText::_($fLine->element_label)). "\t";
 							$nbcol++;
 						}
@@ -1635,7 +1649,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
 				foreach ($colsup as $kOpt => $vOpt) {
 					if ($vOpt == "forms" || $vOpt == "attachment") {
-						$line .= $vOpt."(%)\t";
+						$line .= Text::_('COM_EMUNDUS_'.strtoupper($vOpt))." (%)\t";
 					}
 					elseif ($vOpt == "overall")
 					{
@@ -1708,7 +1722,7 @@ class EmundusControllerFiles extends JControllerLegacy
 					$cipher = 'aes-128-cbc';
 					$encryption_key = JFactory::getConfig()->get('secret');
 				}
-
+				
 				$already_counted_fnums = array();
 				// On parcours les fnums
 				foreach ($fnumsArray as $fnum) {
@@ -1774,7 +1788,26 @@ class EmundusControllerFiles extends JControllerLegacy
 												$v = strip_tags($v);
 											}
 											$line .= preg_replace("/\r|\n|\t/", "", $v)."\t";
-										} elseif (count($opts) > 0 && in_array("upper-case", $opts)) {
+										}
+										elseif(!empty($iban_elements[$k])){
+											if($iban_elements[$k] == 1){
+												if(strpos($k,'repeat')) {
+													$v = explode(',', $v);
+
+													$repeat_values_decrypted = [];
+													foreach ($v as $repeat_value) {
+														$repeat_values_decrypted[] = EmundusHelperFabrik::decryptDatas($repeat_value);
+													}
+
+													$v = implode(',', $repeat_values_decrypted);
+												}
+												else {
+													$v = EmundusHelperFabrik::decryptDatas($v);
+												}
+											}
+											$line .= preg_replace("/\r|\n|\t/", "", $v)."\t";
+										}
+										elseif (count($opts) > 0 && in_array("upper-case", $opts)) {
 											$line .= JText::_(preg_replace("/\r|\n|\t/", "", mb_strtoupper($v)))."\t";
 										} else {
 											$line .= JText::_(preg_replace("/\r|\n|\t/", "", $v))."\t";
@@ -2600,7 +2633,7 @@ class EmundusControllerFiles extends JControllerLegacy
         for ($i; $i<$nbcol; $i++) {
             $value = $objPHPExcel->getActiveSheet()->getCell(Coordinate::stringFromColumnIndex($i) . '1')->getValue();
 
-            if ($value=="forms(%)" || $value=="attachment(%)") {
+            if (strpos($value,'(%)')) {
                 $conditionalStyles = $objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$i].'1')->getConditionalStyles();
                 array_push($conditionalStyles, $objConditional1);
                 array_push($conditionalStyles, $objConditional2);
@@ -4074,4 +4107,45 @@ class EmundusControllerFiles extends JControllerLegacy
 		echo json_encode($response);
 		exit;
 	}
+
+    public function countfilesbeforeaction()
+    {
+        $response = ['status' => false, 'code' => 403, 'msg' => JText::_('ACCESS_DENIED')];
+
+        if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+            $app    = JFactory::getApplication();
+            $jinput = $app->input;
+            $fnums  = $jinput->getString('fnums', null);
+            $action = $jinput->getInt('action_id', 0);
+            $verb = $jinput->getString('verb', '');
+
+            if (!empty($fnums)) {
+                $m_files = new EmundusModelFiles();
+
+                if ($fnums === 'all') {
+                    $fnums = $m_files->getAllFnums();
+                } else if (!is_array($fnums)) {
+                    $fnums = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
+                }
+
+                $validFnums = [];
+                foreach ($fnums as $fnum) {
+                    if (EmundusHelperAccess::asAccessAction($action, $verb, $this->_user->id, $fnum)) {
+                        $validFnums[] = $fnum;
+                    }
+                }
+
+                $response['status'] = true;
+                $response['code'] = 200;
+                $response['msg'] = JText::_('SUCCESS');
+                $response['data'] = sizeof($validFnums);
+            } else {
+                $response['msg'] = JText::_('MISSING_PARAMS');
+                $response['code'] = 400;
+            }
+        }
+
+        echo json_encode($response);
+        exit;
+    }
 }

@@ -802,15 +802,17 @@
           border-top-left-radius: 0 !important;
           border-bottom-left-radius: 0 !important;
           border-color: var(--em-form-bc);
+          background-image: none !important;
+          float: right;
           span{
             font-size: 16px;
             margin-right: 16px;
           }
           div{
             height: auto;
-            width: 8px;
+            width: unset;
             position: static;
-            margin-right: 4px;
+            margin-top: -4px;
             b{
               border: solid var(--neutral-900);
               border-width: 0 2px 2px 0;
@@ -824,8 +826,9 @@
           }
         }
         .chzn-drop {
+          position: relative;
           width: max-content;
-          margin-top: 6px;
+          margin-top: var(--em-form-height);
           .chzn-search{
             padding: 4px;
             input {
@@ -961,6 +964,12 @@
         }
       }
     }
+  }
+
+  .pull-right.em-repeat-table {
+    float: inherit;
+    display: flex;
+    justify-content: flex-end;
   }
 
   /** BACKEND/VUE FORMS **/
@@ -1188,6 +1197,7 @@
         input[type="text"] {
           outline: none;
           height: 18px;
+          min-width: 254px;
         }
       }
     }

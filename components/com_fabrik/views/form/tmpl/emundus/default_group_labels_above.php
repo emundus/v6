@@ -33,5 +33,5 @@ $element = $this->element;
 <?php endif ?>
 
 <?php if ($this->tipLocation == 'below') :?>
-	<span class="fabrikElementTip fabrikElementTipBelow"><?php echo $element->tipBelow ?></span>
+	<p class="fabrikElementTip fabrikElementTipBelow"><?php echo $element->tipBelow ?></p>
 <?php endif ?>

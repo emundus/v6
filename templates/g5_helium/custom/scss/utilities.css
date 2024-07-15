@@ -138,6 +138,10 @@
         list-style: initial;
     }
 
+    ol {
+        list-style: auto;
+    }
+
     legend {
         margin: 10px 0 20px 0;
     }
@@ -393,6 +397,7 @@
         border: solid var(--em-alert-error-border-width) var(--em-alert-error-border-color);
         background-color: var(--em-alert-error-bgc);
         color: var(--em-alert-error-color);
+        margin-bottom: 28px;
 
         .material-icons {
             color: var(--em-alert-error-icon-color);
@@ -464,6 +469,11 @@
         float: right;
         right: unset;
         background: transparent;
+    }
+
+    .alert-danger .close,
+    .alert-error .close {
+          color: var(--em-alert-error-color);
     }
 
     .alert h4 {

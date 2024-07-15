@@ -989,7 +989,7 @@ class EmundusModelFormbuilder extends JModelList {
         }
     }*/
 
-    function createGroup($label, $fid, $repeat_group_show_first = 1) {
+    function createGroup($label, $fid, $repeat_group_show_first = 1, $mode = 'form') {
         $group = [];
 
         if (!empty($fid)) {
@@ -1121,6 +1121,18 @@ class EmundusModelFormbuilder extends JModelList {
                         'ordering' => $order,
                         'formid' => $fid
                     );
+
+					if($mode === 'eval') {
+						require_once (JPATH_SITE . '/components/com_emundus/models/form.php');
+						$m_form = new EmundusModelForm();
+
+						$programs = $m_form->getProgramsByForm($fid, $mode);
+						$codes = array_map(function($program) {
+							return $program['code'];
+						}, $programs);
+
+						$m_form->associateFabrikGroupsToProgram($fid,$codes,$mode);
+					}
                 }
             } catch(Exception $e){
 				error_log($e->getMessage());

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+    <fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+        <fieldset name="plg-form-emundusrsaauhtentication" label="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_FIELDS">
+
+            <field name="emundusrsaauhtentication_event_to_run"
+                   type="list"
+                   default="onBeforeLoad"
+                   description="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_EVENT_TO_RUN_DESC"
+                   label="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_EVENT_TO_RUN_LABEL">
+                <option value="onBeforeLoad">onBeforeLoad</option>
+                <option value="onAfterProcess">onAfterProcess</option>
+            </field>
+
+            <field name="emundusrsaauhtentication_public_key" type="text" default=""
+                   description="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_PUBLIC_KEY_DESC"
+                   label="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_PUBLIC_KEY_LABEL"/>
+
+            <field name="emundusrsaauhtentication_public_key_content" type="textarea" default=""
+                   description="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_PUBLIC_KEY_CONTENT_DESC"
+                   label="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_PUBLIC_KEY_CONTENT_LABEL"/>
+
+            <field name="emundusrsaauhtentication_jgroup" type="text" default="2"
+                   label="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_JOOMLA_GROUP"/>
+
+            <field name="emundusrsaauhtentication_eprofile" type="text" default="1000"
+                   label="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_EMUNDUS_PROFILE"/>
+
+            <field name="emundusrsaauhtentication_attributes_note" type="note" default=""
+                   label="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_ATTRIBUTES_NOTE"/>
+
+            <field name="emundusrsaauhtentication_attributes_id" type="text" default="id"
+                   label="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_ATTRIBUTES_ID"/>
+
+            <field name="emundusrsaauhtentication_attributes_firstname" type="text" default="firstname"
+                   label="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_ATTRIBUTES_FIRSTNAME"/>
+
+            <field name="emundusrsaauhtentication_attributes_lastname" type="text" default="lastname"
+                   label="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_ATTRIBUTES_LASTNAME"/>
+
+            <field name="emundusrsaauhtentication_attributes_email" type="text" default="email"
+                   label="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_ATTRIBUTES_EMAIL"/>
+
+            <field name="emundusrsaauhtentication_attributes_delete_at_login"
+                   type="list"
+                   default="0"
+                   description="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_ATTRIBUTES_DELETE_DESC"
+                   label="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_ATTRIBUTES_DELETE_LABEL">
+                <option value="0">JNO</option>
+                <option value="1">JYES</option>
+            </field>
+
+            <field name="emundusrsaauhtentication_attributes_other"
+                   type="fabrikmodalrepeat"
+                   repeat="true"
+                   description=""
+                   label="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_ATTRIBUTES_OTHER">
+
+                <fields name="params">
+                    <fieldset modal="true" name="emundusrsaauhtentication_attributes_other_modal" repeat="true">
+
+                        <field name="emundusrsaauhtentication_attributes_other_table"
+                               type="text"
+                               repeat="true"
+                               label="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_ATTRIBUTES_OTHER_TABLE_NAME"/>
+
+                        <field name="emundusrsaauhtentication_attributes_other_column"
+                               type="text"
+                               repeat="true"
+                               label="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_ATTRIBUTES_OTHER_COLUMN"/>
+
+                        <field name="emundusrsaauhtentication_attributes_other_attribute"
+                               type="text"
+                               repeat="true"
+                               label="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_ATTRIBUTES_OTHER_ATTRIBUTE"/>
+
+                        <field name="emundusrsaauhtentication_attributes_other_user_key"
+                               type="text"
+                               repeat="true"
+                               label="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_ATTRIBUTES_OTHER_USERKEY"/>
+
+                        <field name="emundusrsaauhtentication_attributes_other_user_key_type"
+                               type="list"
+                               repeat="true"
+                               default="0"
+                               label="PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_ATTRIBUTES_OTHER_USERKEY_TYPE">
+                            <option value="0">jos_users</option>
+                            <option value="1">jos_emundus_users</option>
+                        </field>
+                    </fieldset>
+                </fields>
+            </field>
+        </fieldset>
+    </fields>
+</form>

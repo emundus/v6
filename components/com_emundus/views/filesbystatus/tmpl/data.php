@@ -167,13 +167,11 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
                     {
                         if (result.status && result.fnumInfos != null)
                         {
-                            console.log(result);
                             var fnumInfos = result.fnumInfos;
                             fnum.name = fnumInfos.name;
                             fnum.label = fnumInfos.label;
                             openFiles(fnum);
                         } else {
-                            console.log(result);
                             removeLoader();
                             $(".panel.panel-default").prepend("<div class=\"alert alert-warning\"><?php echo JText::_('COM_EMUNDUS_APPLICATION_CANNOT_OPEN_FILE') ?></div>");
                         }
@@ -195,7 +193,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
         $('#rt-main').children().addClass('mainemundus');
         $('#rt-main').children().children().addClass('mainemundus');
 
-        const dataContainer = document.querySelector('.em-data-container')
+        var dataContainer = document.querySelector('.em-data-container')
         if (dataContainer) {
             DoubleScroll(dataContainer);
         }

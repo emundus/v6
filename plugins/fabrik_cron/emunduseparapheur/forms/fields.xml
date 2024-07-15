@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+    <fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+        <fieldset name="plg-cron-emunduseparapheur" label="COM_FABRIK_OPTIONS">
+
+            <field name="emundus_eparapheur_help"
+                   type="note"
+                   class="alert alert-info"
+                   close="false"
+                   description="PLG_FABRIK_CRON_EMUNDUSEPARAPHEUR_FIELD_HELP_DESC" />
+
+            <field type="field"
+                   description="PLG_FABRIK_CRON_EMUNDUSEPARAPHEUR_FIELD_STATUS_DESC"
+                   filter="string"
+                   label="PLG_FABRIK_CRON_EMUNDUSEPARAPHEUR_FIELD_STATUS_LABEL"
+                   name="status"
+            />
+        </fieldset>
+    </fields>
+</form>

@@ -1,9 +1,9 @@
 <template>
   <div class="campaigns__add-campaign">
     <div v-if="typeof campaignId == 'undefined' || campaignId == 0">
-      <div class="flex items-center mt-4 cursor-pointer" @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
-        <span class="material-icons-outlined">arrow_back</span>
-        <p class="ml-2">{{ translate('BACK') }}</p>
+      <div class="flex items-center cursor-pointer" @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
+        <span class="material-icons-outlined">navigate_before</span>
+        <span class="em-ml-8 em-text-neutral-900">{{ translate('BACK') }}</span>
       </div>
 
       <h1 class="mt-4">{{ translate('COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN') }}</h1>
@@ -76,7 +76,7 @@
                 @searched="onSearchYear"
                 :items="this.session"
                 :year="form.year"
-                :name="'2020 - 2021'"
+                :name="sessionPlaceholder"
             />
           </div>
 
@@ -755,6 +755,15 @@ export default {
         document.getElementById('select_prog').setAttribute('disabled', 'disabled');
       }
       this.isHiddenProgram = !this.isHiddenProgram;
+    },
+  },
+
+  computed: {
+    sessionPlaceholder() {
+      let oneYearFromNow = new Date();
+      oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
+
+      return new Date().getFullYear() + ' - ' + oneYearFromNow.getFullYear();
     },
   },
 

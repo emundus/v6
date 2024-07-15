@@ -1,17 +1,17 @@
 <?php
 /**
- * @version		$Id: default.php 14401 2014-09-16 14:10:00Z brivalland $
- * @package		Joomla
- * @subpackage	Emundus
- * @copyright	Copyright (C) 2005 - 2010 Open Source Matters. All rights reserved.
- * @license		GNU/GPL, see LICENSE.php
+ * @version        $Id: default.php 14401 2014-09-16 14:10:00Z brivalland $
+ * @package        Joomla
+ * @subpackage     Emundus
+ * @copyright      Copyright (C) 2005 - 2010 Open Source Matters. All rights reserved.
+ * @license        GNU/GPL, see LICENSE.php
  * Joomla! is free software. This version may have been modified pursuant to the
  * GNU General Public License, and as distributed it includes or is derivative
  * of works licensed under the GNU General Public License or other free or open
  * source software licenses. See COPYRIGHT.php for copyright notices and
  * details.
  */
-defined( '_JEXEC' ) or die( 'Restricted access' );
+defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
 
@@ -53,29 +53,39 @@ JText::script('COM_EMUNDUS_FILES_FILTER_NO_ELEMENTS_FOUND');
 
 JHtml::styleSheet('components/com_emundus/src/assets/css/element-ui/theme-chalk/index.css');
 
-require_once (JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
+require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
 $hash = EmundusHelperCache::getCurrentGitHash();
 
-$ratio = '66/33';
-$menu = JFactory::getApplication()->getMenu();
-$current_menu = !empty($menu->getActive()) ? $menu->getActive() : $menu->getDefault();
-$params = $menu->getParams($current_menu->id)->get('params');
-if (!empty($params) && !empty($params->ratio_modal)) {
-	$ratio = $params->ratio_modal;
+$app = Factory::getApplication();
+$menu = $app->getMenu();
+if (!empty($menu)) {
+    $current_menu = $menu->getActive();
+    if (!empty($current_menu)) {
+        $app->getSession()->set('current_menu_id', $current_menu->id);
+        $params = $menu->getParams($current_menu->id)->get('params');
+        if (!empty($params) && empty($params->ratio_modal)) {
+            $params->ratio_modal = '66/33';
+        }
+    }
 }
 
-$app = Factory::getApplication();
+if (!isset($params)) {
+    $params = new stdClass();
+    $params->ratio_modal = '66/33';
+}
+
+$app  = Factory::getApplication();
 $fnum = $app->input->getString('fnum', '');
 
-JFactory::getSession()->set('current_menu_id',$current_menu->id);
-$user = JFactory::getUser();
+$user = $app->getIdentity();
 ?>
 <div id="em-files"
-     user=<?= $user->id ?>
-     ratio=<?= $ratio ?>
+     user="<?= $user->id ?>"
+     ratio="<?= $params->ratio_modal ?>"
      type="evaluation"
-     base=<?= JURI::base(); ?>
-     fnum=<?= $fnum; ?>
-></div>
+     base="<?= JURI::base(); ?>"
+     fnum="<?= $fnum; ?>"
+>
+</div>
 
 <script src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>

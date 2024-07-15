@@ -634,7 +634,8 @@ class EmundusHelperUpdate
 				->from($db->quoteName('#__falang_content'))
 				->where($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))
 				->andWhere($db->quoteName('reference_table') . ' = ' . $db->quote($reference_table))
-				->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote($reference_field));
+				->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote($reference_field))
+				->andWhere($db->quoteName('language_id') . ' = ' . $db->quote($lang_id));
 			$db->setQuery($query);
 			$translation_id = $db->loadResult();
 
@@ -1645,6 +1646,7 @@ class EmundusHelperUpdate
                     'path' => $params['path'] ?: $alias,
                     'type' => $params['type'] ?: 'url',
                     'link' => $params['link'] ?: '#',
+					'note' => $params['note'] ?: '',
                     'access' => $params['access'] ?: 1,
                     'component_id' => $params['component_id'] ?: 0,
                     'template_style_id' => $params['template_style_id'] ?: 22,
@@ -2056,12 +2058,39 @@ class EmundusHelperUpdate
                 'params' => json_encode($params)
             ];
 
-            $query->clear()
-                ->insert($db->quoteName('#__fabrik_joins'))
-                ->columns($db->quoteName(array_keys($inserting_datas)))
-                ->values(implode(',',$db->quote(array_values($inserting_datas))));
-            $db->setQuery($query);
-            $db->execute();
+			$query->clear()
+				->select('id')
+				->from($db->quoteName('#__fabrik_joins'));
+			if(!empty($datas['list_id'])) {
+				$query->where($db->quoteName('list_id') . ' = ' . $datas['list_id']);
+			}
+			if(!empty($datas['element_id'])) {
+				$query->where($db->quoteName('element_id') . ' = ' . $datas['element_id']);
+			}
+			if(!empty($datas['table_join'])) {
+				$query->where($db->quoteName('table_join') . ' = ' . $db->quote($datas['table_join']));
+			}
+			if(!empty($datas['table_key'])) {
+				$query->where($db->quoteName('table_key') . ' = ' . $db->quote($datas['table_key']));
+			}
+			if(!empty($datas['table_join_key'])) {
+				$query->where($db->quoteName('table_join_key') . ' = ' . $db->quote($datas['table_join_key']));
+			}
+			if(!empty($datas['group_id'])) {
+				$query->where($db->quoteName('group_id') . ' = ' . $datas['group_id']);
+			}
+			$db->setQuery($query);
+			$is_existing = $db->loadResult();
+
+			if(empty($is_existing))
+			{
+				$query->clear()
+					->insert($db->quoteName('#__fabrik_joins'))
+					->columns($db->quoteName(array_keys($inserting_datas)))
+					->values(implode(',', $db->quote(array_values($inserting_datas))));
+				$db->setQuery($query);
+				$db->execute();
+			}
         } catch (Exception $e) {
             $result['message'] = 'INSERTING FABRIK JOIN : Error : ' . $e->getMessage();
             return $result;
@@ -2184,7 +2213,7 @@ class EmundusHelperUpdate
         return $result;
     }
 
-    public static function addFabrikElement($datas,$params = []) {
+    public static function addFabrikElement($datas,$params = [],$required = true) {
         $result = ['status' => false, 'message' => ''];
 
         if(empty($datas['name'])){
@@ -2213,7 +2242,7 @@ class EmundusHelperUpdate
         if(!$is_existing) {
             require_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
 
-            $default_params = EmundusHelperFabrik::prepareElementParameters($datas['plugin']);
+            $default_params = EmundusHelperFabrik::prepareElementParameters($datas['plugin'],$required);
             $params = array_merge($default_params, $params);
 
             try {
@@ -2712,7 +2741,10 @@ class EmundusHelperUpdate
 				}
 				$db->setQuery($query);
 				$result['status'] = $db->execute();
-			}
+			} else {
+                $result['message'] = 'CREATE TABLE : Table already exists.';
+                $result['status'] = true;
+            }
 		} catch (Exception $e) {
 			$result['message'] = 'ADDING TABLE : Error : ' . $e->getMessage();
 		}
@@ -3187,12 +3219,12 @@ class EmundusHelperUpdate
 				'black' => '#1e1e1e',
 			],
 			'font' => [
-				'size-h1' => '24px',
-				'size-h2' => '22px',
-				'size-h3' => '20px',
-				'size-h4' => '18px',
-				'size-h5' => '16px',
-				'size-h6' => '14px',
+				'size-h1' => '32px',
+				'size-h2' => '24px',
+				'size-h3' => '18px',
+				'size-h4' => '16px',
+				'size-h5' => '12px',
+				'size-h6' => '10px',
 				'font-size' => '16px',
 				'xxs-size' => '10px',
 			],
@@ -3334,12 +3366,12 @@ class EmundusHelperUpdate
 				'title-color' => '#0b0c0f',
 				'family-text' => 'Inter',
 				'family-title' => 'Inter',
-				'size-h1' => '24px',
-				'size-h2' => '22px',
-				'size-h3' => '20px',
-				'size-h4' => '18px',
-				'size-h5' => '16px',
-				'size-h6' => '14px',
+				'size-h1' => '32px',
+				'size-h2' => '24px',
+				'size-h3' => '18px',
+				'size-h4' => '16px',
+				'size-h5' => '12px',
+				'size-h6' => '10px',
 				'font-size' => '16px',
 				'border-radius' => '8px',
 				'border-color' => '#cccccc',
@@ -3381,14 +3413,11 @@ class EmundusHelperUpdate
 		$db->setQuery($query);
 		$db->execute();
 
-		$query->clear()
-			->update($db->quoteName('#__falang_content'))
-			->set($db->quoteName('value') . ' = ' . $db->quote($back_button->content))
-			->where($db->quoteName('reference_id') . ' = ' . $db->quote($back_button->id))
-			->where($db->quoteName('reference_table') . ' = ' . $db->quote('modules'))
-			->where($db->quoteName('reference_field') . ' = ' . $db->quote('content'));
-		$db->setQuery($query);
-		$db->execute();
+		EmundusHelperUpdate::insertFalangTranslation(2, $back_button->id, 'modules', 'content', $back_button->content, true);
+
+		$back_button->content = str_replace('Retour à la page d\'accueil','Back to homepage',$back_button->content);
+
+		EmundusHelperUpdate::insertFalangTranslation(1, $back_button->id, 'modules', 'content', $back_button->content, true);
 		//
 
 		// Remove appli emundus yaml assets
@@ -3636,6 +3665,38 @@ class EmundusHelperUpdate
 				->update($db->quoteName('#__securitycheckpro_storage'))
 				->set($db->quoteName('storage_value') . ' = ' . $db->quote(json_encode($storage_value)))
 				->where($db->quoteName('storage_key') . ' = ' . $db->quote('pro_plugin'));
+			$db->setQuery($query);
+			$db->execute();
+		}
+		//
+
+		// Check if we have a favicon
+		$current_favicon = EmundusHelperUpdate::getYamlVariable('favicon', JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml');
+		$current_favicon = str_replace('gantry-media:/', 'images', $current_favicon);
+
+		if (!file_exists($current_favicon)) {
+			$current_favicon = 'gantry-media://custom/default_favicon.ico';
+
+			EmundusHelperUpdate::updateYamlVariable('favicon', $current_favicon, JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml');
+		}
+		//
+
+		// Check that registration form is on auto-login
+		$query->clear()
+			->select('id,params')
+			->from($db->quoteName('#__fabrik_forms'))
+			->where($db->quoteName('label') . ' LIKE ' . $db->quote('FORM_REGISTRATION'));
+		$db->setQuery($query);
+		$registration_form = $db->loadObject();
+
+		if (!empty($registration_form)) {
+			$params                     = json_decode($registration_form->params, true);
+			$params['juser_auto_login'] = ["1"];
+
+			$query->clear()
+				->update($db->quoteName('#__fabrik_forms'))
+				->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+				->where($db->quoteName('id') . ' = ' . $db->quote($registration_form->id));
 			$db->setQuery($query);
 			$db->execute();
 		}

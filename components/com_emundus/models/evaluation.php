@@ -33,6 +33,8 @@ class EmundusModelEvaluation extends JModelList {
     public $fnum_assoc;
     public $code;
 
+    private $use_module_filters = false;
+
     /**
      * Constructor
      *
@@ -59,6 +61,7 @@ class EmundusModelEvaluation extends JModelList {
         }
 
         $menu_params = $menu->getParams($current_menu->id);
+        $this->use_module_filters = boolval($menu_params->get('em_use_module_for_filters', false));
 
         $session = JFactory::getSession();
         if (!$session->has('filter_order')) {
@@ -847,14 +850,22 @@ class EmundusModelEvaluation extends JModelList {
         }
     }
 
-
-
-    private function _buildWhere($tableAlias = array()) {
+    private function _buildWhere($already_joined_tables = array())
+    {
         $h_files = new EmundusHelperFiles();
-        return $h_files->_buildWhere($tableAlias, 'evaluation', array(
-            'fnum_assoc' => $this->fnum_assoc,
-            'code' => $this->code
-        ));
+
+        if ($this->use_module_filters) {
+            return $h_files->_moduleBuildWhere($already_joined_tables, 'files', array(
+                'fnum_assoc' => $this->fnum_assoc,
+                'code'       => $this->code
+            ));
+        }
+        else {
+            return $h_files->_buildWhere($already_joined_tables, 'files', array(
+                'fnum_assoc' => $this->fnum_assoc,
+                'code'       => $this->code
+            ));
+        }
     }
 
     public function getUsers($current_fnum = null) {
@@ -2153,7 +2164,7 @@ class EmundusModelEvaluation extends JModelList {
                                     if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown" || $elt['plugin'] == "radiobutton") {
 
                                         foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
-                                            if ($elt['plugin'] == "checkbox") {
+                                            if ($elt['plugin'] == "checkbox" || (!empty($params->multiple) && $params->multiple == 1)) {
                                                 $val = json_decode($val['val']);
                                             } else {
                                                 $val = explode(',', $val['val']);
@@ -2182,22 +2193,30 @@ class EmundusModelEvaluation extends JModelList {
                                             $fabrikValues[$elt['id']][$fnum]['val'] = implode(",", $val);
                                         }
 
-                                    } elseif ($elt['plugin'] == 'textarea' && $whitespace_textarea == 1) {
-                                        $formatted_text = explode('<br />', nl2br($fabrikValues[$elt['id']][$fnum]['val']));
-                                        $inline = new \PhpOffice\PhpWord\Element\TextRun();
-                                        foreach ($formatted_text as $key => $text) {
-                                            if (!empty($text)) {
-                                                if ($key > 0) {
-                                                    $inline->addTextBreak();
-                                                }
-                                                $inline->addText(trim($text), array('name' => 'Arial'));
-                                            }
-                                        }
-                                        $fabrikValues[$elt['id']][$fnum]['val'] = $inline;
-                                        $fabrikValues[$elt['id']][$fnum]['complex_data'] = true;
-                                    } elseif ($elt['plugin'] == 'emundus_phonenumber') {
-                                        $fabrikValues[$elt['id']][$fnum]['val'] = substr($fabrikValues[$elt['id']][$fnum]['val'], 2, strlen($fabrikValues[$elt['id']][$fnum]['val']));
-                                    } elseif ($elt['plugin'] == 'cascadingdropdown') {
+				                    }
+				                    elseif ($elt['plugin'] == 'textarea' && $whitespace_textarea == 1) {
+					                    $formatted_text = explode('<br />',nl2br($fabrikValues[$elt['id']][$fnum]['val']));
+					                    $inline = new \PhpOffice\PhpWord\Element\TextRun();
+					                    foreach ($formatted_text as $key => $text) {
+						                    if (!empty($text))
+						                    {
+							                    if($key > 0)
+							                    {
+								                    $inline->addTextBreak();
+							                    }
+							                    $inline->addText(trim($text), array('name' => 'Arial'));
+						                    }
+					                    }
+					                    $fabrikValues[$elt['id']][$fnum]['val'] = $inline;
+					                    $fabrikValues[$elt['id']][$fnum]['complex_data'] = true;
+				                    }
+				                    elseif ($elt['plugin'] == 'emundus_phonenumber') {
+					                    $fabrikValues[$elt['id']][$fnum]['val'] = substr($fabrikValues[$elt['id']][$fnum]['val'], 2, strlen($fabrikValues[$elt['id']][$fnum]['val']));
+				                    }
+                                    elseif ($elt['plugin'] == 'yesno') {
+                                        $fabrikValues[$elt['id']][$fnum]['val'] = $fabrikValues[$elt['id']][$fnum]['val'] == '1' ? JText::_('JYES') : JText::_('JNO');
+                                    }
+                                    elseif ($elt['plugin'] == 'cascadingdropdown') {
                                         foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
                                             $fabrikValues[$elt['id']][$fnum]['val'] = $_mEmail->getCddLabel($elt, $val['val']);
                                         }
@@ -2411,6 +2430,11 @@ class EmundusModelEvaluation extends JModelList {
 	                    }
 						break;
 				}
+
+	            if ($res->status) {
+		            $logs_params = ['created' => ['filename' => $letter->title]];
+		            EmundusModelLogs::log($user->id, (int)substr($fnum, -7), $fnum, 27, 'c', 'COM_EMUNDUS_ACCESS_LETTERS', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
+	            }
 			}
         }
 
@@ -2797,18 +2821,22 @@ class EmundusModelEvaluation extends JModelList {
 
     private function copy_directory($src,$dst) {
         $dir = opendir($src);
-        @mkdir($dst);
-        while(false !== ( $file = readdir($dir)) ) {
-            if (( $file != '.' ) && ( $file != '..' )) {
-                if ( is_dir($src . '/' . $file) ) {
-                    recurse_copy($src . '/' . $file,$dst . '/' . $file);
-                }
-                else {
-                    copy($src . '/' . $file,$dst . '/' . $file);
-                }
-            }
-        }
-        closedir($dir);
+
+		if($dir !== false) {
+			mkdir($dst);
+			while (false !== ($file = readdir($dir))) {
+				if (($file != '.') && ($file != '..')) {
+					if (is_dir($src . '/' . $file)) {
+						recurse_copy($src . '/' . $file, $dst . '/' . $file);
+					}
+					else {
+						copy($src . '/' . $file, $dst . '/' . $file);
+					}
+				}
+			}
+			closedir($dir);
+		}
+
         return 0;
     }
 

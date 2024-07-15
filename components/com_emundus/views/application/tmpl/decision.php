@@ -61,6 +61,15 @@ JFactory::getSession()->set('application_layout', 'decision');
 
     $('iframe').load(function(){
         $(".holds-iframe").remove();
+
+        var iframe = $('#iframe').contents();
+
+        iframe.find("body").click(function(){
+            if (!$('ul.dropdown-menu.open').hasClass('just-open')) {
+                $('ul.dropdown-menu.open').hide();
+                $('ul.dropdown-menu.open').removeClass('open');
+            }
+        });
     }).show();
 
     $('#iframe').mouseleave(function() {
