@@ -1983,8 +1983,23 @@ $(document).ready(function () {
                                                                         $('#em-export-camp').empty();
                                                                         $('#em-export-camp').append('<option value="0" data-value="0">-- ' + Joomla.JText._('COM_EMUNDUS_CHOOSE_CAMP') + ' --</option>');
                                                                         $('#em-export-camp').append(result.html);
-                                                                        $("#em-export-camp").val(0);
+
+                                                                        // if only one campaign, select it
+                                                                        if ($('#em-export-camp option').length == 2) {
+                                                                            var firstOption = $("#em-export-camp").prop("selectedIndex", 1).val();
+                                                                            $('#em-export-camp option[value="' + firstOption + '"]').prop("selected", true);
+                                                                            $('#em-export-camp').val(firstOption);
+                                                                        } else {
+                                                                            $("#em-export-camp").val(0);
+                                                                        }
+
                                                                         $('#em-export-camp').chosen('destroy').chosen({width: "100%"});
+
+                                                                        if ($('#em-export-camp option').length == 2) {
+                                                                            $('#em-export-camp').trigger("chosen:updated");
+                                                                            $('#em-export-camp').trigger("liszt:updated");
+                                                                            $('#em-export-camp').trigger("change");
+                                                                        }
 
                                                                         $('#loadingimg-campaign').remove();
                                                                         $('#camp').show();
