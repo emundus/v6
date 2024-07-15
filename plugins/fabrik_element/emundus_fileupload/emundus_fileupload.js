@@ -38,7 +38,7 @@ function watch(elementId, attachId) {
 
                 if (result != null) {
                     var descriptionInput = document.querySelector('input#'+elementId+'_description');
-                    if(typeof descriptionInput !== 'undefined') {
+                    if(typeof descriptionInput != 'undefined' && descriptionInput != null) {
                         descriptionInput.value = '';
                     }
 
@@ -48,7 +48,7 @@ function watch(elementId, attachId) {
                         divCtrlGroup.querySelector('.control-label').style.cursor = 'default';
 
                         var descriptionElt = document.querySelector('div#'+elementId+'_description_block');
-                        if(typeof descriptionElt !== 'undefined') {
+                        if(typeof descriptionElt !== 'undefined' && descriptionElt != null) {
                             descriptionElt.style.display = 'none';
                         }
                     } else {
@@ -260,7 +260,7 @@ var FbFileUpload = {
         myFormData.append('encrypt', encrypt);
 
         var descriptionInput = document.querySelector('input#'+elementId+'_description');
-        if(typeof descriptionInput !== 'undefined') {
+        if(typeof descriptionInput != 'undefined' && descriptionInput != null) {
             myFormData.append('description', descriptionInput.value);
         }
 
@@ -437,7 +437,7 @@ var FbFileUpload = {
                         div_parent.querySelector('input#'+elementId).show();
 
                         var descriptionElt = document.querySelector('div#'+elementId+'_description_block');
-                        if(typeof descriptionElt !== 'undefined') {
+                        if(typeof descriptionElt != 'undefined' && descriptionElt != null) {
                             descriptionElt.style.display = 'block';
                         }
 
