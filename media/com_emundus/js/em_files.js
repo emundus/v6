@@ -3327,6 +3327,13 @@ $(document).ready(function () {
                                 $('#em-export-prg').append(result.html);
                                 $('#em-export-prg').chosen('destroy').chosen({width: "100%"});
 
+                                let hasDefaultOption = false;
+                                if ($('#em-export-prg option').length == 2) {
+                                    hasDefaultOption = true;
+                                    var firstOption = $("#em-export-prg").prop("selectedIndex", 1).val();
+                                    $('#em-export-prg option[value="' + firstOption + '"]').prop("selected", true);
+                                    $('#em-export-prg').val(firstOption);
+                                }
                                 let filtSavePdf = $('#filt_save_pdf');
 
                                 filtSavePdf.on('change', async function () {
@@ -3475,8 +3482,8 @@ $(document).ready(function () {
                                     } else {
                                         // set "unselect" program
                                         $('#loadingimg-campaign').remove();
-                                        $('#em-export-prg option:selected').removeAttr("selected");
-                                        $('#em-export-prg').trigger('chosen:updated');
+                                        //$('#em-export-prg option:selected').removeAttr("selected");
+                                        //$('#em-export-prg').trigger('chosen:updated');
 
                                         // hide #camp --> set "unselect" campaign
                                         $('#camp').hide();
@@ -3728,6 +3735,11 @@ $(document).ready(function () {
 
                                 var id = ($('#felts').find('input').checked = true);
 
+                                if (hasDefaultOption) {
+                                    $('#em-export-prg').trigger("chosen:updated");
+                                    $('#em-export-prg').trigger("liszt:updated");
+                                    $('#em-export-prg').trigger("change");
+                                }
 
                                 /// save pdf filter
                                 $('#savePDFfilter').on('click', function () {
@@ -5080,7 +5092,6 @@ $(document).ready(function () {
                     reloadActions('files', undefined, true);
 
                 } else {
-                    console.log('here');
                     $(this).prop('checked', false);
                     $('.em-check').prop('checked', false);
                     $('.em-actions[multi="0"]').show();
@@ -5145,7 +5156,6 @@ $(document).ready(function () {
         });
 
         $(document).on('click', '.em-actions-form', function (e) {
-            console.log('here');
             $.ajaxQ.abortAll();
             var id = parseInt($(this).attr('id'));
             var url = $(this).attr('url');
