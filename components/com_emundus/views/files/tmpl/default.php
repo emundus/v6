@@ -16,6 +16,42 @@ JHTML::_('behavior.tooltip');
 JHTML::stylesheet('media/com_emundus/css/emundus_panel.css');
 JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.4.1/css/all.css');
 
+if ($this->open_file_in_modal) {
+    JText::script('COM_EMUNDUS_FILES_EVALUATION');
+    JText::script('COM_EMUNDUS_FILES_TO_EVALUATE');
+    JText::script('COM_EMUNDUS_FILES_EVALUATED');
+    JText::script('COM_EMUNDUS_ONBOARD_FILE');
+    JText::script('COM_EMUNDUS_ONBOARD_STATUS');
+    JText::script('COM_EMUNDUS_FILES_APPLICANT_FILE');
+    JText::script('COM_EMUNDUS_FILES_ATTACHMENTS');
+    JText::script('COM_EMUNDUS_FILES_COMMENTS');
+    JText::script('COM_EMUNDUS_ONBOARD_NOFILES');
+    JText::script('COM_EMUNDUS_FILES_ELEMENT_SELECTED');
+    JText::script('COM_EMUNDUS_FILES_ELEMENTS_SELECTED');
+    JText::script('COM_EMUNDUS_FILES_UNSELECT');
+    JText::script('COM_EMUNDUS_FILES_OPEN_IN_NEW_TAB');
+    JText::script('COM_EMUNDUS_FILES_CANNOT_ACCESS');
+    JText::script('COM_EMUNDUS_FILES_CANNOT_ACCESS_DESC');
+    JText::script('COM_EMUNDUS_FILES_DISPLAY_PAGE');
+    JText::script('COM_EMUNDUS_FILES_NEXT_PAGE');
+    JText::script('COM_EMUNDUS_FILES_PAGE');
+    JText::script('COM_EMUNDUS_FILES_TOTAL');
+    JText::script('COM_EMUNDUS_FILES_ALL');
+    JText::script('COM_EMUNDUS_FILES_ADD_COMMENT');
+    JText::script('COM_EMUNDUS_FILES_CANNOT_ACCESS_COMMENTS');
+    JText::script('COM_EMUNDUS_FILES_CANNOT_ACCESS_COMMENTS_DESC');
+    JText::script('COM_EMUNDUS_FILES_COMMENT_TITLE');
+    JText::script('COM_EMUNDUS_FILES_COMMENT_BODY');
+    JText::script('COM_EMUNDUS_FILES_VALIDATE_COMMENT');
+    JText::script('COM_EMUNDUS_FILES_COMMENT_DELETE');
+    JText::script('COM_EMUNDUS_FILES_ASSOCS');
+    JText::script('COM_EMUNDUS_FILES_TAGS');
+    JText::script('COM_EMUNDUS_FILES_PAGE_ON');
+    JText::script('COM_EMUNDUS_ERROR_OCCURED');
+    JText::script('COM_EMUNDUS_ACTIONS_CANCEL');
+    JText::script('COM_EMUNDUS_OK');
+    JText::script('COM_EMUNDUS_FILES_FILTER_NO_ELEMENTS_FOUND');
+}
 ?>
 
 

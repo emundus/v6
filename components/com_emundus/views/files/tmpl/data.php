@@ -144,20 +144,40 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
                                     <?php elseif ($k == 'status'):?>
                                         <span style="width: 100%" class="label label-<?= $value->status_class; ?>" title="<?= $value->val; ?>"><?= $value->val; ?></span>
                                     <?php elseif ($k == 'fnum'):?>
-                                        <a href="#<?= $value->val; ?>|open" id="<?= $value->val; ?>" class="em_file_open">
-                                            <?php if (isset($value->photo) && !$anonymize_data) :?>
-                                                <div class="em_list_photo"><?= $value->photo; ?></div>
-                                            <?php endif; ?>
-                                            <div class="em_list_text">
-                                                <?php if ($anonymize_data) :?>
-                                                    <div class="em_list_fnum"><?= $value->val; ?></div>
-                                                <?php else :?>
-                                                    <span class="em_list_text" title="<?= $value->val; ?>"> <strong> <?= $value->user->name; ?></strong></span>
-                                                    <div class="em_list_email"><?= $value->user->email; ?></div>
-                                                    <div class="em_list_email"><?= $value->user->id; ?></div>
+                                        <?php if ($this->open_file_in_modal) : ?>
+                                            <div id="<?php echo $value->val ?>" class="em-pointer evaluation-open-modal-file"
+                                                 onclick="clickOpenfile('<?php echo $value->val ?>')">
+                                                <?php if (isset($value->photo) && !$anonymize_data) : ?>
+                                                    <div class="em_list_photo"><?= $value->photo; ?></div>
                                                 <?php endif; ?>
+                                                <div class="em_list_text">
+                                                    <?php if ($anonymize_data) : ?>
+                                                        <div class="em_list_fnum"><?= $value->val; ?></div>
+                                                    <?php else : ?>
+                                                        <span class="em_list_text" title="<?= $value->val; ?>">
+                                                            <strong> <?= $value->user->name; ?></strong>
+                                                        </span>
+                                                        <div class="em_list_email"><?= $value->user->email; ?></div>
+                                                        <div class="em_list_email"><?= $value->user->id; ?></div>
+                                                    <?php endif; ?>
+                                                </div>
                                             </div>
-                                        </a>
+                                        <?php else : ?>
+                                            <a href="#<?= $value->val; ?>|open" id="<?= $value->val; ?>" class="em_file_open">
+                                                <?php if (isset($value->photo) && !$anonymize_data) :?>
+                                                    <div class="em_list_photo"><?= $value->photo; ?></div>
+                                                <?php endif; ?>
+                                                <div class="em_list_text">
+                                                    <?php if ($anonymize_data) :?>
+                                                        <div class="em_list_fnum"><?= $value->val; ?></div>
+                                                    <?php else :?>
+                                                        <span class="em_list_text" title="<?= $value->val; ?>"> <strong> <?= $value->user->name; ?></strong></span>
+                                                        <div class="em_list_email"><?= $value->user->email; ?></div>
+                                                        <div class="em_list_email"><?= $value->user->id; ?></div>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </a>
+                                        <?php endif; ?>
                                     <?php elseif ($k == "access"):?>
                                         <?= $this->accessObj[$line['fnum']->val]; ?>
                                     <?php elseif ($k == "id_tag"):?>
@@ -211,6 +231,34 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
         <?= $this->datas?>
     <?php endif;?>
 </div>
+
+
+<?php
+if ($this->open_file_in_modal) {
+    require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
+    $hash = EmundusHelperCache::getCurrentGitHash();
+    ?>
+    <div id="em-files"
+         context="files"
+         user="<?= $this->user->id; ?>"
+         ratio="<?= $this->modal_ratio; ?>"
+         type="evaluation"
+         base="<?= JURI::base(); ?>"
+    >
+    </div>
+
+    <script src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
+    <script>
+        function clickOpenfile(fnum) {
+            var event = new CustomEvent('openSingleApplicationWithFnum', {detail: {fnum: fnum, fnums: []}});
+            window.dispatchEvent(event);
+        }
+    </script>
+    <?php
+}
+?>
+
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
 
 <script type="text/javascript">

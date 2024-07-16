@@ -24,17 +24,31 @@ class EmundusViewFiles extends JViewLegacy
 	protected $actions;
 	protected $use_module_for_filters;
 
+	protected bool $open_file_in_modal = false;
+	protected string $modal_ratio = '66/33';
+	protected array $modal_left_panel_tabs = [];
+
 	public function __construct($config = array())
 	{
 		$menu = JFactory::getApplication()->getMenu();
-		$current_menu = $menu->getActive();
-		$menu_params = $menu->getParams(@$current_menu->id);
 		$session = JFactory::getSession();
 
-		if (!empty($menu_params)) {
-			$this->use_module_for_filters = boolval($menu_params->get('em_use_module_for_filters', 0));
-		} else {
-			$this->use_module_for_filters = false;
+        if (!empty($menu)) {
+            $current_menu = $menu->getActive();
+			if (!empty($current_menu)) {
+				$menu_params = $menu->getParams($current_menu->id);
+				if (!empty($menu_params)) {
+					$this->use_module_for_filters = boolval($menu_params->get('em_use_module_for_filters', 0));
+
+					$this->open_file_in_modal     = boolval($menu_params->get('em_open_file_in_modal', 0));
+					if ($this->open_file_in_modal) {
+						$this->modal_ratio = $menu_params->get('em_modal_ratio', '66/33');
+						$this->modal_left_panel_tabs = $menu_params->get('em_modal_left_panel_tabs', []);
+					}
+				} else {
+					$this->use_module_for_filters = false;
+				}
+			}
 		}
 
 		if ($this->use_module_for_filters) {
