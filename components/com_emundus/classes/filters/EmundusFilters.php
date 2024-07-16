@@ -278,8 +278,12 @@ class EmundusFilters
                                 }
 
                                 // this field can contains order by clause, so we need to split it
-                                $where_clause = stripos($params['database_join_where_sql'], 'ORDER BY') !== false ? substr($params['database_join_where_sql'], 0, $order_by_pos) : $params['database_join_where_sql'];
-                                $query->where($where_clause);
+                                $order_by_pos = stripos($params['database_join_where_sql'], 'ORDER BY');
+                                $where_clause = $order_by_pos !== false ? substr($params['database_join_where_sql'], 0, $order_by_pos) : $params['database_join_where_sql'];
+
+                                if (!empty($where_clause)) {
+                                    $query->where($where_clause);
+                                }
                             }
 						}
 
