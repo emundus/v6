@@ -63,7 +63,7 @@ $template_type = array(
         document.querySelector("#em-doc-export-mode option[value='1']").remove();
     }
 
-    const select = document.getElementById("em-doc-tmpl");
+    var select = document.getElementById("em-doc-tmpl");
     $.ajax({
         type: 'post',
         url: 'index.php?option=com_emundus&controller=evaluation&task=getattachmentletters',
@@ -75,7 +75,7 @@ $template_type = array(
                 $('#export-div').show();
 
                 attachment_letters.forEach((letter,index) => {
-                    const opt = document.createElement("option");
+                    var opt = document.createElement("option");
                     opt.value = letter.id;
                     opt.text = letter.value;
                     if(index == 0){
@@ -85,7 +85,7 @@ $template_type = array(
                     select.add(opt, select.options[1]);
                 })
             } else {
-                const opt = document.createElement("option");
+                var opt = document.createElement("option");
                 opt.value = -1;
                 opt.disabled = true;
                 opt.selected = true;
@@ -94,7 +94,7 @@ $template_type = array(
                 select.add(opt, select.options[1]);
                 document.getElementById('doc_can_see').remove();
                 document.getElementById('export-div').remove();
-                const merge_div = document.getElementById('merge-div');
+                var merge_div = document.getElementById('merge-div');
                 if(merge_div != null) {
                     document.getElementById('merge-div').remove();
                 }

@@ -248,7 +248,7 @@ $timezone = new DateTimeZone($offset);
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
 <script>
      $(document).ready(function(){
-         const dataContainer = document.querySelector('.em-data-container')
+         var dataContainer = document.querySelector('.em-data-container')
          if (dataContainer) {
              DoubleScroll(dataContainer);
          }

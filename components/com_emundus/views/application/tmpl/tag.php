@@ -71,7 +71,7 @@ JFactory::getSession()->set('application_layout', 'tag');
                                         <div class="comment-text em-tags-action">
                                                 <div class="flex items-center gap-2 sticker label-<?php echo $color ?>" title="<?= $tag['label']; ?>">
                                                     <span class="circle bg-white"></span>
-                                                    <span class="text-white truncate font-semibold"
+                                                    <span class="text-white font-semibold"
                                                           style="float:unset"><?php echo $tag['label']; ?></span>
                                                 </div>
                                         </div>

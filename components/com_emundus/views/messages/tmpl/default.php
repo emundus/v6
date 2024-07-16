@@ -76,7 +76,7 @@ if (empty($id)) {
 
     function updateMessages() {
 
-        const chatClass = document.getElementById("em-chat").className.match(/\d+/)[0];
+        var chatClass = document.getElementById("em-chat").className.match(/\d+/)[0];
 
         $.ajax({
             type: 'POST',

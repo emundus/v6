@@ -376,7 +376,8 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
                                     'user_id_from' => 62,
                                     'user_id_to' => $user->id,
                                     'subject' => $email->subject,
-                                    'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $user->email . '</i><br>' . $body
+                                    'message' => $body,
+                                    'email_to' => $user->email
                                 ];
                                 $m_emails->logEmail($message);
                             }
@@ -410,7 +411,8 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
                             'user_id_from' => 62,
                             'user_id_to' => $user->id,
                             'subject' => $email->subject,
-                            'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $user->email . '</i><br>' . $body
+                            'message' => $body,
+                            'email_to' => $user->email
                         ];
                         $m_emails->logEmail($message);
                     }
@@ -513,7 +515,8 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
                         'user_id_from' => 62,
                         'user_id_to' => $user->id,
                         'subject' => $email->subject,
-                        'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $user->email . '</i><br>' . $body
+                        'message' => $body,
+                        'email_to' => $user->email
                     ];
                     $m_emails->logEmail($message);
                 }
@@ -545,7 +548,8 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 							'user_id_from' => 62,
 							'user_id_to' => $user->id,
 							'subject' => $email->subject,
-							'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$user->email.'</i><br>'.$body
+							'message' => $body,
+                            'email_to' => $user->email
 						];
 						$m_emails->logEmail($message);
 					}

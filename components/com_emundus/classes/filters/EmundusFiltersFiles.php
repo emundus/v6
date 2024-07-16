@@ -554,19 +554,21 @@ class EmundusFiltersFiles extends EmundusFilters
             $db->setQuery($query);
             $tags = $db->loadAssocList();
 
-            $this->applied_filters[] = [
-                'uid' => 'tags',
-                'id' => 'tags',
-                'label' => JText::_('MOD_EMUNDUS_FILTERS_TAGS'),
-                'type' => 'select',
-                'values' => $tags,
-                'value' => ['all'],
-                'default' => true,
-                'available' => true,
-                'operator' => 'IN',
-                'order' => $config['filter_tags_order']
-            ];
-        }
+				$this->applied_filters[] = [
+					'uid'       => 'tags',
+					'id'        => 'tags',
+					'label'     => JText::_('MOD_EMUNDUS_FILTERS_TAGS'),
+					'type'      => 'select',
+					'values'    => $tags,
+					'value'     => ['all'],
+					'default'   => true,
+					'available' => true,
+					'order'     => $config['filter_tags_order'],
+                    'operator' => 'IN',
+                    'andorOperator'  => 'OR',
+                    'andorOperators' => ['OR', 'AND']
+				];
+			}
 
         if ($config['filter_published']) {
             $this->applied_filters[] = [
@@ -597,19 +599,21 @@ class EmundusFiltersFiles extends EmundusFilters
             $db->setQuery($query);
             $groups = $db->loadAssocList();
 
-            $this->applied_filters[] = [
-                'uid' => 'group_assoc',
-                'id' => 'group_assoc',
-                'label' => JText::_('MOD_EMUNDUS_FILTERS_GROUP_ASSOC'),
-                'type' => 'select',
-                'values' => $groups,
-                'value' => ['all'],
-                'default' => true,
-                'available' => true,
-                'operator' => 'IN',
-                'order' => $config['filter_groups_order']
-            ];
-        }
+                $this->applied_filters[] = [
+                    'uid' => 'group_assoc',
+                    'id' => 'group_assoc',
+                    'label' => JText::_('MOD_EMUNDUS_FILTERS_GROUP_ASSOC'),
+                    'type' => 'select',
+                    'values' => $groups,
+                    'value' => ['all'],
+                    'default' => true,
+                    'available' => true,
+                    'order' => $config['filter_groups_order'],
+                    'operator' => 'IN',
+                    'andorOperator'  => 'OR',
+                    'andorOperators' => ['OR', 'AND']
+                ];
+            }
 
         if ($config['filter_users']) {
             $query->clear()
@@ -631,19 +635,21 @@ class EmundusFiltersFiles extends EmundusFilters
                 JLog::add('Failed to get users associated to profiles that current' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
             }
 
-            $this->applied_filters[] = [
-                'uid' => 'users_assoc',
-                'id' => 'users_assoc',
-                'label' => JText::_('MOD_EMUNDUS_FILTERS_USERS_ASSOC'),
-                'type' => 'select',
-                'values' => $users,
-                'value' => ['all'],
-                'default' => true,
-                'available' => true,
-                'operator' => 'IN',
-                'order' => $config['filter_users_order']
-            ];
-        }
+                $this->applied_filters[] = [
+                    'uid' => 'users_assoc',
+                    'id' => 'users_assoc',
+                    'label' => JText::_('MOD_EMUNDUS_FILTERS_USERS_ASSOC'),
+                    'type' => 'select',
+                    'values' => $users,
+                    'value' => ['all'],
+                    'default' => true,
+                    'available' => true,
+                    'order' => $config['filter_users_order'],
+                    'operator' => 'IN',
+                    'andorOperator'  => 'OR',
+                    'andorOperators' => ['OR', 'AND']
+                ];
+            }
 
         $session = JFactory::getSession();
 

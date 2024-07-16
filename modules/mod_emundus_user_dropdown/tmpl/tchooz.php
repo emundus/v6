@@ -466,20 +466,6 @@ if ($user != null)
             }
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
-            if (document.getElementById('profile_chzn') != null) {
-                document.getElementById('profile_chzn').style.display = 'none';
-                document.getElementById('profile').style.display = 'block';
-                document.querySelector('#header-c .g-content').style.alignItems = 'start';
-            }
-
-            let elmnt2 = document.getElementById("g-top");
-            if (elmnt2 !== null) {
-                let hauteurTotaleElem = elmnt2.offsetHeight;
-                document.getElementById("g-navigation").style.top = hauteurTotaleElem + 'px';
-            }
-        });
-
         function updateSvgColors(css_var) {
             document.documentElement.style.setProperty("--em-profile-color", css_var);
         }
@@ -525,11 +511,18 @@ if ($user != null)
             var current_fnum = document.getElementById("profile").value;
             var redirect_url = document.getElementById("switch_profile_redirect").value;
 
-            var url = window.location.origin.toString() + redirect_url;
-
+            var url = window.location.origin.toString() + '/' + redirect_url;
+            <?php
+            $config = JFactory::getConfig();
+            $switch = '/index.php?option=com_emundus&task=switchprofile';
+            $tchoozy = '/media/com_emundus/images/tchoozy/facial-expressions/sad-face.svg';
+            if ($config->get('sef') == 0) {
+                $switch = 'index.php?option=com_emundus&task=switchprofile';
+                $tchoozy = 'media/com_emundus/images/tchoozy/facial-expressions/sad-face.svg';
+            } ?>
             jQuery.ajax({
                 type: 'POST',
-                url: '/index.php?option=com_emundus&task=switchprofile',
+                url: '<?= $switch; ?>',
                 data: ({
                     profnum: current_fnum
                 }),
@@ -647,5 +640,21 @@ if ($user != null)
     </script>
 <?php }
 ?>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+$        if (document.getElementById('profile_chzn') != null) {
+            document.getElementById('profile_chzn').style.display = 'none';
+            document.getElementById('profile').style.display = 'block';
+            document.querySelector('#header-c .g-content').style.alignItems = 'start';
+        }
+
+        let elmnt2 = document.getElementById("g-top");
+        if (elmnt2 !== null) {
+            let hauteurTotaleElem = elmnt2.offsetHeight;
+            document.getElementById("g-navigation").style.top = hauteurTotaleElem + 'px';
+        }
+    });
+</script>
 
 <div class="em-page-loader" style="display: none"></div>

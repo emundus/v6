@@ -88,7 +88,7 @@ JFactory::getDocument()->addStyleSheet("media/com_emundus/css/emundus_chat.css")
 
     function updateMessages() {
 
-        const otherUser = "<?= $other_user; ?>";
+        var otherUser = "<?= $other_user; ?>";
 
         $.ajax({
             type: 'POST',
@@ -140,7 +140,7 @@ JFactory::getDocument()->addStyleSheet("media/com_emundus/css/emundus_chat.css")
 
     function sendMessage() {
         var message = document.getElementById('Tapez-votre-message-ici').value;
-        const receiver = '<?= $other_user; ?>';
+        var receiver = '<?= $other_user; ?>';
 
         if (message.length !== 0  && strip(message).replace(/\s/g, '').length !== 0) {
             // remove white spaces

@@ -81,6 +81,7 @@ import Attachments from "@/views/Attachments";
 import filesService from 'com_emundus/src/services/files';
 import errors from "../../mixins/errors.js";
 import Comments from "@/components/Files/Comments";
+import decisionService from 'com_emundus/src/services/decision';
 
 
 export default {
@@ -189,6 +190,8 @@ export default {
             this.getApplicationForm();
             if (this.$props.type === 'evaluation') {
               this.getEvaluationForm();
+            } else if (this.$props.type === 'decision') {
+              this.getDecisionForm();
             }
 
             this.$modal.show('application-modal');
@@ -217,8 +220,11 @@ export default {
                 this.selected = 'comments';
               }
             }
+
             if (this.$props.type === 'evaluation') {
               this.getEvaluationForm();
+            } else if (this.$props.type === 'decision') {
+              this.getDecisionForm();
             }
             this.$modal.show('application-modal');
             this.hidden = false;
@@ -275,6 +281,11 @@ export default {
             this.url = 'index.php?option=com_fabrik&c=form&view=' + view + '&formid=' + response.data + '&rowid=' + this.rowid + '&jos_emundus_evaluations___student_id[value]=' + this.student_id + '&jos_emundus_evaluations___campaign_id[value]=' + this.selectedFile.campaign + '&jos_emundus_evaluations___fnum[value]=' + this.selectedFile.fnum + '&student_id=' + this.student_id + '&tmpl=component&iframe=1'
           }
         }
+      });
+    },
+    getDecisionForm() {
+      decisionService.getDecisionFormUrl(this.selectedFile.fnum).then((response) => {
+        this.url = response.url;
       });
     },
     iframeLoaded() {

@@ -12,7 +12,7 @@ function addLoader(container = 'body') {
 }
 
 function removeLoader() {
-    const loader = document.getElementById('em-dimmer');
+    var loader = document.getElementById('em-dimmer');
     if (loader!== null) {
        loader.remove();
     }

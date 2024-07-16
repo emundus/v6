@@ -731,7 +731,8 @@ class EmundusModelCampaign extends JModelList {
                 $query->select('COUNT(id)')
                     ->from($this->_db->quoteName('#__emundus_campaign_candidature'))
                     ->where($this->_db->quoteName('status') . ' IN (' . $limit->steps . ')')
-                    ->andWhere($this->_db->quoteName('campaign_id') . ' = ' . $id);
+                    ->andWhere($this->_db->quoteName('campaign_id') . ' = ' . $id)
+                    ->andWhere($this->_db->quoteName('published').' = 1');
 
                 try {
                     $this->_db->setQuery($query);
@@ -2065,7 +2066,7 @@ class EmundusModelCampaign extends JModelList {
             $query->select('*')
                 ->from($this->_db->quoteName('#__dropfiles_files'))
                 ->where($this->_db->quoteName('catid') . ' = ' . $this->_db->quote($campaign_cat))
-                ->group($this->_db->quoteName('ordering'));
+                ->order($this->_db->quoteName('ordering'));
             $this->_db->setQuery($query);
             return $this->_db->loadObjectList();
         }  catch (Exception $e) {

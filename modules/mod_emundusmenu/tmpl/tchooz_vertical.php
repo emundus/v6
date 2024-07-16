@@ -85,6 +85,13 @@ defined('_JEXEC') or die;
         left: -20px;
         display: flex;
     }
+
+    @media screen and (min-width: 768px) and (max-width: 959px){
+        ul.tchooz-vertical-toplevel > li.active.tchooz-vertical-item > a.item::before {
+            left: -25px;
+        }
+    }
+
     .active .item .image-title{
         color: var(--em-profile-color);
     }
