@@ -26,7 +26,7 @@ class EmundusViewFiles extends JViewLegacy
 
 	protected bool $open_file_in_modal = false;
 	protected string $modal_ratio = '66/33';
-	protected array $modal_left_panel_tabs = [];
+	protected string $modal_left_panel_tabs = '';
 
 	public function __construct($config = array())
 	{
@@ -43,7 +43,7 @@ class EmundusViewFiles extends JViewLegacy
 					$this->open_file_in_modal     = boolval($menu_params->get('em_open_file_in_modal', 0));
 					if ($this->open_file_in_modal) {
 						$this->modal_ratio = $menu_params->get('em_modal_ratio', '66/33');
-						$this->modal_left_panel_tabs = $menu_params->get('em_modal_left_panel_tabs', []);
+						$this->modal_left_panel_tabs = $menu_params->get('em_modal_left_panel_tabs', 'evaluation');
 					}
 				} else {
 					$this->use_module_for_filters = false;

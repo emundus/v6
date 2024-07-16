@@ -242,7 +242,7 @@ if ($this->open_file_in_modal) {
          context="files"
          user="<?= $this->user->id; ?>"
          ratio="<?= $this->modal_ratio; ?>"
-         type="evaluation"
+         type="<?= $this->modal_left_panel_tabs; ?>"
          base="<?= JURI::base(); ?>"
     >
     </div>

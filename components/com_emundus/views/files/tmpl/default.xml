@@ -16,7 +16,7 @@
 				<option value="0">JNO</option><option value="1">JYES</option>
 			</field>
 			<field showon="em_open_file_in_modal:1" name="em_modal_ratio" type="text" label="COM_EMUNDUS_MODAL_RATIO" description="COM_EMUNDUS_MODAL_RATIO_DESC" default="66/33"/>
-			<field showon="em_open_file_in_modal:1" name="em_modal_left_panel_tabs" multiple="true" type="list" label="COM_EMUNDUS_MODAL_LEFT_PANEL_TABS" description="COM_EMUNDUS_MODAL_LEFT_PANEL_TABS_DESC" default="evaluation">
+			<field showon="em_open_file_in_modal:1" name="em_modal_left_panel_tabs" type="list" label="COM_EMUNDUS_MODAL_LEFT_PANEL_TABS" description="COM_EMUNDUS_MODAL_LEFT_PANEL_TABS_DESC" default="evaluation">
 				<option value="evaluation">Evaluation</option>
 				<option value="decision">Decision</option>
 			</field>
