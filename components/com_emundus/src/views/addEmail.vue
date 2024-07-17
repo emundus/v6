@@ -543,6 +543,10 @@ export default {
     updateCategorySelectedValue(category)
     {
       if (category.label) {
+        if (category.id > 0) {
+          this.categories[category.id - 1] = category.label;
+        }
+
         this.form.category = category.label;
       } else {
         this.selectedCategory = null;

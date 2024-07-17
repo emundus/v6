@@ -643,7 +643,7 @@ if ($user != null)
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-$        if (document.getElementById('profile_chzn') != null) {
+        if (document.getElementById('profile_chzn') != null) {
             document.getElementById('profile_chzn').style.display = 'none';
             document.getElementById('profile').style.display = 'block';
             document.querySelector('#header-c .g-content').style.alignItems = 'start';

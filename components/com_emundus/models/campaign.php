@@ -1410,7 +1410,9 @@ class EmundusModelCampaign extends JModelList {
                         break;
                     case 'end_date':
                     case 'start_date':
-                        $display_date = EmundusHelperDate::displayDate($val,'Y-m-d H:i:s', 1);
+		                $dateStr = str_replace(' ', 'T', $val);
+		                $date = new DateTime($dateStr);
+		                $display_date = $date->format('Y-m-d H:i:s');
                         if (!empty($display_date)) {
                             $fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($display_date);
                         } else {
