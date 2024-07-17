@@ -4913,6 +4913,20 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 			EmundusHelperUpdate::installExtension('System - eMundus', 'emundus','{"name":"System - eMundus","type":"plugin","creationDate":"15 juillet 2024","author":"eMundus","copyright":"Copyright (C) 2024 eMundus","authorEmail":"dev@emundus.io","authorUrl":"http:\/\/www.emundus.fr","version":"1.39.1","description":"eMundus plugin to call jQuery","group":"","filename":"emundus"}','plugin',1,'system');
 		}
 
+        if (version_compare($cache_version, '1.39.2', '<=') || $firstrun) {
+            $db->setQuery("alter table jos_emundus_evaluations modify user int null");
+            $db->execute();
+
+            $db->setQuery("alter table jos_emundus_evaluations drop foreign key jos_emundus_evaluations_ibfk_4");
+            $db->execute();
+
+            $db->setQuery("alter table jos_emundus_evaluations
+                add constraint jos_emundus_evaluations_ibfk_4
+                foreign key (user) references jos_emundus_users (user_id)
+                on update cascade on delete set null");
+            $db->execute();
+        }
+
 		return $succeed;
 	}
 
