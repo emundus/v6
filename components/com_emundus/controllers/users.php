@@ -1354,7 +1354,7 @@ class EmundusControllerUsers extends JControllerLegacy {
                 }
             }
         }
-        fputcsv($csv_file, $headers);
+        fputcsv($csv_file, $headers,';');
         //
 
         // Retrieve all the value of users' data necessary
@@ -1374,14 +1374,26 @@ class EmundusControllerUsers extends JControllerLegacy {
                 }
             }
             if (!empty(array_filter($userData))) {
-                fputcsv($csv_file, $userData);
+                fputcsv($csv_file, $userData,';');
             }
         }
         fclose($csv_file);
+
+		$nb_cols = count($headers);
+		$nb_rows = count($user_details);
+		$xls_file = $m_users->convertCsvToXls($export_filename,$nb_cols,$nb_rows,'export_users_'. $current_user->id .'_' . date('Y-m-d_H:i'),';');
         //
 
         // Add all the headers necessary
-        header('Content-type: text/csv');
+	    if(!empty($xls_file)) {
+			$path = JPATH_SITE . '/tmp/' . $xls_file;
+		    $export_filename = $xls_file;
+
+		    header('Content-type: application/vnd.ms-excel');
+	    } else {
+		    header('Content-type: text/csv');
+	    }
+
         header('Content-Disposition: attachment; filename=' . $export_filename);
         header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
         header('Cache-Control: no-store, no-cache, must-revalidate');

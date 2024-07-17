@@ -2097,7 +2097,7 @@ div[id^='current_'] .mod_emundus_campaign__list_content #background-shapes {
   width: 95%;
   height: 63%;
   top: 0;
-  right: 0;
+  right: -2px;
   pointer-events: none;
   mask-image: url('/modules/mod_emundus_campaign/assets/fond-clair.svg');
   -webkit-mask-image: url('/modules/mod_emundus_campaign/assets/fond-clair.svg');
@@ -2336,6 +2336,7 @@ div[id^='current_'] .mod_emundus_campaign__list_content h3 {
   /* Peps */
   div[id^='current_'] .mod_emundus_campaign__list_content #background-shapes {
     width: 64%;
+    right: 27px;
   }
 
   .mod_emundus_campaign__pinned_campaign .mod_emundus_campaign__list_content #background-shapes {
@@ -2346,6 +2347,8 @@ div[id^='current_'] .mod_emundus_campaign__list_content h3 {
   .mod_emundus_campaign__pinned_campaign .mod_emundus_campaign__list_content #background-shapes.single-campaign-pinned {
     width: 50%;
     height: 55%;
+    right: 82px;
+    top: 53px;
   }
 
   .mod_emundus_campaign__list_content--default {
@@ -2365,13 +2368,13 @@ div[id^='current_'] .mod_emundus_campaign__list_content h3 {
 
   /* Peps */
   div[id^='current_'] .mod_emundus_campaign__list_content #background-shapes {
-    top: -90px;
-    right: -10px;
+    top: 0;
+    right: -25px;
   }
 
   .mod_emundus_campaign__pinned_campaign .mod_emundus_campaign__list_content #background-shapes {
-    top: -20px;
-    right: -51px;
+    top: 0;
+    right: 58px;
   }
 
   .mod_emundus_campaign__list_content--default {
@@ -2391,18 +2394,18 @@ div[id^='current_'] .mod_emundus_campaign__list_content h3 {
 
   /* Peps */
   .view-featured div[id^='current_'] .mod_emundus_campaign__list_content #background-shapes {
-    top: -47px;
-    right: -11px;
+    top: 11px;
+    right: -25px;
   }
 
   div[id^='current_'] .mod_emundus_campaign__list_content #background-shapes {
-    top: -11px;
-    right: -15px;
+    top: 10px;
+    right: -25px;
   }
 
   .mod_emundus_campaign__pinned_campaign .mod_emundus_campaign__list_content #background-shapes {
-    top: -14px;
-    right: -110px;
+    top: 46px;
+    right: 57px;
   }
 
   .mod_emundus_campaign__list_content--default {
@@ -2422,6 +2425,8 @@ div[id^='current_'] .mod_emundus_campaign__list_content h3 {
 
   /* Peps */
   div[id^='current_'] .mod_emundus_campaign__list_content #background-shapes {
+    top: 12px;
+    right: 23px;
     width: 91%;
     height: 65%;
   }
@@ -2429,6 +2434,8 @@ div[id^='current_'] .mod_emundus_campaign__list_content h3 {
   .mod_emundus_campaign__pinned_campaign .mod_emundus_campaign__list_content #background-shapes {
     width: 70%;
     height: 70%;
+    top: 38px;
+    right: 79px;
   }
 
   .mod_emundus_campaign__list_content--default {
@@ -2603,6 +2610,7 @@ div[id^='current_'] .mod_emundus_campaign__list_content h3 {
     width: 76%;
     height: 71%;
     transform: scale(1);
+    top: -18px;
   }
 
   .mod_emundus_campaign__pinned_campaign .mod_emundus_campaign__list_content #background-shapes {
@@ -2610,6 +2618,7 @@ div[id^='current_'] .mod_emundus_campaign__list_content h3 {
     height: 71%;
     display: block;
     transform: scale(1);
+    right: -108px;
   }
 
   .mod_emundus_campaign__list_content--default {

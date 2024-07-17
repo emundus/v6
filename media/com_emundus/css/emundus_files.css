@@ -725,6 +725,8 @@ div#em-appli-block .legend::before {
 
 div#em-appli-block td {
     border: none;
+    word-break: break-all;
+    hyphens: auto;
 }
 
 div#em-appli-block tr:nth-child(odd) {
@@ -2022,12 +2024,27 @@ label[for="em-file_to_upload"]:hover {
 
 /* Messages sent / failed emails list style. Message recipient list */
 #em-mails-sent, #em-mails-failed, #em-recipitents {
-    overflow-y: scroll;
     max-height: 80px;
     display: flex;
     column-gap: 4px;
     flex-wrap: wrap;
     row-gap: 4px;
+}
+#em-mails-sent .list-group-item, #em-mails-failed .list-group-item {
+    background-color: var(--neutral-300);
+    border-radius: var(--em-coordinator-br);
+}
+
+#em-mails-sent .list-group-item[sended]:hover::after {
+    content: attr(sended);
+    position: absolute;
+    top: 45px;
+    right: 0;
+    border-radius: var(--em-coordinator-br);
+    background: white;
+    padding: 6px;
+    border: solid 1px var(--neutral-300);
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
 }
 
 /* Sending email modal */
@@ -2836,6 +2853,26 @@ a.copy-0:focus {
 }
 
 @media all and (min-width: 768px) and (max-width: 959px) {
+
+    .files-board.gantry #g-container-main .g-container {
+        width: 90vw;
+    }
+
+    /* FILES BOARD */
+    .files-board .span12 {
+        display: flex;
+        flex-direction: column;
+
+        .panel-body.em-containerFilter-body {
+            position: initial;
+            min-height: auto;
+            height: auto;
+        }
+        .col-md-3.side-panel {
+            position: initial;
+            height: auto !important;
+        }
+    }
 
     .g-back-office-emundus-tableau.files-board #g-main-mainbody .platform-content {
         padding: 0 !important;

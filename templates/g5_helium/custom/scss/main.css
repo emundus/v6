@@ -90,7 +90,7 @@ body {
     background-image: var(--display-demonstration);
     background-size: 250px;
     background-repeat: no-repeat;
-    background-position: top -6px right 30px;
+    background-position: top 50% right -40px;
     width: 100%;
     padding-right: 28%;
     min-height: 150px;
@@ -155,8 +155,8 @@ body {
 @media screen and (min-width: 768px) and (max-width: 959px) {
 
     /* Accueil */
-    .homepage #g-container-main .g-container {
-        background-image : none;
+    .homepage #g-container-main .g-container .mod_emundus_campaign__intro {
+        background-position: top 50% right -40px;
     }
 
     /* Connexion */

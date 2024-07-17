@@ -280,10 +280,11 @@ hr.footer-separation {
 }
 
 @media all and (min-width: 768px) and (max-width: 959px) {
-    .footer-emundus {
-        white-space: break-spaces;
-    }
 
+    .em-flex-row.em-footer-container-row {
+        flex-direction: column !important;
+        row-gap: 16px;
+    }
 }
 
 

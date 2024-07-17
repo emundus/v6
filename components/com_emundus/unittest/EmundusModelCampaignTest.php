@@ -315,6 +315,7 @@ class EmundusModelCampaignTest extends TestCase
                 $db->execute();
 
                 $current_file_workflow = $this->m_campaign->getCurrentCampaignWorkflow($fnum, 'Mon dossier au statut 1 récupère le workflow associé à sa campagne');
+                $this->assertNotEmpty($current_file_workflow->id, 'Le workflow associé à la campagne est bien récupéré');
                 $this->assertSame(intval($new_workflow_id), intval($current_file_workflow->id));
 
                 $this->assertTrue($this->m_campaign->deleteWorkflows(), 'La suppression de workflow fonctionne');
