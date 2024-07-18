@@ -2143,15 +2143,26 @@ class EmundusModelApplication extends JModelList
                                                         ->where($this->_db->quoteName('eu.fnum') . ' LIKE ' . $this->_db->quote($fnum))
                                                         ->andWhere($this->_db->quoteName('eu.attachment_id') . ' = ' . $this->_db->quote($params->attachmentId));
                                                     $this->_db->setQuery($query);
-                                                    $attachment_upload = $this->_db->loadObject();
+                                                    $attachments_uploads = $this->_db->loadObjectList();
 
-                                                    if(!empty($attachment_upload->filename) && (($allowed_attachments !== true && in_array($params->attachmentId,$allowed_attachments)) || $allowed_attachments === true)) {
-                                                        $path = DS . 'images' . DS . 'emundus' . DS . 'files' . DS . $aid . DS . $attachment_upload->filename;
-                                                        $elt = '<a href="'.$path.'" target="_blank" style="text-decoration: underline;">' . $attachment_upload->attachment_name . '</a>';
-                                                    } else {
-                                                        $elt = '';
-                                                    }
-                                                } catch (Exception $e) {
+	                                                $elt = [];
+													foreach ($attachments_uploads as $index => $attachment_upload) {
+														if (!empty($attachment_upload->filename) && (($allowed_attachments !== true && in_array($params->attachmentId, $allowed_attachments)) || $allowed_attachments === true)) {
+															$path = DS . 'images' . DS . 'emundus' . DS . 'files' . DS . $aid . DS . $attachment_upload->filename;
+															if(sizeof($attachments_uploads) > 1) {
+																$elt[] = '<a href="' . $path . '" target="_blank" style="text-decoration: underline;">' . $attachment_upload->attachment_name . ' ' . ($index + 1) . '</a>';
+															} else {
+																$elt[] = '<a href="' . $path . '" target="_blank" style="text-decoration: underline;">' . $attachment_upload->attachment_name . '</a>';
+															}
+														}
+													}
+
+													if(!empty($elt)) {
+														$elt = implode('<br>', $elt);
+													} else {
+														$elt = '';
+													}
+												} catch (Exception $e) {
                                                     JLog::add('component/com_emundus/models/application | Error at getting emundus_fileupload for applicant ' . $fnum . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
                                                     $elt = '';
                                                 }
@@ -5068,7 +5079,7 @@ class EmundusModelApplication extends JModelList
                 $path_href = JURI::base() . EMUNDUS_PATH_REL . $user_id . '/' . $upload->filename;
                 $html .= '<li><b>' . $upload->value . '</b>';
                 $html .= '<ul>';
-                $html .= '<li><a href="' . $path_href . '" dir="ltr" target="_blank">' . $upload->filename . '</a> (' . strftime("%d/%m/%Y %H:%M", strtotime($upload->timedate)) . ')<br/><b>' . JText::_('COM_EMUNDUS_ATTACHMENTS_DESCRIPTION') . '</b> : ' . $upload->description . '</li>';
+                $html .= '<li><a href="' . $path_href . '" dir="ltr" target="_blank">' . $upload->filename . '</a> (' . strftime("%d/%m/%Y %H:%M", strtotime($upload->timedate)) . ')<br/><b>' . JText::_('COM_EMUNDUS_ATTACHMENTS_DESCRIPTION') . '</b> : ' . (!empty($upload->upload_description) ? $upload->upload_description : $upload->description). '</li>';
                 $html .= '</ul>';
                 $html .= '</li>';
             }

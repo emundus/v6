@@ -132,7 +132,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
                         require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
                         $h_date = new EmundusHelperDate();
                         $now = $h_date->getNow();
-                        $insert[] = $db->quote($now) . ' , ' . $db->quote($user) . ' , ' . $db->quote($fnum) . ' , ' . $db->quote($cid) . ' , ' . $db->quote($attachId) . ' , ' . $db->quote($fileName) . ' , ' . $db->quote(1) . ' , ' . $db->quote(1) . ' , ' . $db->quote($now) . ' , ' . $db->quote($file['name'] . ' , ' . $db->quote($description));
+                        $insert[] = $db->quote($now) . ' , ' . $db->quote($user) . ' , ' . $db->quote($fnum) . ' , ' . $db->quote($cid) . ' , ' . $db->quote($attachId) . ' , ' . $db->quote($fileName) . ' , ' . $db->quote(1) . ' , ' . $db->quote(1) . ' , ' . $db->quote($now) . ' , ' . $db->quote($file['name']) . ' , ' . $db->quote($description);
                     }
 
 
@@ -289,7 +289,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
                 }
 
                 $target = '/images' . DS . 'emundus' . DS . 'files' . DS . $fnumInfos['applicant_id'] . DS . $fileName;
-                $result['files'][] = array('filename' => $fileName, 'local_filename' => $local_fileName, 'target' => $target, 'can_be_deleted' => $upload->can_be_deleted, 'can_be_viewed' => $upload->can_be_viewed);
+                $result['files'][] = array('filename' => $fileName, 'local_filename' => $local_fileName, 'target' => $target, 'can_be_deleted' => $upload->can_be_deleted, 'can_be_viewed' => $upload->can_be_viewed, 'description' => $upload->description);
                 $result['status'] = true;
             }
 
@@ -455,7 +455,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
         $db = JFactory::getDBO();
 
         $query = $db->getQuery(true);
-        $query->select(array($db->quoteName('id'), $db->quoteName('filename'), $db->quoteName('local_filename'), $db->quoteName('can_be_deleted'), $db->quoteName('can_be_viewed')))
+        $query->select(array($db->quoteName('id'), $db->quoteName('filename'), $db->quoteName('local_filename'), $db->quoteName('can_be_deleted'), $db->quoteName('can_be_viewed'), $db->quoteName('description')))
             ->from($db->quoteName('#__emundus_uploads'))
             ->where($db->quoteName('attachment_id') . ' = ' . $attachId . ' AND ' . $db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
         $db->setQuery($query);
