@@ -4909,6 +4909,10 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 			//
 		}
 
+		if (version_compare($cache_version, '1.39.1', '<=') || $firstrun) {
+			EmundusHelperUpdate::installExtension('System - eMundus', 'emundus','{"name":"System - eMundus","type":"plugin","creationDate":"15 juillet 2024","author":"eMundus","copyright":"Copyright (C) 2024 eMundus","authorEmail":"dev@emundus.io","authorUrl":"http:\/\/www.emundus.fr","version":"1.39.1","description":"eMundus plugin to call jQuery","group":"","filename":"emundus"}','plugin',1,'system');
+		}
+
 		return $succeed;
 	}
 
