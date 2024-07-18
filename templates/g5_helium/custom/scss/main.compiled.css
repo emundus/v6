@@ -1080,11 +1080,6 @@ form.fabrikForm .check
       opacity: 0;
       position: absolute;
     }
-form.fabrikForm .\!check
-    {
-      opacity: 0 !important;
-      position: absolute !important;
-    }
 form.fabrikForm .fabrikEmundusPhoneNumber .chzn-container{
       width: auto !important;
     }
@@ -1670,16 +1665,9 @@ form.fabrikForm .currencyElement input:focus + select,form.fabrikForm .currencyE
 form.fabrikForm .control-group.error label {
         color: var(--em-form-label-color-error);
       }
-form.fabrikForm .control-group.\!error label {
-        color: var(--em-form-label-color-error) !important;
-      }
 form.fabrikForm .control-group.error input,form.fabrikForm .control-group.error textarea,form.fabrikForm .control-group.error select {
         border-color: var(--em-form-bc-error);
         color: var(--em-default-text-color-1);
-      }
-form.fabrikForm .control-group.\!error input,form.fabrikForm .control-group.\!error textarea,form.fabrikForm .control-group.\!error select {
-        border-color: var(--em-form-bc-error) !important;
-        color: var(--em-default-text-color-1) !important;
       }
 form.fabrikForm .fabrikError.plg-checkbox .fabrikElement .fabrikSubElementContainer {
           border-color: var(--em-form-checkbox-bc-error);
@@ -2029,9 +2017,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
   white-space: nowrap;
   border-width: 0;
 }
-.\!visible {
-  visibility: visible !important;
-}
 .visible {
   visibility: visible;
 }
@@ -2056,20 +2041,8 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .sticky {
   position: sticky;
 }
-.end-1 {
-  inset-inline-end: var(--em-spacing-1);
-}
-.left-1 {
-  left: var(--em-spacing-1);
-}
-.start-1 {
-  inset-inline-start: var(--em-spacing-1);
-}
 .start-2 {
   inset-inline-start: var(--em-spacing-2);
-}
-.isolate {
-  isolation: isolate;
 }
 .row-auto {
   grid-row: auto;
@@ -3591,9 +3564,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .inline-block {
   display: inline-block;
 }
-.\!inline {
-  display: inline !important;
-}
 .inline {
   display: inline;
 }
@@ -3603,17 +3573,8 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .inline-flex {
   display: inline-flex;
 }
-.\!table {
-  display: table !important;
-}
 .table {
   display: table;
-}
-.inline-table {
-  display: inline-table;
-}
-.table-caption {
-  display: table-caption;
 }
 .table-cell {
   display: table-cell;
@@ -3633,17 +3594,8 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .grid {
   display: grid;
 }
-.inline-grid {
-  display: inline-grid;
-}
 .contents {
   display: contents;
-}
-.list-item {
-  display: list-item;
-}
-.\!hidden {
-  display: none !important;
 }
 .hidden {
   display: none;
@@ -3996,9 +3948,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .flex-grow-0 {
   flex-grow: 0;
-}
-.grow {
-  flex-grow: 1;
 }
 .grow-0 {
   flex-grow: 0;
@@ -6942,9 +6891,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .whitespace-pre-line {
   white-space: pre-line;
-}
-.break-all {
-  word-break: break-all;
 }
 .rounded {
   border-radius: 0.25rem;
@@ -16661,10 +16607,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .italic {
   font-style: italic;
 }
-.ordinal {
-  --tw-ordinal: ordinal;
-  font-variant-numeric: var(--tw-ordinal) var(--tw-slashed-zero) var(--tw-numeric-figure) var(--tw-numeric-spacing) var(--tw-numeric-fraction);
-}
 .text-\[\#EF681F\] {
   --tw-text-opacity: 1;
   color: rgb(239 104 31 / var(--tw-text-opacity));
@@ -16682,6 +16624,10 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .text-neutral-600 {
   color: var(--neutral-600);
+}
+.text-neutral-700 {
+  --tw-text-opacity: 1;
+  color: rgb(64 64 64 / var(--tw-text-opacity));
 }
 .text-red-500 {
   --tw-text-opacity: 1;
@@ -19901,11 +19847,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .accent-yellow-950\/95 {
   accent-color: rgb(66 32 6 / 0.95);
-}
-.\!shadow {
-  --tw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1) !important;
-  --tw-shadow-colored: 0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color) !important;
-  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow) !important;
 }
 .shadow {
   --tw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
@@ -37000,10 +36941,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
   --tw-blur: blur(8px);
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
-.drop-shadow {
-  --tw-drop-shadow: drop-shadow(0 1px 2px rgb(0 0 0 / 0.1)) drop-shadow(0 1px 1px rgb(0 0 0 / 0.06));
-  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
-}
 .drop-shadow-2xl {
   --tw-drop-shadow: drop-shadow(0 25px 25px rgb(0 0 0 / 0.15));
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
@@ -37056,9 +36993,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .duration-300 {
   transition-duration: 300ms;
-}
-.ease-in {
-  transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
 }
 .ease-in-out {
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
@@ -37134,9 +37068,6 @@ a,
         line-height: normal;
         font-size: var(--em-applicant-font-size);
     }
-.\!hidden {
-        display: none !important;
-    }
 .hidden {
         display: none;
     }
@@ -37197,9 +37128,6 @@ a,
         min-height: 0;
         padding-left: 0;
         padding-right: 0;
-    }
-.\!row {
-        margin: 0 !important;
     }
 .row {
         margin: 0;
@@ -37525,14 +37453,6 @@ button.swal2-cancel.goback-btn:hover,
         width: auto;
     }
 /* STATUTS ET ETIQUETTES */
-.\!label {
-        display: inline-block !important;
-        border-radius: var(--em-status-br) !important;
-        font-size: 14px !important;
-        font-weight: 400 !important;
-        box-shadow: 0 1px 4px rgba(32, 35, 44, 0.05) !important;
-        padding: 6px 10px !important;
-    }
 .label {
         display: inline-block;
         border-radius: var(--em-status-br);
@@ -37796,12 +37716,6 @@ button.swal2-cancel.goback-btn:hover,
 .label-border-black {
         border-color: var(--em-black);
     }
-.\[-a-zA-Z\:0-9_\.\] {
-  -a-z-a--z: 0-9 .;
-}
-.\[key\:string\] {
-  key: string;
-}
 @font-face {
     font-family: 'Material Icons';
     font-style: normal;
