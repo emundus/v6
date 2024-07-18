@@ -43,7 +43,8 @@ class EmundusHelperChecklist {
         $keep_original_file_name = $eMConfig->get('keep_original_file_name', null);
 
         if ($keep_original_file_name) {
-            $filename = $file;
+            // remove some characters that could lead to SQL injection
+            $filename = preg_replace('/[\/\\\:\*\?\"\<\>\|\'\;]/', '', $file);
         } else {
             if (!empty($applicant_file_name)) {
                 require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
