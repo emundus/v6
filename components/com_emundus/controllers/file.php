@@ -11,6 +11,7 @@ class EmundusControllerFile extends JControllerLegacy
 {
 	private $type;
 	private $files;
+    private $_user;
 
     public function __construct($config = array())
     {
@@ -54,6 +55,8 @@ class EmundusControllerFile extends JControllerLegacy
 		}
 
 	    JFactory::getSession()->set('files', serialize($this->files));
+
+        $this->_user = JFactory::getUser();
 
         parent::__construct($config);
     }
@@ -291,30 +294,36 @@ class EmundusControllerFile extends JControllerLegacy
 		exit;
 	}
 
-	public function savecomment(){
-		$results = ['status' => 0, 'msg' => JText::_('ACCESS_DENIED'), 'data' => []];
-		$jinput = JFactory::getApplication()->input;
-		$fnum = $jinput->getString('fnum', '');
+    public function savecomment()
+    {
+        $results = ['status' => 0, 'msg' => JText::_('ACCESS_DENIED'), 'data' => []];
 
-		if (!empty($fnum) && EmundusHelperAccess::asAccessAction(10,'c',JFactory::getUser()->id,$fnum)){
-			$reason = $jinput->getString('reason','');
-			$comment_body = $jinput->getString('comment_body','');
+        $fnum = $this->input->getString('fnum', '');
 
-			$comment = $this->files->saveComment($fnum,$reason,$comment_body);
+        if (!empty($fnum) && EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $fnum)) {
+            $reason       = $this->input->getString('reason', '');
+            $comment_body = $this->input->getString('comment_body', '');
 
-			if (!empty($comment->id)) {
-				$results['status'] = 1;
-				$results['msg'] = '';
-				$results['data'] = $comment;
-			} else {
-				$results['msg'] = JText::_('COM_EMUNDUS_FILES_CANNOT_GET_COMMENTS');
-				$results['status'] = 0;
-			}
-		}
+            if (!empty($comment_body)) {
+                $comment = $this->files->saveComment($fnum, $reason, $comment_body);
 
-		echo json_encode((object)$results);
-		exit;
-	}
+                if (!empty($comment->id)) {
+                    $results['status'] = 1;
+                    $results['msg']    = '';
+                    $results['data']   = $comment;
+                }
+                else {
+                    $results['msg']    = JText::_('COM_EMUNDUS_FILES_CANNOT_GET_COMMENTS');
+                    $results['status'] = 0;
+                }
+            } else {
+                $results['msg'] = JText::_('COM_EMUNDUS_FILES_COMMENT_EMPTY');
+            }
+        }
+
+        echo json_encode((object) $results);
+        exit;
+    }
 
 	public function deletecomment(){
 		$results = ['status' => 0, 'msg' => JText::_('ACCESS_DENIED')];

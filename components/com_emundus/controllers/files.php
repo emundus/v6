@@ -10,6 +10,7 @@
 // No direct access
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
+use Joomla\CMS\Language\Text;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -1196,20 +1197,20 @@ class EmundusControllerFiles extends JControllerLegacy
 	        $m_files  = new EmundusModelFiles();
 
 	        $fnums_post = $jinput->getVar('fnums', null);
-	        $fnums_array = ($fnums_post == 'all')? 'all' :(array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
+	        $fnums_array = ($fnums_post == 'all') ? 'all' : (array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
 
 	        if ($fnums_array == 'all') {
 		        $fnums = $m_files->getAllFnums();
 	        } else {
 		        $fnums = array();
-		        foreach ($fnums_array as $key => $value) {
+		        foreach ($fnums_array as $value) {
 			        $fnums[] = $value;
 		        }
 	        }
 
-	        $validFnums = array();
+	        $validFnums = [];
 	        foreach ($fnums as $fnum) {
-		        if (EmundusHelperAccess::asAccessAction(6, 'c', $this->_user->id, $fnum)) {
+		        if (is_numeric($fnum) && EmundusHelperAccess::asAccessAction(6, 'c', $this->_user->id, $fnum)) {
 			        $validFnums[] = $fnum;
 		        }
 	        }
@@ -1497,6 +1498,7 @@ class EmundusControllerFiles extends JControllerLegacy
 			}
 		}
 
+	    $not_already_handled_fnums = [];
 		if ($methode != 2 || $failed_with_old_method) {
 			$not_already_handled_fnums = $fnums;
 			if ($start > 0) {
@@ -1656,7 +1658,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
 				foreach ($colsup as $kOpt => $vOpt) {
 					if ($vOpt == "forms" || $vOpt == "attachment") {
-						$line .= $vOpt."(%)\t";
+						$line .= Text::_('COM_EMUNDUS_'.strtoupper($vOpt))." (%)\t";
 					}
 					elseif ($vOpt == "overall")
 					{
@@ -2640,7 +2642,7 @@ class EmundusControllerFiles extends JControllerLegacy
         for ($i; $i<$nbcol; $i++) {
             $value = $objPHPExcel->getActiveSheet()->getCell(Coordinate::stringFromColumnIndex($i) . '1')->getValue();
 
-            if ($value=="forms(%)" || $value=="attachment(%)") {
+            if (strpos($value,'(%)')) {
                 $conditionalStyles = $objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$i].'1')->getConditionalStyles();
                 array_push($conditionalStyles, $objConditional1);
                 array_push($conditionalStyles, $objConditional2);

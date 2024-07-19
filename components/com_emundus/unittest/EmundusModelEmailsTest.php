@@ -225,6 +225,7 @@ class EmundusModelEmailsTest extends TestCase
 			'type'          => 1,
 			'email_id'      => 1,
 			'email_cc' => '',
+			'email_to' => $email_address,
 		];
 		$this->m_emails->logEmail($log,$fnum);
 

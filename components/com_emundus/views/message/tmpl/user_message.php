@@ -337,7 +337,7 @@ $uids = array();
     var SizeStyle = Quill.import('attributors/style/size');
     Quill.register(SizeStyle, true);
 
-    let editor = null;
+    var editor = null;
 
     // Editor loads disabled by default, we apply must toggle it active on page load.
     $(document).ready(() => {
@@ -361,7 +361,7 @@ $uids = array();
     }
 
     function initQuill() {
-        let variables = [];
+        var variables = [];
 
         fetch('index.php?option=com_emundus&controller=settings&task=geteditorvariables')
             .then(function (response) {
@@ -370,7 +370,7 @@ $uids = array();
             .then(function (variables) {
                 variables = variables.data;
 
-                let options = {
+                var options = {
                     modules: {
                         toolbar: [
                             ['bold', 'italic', 'underline', 'strike'],
@@ -394,7 +394,7 @@ $uids = array();
                     allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/,
                     mentionDenotationChars: ["/"],
                     source: (searchTerm, renderList, mentionChar) => {
-                        let values;
+                        var values;
 
                         if (mentionChar === "/") {
                             values = variables;
@@ -403,8 +403,8 @@ $uids = array();
                         if (searchTerm.length === 0) {
                             renderList(values, searchTerm);
                         } else {
-                            const matches = [];
-                            for (let i = 0; i < values.length; i++)
+                            var matches = [];
+                            for (var i = 0; i < values.length; i++)
                                 if (
                                     ~values[i].value.toLowerCase().indexOf(searchTerm.toLowerCase())
                                 )
@@ -427,8 +427,8 @@ $uids = array();
                     }
                 }
                 editor = new Quill('#editor', options);
-                const editorContent = "<?php echo addslashes($this->body) ?>";
-                let delta = editor.clipboard.convert(editorContent);
+                var editorContent = "<?php echo addslashes($this->body) ?>";
+                var delta = editor.clipboard.convert(editorContent);
                 editor.setContents(delta);
                 $('#mail_body').val(editor.root.innerHTML);
 
@@ -465,7 +465,7 @@ $uids = array();
                     if (data.status) {
                         var email_block = document.getElementById("em_email_block");
 
-                        let email = data.data.email;
+                        var email = data.data.email;
 
                         $("#mail_subject").text(email.subject);
 
@@ -476,7 +476,7 @@ $uids = array();
                             $("#mail_from_name").text("<?= JFactory::getConfig()->get('fromname'); ?>");
                         }
 
-                        let delta = editor.clipboard.convert(email.message);
+                        var delta = editor.clipboard.convert(email.message);
                         editor.setContents(delta);
 
                         // Get the attached uploaded file if there is one.
@@ -494,7 +494,7 @@ $uids = array();
             $("#mail_subject").text("<?= JFactory::getConfig()->get('sitename'); ?>");
             $("#mail_from_name").text("<?= JFactory::getConfig()->get('fromname'); ?>");
 
-            let delta = editor.clipboard.convert('<p>Bonjour [NAME],</p>');
+            var delta = editor.clipboard.convert('<p>Bonjour [NAME],</p>');
             editor.setContents(delta);
         }
 
@@ -543,8 +543,8 @@ $uids = array();
     // Add file to the list being attached.
     function addFile() {
         // We need to get the file uploaded by the user.
-        let file = $("#em-file_to_upload")[0].files[0];
-        let upload = new Upload(file);
+        var file = $("#em-file_to_upload")[0].files[0];
+        var upload = new Upload(file);
         // Verification of style size and type can be done here.
         upload.doUpload();
     }

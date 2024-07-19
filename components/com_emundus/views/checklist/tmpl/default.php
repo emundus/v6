@@ -103,12 +103,20 @@ if (!empty($this->custom_title)) :?>
 <?php if (count($this->attachments) > 0) :?>
 
     <div id="attachment_list" class="em-attachmentList em-repeat-card p-6">
-        <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
+        <?php
+        $config = JFactory::getConfig();
+        if ($config->get('sef') == 0) {
+            echo '<iframe id="background-shapes" src="modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_("MOD_EM_FORM_IFRAME") ?>"></iframe>';
+        }
+        else{
+            echo '<iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_("MOD_EM_FORM_IFRAME") ?>"></iframe>';
+        }
+        ?>
         <h2 class="after-em-border after:bg-red-800 mb-4"><?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_TITLE') ?></h2>
         <div class="alert alert-info flex items-center gap-1 mt-1">
             <span class="material-icons">info</span>
             <div>
-                <p><?= JText::_('COM_EMUNDUS_ATTACHMENTS_INFO_UPLOAD_MAX_FILESIZE') . ' ' . ini_get("upload_max_filesize") . ' '. JText::_('COM_EMUNDUS_ATTACHMENTS_BYTES'); ?> </p>
+                <p><?= JText::_('COM_EMUNDUS_ATTACHMENTS_INFO_UPLOAD_MAX_FILESIZE') . ' ' . ini_get("upload_max_filesize") . JText::_('COM_EMUNDUS_ATTACHMENTS_BYTES'); ?> </p>
             </div>
         </div>
     <?php if ($this->show_info_legend) :?>
@@ -667,8 +675,8 @@ $(document).on('change', '.btn-file :file', function() {
 
 $(document).ready(function() {
     // Set sidebar sticky depends on height of header
-    const headerNav = document.getElementById('g-navigation');
-    const sidebar = document.querySelector('.view-checklist #g-sidebar');
+    var headerNav = document.getElementById('g-navigation');
+    var sidebar = document.querySelector('.view-checklist #g-sidebar');
     if (headerNav && sidebar) {
         sidebar.style.top = headerNav.offsetHeight + 8 + 'px';
     }
@@ -792,7 +800,6 @@ $(document).ready(() => {
     }
     ?>
     var attachments = "<?php echo $attachments_label; ?>";
-    console.log(attachments);
     Swal.fire({
         position: 'top',
         type: 'info',
@@ -818,7 +825,7 @@ $(document).ready(() => {
 
 //ADDPIPE check if video is uploaded. If yes, reaload page
 function is_file_uploaded(fnum, aid, applicant_id) {
-    let is_file_uploaded_timer = setInterval(function(){
+    var is_file_uploaded_timer = setInterval(function(){
 
         $.ajax({
             type: 'POST',
