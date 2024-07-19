@@ -944,7 +944,6 @@ class EmundusModelRanking extends JModelList
                 });
             }
 
-
             $ids = $this->getAllFilesRankerCanAccessTo($user_id, null, $package);
 
             if (!empty($hierarchies) && !empty($ids)) {
@@ -959,7 +958,7 @@ class EmundusModelRanking extends JModelList
                     ];
 
                     $query->clear()
-                        ->select('CONCAT(applicant.firstname, " ", applicant.lastname) AS applicant, cc.id, cc.fnum, cr.rank, cr.locked, cr.user_id as ranker_id')
+                        ->select('CONCAT(applicant.firstname, " ", applicant.lastname) AS applicant, cc.id, cc.fnum, cc.status, cr.rank, cr.locked, cr.user_id as ranker_id')
                         ->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
                         ->leftJoin($this->db->quoteName('#__emundus_users', 'applicant') . ' ON ' . $this->db->quoteName('cc.applicant_id') . ' = ' . $this->db->quoteName('applicant.user_id'))
                         ->leftJoin($this->db->quoteName('#__emundus_ranking', 'cr') . ' ON ' . $this->db->quoteName('cc.id') . ' = ' . $this->db->quoteName('cr.ccid'))
@@ -987,6 +986,14 @@ class EmundusModelRanking extends JModelList
                     } catch (Exception $e) {
                         JLog::add('getOtherRankingsRankerCanSee ' . $e->getMessage(), JLog::ERROR, 'com_emundus.ranking.php');
                         throw new Exception('An error occurred while fetching the files.');
+                    }
+
+                    foreach($data['files'] as $key => $file) {
+                        if ($file['status'] !== $hierarchy['status']) {
+                            $data['files'][$key]['locked'] = 1;
+                        }
+
+                        // todo: also handle potential hierarchy end date
                     }
 
                     $rankings[] = $data;
@@ -1068,7 +1075,7 @@ class EmundusModelRanking extends JModelList
             $query = $this->db->getQuery(true);
 
             $query->clear()
-                ->select('DISTINCT ' . $this->db->quoteName('erh.id') . ', ' . $this->db->quoteName('erh.label'))
+                ->select('DISTINCT ' . $this->db->quoteName('erh.id') . ', ' . $this->db->quoteName('erh.label') . ', ' . $this->db->quoteName('erh.status'))
                 ->from($this->db->quoteName('#__emundus_ranking_hierarchy_view', 'erhv'))
                 ->leftJoin($this->db->quoteName('#__emundus_ranking_hierarchy', 'erh') . ' ON ' . $this->db->quoteName('erhv.visible_hierarchy_id') . ' = ' . $this->db->quoteName('erh.id'))
                 ->where($this->db->quoteName('erhv.hierarchy_id') . ' = ' . $this->db->quote($user_hierarchy))
