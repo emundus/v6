@@ -1512,6 +1512,10 @@ class EmundusModelRanking extends JModelList
             if ($current_max_value > 0) {
                 $max_value_reachable = $current_max_value + 1;
             }
+
+            if ($max_value_reachable > sizeof($rankable_ids)) {
+                $max_value_reachable =  sizeof($rankable_ids);
+            }
         }
 
         return $max_value_reachable;
