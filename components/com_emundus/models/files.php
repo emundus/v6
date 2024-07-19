@@ -5183,7 +5183,7 @@ class EmundusModelFiles extends JModelLegacy
     }
 
     
-    public function generatePDF($validFnums, $file, $totalfile, $start, $forms, $attachment, $assessment, $decision, $admission, $ids, $formid, $attachids, $options, $pdf_data)
+    public function generatePDF($validFnums, $file, $totalfile = 1, $start = 0, $forms = 0, $attachment = 0, $assessment = 0, $decision = 0, $admission = 0, $ids = null, $formid = null, $attachids = null, $options = null, $pdf_data = [])
     {
         $response_status = false;
         $dataresult = array();
