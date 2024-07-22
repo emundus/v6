@@ -24,11 +24,13 @@ $display_required_icon = $eMConfig->get('display_required_icon', 1);
 
 $pageClass = $this->params->get('pageclass_sfx', '');
 
-$user = JFactory::getUser();
-$app = JFactory::getApplication();
+$session = Factory::getSession();
+$emundus_user = $session->get('emundusUser');
+$user = Factory::getUser();
+$app = Factory::getApplication();
 $fnum = $app->input->getString('rowid', '');
 if (empty($fnum)) {
-    $fnum = JFactory::getSession()->get('emundusUser')->fnum;
+    $fnum = $emundus_user->fnum;
 }
 
 if (!empty($fnum)) {
@@ -48,6 +50,19 @@ if (!empty($fnum)) {
 require_once(JPATH_SITE .'/components/com_emundus/models/users.php');
 $m_users = new EmundusModelUsers();
 $profile_form = $m_users->getProfileForm();
+
+$current_user_profile = $emundus_user->profile;
+$applicant_profiles = $m_users->getApplicantProfiles();
+$applicant_profiles_ids = array_map(function($profile) {
+    return $profile->id;
+}, $applicant_profiles);
+
+if (!in_array($current_user_profile, $applicant_profiles_ids)) {
+    $is_applicant = 0;
+    $this->is_applicant = false;
+} else {
+    $this->is_applicant = true;
+}
 
 JText::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TITLE');
 JText::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TEXT');
