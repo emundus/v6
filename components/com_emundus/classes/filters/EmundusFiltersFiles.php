@@ -655,6 +655,41 @@ class EmundusFiltersFiles extends EmundusFilters
                 ];
             }
 
+			if ($config['filter_attachments']) {
+				$attachments = [];
+
+				$query->clear()
+					->select('esa.id as value, esa.value as label')
+					->from($db->quoteName('#__emundus_setup_attachments','esa'))
+					->leftJoin($db->quoteName('#__emundus_setup_attachment_profiles','esap') . ' ON ' . $db->quoteName('esap.attachment_id') . ' = ' . $db->quoteName('esa.id'))
+					->leftJoin($db->quoteName('#__emundus_setup_profiles','esp') . ' ON ' . $db->quoteName('esp.id') . ' = ' . $db->quoteName('esap.profile_id'))
+					->leftJoin($db->quoteName('#__emundus_setup_campaigns','esc') . ' ON ' . $db->quoteName('esc.profile_id') . ' = ' . $db->quoteName('esp.id'))
+					->leftJoin($db->quoteName('#__emundus_setup_programmes','espp') . ' ON ' . $db->quoteName('esc.training') . ' = ' . $db->quoteName('espp.code'))
+					->where('esc.id IN ' . '(' . implode(',', $this->user_campaigns) . ') OR espp.id IN ' . '(' . implode(',', $this->user_programs) . ')')
+					->group('esa.id');
+
+				try {
+					$db->setQuery($query);
+					$attachments = $db->loadAssocList();
+				} catch (Exception $e) {
+					JLog::add('Failed to get attachments associated to profiles that current' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
+				}
+
+				$this->applied_filters[] = [
+					'uid' => 'attachments',
+					'id' => 'attachments',
+					'label' => JText::_('MOD_EMUNDUS_FILTERS_ATTACHMENTS'),
+					'type' => 'select',
+					'values' => $attachments,
+					'value' => ['all'],
+					'default' => true,
+					'available' => true,
+					'order' => $config['filter_attachments_order'],
+					'andorOperator'  => 'OR',
+					'andorOperators' => ['OR', 'AND']
+				];
+			}
+
             if (!empty($config['more_filter_elements']))
 			{
 				$config['more_filter_elements'] = json_decode($config['more_filter_elements'], true);
