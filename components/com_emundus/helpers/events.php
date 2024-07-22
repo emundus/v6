@@ -1692,9 +1692,6 @@ class EmundusHelperEvents {
 					'last_update' => $db->quote(time())
 				];
 
-				$query->delete($db->quoteName('#__fabrik_form_sessions'))
-					->where($db->quoteName('user_id') . ' = ' . $user->id);
-
 				$db->setQuery($query);
 				$db->execute();
 
