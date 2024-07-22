@@ -437,26 +437,25 @@ export default {
         if (target) {
           let form_id = 0;
           switch(comment.target_type) {
-            case 'elements':
-              form_id = target.element_form_id;
-              break;
-            case 'groups':
-              form_id = target.form_id;
-              break;
-            case 'forms':
-              form_id = target.id;
-              break;
+          case 'elements':
+            form_id = target.element_form_id;
+            break;
+          case 'groups':
+            form_id = target.form_id;
+            break;
+          case 'forms':
+            form_id = target.id;
+            break;
           }
 
           if (form_id > 0 && this.fnum) {
             // open a new tab with the target element
             if (!this.isApplicant) {
-              window.open(`/index.php?option=com_fabrik&view=form&formid=` + form_id + `&usekey=fnum&rowid=` + this.fnum + '&r=2#' + comment.target_type + '-' + comment.target_id, '_blank');
+              window.location.assign(`/index.php?option=com_fabrik&view=form&formid=` + form_id + `&usekey=fnum&rowid=` + this.fnum + '&r=2#' + comment.target_type + '-' + comment.target_id, '_blank');
             } else {
-
               commentsService.getMenuItemForFormId(this.ccid, form_id).then((response) => {
                 if (response.status) {
-                  window.open(`/index.php?option=com_fabrik&view=form&formid=` + form_id + `&Itemid=` + response.data, '_blank');
+                  window.location.assign(`/index.php?option=com_fabrik&view=form&formid=` + form_id + `&Itemid=` + response.data, '_blank');
                 }
               });
             }
@@ -576,8 +575,8 @@ export default {
           return comment.comment_body.toLowerCase().includes(this.search.toLowerCase())
               || this.getCommentTargetLabel(comment.target_id, comment.target_type).toLowerCase().includes(this.search.toLowerCase())
               || this.childrenComments[comment.id].some((child) => {
-            return child.comment_body.toLowerCase().includes(this.search.toLowerCase()) || this.getCommentTargetLabel(child.target_id, child.target_type).toLowerCase().includes(this.search.toLowerCase());
-          });
+                return child.comment_body.toLowerCase().includes(this.search.toLowerCase()) || this.getCommentTargetLabel(child.target_id, child.target_type).toLowerCase().includes(this.search.toLowerCase());
+              });
         });
       }
 
