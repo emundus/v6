@@ -54,6 +54,9 @@
               </div>
             </th>
             <th>{{ translate('COM_EMUNDUS_RANKING_FILE_STATUS') }}</th>
+            <th v-for="column in additionalHeaderColumns" :key="column">
+              <span> {{ column }} </span>
+            </th>
           </tr>
           </thead>
           <!-- only ranked files -->
@@ -90,6 +93,10 @@
                 <span v-else> {{ translate('COM_EMUNDUS_CLASSEMENT_NOT_RANKED') }} </span>
               </td>
               <td><span v-html="getStatusTag(file.status)"></span></td>
+              <td v-for="column in additionalHeaderColumns" :key="file.fnum + '-' + column">
+                <span v-if="file.additional_columns && file.additional_columns[column]">{{ file.additional_columns[column] }}</span>
+                <span v-else>-</span>
+              </td>
             </tr>
           </draggable>
           <draggable
@@ -122,6 +129,10 @@
                 {{ translate('COM_EMUNDUS_CLASSEMENT_NOT_RANKED') }}
               </td>
               <td><span v-html="getStatusTag(file.status)"></span></td>
+              <td v-for="column in additionalHeaderColumns" :key="file.fnum + '-' + column">
+                <span v-if="file.additional_columns && file.additional_columns[column]">{{ file.additional_columns[column] }}</span>
+                <span v-else>-</span>
+              </td>
             </tr>
           </draggable>
         </table>
@@ -377,48 +388,48 @@ export default {
 
       tmpTabs.forEach(tab => {
         switch (tab) {
-          case 'forms':
-            this.fileTabs.push({
-              label: this.translate('COM_EMUNDUS_FILES_APPLICANT_FILE'),
-              name: 'application',
-              access: '1'
-            });
-            break;
-          case 'attachments':
-            this.fileTabs.push({
-              label: this.translate('COM_EMUNDUS_FILES_ATTACHMENTS'),
-              name: 'attachments',
-              access: '4'
-            });
-            break;
-          case 'comments':
-            this.fileTabs.push({
-              label: this.translate('COM_EMUNDUS_FILES_COMMENTS'),
-              name: 'comments',
-              access: '10'
-            });
-            break;
-          case 'evaluation':
-            this.fileTabs.push({
-              label: this.translate('COM_EMUNDUS_FILES_EVALUATION'),
-              name: 'evaluation',
-              access: '5'
-            });
-            break;
-          case 'decision':
-            this.fileTabs.push({
-              label: this.translate('COM_EMUNDUS_FILES_DECISION'),
-              name: 'decision',
-              access: '29'
-            });
-            break;
-          case 'admission':
-            this.fileTabs.push({
-              label: this.translate('COM_EMUNDUS_FILES_ADMISSION'),
-              name: 'admission',
-              access: '32'
-            });
-            break;
+        case 'forms':
+          this.fileTabs.push({
+            label: this.translate('COM_EMUNDUS_FILES_APPLICANT_FILE'),
+            name: 'application',
+            access: '1'
+          });
+          break;
+        case 'attachments':
+          this.fileTabs.push({
+            label: this.translate('COM_EMUNDUS_FILES_ATTACHMENTS'),
+            name: 'attachments',
+            access: '4'
+          });
+          break;
+        case 'comments':
+          this.fileTabs.push({
+            label: this.translate('COM_EMUNDUS_FILES_COMMENTS'),
+            name: 'comments',
+            access: '10'
+          });
+          break;
+        case 'evaluation':
+          this.fileTabs.push({
+            label: this.translate('COM_EMUNDUS_FILES_EVALUATION'),
+            name: 'evaluation',
+            access: '5'
+          });
+          break;
+        case 'decision':
+          this.fileTabs.push({
+            label: this.translate('COM_EMUNDUS_FILES_DECISION'),
+            name: 'decision',
+            access: '29'
+          });
+          break;
+        case 'admission':
+          this.fileTabs.push({
+            label: this.translate('COM_EMUNDUS_FILES_ADMISSION'),
+            name: 'admission',
+            access: '32'
+          });
+          break;
         }
       });
     }
@@ -789,6 +800,19 @@ export default {
       });
 
       return rankers;
+    },
+    additionalHeaderColumns() {
+      let columns = [];
+
+      if (this.rankings.myRanking.length > 0) {
+        let firstFile = this.rankings.myRanking[0];
+
+        if (firstFile.additional_columns) {
+          columns = Object.keys(firstFile.additional_columns);
+        }
+      }
+
+      return columns;
     }
   }
 }

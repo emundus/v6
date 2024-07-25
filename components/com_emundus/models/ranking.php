@@ -677,7 +677,7 @@ class EmundusModelRanking extends JModelList
             }
         }
 
-        $this->dispatchEvent('onGetFilesUserCanRank', ['files' => &$files, 'user_id' => $user_id, 'page' => $page, 'limit' => $limit, 'sort' => $sort, 'hierarchy_order_by' => $hierarchy_order_by, 'package_id' => $package_id]);
+        $this->dispatchEvent('onGetFilesUserCanRank', ['files' => &$files, 'user_id' => $user_id, 'page' => $page, 'limit' => $limit, 'sort' => $sort, 'hierarchy_id' => $hierarchy, 'hierarchy_order_by' => $hierarchy_order_by, 'package_id' => $package_id]);
 
         return $files;
     }
