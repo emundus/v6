@@ -1766,8 +1766,8 @@ class EmundusModelRanking extends JModelList
 
                         foreach ($files as $index => $file) {
                             $file_data = [];
-                            $fnums[$index] = $file['fnum'];
-                            $ccids[$index] = $file['id'];
+                            $fnums[] = $file['fnum'];
+                            $ccids[] = $file['id'];
 
                             foreach($ordered_columns_keys as $column) {
                                 switch($column) {
