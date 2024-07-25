@@ -1740,9 +1740,10 @@ class EmundusModelUsers extends JModelList {
                     }
                 }
                 if (!empty($user->emGroups)) {
-                    $query = "SELECT esgc.course, acl.action_id, acl.c, acl.r, acl.u, acl.d, acl.group_id
-                        FROM #__emundus_setup_groups_repeat_course AS esgc
-                        LEFT JOIN #__emundus_acl AS acl ON acl.group_id = esgc.parent_id
+					$query = "SELECT esgc.course, acl.action_id, acl.c, acl.r, acl.u, acl.d, acl.group_id
+                        FROM #__emundus_setup_groups AS esg
+                        LEFT JOIN #__emundus_setup_groups_repeat_course AS esgc ON esgc.parent_id = esg.id
+                        LEFT JOIN #__emundus_acl AS acl ON acl.group_id = esg.id
                         WHERE acl.group_id in (".implode(',', $user->emGroups).")";
                     $db = $this->getDbo();
                     $db->setQuery($query);

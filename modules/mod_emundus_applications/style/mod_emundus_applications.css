@@ -834,11 +834,6 @@ circle.circle {
     margin-bottom: 12px;
 }
 
-/* Clôture */
-.mod_emundus_applications___content_app .em-flex-row .mod_emundus_applications___date {
-    display: none;
-}
-
 /* Déposant */
 .mod_emundus_applications___informations div:first-child label {
     margin-bottom: 12px;

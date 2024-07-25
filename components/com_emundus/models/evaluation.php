@@ -2146,176 +2146,190 @@ class EmundusModelEvaluation extends JModelList {
 			                    }
 
 			                    $fabrikValues = [];
+								$textarea_elements = [];
 
 			                    // TODO: Move this to a global method by passing the fabrik element
-			                    foreach ($fabrikElts as $elt) {
-				                    $params      = json_decode($elt['params']);
-				                    $groupParams = json_decode($elt['group_params']);
+								foreach ($fabrikElts as $elt) {
+									$params      = json_decode($elt['params']);
+									$groupParams = json_decode($elt['group_params']);
 
-                                    if (!empty($groupParams) && $groupParams->repeat_group_button == 1) {
-                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, $groupParams->repeat_group_button == 1);
-                                    } else if ($elt['plugin'] == 'date') {
-                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name'], $params->date_form_format);
-                                    }
-                                    else {
-                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
-                                    }
-                                    if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown" || $elt['plugin'] == "radiobutton") {
+									if (!empty($groupParams) && $groupParams->repeat_group_button == 1) {
+										$fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, $groupParams->repeat_group_button == 1);
+									} else if ($elt['plugin'] == 'date') {
+										$fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name'], $params->date_form_format);
+									} else if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown" || $elt['plugin'] == "radiobutton") {
 
-                                        foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
-                                            if ($elt['plugin'] == "checkbox" || (!empty($params->multiple) && $params->multiple == 1)) {
-                                                $val = json_decode($val['val']);
-                                            } else {
-                                                $val = explode(',', $val['val']);
-                                            }
+										foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
+											if ($elt['plugin'] == "checkbox") {
+												$val = json_decode($val['val']);
+											} else {
+												$val = explode(',', $val['val']);
+											}
 
-                                            if (count($val) > 0) {
-                                                foreach ($val as $k => $v) {
-                                                    $index = array_search($v, $params->sub_options->sub_values);
-                                                    $val[$k] = JText::_($params->sub_options->sub_labels[$index]);
-                                                }
-                                                $fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", $val);
-                                            } else {
-                                                $fabrikValues[$elt['id']][$fnum]['val'] = "";
-                                            }
-                                        }
+											if (count($val) > 0) {
+												foreach ($val as $k => $v) {
+													$index = array_search($v, $params->sub_options->sub_values);
+													$val[$k] = JText::_($params->sub_options->sub_labels[$index]);
+												}
+												$fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", $val);
+											} else {
+												$fabrikValues[$elt['id']][$fnum]['val'] = "";
+											}
+										}
 
-                                    } elseif ($elt['plugin'] == "birthday") {
+									} elseif ($elt['plugin'] == "birthday") {
 
-                                        foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
-                                            $val = explode(',', $val['val']);
-                                            foreach ($val as $k => $v) {
-                                                if (!empty($v)) {
-                                                    $val[$k] = date($params->details_date_format, strtotime($v));
-                                                }
-                                            }
-                                            $fabrikValues[$elt['id']][$fnum]['val'] = implode(",", $val);
-                                        }
+										foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
+											$val = explode(',', $val['val']);
+											foreach ($val as $k => $v) {
+												if (!empty($v)) {
+													$val[$k] = date($params->details_date_format, strtotime($v));
+												}
+											}
+											$fabrikValues[$elt['id']][$fnum]['val'] = implode(",", $val);
+										}
 
-				                    }
-				                    elseif ($elt['plugin'] == 'textarea' && $whitespace_textarea == 1) {
-					                    $formatted_text = explode('<br />',nl2br($fabrikValues[$elt['id']][$fnum]['val']));
-					                    $inline = new \PhpOffice\PhpWord\Element\TextRun();
-					                    foreach ($formatted_text as $key => $text) {
-						                    if (!empty($text))
-						                    {
-							                    if($key > 0)
-							                    {
-								                    $inline->addTextBreak();
-							                    }
-							                    $inline->addText(trim($text), array('name' => 'Arial'));
-						                    }
-					                    }
-					                    $fabrikValues[$elt['id']][$fnum]['val'] = $inline;
-					                    $fabrikValues[$elt['id']][$fnum]['complex_data'] = true;
-				                    }
-				                    elseif ($elt['plugin'] == 'emundus_phonenumber') {
-					                    $fabrikValues[$elt['id']][$fnum]['val'] = substr($fabrikValues[$elt['id']][$fnum]['val'], 2, strlen($fabrikValues[$elt['id']][$fnum]['val']));
-				                    }
-                                    elseif ($elt['plugin'] == 'yesno') {
-                                        $fabrikValues[$elt['id']][$fnum]['val'] = $fabrikValues[$elt['id']][$fnum]['val'] == '1' ? JText::_('JYES') : JText::_('JNO');
-                                    }
-                                    elseif ($elt['plugin'] == 'cascadingdropdown') {
-                                        foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
-                                            $fabrikValues[$elt['id']][$fnum]['val'] = $_mEmail->getCddLabel($elt, $val['val']);
-                                        }
-                                    } else if ($elt['plugin'] === 'databasejoin') {
-                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, $groupParams->repeat_group_button == 1);
-                                    } else {
-                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
-                                    }
+									}
+									elseif ($elt['plugin'] == 'textarea' && $whitespace_textarea == 1) {
+										$fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
+										$formatted_text = explode('<br />',nl2br($fabrikValues[$elt['id']][$fnum]['val']));
+										$inline = new \PhpOffice\PhpWord\Element\TextRun();
+										foreach ($formatted_text as $key => $text) {
+											if (!empty($text))
+											{
+												$text = strip_tags($text);
 
-				                    if(!isset($fabrikValues[$elt['id']][$fnum]['complex_data'])){
-					                    $fabrikValues[$elt['id']][$fnum]['complex_data'] = false;
-				                    }
-			                    }
+												if($key > 0)
+												{
+													$inline->addTextBreak();
+												}
+												$inline->addText(trim($text), array('name' => 'Arial'));
+											}
+										}
+										$fabrikValues[$elt['id']][$fnum]['val'] = $inline;
+										$fabrikValues[$elt['id']][$fnum]['complex_data'] = true;
+									}
+									elseif ($elt['plugin'] == 'textarea') {
+										$textarea_elements[] = $elt['id'];
+										$fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
+									}
+									elseif ($elt['plugin'] == 'emundus_phonenumber') {
+										$fabrikValues[$elt['id']][$fnum]['val'] = substr($fabrikValues[$elt['id']][$fnum]['val'], 2, strlen($fabrikValues[$elt['id']][$fnum]['val']));
+									}
+									elseif ($elt['plugin'] == 'yesno') {
+										$fabrikValues[$elt['id']][$fnum]['val'] = $fabrikValues[$elt['id']][$fnum]['val'] == '1' ? JText::_('JYES') : JText::_('JNO');
+									}
+									elseif ($elt['plugin'] == 'cascadingdropdown') {
+										foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
+											$fabrikValues[$elt['id']][$fnum]['val'] = $_mEmail->getCddLabel($elt, $val['val']);
+										}
+									} else if ($elt['plugin'] === 'databasejoin') {
+										$fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, $groupParams->repeat_group_button == 1);
+									} else {
+										$fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
+									}
 
-			                    $preprocess = new \PhpOffice\PhpWord\TemplateProcessor($letter_file);
-			                    if (isset($fnumInfo[$fnum])) {
-				                    $tags = $_mEmail->setTagsWord(@$fnumInfo[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
+									if(!isset($fabrikValues[$elt['id']][$fnum]['complex_data'])){
+										$fabrikValues[$elt['id']][$fnum]['complex_data'] = false;
+									}
+								}
 
-				                    foreach ($setupTags as $tag) {
-					                    $val      = '';
-					                    $lowerTag = strtolower($tag);
+								$preprocess = new \PhpOffice\PhpWord\TemplateProcessor($letter_file);
+								if (isset($fnumInfo[$fnum])) {
+									foreach ($idFabrik as $id) {
+										if (isset($fabrikValues[$id][$fnum])) {
+											if (in_array($id, $textarea_elements)) {
+												$html = $fabrikValues[$id][$fnum]['val'];
+												$section = $phpWord->addSection();
+												\PhpOffice\PhpWord\Shared\Html::addHtml($section, $html);
+												$containers = $section->getElements();
+												$clone = $preprocess->cloneBlock('textarea_' . $id, count($containers), true, true);
 
-					                    if (array_key_exists($lowerTag, $const)) {
-						                    $preprocess->setValue($tag, $const[$lowerTag]);
-					                    }
-					                    elseif (in_array($lowerTag, $special)) {
-						                    switch ($lowerTag) {
+												for($i = 0; $i < count($containers); $i++) {
+													$complex_block = $preprocess->setComplexBlock($id . '#' . ($i+1), $containers[$i]);
+												}
 
-							                    // dd-mm-YYYY (YY)
-							                    case 'user_dob_age':
-								                    $birthday = $_mFile->getBirthdate($fnum, 'd/m/Y', true);
-								                    $preprocess->setValue($tag, $birthday->date . ' (' . $birthday->age . ')');
-								                    break;
+											} else if($fabrikValues[$id][$fnum]['complex_data']){
+												$preprocess->setComplexValue($id, $fabrikValues[$id][$fnum]['val']);
+											} else {
+												$value = str_replace('\n', ', ', $fabrikValues[$id][$fnum]['val']);
+												$preprocess->setValue($id, $value);
+											}
+										}
+										else {
+											$preprocess->setValue($id, '');
+										}
+									}
 
-							                    default:
-								                    $preprocess->setValue($tag, '');
-								                    break;
-						                    }
-					                    }
-					                    elseif (!empty(@$fnumInfo[$fnum][$lowerTag])) {
-						                    $preprocess->setValue($tag, @$fnumInfo[$fnum][$lowerTag]);
-					                    }
-					                    else {
-						                    $i = 0;
-						                    foreach ($tags['patterns'] as $value) {
-							                    if ($value == $tag) {
-								                    $val = $tags['replacements'][$i];
-								                    break;
-							                    }
-							                    $i++;
-						                    }
+									$tags = $_mEmail->setTagsWord(@$fnumInfo[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
 
-						                    if (strpos($tag, 'IMG_') !== false) {
-							                    $preprocess->setImageValue($tag, $val);
-						                    }
-						                    else {
-							                    $preprocess->setValue($tag, $val);
-						                    }
-					                    }
-				                    }
+									foreach ($setupTags as $tag) {
+										$val      = '';
+										$lowerTag = strtolower($tag);
 
-				                    foreach ($idFabrik as $id) {
-					                    if (isset($fabrikValues[$id][$fnum])) {
-						                    if($fabrikValues[$id][$fnum]['complex_data']){
-							                    $preprocess->setComplexValue($id, $fabrikValues[$id][$fnum]['val']);
-						                    } else {
-							                    $value = str_replace('\n', ', ', $fabrikValues[$id][$fnum]['val']);
-							                    $preprocess->setValue($id, $value);
-						                    }
-					                    }
-					                    else {
-						                    $preprocess->setValue($id, '');
-					                    }
-				                    }
+										if (array_key_exists($lowerTag, $const)) {
+											$preprocess->setValue($tag, $const[$lowerTag]);
+										}
+										elseif (in_array($lowerTag, $special)) {
+											switch ($lowerTag) {
 
-				                    $preprocess->saveAs($dest);
-				                    if ($gotenberg_activation == 1 && $letter->pdf == 1) {
-					                    $dest_pdf = str_replace('.docx', '', $dest);
-					                    $dest_tmp_pdf = str_replace('.docx', '.pdf', $dest_tmp);
-					                    $filename = str_replace('.docx', '.pdf', $filename);
+												// dd-mm-YYYY (YY)
+												case 'user_dob_age':
+													$birthday = $_mFile->getBirthdate($fnum, 'd/m/Y', true);
+													$preprocess->setValue($tag, $birthday->date . ' (' . $birthday->age . ')');
+													break;
 
-					                    try {
-						                    $gotenberg_results = $m_Export->toPdf($dest, $dest_pdf, 'docx', $fnum);
+												default:
+													$preprocess->setValue($tag, '');
+													break;
+											}
+										}
+										elseif (!empty(@$fnumInfo[$fnum][$lowerTag])) {
+											$preprocess->setValue($tag, @$fnumInfo[$fnum][$lowerTag]);
+										}
+										else {
+											$i = 0;
+											foreach ($tags['patterns'] as $value) {
+												if ($value == $tag) {
+													$val = $tags['replacements'][$i];
+													break;
+												}
+												$i++;
+											}
+
+											if (strpos($tag, 'IMG_') !== false) {
+												$preprocess->setImageValue($tag, $val);
+											}
+											else {
+												$preprocess->setValue($tag, $val);
+											}
+										}
+									}
+									$preprocess->saveAs($dest);
+									if ($gotenberg_activation == 1 && $letter->pdf == 1) {
+										$dest_pdf = str_replace('.docx', '', $dest);
+										$dest_tmp_pdf = str_replace('.docx', '.pdf', $dest_tmp);
+										$filename = str_replace('.docx', '.pdf', $filename);
+
+										try {
+											$gotenberg_results = $m_Export->toPdf($dest, $dest_pdf, 'docx', $fnum);
 											if($gotenberg_results->status){
 												copy($gotenberg_results->file,$dest_tmp_pdf);
 												unlink($dest);
 											}
-					                    }
-					                    catch (Exception $e) {
-						                    JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+										}
+										catch (Exception $e) {
+											JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
 
-						                    return false;
-					                    }
-				                    } else {
+											return false;
+										}
+									} else {
 										copy($dest,$dest_tmp);
-				                    }
+									}
 
-				                    $upId         = $_mFile->addAttachment($fnum, $filename, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);
-				                    $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $applicant_url, 'type' => $attachInfo['id']);
-			                    }
+									$upId         = $_mFile->addAttachment($fnum, $filename, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);
+									$res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $applicant_url, 'type' => $attachInfo['id']);
+								}
 		                    }
 		                    catch (Exception $e) {
 			                    $res->status = false;
