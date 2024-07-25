@@ -4948,6 +4948,22 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 			}
 		}
 
+        if (version_compare($cache_version, '1.39.2', '<=') || $firstrun) {
+            $db->setQuery("alter table jos_emundus_evaluations modify user int null");
+            $db->execute();
+
+            $db->setQuery("alter table jos_emundus_evaluations drop foreign key jos_emundus_evaluations_ibfk_4");
+            $db->execute();
+
+            $db->setQuery("alter table jos_emundus_evaluations
+                add constraint jos_emundus_evaluations_ibfk_4
+                foreign key (user) references jos_emundus_users (user_id)
+                on update cascade on delete set null");
+            $db->execute();
+
+	        EmundusHelperUpdate::installExtension('plg_fabrik_element_iban','iban','{"name":"plg_fabrik_element_iban","type":"plugin","creationDate":"March 2024","author":"Media A-Team, Inc.","copyright":"Copyright (C) 2005-2024 Media A-Team, Inc. - All rights reserved.","authorEmail":"brice.hubinet@emundus.fr","authorUrl":"www.emundus.fr","version":"4.0Zeta","description":"PLG_ELEMENT_IBAN_DESCRIPTION","group":"","filename":"iban"}','plugin',1,'fabrik_element');
+        }
+
 		return $succeed;
 	}
 
