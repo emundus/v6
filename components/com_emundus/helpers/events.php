@@ -1409,13 +1409,12 @@ class EmundusHelperEvents {
 				$db->setQuery($query);
 				$exists = $db->loadResult();
 
-				if(!empty($exists))
-				{
+				if (!empty($exists)) {
 					return true;
 				}
 
 				$columns = array('parent_id', 'course');
-				$values  = array($db->quote($all_rights_group_id), $db->quote($code));
+				$values = array($db->quote($all_rights_group_id), $db->quote($code));
 
 				$query->clear()
 					->insert($db->quoteName('#__emundus_setup_groups_repeat_course'))
@@ -1426,18 +1425,17 @@ class EmundusHelperEvents {
 			}
 
 			return true;
-		}
-		catch (Exception $e)
-		{
+		} catch (Exception $e) {
 			JLog::add('Error when run event onAfterProgramCreate | ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
 			return false;
 		}
 
 	}
 
-	private function checkLockedElements($params): bool {
-		if(!empty($this->locked_elements)) {
-			if(in_array($params['elementModel']->getFullName(),$this->locked_elements)) {
+	private function checkLockedElements($params): bool
+	{
+		if (!empty($this->locked_elements)) {
+			if (in_array($params['elementModel']->getFullName(), $this->locked_elements)) {
 				return false;
 			}
 		}
@@ -1445,20 +1443,20 @@ class EmundusHelperEvents {
 		return true;
 	}
 
-    private function logUpdateForms($params, $forms_to_log = []) : bool
-    {
-        $logged = false;
+	private function logUpdateForms($params, $forms_to_log = []): bool
+	{
+		$logged = false;
 
-        $form_data = $params['formModel']->formData;
-        if (!empty($forms_to_log) && in_array($form_data['formid'], $forms_to_log) || empty($forms_to_log)) {
-            $emundusUser = JFactory::getSession()->get('emundusUser');
-            $fnum = $emundusUser->fnum;
+		$form_data = $params['formModel']->formData;
+		if (!empty($forms_to_log) && in_array($form_data['formid'], $forms_to_log) || empty($forms_to_log)) {
+			$emundusUser = JFactory::getSession()->get('emundusUser');
+			$fnum = $emundusUser->fnum;
 
-            if (empty($fnum)) {
-                foreach($form_data as $key => $value) {
-                    if (strpos($key, '___fnum') !== false) {
-                        $fnum = $value;
-                        break;
+			if (empty($fnum)) {
+				foreach ($form_data as $key => $value) {
+					if (strpos($key, '___fnum') !== false) {
+						$fnum = $value;
+						break;
                     }
                 }
             }
