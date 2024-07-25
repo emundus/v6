@@ -20,12 +20,18 @@ $w = new FabrikWorker;
 $current_user_id = JFactory::getUser()->id;
 
 foreach ($group->subgroups as $subgroup) :
-	$can_edit = true;
-	if(!empty($subgroup['user']) && !EmundusHelperAccess::asPartnerAccessLevel($current_user_id) && $this->collaborator) {
-		if(!empty($subgroup['user']->element_raw[$i-1]) && $subgroup['user']->element_raw[$i-1] != $current_user_id) {
-			$can_edit = false;
-		}
-	}
+    $can_edit = true;
+    $can_see = true;
+    if (!empty($subgroup['user']) && !EmundusHelperAccess::asPartnerAccessLevel($current_user_id) && $this->collaborator) {
+        if(!empty($subgroup['user']->element_raw[$i-1]) && $subgroup['user']->element_raw[$i-1] != $current_user_id) {
+            $can_edit = false;
+            $can_see = false;
+        }
+    } else if (!$this->collaborator && $this->is_applicant) {
+        if(!empty($subgroup['user']->element_raw[$i-1]) && $subgroup['user']->element_raw[$i-1] != $current_user_id) {
+            $can_edit = false;
+        }
+    }
 
 	$introData = array_merge($input->getArray(), array('i' => $i));
 	?>
@@ -44,8 +50,12 @@ foreach ($group->subgroups as $subgroup) :
 
 			// Load each group in a <ul>
 			$this->elements = $subgroup;
-			echo $this->loadTemplate('group');
-			?>
+
+            if ($can_edit) {
+                echo $this->loadTemplate('group');
+            } else {
+                echo $this->loadTemplate('group_details');
+            }			?>
         </div><!-- end fabrikSubGroupElements -->
 		<?php
 		// Add the add/remove repeat group buttons

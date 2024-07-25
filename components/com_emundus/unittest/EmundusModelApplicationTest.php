@@ -92,7 +92,7 @@ class EmundusModelApplicationTest extends TestCase
 		$this->assertNotEmpty($attachments);
 		$this->assertSame($attachments[0]->value, $search);
 		$this->assertSame(count($attachments), 1);
-		
+
 		// If i'am an applicant i should not be able to see attachments with can_be_viewed = 0
 		$attachments = $this->m_application->getUserAttachmentsByFnum($fnum, '', null, true, $user_id);
 		foreach ($attachments as $attachment) {
@@ -421,7 +421,7 @@ class EmundusModelApplicationTest extends TestCase
 		$shared_users = $this->m_application->getSharedFileUsers($fnumInfos['ccid']);
 
 		$this->assertSame('1', $shared_users[0]->u, 'The user should be able to update file');
-		$updated = $this->m_application->updateRight($shared_users[0]->id, $fnumInfos['ccid'], 'u',0,$user_id);
+		$updated = $this->m_application->updateRight($shared_users[0]->id, $fnumInfos['ccid'], 'u',0);
 		$this->assertTrue($updated, 'updateRight should return true if the right is updated');
 
 		$shared_users = $this->m_application->getSharedFileUsers($fnumInfos['ccid']);

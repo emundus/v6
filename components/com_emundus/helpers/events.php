@@ -1791,7 +1791,11 @@ class EmundusHelperEvents {
 					'last_update' => $db->quote(time())
 				];
 
-				$query->insert($db->quoteName('#__fabrik_form_sessions'))
+				$db->setQuery($query);
+				$db->execute();
+
+				$query->clear()
+					->insert($db->quoteName('#__fabrik_form_sessions'))
 					->columns($db->quoteName(array_keys($insert)))
 					->values(implode(',', $insert));
 				$db->setQuery($query);
@@ -1802,12 +1806,16 @@ class EmundusHelperEvents {
 			}
 		} else {
 			try {
-				$query->update($db->quoteName('#__fabrik_form_sessions'))
-					->set($db->quoteName('last_update') . ' = ' . $db->quote(time()))
-					->where($db->quoteName('id') . ' = ' . $existing_session->id);
-
-				if($existing_session->last_update < (time() - 900)) {
-					$query->set($db->quoteName('user_id') . ' = ' . $db->quote($user->id));
+				if ($existing_session->last_update < (time() - 900)) {
+					$query->update($db->quoteName('#__fabrik_form_sessions'))
+						->set($db->quoteName('last_update') . ' = ' . $db->quote(time()))
+						->set($db->quoteName('user_id') . ' = ' . $db->quote($user->id))
+						->where($db->quoteName('id') . ' = ' . $existing_session->id);
+				} else {
+					$query->update($db->quoteName('#__fabrik_form_sessions'))
+						->set($db->quoteName('last_update') . ' = ' . $db->quote(time()))
+						->where($db->quoteName('id') . ' = ' . $existing_session->id)
+						->andWhere($db->quoteName('user_id') . ' = ' . $user->id);
 				}
 
 				$db->setQuery($query);

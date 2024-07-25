@@ -296,6 +296,55 @@ class EmundusHelperAccess {
 		return false;
 	}
 
+    public static function isFnumMine($user_id, $fnum) {
+        $mine = false;
+
+        if (!empty($user_id) && !empty($fnum)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('id')
+                ->from($db->quoteName('#__emundus_campaign_candidature'))
+                ->where('applicant_id = ' . $db->quote($user_id))
+                ->andWhere('fnum LIKE ' . $db->quote($fnum));
+            try {
+                $db->setQuery($query);
+                $ccid = $db->loadResult();
+
+                if (!empty($ccid)) {
+                    $mine = true;
+                }
+
+            } catch (Exception $e) {
+                JLog::add('Error seeing if fnum is mine. -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+            }
+
+            if (!$mine) {
+                // maybe filed has been shared to me (collaboration)
+                $query->clear()
+                    ->select('efr.id')
+                    ->from($db->quoteName('#__emundus_files_request', 'efr'))
+                    ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ecc.id = efr.ccid')
+                    ->where('ecc.fnum LIKE ' . $db->quote($fnum))
+                    ->andWhere('efr.user_id = ' . $db->quote($user_id))
+                    ->andWhere('efr.uploaded = 1');
+
+                try {
+                    $db->setQuery($query);
+                    $collaboration_id = $db->loadResult();
+
+                    if (!empty($collaboration_id)) {
+                        $mine = true;
+                    }
+                } catch (Exception $e) {
+                    JLog::add('Error seeing if fnum is mine. -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+                }
+            }
+        }
+
+        return $mine;
+    }
+
     /**
      * @param $user_id
      * @param $fnum
@@ -314,17 +363,9 @@ class EmundusHelperAccess {
 	        $db = JFactory::getDbo();
 	        $query = $db->getQuery(true);
 
-			// is the fnum mine ?
-			$query->select('id')
-				->from($db->quoteName('#__emundus_campaign_candidature'))
-				->where('applicant_id = '.$db->quote($user_id))
-				->andWhere('fnum LIKE '.$db->quote($fnum));
-			$db->setQuery($query);
-			$ccid = $db->loadResult();
-
-			if (!empty($ccid)) {
-				$allowed = true;
-			} else {
+            if (EmundusHelperAccess::isFnumMine($user_id, $fnum)) {
+                $allowed = true;
+            } else {
 				// does user is associated to the fnum directly?
 				$query->clear()
 					->select('id')

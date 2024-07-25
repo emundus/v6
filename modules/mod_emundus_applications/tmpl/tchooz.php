@@ -418,7 +418,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 											        <?php endif; ?>
                                                     <div class="em-w-100">
                                                         <div class="em-flex-row em-flex-space-between em-mb-12">
-                                                            <div>
+                                                            <div class="flex flex-row gap-2 items-center justify-content-center">
                                                                 <?php
                                                                 if (empty($application->class)) {
                                                                     $application->class = 'default';
@@ -444,6 +444,13 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                                                                 <?php if (!empty($application->order_status)): ?>
                                                                     <br>
                                                                     <p><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_ORDER_STATUS') ?> <span style="color: <?= $application->order_color; ?>"><?= JText::_(strtoupper($application->order_status)); ?></span></p>
+                                                                <?php endif; ?>
+
+                                                                <?php if ($application->show_shared_users): ?>
+                                                                    <div id="actions_button_collaborate" class="flex flex-row collaborators-icon-wrapper em-bg-main-500" onclick="shareApplication('<?php echo $application->fnum ?>','<?php echo $application->application_id ?>')">
+                                                                        <span id="actions_button_collaborate_icon" class="material-icons-outlined em-text-neutral-300">group</span>
+                                                                        <span id="actions_button_collaborate_nb" class="nb-collaborators em-profile-color em-border-main-500 em-font-size-12 em-bg-neutral-100"><?= sizeof($application->collaborators) ?></span>
+                                                                    </div>
                                                                 <?php endif; ?>
                                                             </div>
                                                             <div class="mod_emundus_applications__container">
@@ -1032,12 +1039,14 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                 let view = url[url.length - 2];
 
                 actions = document.getElementById('actions_block_' + fnum + '_' + view + '_' + tab);
-                if (modal !== null) {
-                    actions.style.display = 'none';
-                } else if (actions.style.display === 'none') {
-                    actions.style.display = 'flex';
-                } else {
-                    actions.style.display = 'none';
+                if (actions) {
+                    if (modal !== null) {
+                        actions.style.display = 'none';
+                    } else if (actions.style.display === 'none') {
+                        actions.style.display = 'flex';
+                    } else {
+                        actions.style.display = 'none';
+                    }
                 }
             }
         }
@@ -1682,30 +1691,10 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                     formData.append('ccid', ccid);
                     formData.append('emails', document.querySelector('#collab_emails').value);
 
-                    fetch('index.php?option=com_emundus&controller=application&task=sharefilewith', {
-                        body: formData,
-                        method: 'post',
-                    }).then((response) => {
-                        if (response.ok) {
-                            return response.json();
-                        }
-                    }).then((res) => {
-                        if (res.status != true) {
-                            Swal.fire({
-                                title: "Une erreur est survenue",
-                                text: res.msg,
-                                type: "error",
-                                reverseButtons: true,
-                                confirmButtonText: "<?php echo JText::_('JYES');?>",
-                                timer: 3000
-                            });
-                        }
-                    });
-
                     Swal.fire({
                         title: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_SUCCESS'); ?>",
                         text: res.msg,
-                        iconHtml: "<img src='media/com_emundus/images/tchoozy/complex-illustrations/sending-message.svg' width='200px' class='mb-4' />",
+                        html: "<div class='align-center'><img src='media/com_emundus/images/tchoozy/complex-illustrations/sending-message.svg' width='200px' class='mb-4' /></div>",
                         showCancelButton: false,
                         showConfirmButton: false,
                         customClass: {
@@ -1715,6 +1704,51 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                             icon: 'border-0 w-full h-full mt-0',
                         },
                         timer: 3000
+                    });
+
+                    fetch('index.php?option=com_emundus&controller=application&task=sharefilewith', {
+                        body: formData,
+                        method: 'post',
+                    }).then((response) => {
+                        if (response.ok) {
+                            return response.json();
+                        } else {
+                            return response.text().then((text) => {
+                                throw new Error(text);
+                            });
+                        }
+                    }).then((res) => {
+                        if (res.status != true) {
+                            throw new Error(res.msg);
+                        } else {
+                            if (res.data.failed_emails.length > 0) {
+                                let failed_emails = res.data.failed_emails.join(', ');
+                                throw new Error("<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_ERROR_EMAILS'); ?> " + failed_emails);
+                            } else {
+                                Swal.fire({
+                                    title: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_FINISH_SUCCESS'); ?>",
+                                    text: res.msg,
+                                    html: "<div class='align-center'><img src='media/com_emundus/images/tchoozy/complex-illustrations/message-sent.svg' width='200px' class='mb-4' /></div>",
+                                    showCancelButton: false,
+                                    showConfirmButton: false,
+                                    customClass: {
+                                        title: 'em-swal-title !text-center',
+                                        cancelButton: 'em-swal-cancel-button',
+                                        confirmButton: 'em-swal-confirm-button',
+                                        icon: 'border-0 w-full h-full mt-0',
+                                    },
+                                    timer: 3000
+                                });
+                            }
+                        }
+                    }).catch((error) => {
+                        Swal.fire({
+                            title: "Une erreur est survenue",
+                            text: error,
+                            type: "error",
+                            reverseButtons: true,
+                            confirmButtonText: "<?php echo JText::_('JYES');?>"
+                        });
                     });
                 }
             });

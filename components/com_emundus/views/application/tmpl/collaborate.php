@@ -21,14 +21,14 @@ Text::script('COM_EMUNDUS_APPLICATION_SHARE_VIEW_REQUESTS');
     <?php if($this->_user->applicant == 1) : ?>
         <div id="collab_emails_block">
             <label for="collab_emails" class="text-black"><?php echo Text::_('COM_EMUNDUS_APPLICATION_SHARE_EMAILS') ?></label>
-            <input type="text" name="collab_emails" id="collab_emails" class="mt-2" />
+            <input type="text" name="collab_emails" id="collab_emails" class="mt-2 <?php if (sizeof($this->collaborators) > 0) { echo 'mb-6';} ?>" />
         </div>
     <?php endif; ?>
 
-	<div class="<?php if($this->_user->applicant == 1) : ?>mt-6<?php endif; ?>">
+	<div id="collaborators_block">
 		<?php if(sizeof($this->collaborators) > 0) : ?>
             <?php if($this->_user->applicant == 1) : ?>
-                <div class="flex items-center justify-between" onclick="toggleRequests()">
+                <div class="flex items-center justify-between cursor-pointer" onclick="toggleRequests()">
                     <h3><?php echo Text::_('COM_EMUNDUS_APPLICATION_SHARE_VIEW_REQUESTS') ?></h3>
                     <span class="material-icons" id="requests_icon">expand_less</span>
                 </div>
@@ -78,22 +78,22 @@ Text::script('COM_EMUNDUS_APPLICATION_SHARE_VIEW_REQUESTS');
 
 						<div class="flex <?php if($this->_user->applicant == 1) : ?>items-center justify-between flex-wrap <?php else : ?>flex-col<?php endif;?>">
 							<div class="flex items-center gap-2">
-								<input class="!mt-0" type="checkbox" name="rights_<?php echo $collaborator->id; ?>" id="read_<?php echo $collaborator->id; ?>" value="r" onchange="updateRight('<?php echo $collaborator->id ?>','<?php echo $collaborator->ccid ?>','<?php echo $collaborator->fnum ?>',this.value, this.checked)" <?php if($collaborator->r == 1) : ?>checked<?php endif; ?> />
+								<input class="!mt-0" type="checkbox" name="rights_"<?= $collaborator->id; ?>" id="read_<?php echo $collaborator->id; ?>" value="r" onchange="updateRight('<?php echo $collaborator->id ?>','<?php echo $collaborator->ccid ?>','<?php echo $collaborator->fnum ?>',this.value, this.checked)" <?php if($collaborator->r == 1) : ?>checked<?php endif; ?> />
 								<label class="!mb-0" for="read_<?php echo $collaborator->id; ?>"><?php echo Text::_('COM_EMUNDUS_APPLICATION_SHARE_READ') ?></label>
 							</div>
 
 							<div class="flex items-center gap-2">
-								<input class="!mt-0" type="checkbox" name="rights_<?php echo $collaborator->id; ?>" id="update_<?php echo $collaborator->id; ?>" value="u" onchange="updateRight('<?php echo $collaborator->id ?>','<?php echo $collaborator->ccid ?>','<?php echo $collaborator->fnum ?>',this.value, this.checked)" <?php if($collaborator->u == 1) : ?>checked<?php endif; ?> />
+								<input class="!mt-0" type="checkbox" name="rights_"<?= $collaborator->id; ?>" id="update_<?php echo $collaborator->id; ?>" value="u" onchange="updateRight('<?php echo $collaborator->id ?>','<?php echo $collaborator->ccid ?>','<?php echo $collaborator->fnum ?>',this.value, this.checked)" <?php if($collaborator->u == 1) : ?>checked<?php endif; ?> />
 								<label class="!mb-0" for="update_<?php echo $collaborator->id; ?>"><?php echo Text::_('COM_EMUNDUS_APPLICATION_SHARE_UPDATE') ?></label>
 							</div>
 
 							<div class="flex items-center gap-2">
-								<input class="!mt-0" type="checkbox" name="rights_<?php echo $collaborator->id; ?>" id="view_history_<?php echo $collaborator->id; ?>" value="show_history" onchange="updateRight('<?php echo $collaborator->id ?>','<?php echo $collaborator->ccid ?>','<?php echo $collaborator->fnum ?>',this.value, this.checked)" <?php if($collaborator->show_history == 1) : ?>checked<?php endif; ?> />
+								<input class="!mt-0" type="checkbox" name="rights_"<?= $collaborator->id; ?>" id="view_history_<?php echo $collaborator->id; ?>" value="show_history" onchange="updateRight('<?php echo $collaborator->id ?>','<?php echo $collaborator->ccid ?>','<?php echo $collaborator->fnum ?>',this.value, this.checked)" <?php if($collaborator->show_history == 1) : ?>checked<?php endif; ?> />
 								<label class="!mb-0" for="view_history_<?php echo $collaborator->id; ?>"><?php echo Text::_('COM_EMUNDUS_APPLICATION_SHARE_VIEW_HISTORY') ?></label>
 							</div>
 
 							<div class="flex items-center gap-2">
-								<input class="!mt-0" type="checkbox" name="rights_<?php echo $collaborator->id; ?>" id="view_others_<?php echo $collaborator->id; ?>" value="show_shared_users" onchange="updateRight('<?php echo $collaborator->id ?>','<?php echo $collaborator->ccid ?>','<?php echo $collaborator->fnum ?>',this.value, this.checked)" <?php if($collaborator->show_shared_users == 1) : ?>checked<?php endif; ?> />
+								<input class="!mt-0" type="checkbox" name="rights_"<?= $collaborator->id; ?>" id="view_others_<?php echo $collaborator->id; ?>" value="show_shared_users" onchange="updateRight('<?php echo $collaborator->id ?>','<?php echo $collaborator->ccid ?>','<?php echo $collaborator->fnum ?>',this.value, this.checked)" <?php if($collaborator->show_shared_users == 1) : ?>checked<?php endif; ?> />
 								<label class="!mb-0" for="view_others_<?php echo $collaborator->id; ?>"><?php echo Text::_('COM_EMUNDUS_APPLICATION_SHARE_VIEW_OTHERS') ?></label>
 							</div>
 						</div>

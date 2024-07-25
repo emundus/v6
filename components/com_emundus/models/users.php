@@ -1128,16 +1128,16 @@ class EmundusModelUsers extends JModelList {
 		// Hit the user last visit field
 		$instance->setLastVisit();
 
-		// Trigger OnUserLogin
-		PluginHelper::importPlugin('user');
-		PluginHelper::importPlugin('emundus');
+        // Trigger OnUserLogin
+	    PluginHelper::importPlugin('user');
+	    PluginHelper::importPlugin('emundus');
 
-		$options = array();
-		$options['action'] = 'core.login.site';
+	    $options = array();
+	    $options['action'] = 'core.login.site';
 
-		$response['username'] = $instance->get('username');
-		$app->triggerEvent('onUserLogin', array($response, $options));
-		$app->triggerEvent('callEventHandler', ['onUserLogin', ['user_id' => $uid]]);
+	    $response['username'] = $instance->get('username');
+	    $app->triggerEvent('onUserLogin', array($response, $options));
+	    $app->triggerEvent('callEventHandler', ['onUserLogin', ['user_id' => $uid]]);
 
 		return $instance;
 	}
@@ -1901,7 +1901,7 @@ class EmundusModelUsers extends JModelList {
 
     public function getUserOprofiles($uid) {
 		$o_profiles = [];
-		
+
         try {
 			$db = Factory::getDbo();
 			$query = $db->getQuery(true);
@@ -1914,7 +1914,7 @@ class EmundusModelUsers extends JModelList {
         } catch(Exception $e) {
             Log::add('Failed to get user o-profiles ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
         }
-		
+
 		return $o_profiles;
     }
 

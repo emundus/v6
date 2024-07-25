@@ -24,23 +24,45 @@ $display_required_icon = $eMConfig->get('display_required_icon', 1);
 
 $pageClass = $this->params->get('pageclass_sfx', '');
 
-$fnum = Factory::getApplication()->input->getString('fnum','');
-
-require_once JPATH_SITE . '/components/com_emundus/models/application.php';
-$m_application = new EmundusModelApplication();
-$this->locked_elements = $m_application->getLockedElements($this->form->id, $fnum);
-$this->collaborators = $m_application->getSharedFileUsers(null, $fnum);
-
-$this->collaborator = false;
-$e_user = Factory::getSession()->get('emundusUser', null);
-if(!empty($e_user->fnums)) {
-	$fnumInfos = $e_user->fnums[$fnum];
-	$this->collaborator = $fnumInfos->applicant_id != $e_user->id;
+$session = Factory::getSession();
+$emundus_user = $session->get('emundusUser');
+$user = Factory::getUser();
+$app = Factory::getApplication();
+$fnum = $app->input->getString('rowid', '');
+if (empty($fnum)) {
+    $fnum = $emundus_user->fnum;
 }
 
-require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+if (!empty($fnum)) {
+    require_once(JPATH_SITE . '/components/com_emundus/models/application.php');
+    $m_application = new EmundusModelApplication();
+    $this->locked_elements = $m_application->getLockedElements($this->form->id, $fnum);
+    $this->collaborators = $m_application->getSharedFileUsers(null, $fnum);
+
+    $this->collaborator = false;
+    $e_user = Factory::getSession()->get('emundusUser', null);
+    if(!empty($e_user->fnums)) {
+        $fnumInfos = $e_user->fnums[$fnum];
+        $this->collaborator = $fnumInfos->applicant_id != $e_user->id;
+    }
+}
+
+require_once(JPATH_SITE .'/components/com_emundus/models/users.php');
 $m_users = new EmundusModelUsers();
 $profile_form = $m_users->getProfileForm();
+
+$current_user_profile = $emundus_user->profile;
+$applicant_profiles = $m_users->getApplicantProfiles();
+$applicant_profiles_ids = array_map(function($profile) {
+    return $profile->id;
+}, $applicant_profiles);
+
+if (!in_array($current_user_profile, $applicant_profiles_ids)) {
+    $is_applicant = 0;
+    $this->is_applicant = false;
+} else {
+    $this->is_applicant = true;
+}
 
 JText::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TITLE');
 JText::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TEXT');

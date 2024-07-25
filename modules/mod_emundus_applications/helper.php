@@ -72,14 +72,14 @@ class modemundusApplicationsHelper {
 		}
 
 
-		if($collaborate) {
+		if ($collaborate) {
 			$select_collaborate = [
 				'efr.r',
 				'efr.u',
 				'efr.show_history',
 				'efr.show_shared_users',
 			];
-			$select = array_merge($select,$select_collaborate);
+			$select = array_merge($select, $select_collaborate);
 		}
 
 		$query->clear()
@@ -149,8 +149,28 @@ class modemundusApplicationsHelper {
 			JLog::add('Module emundus applications failed to get applications for user ' . $user->id .  ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
 		}
 
-		return $applications;
+        return $applications;
 	}
+
+    static function getCollaborators(&$applications)
+    {
+        foreach ($applications as $fnum => $application) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('efr.email, efr.user_id')
+                ->from($db->quoteName('#__emundus_files_request', 'efr'))
+                ->where($db->quoteName('efr.ccid') . ' = ' . $application->application_id)
+                ->andWhere($db->quoteName('efr.show_shared_users') . ' = 1');
+
+            try {
+                $db->setQuery($query);
+                $application->collaborators = $db->loadObjectList();
+            } catch (Exception $e) {
+                JLog::add('Module emundus applications failed to get collaborators for application ' . $application->application_id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            }
+        }
+    }
 
     // get State of the files (published, removed, archived)
     static function getStatusFiles() {

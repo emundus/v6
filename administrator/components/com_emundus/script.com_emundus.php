@@ -4914,6 +4914,38 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 
 		if (version_compare($cache_version, '1.39.1', '<=') || $firstrun) {
 			EmundusHelperUpdate::installExtension('System - eMundus', 'emundus','{"name":"System - eMundus","type":"plugin","creationDate":"15 juillet 2024","author":"eMundus","copyright":"Copyright (C) 2024 eMundus","authorEmail":"dev@emundus.io","authorUrl":"http:\/\/www.emundus.fr","version":"1.39.1","description":"eMundus plugin to call jQuery","group":"","filename":"emundus"}','plugin',1,'system');
+			if (version_compare($cache_version, '1.39.0', '<=') || $firstrun) {
+				$succeed['get_attachments_for_profile_event_added'] = EmundusHelperUpdate::addCustomEvents([
+					['label' => 'onAfterGetAttachmentsForProfile', 'category' => 'Files']
+				]);
+
+
+                // Sharing files feature
+                EmundusHelperUpdate::addColumn('jos_fabrik_form_sessions', 'fnum', 'VARCHAR', 28);
+
+				$query = 'ALTER TABLE `jos_fabrik_form_sessions` MODIFY `referring_url` VARCHAR(255) NULL';
+				$db->setQuery($query);
+				$db->execute();
+
+				$query = 'ALTER TABLE `jos_fabrik_form_sessions` MODIFY `last_page` INT(11) NULL';
+				$db->setQuery($query);
+				$db->execute();
+
+				$query = 'ALTER TABLE `jos_fabrik_form_sessions` MODIFY `hash` VARCHAR(255) NULL';
+				$db->setQuery($query);
+				$db->execute();
+
+				require_once JPATH_ADMINISTRATOR . '/components/com_emundus/scripts/SharingFilesInstall.php';
+				$sharing_files_install   = new scripts\SharingFilesInstall();
+				$sharing_files_installed = $sharing_files_install->install();
+				if ($sharing_files_installed['status']) {
+					EmundusHelperUpdate::displayMessage('La fonctionnalité de partage de dossier a été installée avec succès', 'success');
+				}
+				else {
+					EmundusHelperUpdate::displayMessage($sharing_files_installed['message'], 'error');
+					$succeed = false;
+				}
+			}
 		}
 
 		return $succeed;

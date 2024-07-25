@@ -617,7 +617,8 @@ class SharingFilesInstall
 		$this->db->execute();
 
 		EmundusHelperUpdate::addCustomEvents([
-			['label' => 'onAfterAcceptCollaboration', 'category' => 'Collaboration']
+			['label' => 'onAfterAcceptCollaboration', 'category' => 'Collaboration'],
+            ['label' => 'onAfterShareFileWith', 'category' => 'Collaboration']
 		]);
 
 		$column_added = EmundusHelperUpdate::addColumn('jos_fabrik_form_sessions', 'last_update', 'varchar(50)');
