@@ -3669,39 +3669,43 @@ class EmundusHelperFiles
             $where['q'] .= ' AND jecc.status <> 0';
         }
 
-	    $menu = JFactory::getApplication()->getMenu();
-		if (!empty($menu)) {
-			$active = $menu->getActive();
+        if (!empty($menu_item)) {
+            $active = $menu_item;
+        } else {
+            $menu = JFactory::getApplication()->getMenu();
+            if (!empty($menu)) {
+                $active = $menu->getActive();
+            }
+        }
 
-			if (!empty($active)) {
-				$menu_params = $active->params;
-				$filter_menu_values = $menu_params->get('em_filters_values', '');
-				$filter_menu_values = explode(',', $filter_menu_values);
+        if (!empty($active)) {
+            $menu_params = $active->params;
+            $filter_menu_values = $menu_params->get('em_filters_values', '');
+            $filter_menu_values = explode(',', $filter_menu_values);
 
-				if (!empty($filter_menu_values)) {
-					$filter_names = $menu_params->get('em_filters_names', '');
-					$filter_names = explode(',', $filter_names);
+            if (!empty($filter_menu_values)) {
+                $filter_names = $menu_params->get('em_filters_names', '');
+                $filter_names = explode(',', $filter_names);
 
-					foreach($filter_names as $key => $filter_name) {
-						if (isset($filter_menu_values[$key]) && $filter_menu_values[$key] != '') {
-							$values = explode('|', $filter_menu_values[$key]);
+                foreach($filter_names as $key => $filter_name) {
+                    if (isset($filter_menu_values[$key]) && $filter_menu_values[$key] != '') {
+                        $values = explode('|', $filter_menu_values[$key]);
 
-							switch ($filter_name) {
-								case 'status':
-									$where['q'] .= ' AND jecc.status IN ("' . implode('","', $values) . '") ';
-									break;
-								case 'programme':
-									$where['q'] .= ' AND sp.id IN ("' . implode('","', $values) . '") ';
-									break;
-								case 'campaign':
-									$where['q'] .= ' AND esc.id IN ("' . implode('","', $values) . '") ';
-									break;
-							}
-						}
-					}
-				}
-			}
-		}
+                        switch ($filter_name) {
+                            case 'status':
+                                $where['q'] .= ' AND jecc.status IN ("' . implode('","', $values) . '") ';
+                                break;
+                            case 'programme':
+                                $where['q'] .= ' AND sp.id IN ("' . implode('","', $values) . '") ';
+                                break;
+                            case 'campaign':
+                                $where['q'] .= ' AND esc.id IN ("' . implode('","', $values) . '") ';
+                                break;
+                        }
+                    }
+                }
+            }
+        }
 
 		// Now we handle session filters (if any)
 	    $session = JFactory::getSession();
@@ -4877,7 +4881,7 @@ class EmundusHelperFiles
                                 $query .= $leftJoins;
                             }
 
-                            $whereConditions = $this->_moduleBuildWhere($already_joined, 'files', ['code' => $user_programmes, 'fnum_assoc' => $user_fnums_assoc], [$applied_filter['uid']]);
+                            $whereConditions = $this->_moduleBuildWhere($already_joined, 'files', ['code' => $user_programmes, 'fnum_assoc' => $user_fnums_assoc], [$applied_filter['uid']], null, $menu_item);
 
                             $query .= $whereConditions['join'];
                             $query .= ' WHERE u.block=0 ' . $whereConditions['q'];
@@ -4934,7 +4938,7 @@ class EmundusHelperFiles
                             $where_params['code'] = $user_programmes;
                             $where_params['fnum_assoc'] = $user_fnums_assoc;
 
-                            $whereConditions = $this->_moduleBuildWhere($already_joined, 'files', $where_params, [$applied_filter['uid']]);
+                            $whereConditions = $this->_moduleBuildWhere($already_joined, 'files', $where_params, [$applied_filter['uid']], null, $menu_item);
 
                             $query .= $whereConditions['join'];
                             $query .= ' WHERE u.block=0 ' . $whereConditions['q'];
