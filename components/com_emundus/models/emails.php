@@ -2937,7 +2937,6 @@ class EmundusModelEmails extends JModelList {
                 }
 
                 // In case no post value is supplied
-                // In case no post value is supplied
                 $default_post = [
                     'SITE_URL'   => JURI::base(),
                     'SITE_NAME' => $config->get('sitename'),

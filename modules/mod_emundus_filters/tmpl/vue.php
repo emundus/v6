@@ -40,6 +40,8 @@ JText::script('MOD_EMUNDUS_FILTERS_SCOPE_ID');
 JText::script('MOD_EMUNDUS_FILTERS_GLOBAL_SEARCH_PLACEHOLDER');
 JText::script('MOD_EMUNDUS_FILTERS_MORE_VALUES');
 JText::script('MOD_EMUNDUS_FILTERS_GROUP_ASSOC');
+JText::script('MOD_EMUNDUS_FILTERS_VALUE_TO_EVALUATE_TODO');
+JText::script('MOD_EMUNDUS_FILTERS_VALUE_TO_EVALUATE_DONE');
 ?>
 <div
         id="em-filters-vue"
@@ -48,6 +50,7 @@ JText::script('MOD_EMUNDUS_FILTERS_GROUP_ASSOC');
         data-filters='<?= base64_encode(json_encode($filters)) ?>'
         data-quick-search-filters='<?= base64_encode(json_encode($quick_search_filters)) ?>'
         data-count-filter-values='<?= $params->get('count_filter_values')  ?>'
+        data-menu-id='<?= $menu_id; ?>'
 ></div>
 
 <script src="media/mod_emundus_filters/app.js"></script>

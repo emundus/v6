@@ -312,7 +312,7 @@ function refreshFilter(view) {
             }
         });
     } else {
-        reloadData($('#view').val(), false);
+        window.dispatchEvent(this.refreshModuleFiltersEvent);
     }
 }
 
@@ -3144,7 +3144,6 @@ $(document).ready(function () {
                         $('#em-ex-admission').click(function (e) {
                             if ($("#felts input[type=checkbox]").is(":checked") || $('#em-ex-forms').is(":checked") || $('#em-ex-assessment').is(":checked") || $('#em-ex-decision').is(":checked") || $('#em-ex-admission').is(":checked")) {
                                 $('#exp-options').show();
-                            } else {
                                 $('#exp-options').hide();
                             }
                         });
@@ -6525,4 +6524,9 @@ window.addEventListener('emundus-start-apply-filters', () => {
 
 window.addEventListener('emundus-apply-filters-success', () => {
     reloadData(document.getElementById('view').getAttribute('value'), false);
+});
+
+window.addEventListener('emundus-close-split-modal', () => {
+    const controller = $('#view').val();
+    refreshFilter(controller);
 });

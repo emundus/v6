@@ -44,7 +44,15 @@ if (!empty($user) && EmundusHelperAccess::asAccessAction(1, 'r', $user->id)) {
 			$applied_filters = $m_filters->getAppliedFilters();
 			$quick_search_filters = $m_filters->getQuickSearchFilters();
 
-			require JModuleHelper::getLayoutPath('mod_emundus_filters', $layout);
+            $menu_id = 0;
+            $menu = $app->getMenu();
+            if (!empty($menu))
+            {
+                $menu_item = $menu->getActive();
+                $menu_id = $menu_item->id;
+            }
+
+            require JModuleHelper::getLayoutPath('mod_emundus_filters', $layout);
 		}
 	}
 } else {

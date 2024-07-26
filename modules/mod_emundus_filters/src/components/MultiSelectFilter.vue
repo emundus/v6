@@ -143,7 +143,7 @@ export default {
   },
   mounted() {
     this.filter.operator = this.filter.operator === '=' ? 'IN' : this.filter.operator;
-    this.originalFilterValue = this.filter.value;
+    this.originalFilterValue = JSON.parse(JSON.stringify(this.filter.value));
     this.originalFilterOperator = this.filter.operator;
     this.originalFilterAndorOperator = this.filter.andorOperator;
   },
@@ -197,7 +197,11 @@ export default {
       this.filter.operator = 'IN';
       this.filter.andorOperator = 'OR';
       this.search = '';
-      this.filter.value = [];
+      if (this.filter.defaultValue) {
+        this.filter.value = this.filter.defaultValue;
+      } else {
+        this.filter.value = [];
+      }
 
       if (this.opened) {
         this.opened = false;
@@ -277,7 +281,7 @@ export default {
         })
 
         if (selectedValue) {
-          labels.push(selectedValue.label);
+          labels.push(this.translate(selectedValue.label));
         }
       });
 

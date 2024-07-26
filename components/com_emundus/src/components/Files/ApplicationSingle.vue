@@ -130,11 +130,11 @@ export default {
     access: null,
     student_id: null,
     hidden: false,
-    loading: false
+    loading: false,
+    closeSplitModal: null
   }),
 
   created() {
-    document.querySelector('body').style.overflow = 'hidden';
     var r = document.querySelector(':root');
     let ratio_array = this.$props.ratio.split('/');
     r.style.setProperty('--attachment-width', ratio_array[0] + '%');
@@ -170,6 +170,7 @@ export default {
       });
     },
     render() {
+      document.querySelector('body').style.overflow = 'hidden';
       this.loading = true;
       let fnum = '';
 
@@ -234,6 +235,7 @@ export default {
           this.loading = false;
         });
       }
+      this.closeSplitModal = new Event('emundus-close-split-modal');
     },
 
     getApplicationForm() {
@@ -290,10 +292,14 @@ export default {
     },
     onClose(e) {
       e.preventDefault();
+
+      window.location.href = window.location.origin + window.location.pathname;
+
       this.hidden = true;
       this.$modal.hide('application-modal');
       document.querySelector('body').style.overflow= 'visible';
-      swal.close();
+      window.dispatchEvent(this.closeSplitModal);
+      Swal.close();
     },
     openNextFnum() {
       let index = typeof this.selectedFile === 'string' ? this.fnums.indexOf(this.selectedFile) : this.fnums.indexOf(this.selectedFile.fnum);
