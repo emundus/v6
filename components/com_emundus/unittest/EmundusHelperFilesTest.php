@@ -232,6 +232,6 @@ class EmundusHelperFilesTest extends TestCase {
             'eval' => true
         ];
         $where = $this->h_files->_moduleBuildWhere([], 'files', $caller_params);
-        $this->assertSame(' AND esc.published > 0 AND jecc.status <> 0 AND jecc.published = \'1\'', $where['q'], 'Build where on evaluation view should return default filters and filter on status');
+        $this->assertSame(' AND esc.published = \'1\' AND jecc.status <> 0 AND jecc.published = \'1\'', $where['q'], 'Build where on evaluation view should return default filters and filter on status');
 	}
 }
