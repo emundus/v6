@@ -868,8 +868,8 @@ class EmundusModelEvaluation extends JModelList {
                 'code'       => $this->code,
                 'eval'       => true
             ];
-            if (!empty($this->filter_module_params->get('filter_to_evaluate_custom_users'))) {
-                $caller_params['custom_eval_users_filter'] = $this->filter_module_params->get('filter_to_evaluate_custom_users');
+            if (!empty($this->filter_module_params->get('filter_to_evaluate_custom_files'))) {
+                $caller_params['custom_eval_files_filter'] = $this->filter_module_params->get('filter_to_evaluate_custom_files');
             }
             return $h_files->_moduleBuildWhere($already_joined_tables, 'files', $caller_params);
         }
@@ -968,11 +968,10 @@ class EmundusModelEvaluation extends JModelList {
                     LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum = jecc.fnum ';
         if (EmundusHelperAccess::isCoordinator($current_user->id)
             || (EmundusHelperAccess::asEvaluatorAccessLevel($current_user->id) && $evaluators_can_see_other_eval == 1)
-            || EmundusHelperAccess::asAccessAction(5, 'r', $current_user->id)
-            || !empty($this->filter_module_params->get('filter_to_evaluate_custom_users'))) {
+            || EmundusHelperAccess::asAccessAction(5, 'r', $current_user->id)) {
             $query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum = jecc.fnum ';
         } else {
-            $query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum = jecc.fnum AND (jos_emundus_evaluations.user='.$current_user->id.' OR jos_emundus_evaluations.user IS NULL)';
+            $query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum = jecc.fnum AND jos_emundus_evaluations.user='.$current_user->id.' ';
         }
 
         $already_joined_tables['jos_emundus_evaluations'] = 'jos_emundus_evaluations';

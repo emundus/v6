@@ -3775,6 +3775,17 @@ class EmundusHelperFiles
                         continue;
                     }
 
+                    if (!empty($caller_params) && !empty($caller_params['custom_eval_files_filter'])) {
+                        $custom_eval_files_filter = $caller_params['custom_eval_files_filter'];
+                        $custom_eval_files_filter = str_replace('{user_id}', $user->id, $custom_eval_files_filter);
+
+                        try {
+                            $evaluated_and_to_evaluate_files = eval($custom_eval_files_filter);
+                        } catch (Exception $e) {
+                            JLog::add('Failed to evaluate custom_eval_files_filter in filter context ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                        }
+                    }
+
                     if ((!is_array($filter['value']) || !in_array('all', $filter['value'], true)) && (!empty($filter['value']) || $filter['value'] == '0')) {
                         $filter_id = str_replace(['filter-', 'default-filter-'], '', $filter['id']);
 
@@ -4086,14 +4097,14 @@ class EmundusHelperFiles
                                     }
                                     break;
                                 /**
-                                 * Si condition custom, évaluer le code, qui doit retourner un tableau de evaluation id avec evaluated et to_evaluate
+                                 * Si condition custom, évaluer le code, qui doit retourner un tableau de fnum avec une colonne to_evaluate et une colonne evaluated
                                  *
-                                 * Si multi eval,
-                                 * un dossier traité = un dossier avec une évaluation pour moi
-                                 * un dossier non traité = un dossier sans évaluation, ou une évaluation pour un autre
+                                 * Sinon si multi eval,
+                                 * un dossier traité = un dossier avec une évaluation par moi
+                                 * un dossier non traité = un dossier sans évaluation, ou une évaluation par un autre
                                  *
                                  * Sinon,
-                                 * un dossier traité = un dossier avec une évaluation pour moi
+                                 * un dossier traité = un dossier avec une évaluation
                                  * un dossier non traité = un dossier sans évaluation
                                  */
                                 case 'to_evaluate':
@@ -4109,6 +4120,10 @@ class EmundusHelperFiles
                                     $searched = $filter['value'];
                                     if ($filter['operator'] === 'NOT IN') {
                                         if (is_array($filter['value'])) {
+                                            if (!empty($evaluated_and_to_evaluate_files) && isset($evaluated_and_to_evaluate_files['evaluated']) && isset($evaluated_and_to_evaluate_files['to_evaluate'])) {
+                                                $where['q'] .= ' AND ' . $this->writeQueryWithOperator($jecc_alias . '.fnum', array_merge($evaluated_and_to_evaluate_files['evaluated'], $evaluated_and_to_evaluate_files['to_evaluate']), 'IN');
+                                            }
+
                                             $where['q'] .= ' AND 1 = 2';
                                             break;
                                         }
@@ -4116,24 +4131,13 @@ class EmundusHelperFiles
                                         $searched = $filter['value'] === 'evaluated' ? 'to_evaluate' : 'evaluated';
                                     }
 
-                                    if (!empty($caller_params) && !empty($caller_params['custom_eval_users_filter'])) {
-                                        $custom_eval_users_filter = $caller_params['custom_eval_users_filter'];
-                                        $custom_eval_users_filter = str_replace('{user_id}', $user->id, $custom_eval_users_filter);
-
-                                        try {
-                                            $evaluated_and_to_evaluate_files = eval($custom_eval_users_filter);
-                                        } catch (Exception $e) {
-                                            JLog::add('Failed to evaluate custom_eval_users_filter in filter context ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
-                                        }
-
-                                        if (!empty($evaluated_and_to_evaluate_files) && isset($evaluated_and_to_evaluate_files['evaluated']) && isset($evaluated_and_to_evaluate_files['to_evaluate'])) {
-                                            if ($searched == 'evaluated') {
-                                                $where['q'] .= ' AND ' . $this->writeQueryWithOperator($jecc_alias . '.fnum', $evaluated_and_to_evaluate_files['evaluated'], 'IN');
-                                            } else if ($searched == 'to_evaluate') {
-                                                $where['q'] .= ' AND ' . $this->writeQueryWithOperator($jecc_alias . '.fnum', $evaluated_and_to_evaluate_files['to_evaluate'], 'IN');
-                                            } else {
-                                                $where['q'] .= ' AND ' . $this->writeQueryWithOperator($jecc_alias . '.fnum', array_merge($evaluated_and_to_evaluate_files['evaluated'], $evaluated_and_to_evaluate_files['to_evaluate']), 'IN');
-                                            }
+                                    if (!empty($evaluated_and_to_evaluate_files) && isset($evaluated_and_to_evaluate_files['evaluated']) && isset($evaluated_and_to_evaluate_files['to_evaluate'])) {
+                                        if ($searched == 'evaluated') {
+                                            $where['q'] .= ' AND ' . $this->writeQueryWithOperator($jecc_alias . '.fnum', $evaluated_and_to_evaluate_files['evaluated'], 'IN');
+                                        } else if ($searched == 'to_evaluate') {
+                                            $where['q'] .= ' AND ' . $this->writeQueryWithOperator($jecc_alias . '.fnum', $evaluated_and_to_evaluate_files['to_evaluate'], 'IN');
+                                        } else {
+                                            $where['q'] .= ' AND ' . $this->writeQueryWithOperator($jecc_alias . '.fnum', array_merge($evaluated_and_to_evaluate_files['evaluated'], $evaluated_and_to_evaluate_files['to_evaluate']), 'IN');
                                         }
                                     } else {
                                         $emundus_config = JComponentHelper::getParams('com_emundus');
@@ -4164,6 +4168,51 @@ class EmundusHelperFiles
                                     break;
                                 default:
                                     break;
+                            }
+                        }
+                    } else {
+                        // Take custom eval filter even if no value was selected
+                        if (!empty($evaluated_and_to_evaluate_files)) {
+                            $jecc_alias = array_search('jos_emundus_campaign_candidature', $already_joined);
+                            $jee_alias = array_search('jos_emundus_evaluations', $already_joined);
+
+                            if ($jee_alias === false) {
+                                $jee_alias = 'jos_emundus_evaluations';
+                                $eMConfig = JComponentHelper::getParams('com_emundus');
+                                $evaluators_can_see_other_eval = $eMConfig->get('evaluators_can_see_other_eval', '0');
+
+                                if (EmundusHelperAccess::isCoordinator($user->id)
+                                    || (EmundusHelperAccess::asEvaluatorAccessLevel($user->id) && $evaluators_can_see_other_eval == 1)
+                                    || EmundusHelperAccess::asAccessAction(5, 'r', $user->id)) {
+                                    $where['join'] .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum = jecc.fnum ';
+                                } else {
+                                    $where['join'] .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum = jecc.fnum AND jos_emundus_evaluations.user='.$user->id.' ';
+                                }
+                                $already_joined[$jee_alias] = 'jos_emundus_evaluations';
+                            }
+
+                            $searched = $filter['value'];
+                            if ($filter['operator'] === 'NOT IN') {
+                                if (is_array($filter['value'])) {
+                                    if (!empty($evaluated_and_to_evaluate_files) && isset($evaluated_and_to_evaluate_files['evaluated']) && isset($evaluated_and_to_evaluate_files['to_evaluate'])) {
+                                        $where['q'] .= ' AND ' . $this->writeQueryWithOperator($jecc_alias . '.fnum', array_merge($evaluated_and_to_evaluate_files['evaluated'], $evaluated_and_to_evaluate_files['to_evaluate']), 'IN');
+                                    }
+
+                                    $where['q'] .= ' AND 1 = 2';
+                                    break;
+                                }
+
+                                $searched = $filter['value'] === 'evaluated' ? 'to_evaluate' : 'evaluated';
+                            }
+
+                            if (!empty($evaluated_and_to_evaluate_files) && isset($evaluated_and_to_evaluate_files['evaluated']) && isset($evaluated_and_to_evaluate_files['to_evaluate'])) {
+                                if ($searched == 'evaluated') {
+                                    $where['q'] .= ' AND ' . $this->writeQueryWithOperator($jecc_alias . '.fnum', $evaluated_and_to_evaluate_files['evaluated'], 'IN');
+                                } else if ($searched == 'to_evaluate') {
+                                    $where['q'] .= ' AND ' . $this->writeQueryWithOperator($jecc_alias . '.fnum', $evaluated_and_to_evaluate_files['to_evaluate'], 'IN');
+                                } else {
+                                    $where['q'] .= ' AND ' . $this->writeQueryWithOperator($jecc_alias . '.fnum', array_merge($evaluated_and_to_evaluate_files['evaluated'], $evaluated_and_to_evaluate_files['to_evaluate']), 'IN');
+                                }
                             }
                         }
                     }
@@ -4431,9 +4480,25 @@ class EmundusHelperFiles
 					} else {
 						if ($create_alias) {
 							$left_joins .= ' LEFT JOIN ' . $dbo->quoteName($element_join['join_from_table']) . ' AS ' . $join_from_table_alias . ' ON ' . $dbo->quoteName($join_from_table_alias. '.' . $element_join['table_key']) . ' = ' . $dbo->quoteName($table_join_alias. '.' . $element_join['table_join_key']);
-						} else {
-							$left_joins .= ' LEFT JOIN ' . $dbo->quoteName($element_join['join_from_table']) . ' ON ' . $dbo->quoteName($element_join['join_from_table'] . '.' . $element_join['table_key']) . ' = ' . $dbo->quoteName($table_join_alias. '.' . $element_join['table_join_key']);
-						}
+                        } else {
+                            // If the table to join is the evaluations table, take into account the visibility the evaluator has
+                            if ($element_join['join_from_table'] == 'jos_emundus_evaluations') {
+                                $eMConfig = JComponentHelper::getParams('com_emundus');
+                                $evaluators_can_see_other_eval = $eMConfig->get('evaluators_can_see_other_eval', '0');
+
+                                $user = JFactory::getUser();
+
+                                if (!EmundusHelperAccess::isCoordinator($user->id)
+                                    || (EmundusHelperAccess::asEvaluatorAccessLevel($user->id) && $evaluators_can_see_other_eval != 1)
+                                    || !EmundusHelperAccess::asAccessAction(5, 'r', $user->id)) {
+                                    $left_joins .= ' LEFT JOIN ' . $dbo->quoteName($element_join['join_from_table']) . ' ON  ' . $dbo->quoteName($element_join['join_from_table'] . '.' . $element_join['table_key']) . ' = ' . $dbo->quoteName($table_join_alias. '.' . $element_join['table_join_key']) . ' AND ' . $dbo->quoteName($element_join['join_from_table'] . '.user') . ' = ' . $dbo->quote($user->id);
+                                } else {
+                                    $left_joins .= ' LEFT JOIN ' . $dbo->quoteName($element_join['join_from_table']) . ' ON ' . $dbo->quoteName($element_join['join_from_table'] . '.' . $element_join['table_key']) . ' = ' . $dbo->quoteName($table_join_alias. '.' . $element_join['table_join_key']);
+                                }
+                            } else {
+                                $left_joins .= ' LEFT JOIN ' . $dbo->quoteName($element_join['join_from_table']) . ' ON ' . $dbo->quoteName($element_join['join_from_table'] . '.' . $element_join['table_key']) . ' = ' . $dbo->quoteName($table_join_alias. '.' . $element_join['table_join_key']);
+                            }
+                        }
 					}
 				}
 			}
@@ -4926,13 +4991,25 @@ class EmundusHelperFiles
                             }
 
                             if ((!empty($menu_item) && $menu_item->query['view'] == 'evaluation') || $applied_filter['uid'] == 'to_evaluate') {
-                                $query .= 'LEFT JOIN jos_emundus_evaluations on jos_emundus_evaluations.fnum = jecc.fnum';
-                                $already_joined['jos_emundus_evaluations'] = 'jos_emundus_evaluations';
+                                if (!in_array('jos_emundus_evaluations', $already_joined)) {
+                                    $eMConfig = JComponentHelper::getParams('com_emundus');
+                                    $evaluators_can_see_other_eval = $eMConfig->get('evaluators_can_see_other_eval', '0');
+
+                                    if (EmundusHelperAccess::isCoordinator($user->id)
+                                        || (EmundusHelperAccess::asEvaluatorAccessLevel($user->id) && $evaluators_can_see_other_eval == 1)
+                                        || EmundusHelperAccess::asAccessAction(5, 'r', $user->id)) {
+                                        $query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum = jecc.fnum ';
+                                    } else {
+                                        $query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum = jecc.fnum AND jos_emundus_evaluations.user='.$user->id.' ';
+                                    }
+
+                                    $already_joined['jos_emundus_evaluations'] = 'jos_emundus_evaluations';
+                                }
                                 $where_params['eval'] = true;
                             }
 
-                            if (!empty($module_params['filter_to_evaluate_custom_users'])) {
-                                $where_params['custom_eval_users_filter'] = $module_params['filter_to_evaluate_custom_users'];
+                            if (!empty($module_params['filter_to_evaluate_custom_files'])) {
+                                $where_params['custom_eval_files_filter'] = $module_params['filter_to_evaluate_custom_files'];
                             }
 
                             $where_params['code'] = $user_programmes;
@@ -4996,7 +5073,7 @@ class EmundusHelperFiles
      *
      * @return array
      */
-    private function _buildSearch($str_array, $tableAlias = array(), $caller_aprams = array()) {
+        private function _buildSearch($str_array, $tableAlias = array(), $caller_params = array()) {
 
         $q = array('q' => array(), 'join' => array());
         $queryGroups = [
