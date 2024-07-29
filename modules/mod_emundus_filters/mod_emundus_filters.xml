@@ -149,9 +149,9 @@
                     </field>
                     <field
                             type="textarea"
-                            name="filter_to_evaluate_custom_users"
-                            label="FILTER_ON_TO_EVALUATE_CUSTOM_USERS"
-                            description="FILTER_ON_TO_EVALUATE_CUSTOM_USERS_DESC"
+                            name="filter_to_evaluate_custom_files"
+                            label="FILTER_ON_TO_EVALUATE_CUSTOM_FILES"
+                            description="FILTER_ON_TO_EVALUATE_CUSTOM_FILES_DESC"
                             default=""
                             showon="filter_to_evaluate:1"
                     />
