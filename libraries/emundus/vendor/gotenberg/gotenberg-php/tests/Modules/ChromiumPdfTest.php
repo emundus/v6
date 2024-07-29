@@ -2,48 +2,56 @@
 
 declare(strict_types=1);
 
-use Gotenberg\Exceptions\NativeFunctionErroed;
+use Gotenberg\Exceptions\NativeFunctionErrored;
 use Gotenberg\Gotenberg;
-use Gotenberg\Modules\Chromium;
+use Gotenberg\Modules\ChromiumCookie;
+use Gotenberg\Modules\ChromiumPdf;
 use Gotenberg\Stream;
 
 it(
     'creates a valid request for the "/forms/chromium/convert/url" endpoint',
     /**
+     * @param ChromiumCookie[] $cookies
      * @param array<string,string> $extraHttpHeaders
+     * @param int[] $failOnHttpStatusCodes
+     * @param array<string,string|bool|float|int|array<string>> $metadata
      * @param Stream[] $assets
      */
     function (
         string $url,
-        ?float $paperWidth = null,
-        float $paperHeight = 0,
-        ?float $marginTop = null,
-        float $marginBottom = 0,
-        float $marginLeft = 0,
-        float $marginRight = 0,
+        bool $singlePage = false,
+        float|string|null $paperWidth = null,
+        float|string $paperHeight = 0,
+        float|string|null $marginTop = null,
+        float|string $marginBottom = 0,
+        float|string $marginLeft = 0,
+        float|string $marginRight = 0,
         bool $preferCssPageSize = false,
         bool $printBackground = false,
         bool $omitBackground = false,
         bool $landscape = false,
-        ?float $scale = null,
-        ?string $nativePageRanges = null,
-        ?Stream $header = null,
-        ?Stream $footer = null,
-        ?string $waitDelay = null,
-        ?string $waitWindowStatus = null,
-        ?string $waitForExpression = null,
-        ?string $userAgent = null,
+        float|null $scale = null,
+        string|null $nativePageRanges = null,
+        Stream|null $header = null,
+        Stream|null $footer = null,
+        string|null $waitDelay = null,
+        string|null $waitForExpression = null,
+        string|null $emulatedMediaType = null,
+        array $cookies = [],
+        string|null $userAgent = null,
         array $extraHttpHeaders = [],
+        array $failOnHttpStatusCodes = [],
         bool $failOnConsoleExceptions = false,
-        ?string $emulatedMediaType = null,
-        ?string $pdfFormat = null,
-        ?string $pdfa = null,
+        bool $skipNetworkIdleEvent = false,
+        string|null $pdfa = null,
         bool $pdfua = false,
-        array $assets = []
+        array $metadata = [],
+        array $assets = [],
     ): void {
-        $chromium = Gotenberg::chromium('');
-        $chromium = hydrate(
+        $chromium = Gotenberg::chromium('')->pdf();
+        $chromium = hydrateChromiumPdfFormData(
             $chromium,
+            $singlePage,
             $paperWidth,
             $paperHeight,
             $marginTop,
@@ -59,16 +67,18 @@ it(
             $header,
             $footer,
             $waitDelay,
-            $waitWindowStatus,
             $waitForExpression,
+            $emulatedMediaType,
+            $cookies,
             $userAgent,
             $extraHttpHeaders,
+            $failOnHttpStatusCodes,
             $failOnConsoleExceptions,
-            $emulatedMediaType,
-            $pdfFormat,
+            $skipNetworkIdleEvent,
             $pdfa,
             $pdfua,
-            $assets
+            $metadata,
+            $assets,
         );
 
         $request = $chromium->url($url);
@@ -77,8 +87,9 @@ it(
         expect($request->getUri()->getPath())->toBe('/forms/chromium/convert/url');
         expect($body)->toContainFormValue('url', $url);
 
-        expectOptions(
+        expectChromiumPdfOptions(
             $body,
+            $singlePage,
             $paperWidth,
             $paperHeight,
             $marginTop,
@@ -94,26 +105,29 @@ it(
             $header,
             $footer,
             $waitDelay,
-            $waitWindowStatus,
             $waitForExpression,
+            $emulatedMediaType,
+            $cookies,
             $userAgent,
             $extraHttpHeaders,
+            $failOnHttpStatusCodes,
             $failOnConsoleExceptions,
-            $emulatedMediaType,
-            $pdfFormat,
+            $skipNetworkIdleEvent,
             $pdfa,
             $pdfua,
-            $assets
+            $metadata,
+            $assets,
         );
-    }
+    },
 )->with([
     ['https://my.url'],
     ['https://my.url'],
     [
         'https://my.url',
+        true,
         8.27,
         11.7,
-        2,
+        '192px',
         2,
         2,
         2,
@@ -126,18 +140,23 @@ it(
         Stream::string('my_header.html', 'Header content'),
         Stream::string('my_footer.html', 'Footer content'),
         '1s',
-        'ready',
         "window.status === 'ready'",
-        'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1',
+        'print',
+        [
+            new ChromiumCookie('yummy_cookie', 'choco', 'theyummycookie.com'),
+            new ChromiumCookie('vanilla_cookie', 'vanilla', 'theyummycookie.com', '/', true, true, 'Lax'),
+        ],
+        'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko)',
         [
             'My-Http-Header' => 'HTTP Header content',
             'My-Second-Http-Header' => 'Second HTTP Header content',
         ],
+        [ 499, 599 ],
         true,
-        'print',
-        'PDF/A-1a',
+        true,
         'PDF/A-1a',
         true,
+        [ 'Producer' => 'Gotenberg' ],
         [
             Stream::string('my.jpg', 'Image content'),
         ],
@@ -147,39 +166,47 @@ it(
 it(
     'creates a valid request for the "/forms/chromium/convert/html" endpoint',
     /**
+     * @param ChromiumCookie[] $cookies
+     * @param array<string,string> $extraHttpHeaders
+     * @param int[] $failOnHttpStatusCodes
+     * @param array<string,string|bool|float|int|array<string>> $metadata
      * @param Stream[] $assets
      */
     function (
         Stream $index,
-        ?float $paperWidth = null,
-        float $paperHeight = 0,
-        ?float $marginTop = null,
-        float $marginBottom = 0,
-        float $marginLeft = 0,
-        float $marginRight = 0,
+        bool $singlePage = false,
+        float|string|null $paperWidth = null,
+        float|string $paperHeight = 0,
+        float|string|null $marginTop = null,
+        float|string $marginBottom = 0,
+        float|string $marginLeft = 0,
+        float|string $marginRight = 0,
         bool $preferCssPageSize = false,
         bool $printBackground = false,
         bool $omitBackground = false,
         bool $landscape = false,
-        ?float $scale = null,
-        ?string $nativePageRanges = null,
-        ?Stream $header = null,
-        ?Stream $footer = null,
-        ?string $waitDelay = null,
-        ?string $waitWindowStatus = null,
-        ?string $waitForExpression = null,
-        ?string $userAgent = null,
+        float|null $scale = null,
+        string|null $nativePageRanges = null,
+        Stream|null $header = null,
+        Stream|null $footer = null,
+        string|null $waitDelay = null,
+        string|null $waitForExpression = null,
+        string|null $emulatedMediaType = null,
+        array $cookies = [],
+        string|null $userAgent = null,
         array $extraHttpHeaders = [],
+        array $failOnHttpStatusCodes = [],
         bool $failOnConsoleExceptions = false,
-        ?string $emulatedMediaType = null,
-        ?string $pdfFormat = null,
-        ?string $pdfa = null,
+        bool $skipNetworkIdleEvent = false,
+        string|null $pdfa = null,
         bool $pdfua = false,
-        array $assets = []
+        array $metadata = [],
+        array $assets = [],
     ): void {
-        $chromium = Gotenberg::chromium('');
-        $chromium = hydrate(
+        $chromium = Gotenberg::chromium('')->pdf();
+        $chromium = hydrateChromiumPdfFormData(
             $chromium,
+            $singlePage,
             $paperWidth,
             $paperHeight,
             $marginTop,
@@ -195,16 +222,18 @@ it(
             $header,
             $footer,
             $waitDelay,
-            $waitWindowStatus,
             $waitForExpression,
+            $emulatedMediaType,
+            $cookies,
             $userAgent,
             $extraHttpHeaders,
+            $failOnHttpStatusCodes,
             $failOnConsoleExceptions,
-            $emulatedMediaType,
-            $pdfFormat,
+            $skipNetworkIdleEvent,
             $pdfa,
             $pdfua,
-            $assets
+            $metadata,
+            $assets,
         );
 
         $request = $chromium->html($index);
@@ -215,8 +244,9 @@ it(
         $index->getStream()->rewind();
         expect($body)->toContainFormFile('index.html', $index->getStream()->getContents(), 'text/html');
 
-        expectOptions(
+        expectChromiumPdfOptions(
             $body,
+            $singlePage,
             $paperWidth,
             $paperHeight,
             $marginTop,
@@ -232,25 +262,28 @@ it(
             $header,
             $footer,
             $waitDelay,
-            $waitWindowStatus,
             $waitForExpression,
+            $emulatedMediaType,
+            $cookies,
             $userAgent,
             $extraHttpHeaders,
+            $failOnHttpStatusCodes,
             $failOnConsoleExceptions,
-            $emulatedMediaType,
-            $pdfFormat,
+            $skipNetworkIdleEvent,
             $pdfa,
             $pdfua,
-            $assets
+            $metadata,
+            $assets,
         );
-    }
+    },
 )->with([
     [Stream::string('my.html', 'HTML content')],
     [
         Stream::string('my.html', 'HTML content'),
+        true,
         8.27,
         11.7,
-        2,
+        '192px',
         2,
         2,
         2,
@@ -263,18 +296,23 @@ it(
         Stream::string('my_header.html', 'Header content'),
         Stream::string('my_footer.html', 'Footer content'),
         '1s',
-        'ready',
         "window.status === 'ready'",
-        'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1',
+        'screen',
+        [
+            new ChromiumCookie('yummy_cookie', 'choco', 'theyummycookie.com'),
+            new ChromiumCookie('vanilla_cookie', 'vanilla', 'theyummycookie.com', '/', true, true, 'Lax'),
+        ],
+        'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko)',
         [
             'My-Http-Header' => 'Http Header content',
             'My-Second-Http-Header' => 'Second Http Header content',
         ],
+        [ 499, 599 ],
         true,
-        'screen',
-        'PDF/A-1a',
+        true,
         'PDF/A-1a',
         true,
+        [ 'Producer' => 'Gotenberg' ],
         [
             Stream::string('my.jpg', 'Image content'),
         ],
@@ -284,41 +322,49 @@ it(
 it(
     'creates a valid request for the "/forms/chromium/convert/markdown" endpoint',
     /**
+     * @param ChromiumCookie[] $cookies
+     * @param array<string,string> $extraHttpHeaders
+     * @param int[] $failOnHttpStatusCodes
      * @param Stream[] $markdowns
+     * @param array<string,string|bool|float|int|array<string>> $metadata
      * @param Stream[] $assets
      */
     function (
         Stream $index,
         array $markdowns,
-        ?float $paperWidth = null,
-        float $paperHeight = 0,
-        ?float $marginTop = null,
-        float $marginBottom = 0,
-        float $marginLeft = 0,
-        float $marginRight = 0,
+        bool $singlePage = false,
+        float|string|null $paperWidth = null,
+        float|string $paperHeight = 0,
+        float|string|null $marginTop = null,
+        float|string $marginBottom = 0,
+        float|string $marginLeft = 0,
+        float|string $marginRight = 0,
         bool $preferCssPageSize = false,
         bool $printBackground = false,
         bool $omitBackground = false,
         bool $landscape = false,
-        ?float $scale = null,
-        ?string $nativePageRanges = null,
-        ?Stream $header = null,
-        ?Stream $footer = null,
-        ?string $waitDelay = null,
-        ?string $waitWindowStatus = null,
-        ?string $waitForExpression = null,
-        ?string $userAgent = null,
+        float|null $scale = null,
+        string|null $nativePageRanges = null,
+        Stream|null $header = null,
+        Stream|null $footer = null,
+        string|null $waitDelay = null,
+        string|null $waitForExpression = null,
+        string|null $emulatedMediaType = null,
+        array $cookies = [],
+        string|null $userAgent = null,
         array $extraHttpHeaders = [],
+        array $failOnHttpStatusCodes = [],
         bool $failOnConsoleExceptions = false,
-        ?string $emulatedMediaType = null,
-        ?string $pdfFormat = null,
-        ?string $pdfa = null,
+        bool $skipNetworkIdleEvent = false,
+        string|null $pdfa = null,
         bool $pdfua = false,
-        array $assets = []
+        array $metadata = [],
+        array $assets = [],
     ): void {
-        $chromium = Gotenberg::chromium('');
-        $chromium = hydrate(
+        $chromium = Gotenberg::chromium('')->pdf();
+        $chromium = hydrateChromiumPdfFormData(
             $chromium,
+            $singlePage,
             $paperWidth,
             $paperHeight,
             $marginTop,
@@ -334,16 +380,18 @@ it(
             $header,
             $footer,
             $waitDelay,
-            $waitWindowStatus,
             $waitForExpression,
+            $emulatedMediaType,
+            $cookies,
             $userAgent,
             $extraHttpHeaders,
+            $failOnHttpStatusCodes,
             $failOnConsoleExceptions,
-            $emulatedMediaType,
-            $pdfFormat,
+            $skipNetworkIdleEvent,
             $pdfa,
             $pdfua,
-            $assets
+            $metadata,
+            $assets,
         );
 
         $request = $chromium->markdown($index, ...$markdowns);
@@ -359,8 +407,9 @@ it(
             expect($body)->toContainFormFile($markdown->getFilename(), $markdown->getStream()->getContents());
         }
 
-        expectOptions(
+        expectChromiumPdfOptions(
             $body,
+            $singlePage,
             $paperWidth,
             $paperHeight,
             $marginTop,
@@ -376,18 +425,20 @@ it(
             $header,
             $footer,
             $waitDelay,
-            $waitWindowStatus,
             $waitForExpression,
+            $emulatedMediaType,
+            $cookies,
             $userAgent,
             $extraHttpHeaders,
+            $failOnHttpStatusCodes,
             $failOnConsoleExceptions,
-            $emulatedMediaType,
-            $pdfFormat,
+            $skipNetworkIdleEvent,
             $pdfa,
             $pdfua,
-            $assets
+            $metadata,
+            $assets,
         );
-    }
+    },
 )->with([
     [
         Stream::string('my.html', 'HTML content'),
@@ -401,9 +452,10 @@ it(
             Stream::string('my.md', 'Markdown content'),
             Stream::string('my_second.md', 'Second Markdown content'),
         ],
+        true,
         8.27,
         11.7,
-        2,
+        '192px',
         2,
         2,
         2,
@@ -416,18 +468,23 @@ it(
         Stream::string('my_header.html', 'Header content'),
         Stream::string('my_footer.html', 'Footer content'),
         '1s',
-        'ready',
         "window.status === 'ready'",
-        'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1',
+        'screen',
+        [
+            new ChromiumCookie('yummy_cookie', 'choco', 'theyummycookie.com'),
+            new ChromiumCookie('vanilla_cookie', 'vanilla', 'theyummycookie.com', '/', true, true, 'Lax'),
+        ],
+        'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko)',
         [
             'My-Http-Header' => 'Http Header content',
             'My-Second-Http-Header' => 'Second Http Header content',
         ],
+        [ 499, 599 ],
         true,
-        'screen',
-        'PDF/A-1a',
+        true,
         'PDF/A-1a',
         true,
+        [ 'Producer' => 'Gotenberg' ],
         [
             Stream::string('my.jpg', 'Image content'),
         ],
@@ -435,37 +492,47 @@ it(
 ]);
 
 /**
- * @param array<string,string> $extraHttpHeaders
- * @param Stream[]             $assets
+ * @param ChromiumCookie[]                                  $cookies
+ * @param array<string,string>                              $extraHttpHeaders
+ * @param int[]                                             $failOnHttpStatusCodes
+ * @param array<string,string|bool|float|int|array<string>> $metadata
+ * @param Stream[]                                          $assets
  */
-function hydrate(
-    Chromium $chromium,
-    ?float $paperWidth = null,
-    float $paperHeight = 0,
-    ?float $marginTop = null,
-    float $marginBottom = 0,
-    float $marginLeft = 0,
-    float $marginRight = 0,
+function hydrateChromiumPdfFormData(
+    ChromiumPdf $chromium,
+    bool $singlePage = false,
+    float|string|null $paperWidth = null,
+    float|string $paperHeight = 0,
+    float|string|null $marginTop = null,
+    float|string $marginBottom = 0,
+    float|string $marginLeft = 0,
+    float|string $marginRight = 0,
     bool $preferCssPageSize = false,
     bool $printBackground = false,
     bool $omitBackground = false,
     bool $landscape = false,
-    ?float $scale = null,
-    ?string $nativePageRanges = null,
-    ?Stream $header = null,
-    ?Stream $footer = null,
-    ?string $waitDelay = null,
-    ?string $waitWindowStatus = null,
-    ?string $waitForExpression = null,
-    ?string $userAgent = null,
+    float|null $scale = null,
+    string|null $nativePageRanges = null,
+    Stream|null $header = null,
+    Stream|null $footer = null,
+    string|null $waitDelay = null,
+    string|null $waitForExpression = null,
+    string|null $emulatedMediaType = null,
+    array $cookies = [],
+    string|null $userAgent = null,
     array $extraHttpHeaders = [],
+    array $failOnHttpStatusCodes = [],
     bool $failOnConsoleExceptions = false,
-    ?string $emulatedMediaType = null,
-    ?string $pdfFormat = null,
-    ?string $pdfa = null,
+    bool $skipNetworkIdleEvent = false,
+    string|null $pdfa = null,
     bool $pdfua = false,
-    array $assets = []
-): Chromium {
+    array $metadata = [],
+    array $assets = [],
+): ChromiumPdf {
+    if ($singlePage) {
+        $chromium->singlePage();
+    }
+
     if ($paperWidth !== null) {
         $chromium->paperSize($paperWidth, $paperHeight);
     }
@@ -510,24 +577,8 @@ function hydrate(
         $chromium->waitDelay($waitDelay);
     }
 
-    if ($waitWindowStatus !== null) {
-        $chromium->waitWindowStatus($waitWindowStatus);
-    }
-
     if ($waitForExpression !== null) {
         $chromium->waitForExpression($waitForExpression);
-    }
-
-    if ($userAgent !== null) {
-        $chromium->userAgent($userAgent);
-    }
-
-    if (count($extraHttpHeaders) > 0) {
-        $chromium->extraHttpHeaders($extraHttpHeaders);
-    }
-
-    if ($failOnConsoleExceptions) {
-        $chromium->failOnConsoleExceptions();
     }
 
     if ($emulatedMediaType === 'print') {
@@ -538,8 +589,28 @@ function hydrate(
         $chromium->emulateScreenMediaType();
     }
 
-    if ($pdfFormat !== null) {
-        $chromium->pdfFormat($pdfFormat);
+    if (count($cookies) > 0) {
+        $chromium->cookies($cookies);
+    }
+
+    if ($userAgent !== null) {
+        $chromium->userAgent($userAgent);
+    }
+
+    if (count($extraHttpHeaders) > 0) {
+        $chromium->extraHttpHeaders($extraHttpHeaders);
+    }
+
+    if (count($failOnHttpStatusCodes) > 0) {
+        $chromium->failOnHttpStatusCodes($failOnHttpStatusCodes);
+    }
+
+    if ($failOnConsoleExceptions) {
+        $chromium->failOnConsoleExceptions();
+    }
+
+    if ($skipNetworkIdleEvent) {
+        $chromium->skipNetworkIdleEvent();
     }
 
     if ($pdfa !== null) {
@@ -550,6 +621,10 @@ function hydrate(
         $chromium->pdfua();
     }
 
+    if (count($metadata) > 0) {
+        $chromium->metadata($metadata);
+    }
+
     if (count($assets) > 0) {
         $chromium->assets(...$assets);
     }
@@ -558,37 +633,45 @@ function hydrate(
 }
 
 /**
- * @param array<string,string> $extraHttpHeaders
- * @param Stream[]             $assets
+ * @param ChromiumCookie[]                                  $cookies
+ * @param array<string,string>                              $extraHttpHeaders
+ * @param int[]                                             $failOnHttpStatusCodes
+ * @param array<string,string|bool|float|int|array<string>> $metadata
+ * @param Stream[]                                          $assets
  */
-function expectOptions(
+function expectChromiumPdfOptions(
     string $body,
-    ?float $paperWidth,
-    float $paperHeight,
-    ?float $marginTop,
-    float $marginBottom,
-    float $marginLeft,
-    float $marginRight,
+    bool $singlePage,
+    float|string|null $paperWidth,
+    float|string $paperHeight,
+    float|string|null $marginTop,
+    float|string $marginBottom,
+    float|string $marginLeft,
+    float|string $marginRight,
     bool $preferCssPageSize,
     bool $printBackground,
     bool $omitBackground,
     bool $landscape,
-    ?float $scale,
-    ?string $nativePageRanges,
-    ?Stream $header,
-    ?Stream $footer,
-    ?string $waitDelay,
-    ?string $waitWindowStatus,
-    ?string $waitForExpression,
-    ?string $userAgent,
+    float|null $scale,
+    string|null $nativePageRanges,
+    Stream|null $header,
+    Stream|null $footer,
+    string|null $waitDelay,
+    string|null $waitForExpression,
+    string|null $emulatedMediaType,
+    array $cookies,
+    string|null $userAgent,
     array $extraHttpHeaders,
+    array $failOnHttpStatusCodes,
     bool $failOnConsoleExceptions,
-    ?string $emulatedMediaType,
-    ?string $pdfFormat,
-    ?string $pdfa,
+    bool $skipNetworkIdleEvent,
+    string|null $pdfa,
     bool $pdfua,
-    array $assets
+    array $metadata,
+    array $assets,
 ): void {
+    expect($body)->unless($singlePage === false, fn ($body) => $body->toContainFormValue('singlePage', '1'));
+
     if ($paperWidth !== null) {
         expect($body)
             ->toContainFormValue('paperWidth', $paperWidth . '')
@@ -621,25 +704,51 @@ function expectOptions(
     }
 
     expect($body)->unless($waitDelay === null, fn ($body) => $body->toContainFormValue('waitDelay', $waitDelay));
-    expect($body)->unless($waitWindowStatus === null, fn ($body) => $body->toContainFormValue('waitWindowStatus', $waitWindowStatus));
     expect($body)->unless($waitForExpression === null, fn ($body) => $body->toContainFormValue('waitForExpression', $waitForExpression));
+    expect($body)->unless($emulatedMediaType === null, fn ($body) => $body->toContainFormValue('emulatedMediaType', $emulatedMediaType));
+
+    if (count($cookies) > 0) {
+        $json = json_encode($cookies);
+        if ($json === false) {
+            throw NativeFunctionErrored::createFromLastPhpError();
+        }
+
+        expect($body)->toContainFormValue('cookies', $json);
+    }
+
     expect($body)->unless($userAgent === null, fn ($body) => $body->toContainFormValue('userAgent', $userAgent));
 
     if (count($extraHttpHeaders) > 0) {
         $json = json_encode($extraHttpHeaders);
         if ($json === false) {
-            throw NativeFunctionErroed::createFromLastPhpError();
+            throw NativeFunctionErrored::createFromLastPhpError();
         }
 
         expect($body)->toContainFormValue('extraHttpHeaders', $json);
     }
 
+    if (count($failOnHttpStatusCodes) > 0) {
+        $json = json_encode($failOnHttpStatusCodes);
+        if ($json === false) {
+            throw NativeFunctionErrored::createFromLastPhpError();
+        }
+
+        expect($body)->toContainFormValue('failOnHttpStatusCodes', $json);
+    }
+
     expect($body)->unless($failOnConsoleExceptions === false, fn ($body) => $body->toContainFormValue('failOnConsoleExceptions', '1'));
-    expect($body)->unless($emulatedMediaType === null, fn ($body) => $body->toContainFormValue('emulatedMediaType', $emulatedMediaType));
-    expect($body)->unless($pdfFormat === null, fn ($body) => $body->toContainFormValue('pdfFormat', $pdfFormat));
-    expect($body)->unless($pdfFormat === null, fn ($body) => $body->toContainFormValue('pdfFormat', $pdfFormat));
+    expect($body)->unless($skipNetworkIdleEvent === false, fn ($body) => $body->toContainFormValue('skipNetworkIdleEvent', '1'));
     expect($body)->unless($pdfa === null, fn ($body) => $body->toContainFormValue('pdfa', $pdfa));
     expect($body)->unless($pdfua === false, fn ($body) => $body->toContainFormValue('pdfua', '1'));
+
+    if (count($metadata) > 0) {
+        $json = json_encode($metadata);
+        if ($json === false) {
+            throw NativeFunctionErrored::createFromLastPhpError();
+        }
+
+        expect($body)->toContainFormValue('metadata', $json);
+    }
 
     if (count($assets) <= 0) {
         return;
