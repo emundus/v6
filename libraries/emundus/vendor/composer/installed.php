@@ -3,7 +3,7 @@
         'name' => 'benj/emundus',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => '42bcfff4fa9a39d6111cd80f4ad22ce3d1cc6146',
+        'reference' => '561d9da1dd4fe4d058901474a20f627ed275e321',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'benj/emundus' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '42bcfff4fa9a39d6111cd80f4ad22ce3d1cc6146',
+            'reference' => '561d9da1dd4fe4d058901474a20f627ed275e321',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -217,15 +217,15 @@
         'php-http/async-client-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.0',
-                1 => '*',
+                0 => '*',
+                1 => '1.0',
             ),
         ),
         'php-http/client-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.0',
-                1 => '*',
+                0 => '*',
+                1 => '1.0',
             ),
         ),
         'php-http/discovery' => array(
@@ -418,8 +418,8 @@
         'psr/http-factory-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '*',
-                1 => '1.0',
+                0 => '1.0',
+                1 => '*',
             ),
         ),
         'psr/http-message' => array(
@@ -434,8 +434,8 @@
         'psr/http-message-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '*',
-                1 => '1.0',
+                0 => '1.0',
+                1 => '*',
             ),
         ),
         'psr/simple-cache' => array(
