@@ -2153,13 +2153,24 @@ class EmundusModelEvaluation extends JModelList {
 				                    $params      = json_decode($elt['params']);
 				                    $groupParams = json_decode($elt['group_params']);
 
-                                    if (!empty($groupParams) && $groupParams->repeat_group_button == 1) {
+                                    /*if (!empty($groupParams) && $groupParams->repeat_group_button == 1) {
                                         $fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, $groupParams->repeat_group_button == 1);
                                     } else if ($elt['plugin'] == 'date') {
                                         $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name'], $params->date_form_format);
                                     }
                                     else {
                                         $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
+                                    }*/
+                                    if ((!empty($groupParams) &&@$groupParams->repeat_group_button == 1) || $elt['plugin'] === 'databasejoin') {
+                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, $groupParams->repeat_group_button == 1);
+                                    }
+                                    else {
+                                        if ($elt['plugin'] == 'date') {
+                                            $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name'], $params->date_form_format);
+                                        }
+                                        else {
+                                            $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
+                                        }
                                     }
                                     if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown" || $elt['plugin'] == "radiobutton") {
 
@@ -2173,7 +2184,7 @@ class EmundusModelEvaluation extends JModelList {
                                             if (count($val) > 0) {
                                                 foreach ($val as $k => $v) {
                                                     $index = array_search($v, $params->sub_options->sub_values);
-                                                    $val[$k] = JText::_($params->sub_options->sub_labels[$index]);
+                                                    $val[$k] = $index !== false ? JText::_($params->sub_options->sub_labels[$index]) : "";
                                                 }
                                                 $fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", $val);
                                             } else {
@@ -2279,15 +2290,14 @@ class EmundusModelEvaluation extends JModelList {
 				                    }
 
 				                    foreach ($idFabrik as $id) {
-					                    if (isset($fabrikValues[$id][$fnum])) {
-						                    if($fabrikValues[$id][$fnum]['complex_data']){
-							                    $preprocess->setComplexValue($id, $fabrikValues[$id][$fnum]['val']);
+                                        if (isset($fabrikValues[$id][$fnum]) && !empty($fabrikValues[$id][$fnum]['val'])) {
+                                            if ($fabrikValues[$id][$fnum]['complex_data']){
+                                                $preprocess->setComplexValue($id, $fabrikValues[$id][$fnum]['val']);
 						                    } else {
 							                    $value = str_replace('\n', ', ', $fabrikValues[$id][$fnum]['val']);
 							                    $preprocess->setValue($id, $value);
 						                    }
-					                    }
-					                    else {
+					                    } else {
 						                    $preprocess->setValue($id, '');
 					                    }
 				                    }
