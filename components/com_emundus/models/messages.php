@@ -1518,4 +1518,89 @@ class EmundusModelMessages extends JModelList {
 
 		return $csv_filename;
 	}
+    public function getStatusChatroom($fnum){
+
+        if(version_compare(JVERSION, '4.0', '>=')) {
+            $db = Factory::getContainer()->get('DatabaseDriver');
+        } else {
+            $db = Factory::getDbo();
+        }
+
+        $query = $db->getQuery(true);
+
+        $query->clear()
+            ->select($db->quoteName('status'))
+            ->from($db->quoteName('#__emundus_chatroom'))
+            ->where($db->quoteName('fnum').' LIKE '. $db->quote($fnum));
+        try
+        {
+            $db->setQuery($query);
+            $chatroom = $db->loadResult();
+        }
+        catch (Exception $e)
+        {
+            Log::add('Could not retrieve chatroom for fnum: ' . $fnum. preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+        }
+        return $chatroom;
+    }
+    public function openChatroom($fnum)
+    {
+        if(version_compare(JVERSION, '4.0', '>=')) {
+            $db = Factory::getContainer()->get('DatabaseDriver');
+        } else {
+            $db = Factory::getDbo();
+        }
+
+        $query = $db->getQuery(true);
+
+
+        $fields = array(
+            $db->quoteName('status') . ' = 1'
+        );
+
+        // Conditions for which records should be updated.
+        $conditions = array(
+            $db->quoteName('fnum') . ' LIKE ' .  $db->quote($fnum)
+        );
+
+        $query->update($db->quoteName('#__emundus_chatroom'))->set($fields)->where($conditions);
+
+        $db->setQuery($query);
+
+        $result = $db->execute();
+
+    }
+    public function closeMessenger($fnum){
+
+        if(version_compare(JVERSION, '4.0', '>=')) {
+            $db = Factory::getContainer()->get('DatabaseDriver');
+        } else {
+            $db = Factory::getDbo();
+        }
+        try{
+            $query = $db->getQuery(true);
+
+            $fields = array(
+                $db->quoteName('status') . ' = 0'
+            );
+
+            // Conditions for which records should be updated.
+            $conditions = array(
+                $db->quoteName('fnum') . ' LIKE ' .  $db->quote($fnum)
+            );
+
+            $query->update($db->quoteName('#__emundus_chatroom'))->set($fields)->where($conditions);
+
+            $db->setQuery($query);
+
+            $result = $db->execute();
+            $app = JFactory::getApplication();
+            $app->redirect('index.php');
+            return true;
+        }
+        catch (Exception $e)
+        {
+            Log::add('Could not update chatroom for fnum: ' . $fnum. preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+        }
+    }
 }

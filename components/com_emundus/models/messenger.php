@@ -106,7 +106,9 @@ class EmundusModelMessenger extends JModelList
         $notifications_on_send = $eMConfig->get('messenger_notifications_on_send', '1');
 
 	    require_once (JPATH_SITE . '/components/com_emundus/models/files.php');
+        require_once (JPATH_SITE . '/components/com_emundus/models/messages.php');
 	    $m_files = new EmundusModelFiles;
+        $m_messages = new EmundusModelMessages;
 
         $fnum_detail = $m_files->getFnumInfos($fnum);
 
@@ -122,8 +124,6 @@ class EmundusModelMessenger extends JModelList
 				$chatroom = $db->loadResult();
 
 				if(empty($chatroom)){
-					require_once (JPATH_SITE . '/components/com_emundus/models/messages.php');
-					$m_messages = new EmundusModelMessages;
 					$chatroom = $m_messages->createChatroom($fnum);
 				}
 
@@ -139,6 +139,12 @@ class EmundusModelMessenger extends JModelList
 					$db->execute();
 
 					$new_message = $db->insertid();
+
+                    $statusMessage = $m_messages->getStatusChatroom($fnum);
+
+                    if($statusMessage == 0){
+                        $m_messages->openChatroom($fnum);
+                    }
 
 					$notify_applicant = 0;
 					if($fnum_detail['applicant_id'] != $user->id){
