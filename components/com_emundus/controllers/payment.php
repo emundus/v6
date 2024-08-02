@@ -30,6 +30,7 @@ class EmundusControllerPayment extends JControllerLegacy
      */
     public function getFlywireConfig()
     {
+        require_once (JPATH_SITE . '/components/com_emundus/models/payment.php');
         $emundusUser = JFactory::getSession()->get('emundusUser');
         $jinput = JFactory::getApplication()->input;
         $format = $jinput->get('format', '');
