@@ -23,10 +23,10 @@
       </div>
 
       <div class="form-group controls" v-if="selectedColumn.index === 0 && this.form.content.col1 != null">
-        <editor-quill :height="'30em'" :text="form.content.col1" :lang="actualLanguage" :enable_variables="false" :id="'editor_1'" :key="dynamicComponent" v-model="form.content.col1" @focusout="saveFooter"></editor-quill>
+        <editor-quill :height="'30em'" :text="form.content.col1" :lang="actualLanguage" :enable_variables="false" :id="'editor_1'" :key="dynamicComponent" v-model="form.content.col1" @input="debounce(() => {saveFooter();}, 1500)();"></editor-quill>
       </div>
       <div class="form-group controls" v-if="selectedColumn.index === 1 && this.form.content.col2 != null">
-        <editor-quill :height="'30em'" :text="form.content.col2" :lang="actualLanguage" :enable_variables="false" :id="'editor_2'" :key="dynamicComponent" v-model="form.content.col2" @focusout="saveFooter"></editor-quill>
+        <editor-quill :height="'30em'" :text="form.content.col2" :lang="actualLanguage" :enable_variables="false" :id="'editor_2'" :key="dynamicComponent" v-model="form.content.col2" @input="debounce(() => {saveFooter();}, 1500)();"></editor-quill>
       </div>
     </div>
 

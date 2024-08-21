@@ -37,6 +37,7 @@ img {
 }
 
 .modal {
+    display: block !important;
     position: relative !important;
     background-color: #fff !important;
     margin: 0 !important;

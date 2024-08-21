@@ -189,7 +189,8 @@ class PlgEmundusReferent_status extends JPlugin {
                                 'user_id_from' => $from_id,
                                 'user_id_to' => $to_id,
                                 'subject' => $subject,
-                                'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $to . '</i><br>' . $body
+                                'message' => $body,
+                                'email_to' => $to
                             );
                             $m_emails->logEmail($message);
                             $this->log .= '\n' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $to . ' :: ' . $body;

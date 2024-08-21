@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+		<fieldset name="plg-form-emundusupdateprofile" label="PLG_FABRIK_FORM_EMUNDUSUPDATEPROFILE_FIELDS">
+
+			<field name="emundusupdateprofile_field_alias"
+				   type="field"
+				   default="mon-profil"
+				   description="PLG_FABRIK_FORM_EMUNDUSUPDATEPROFILE_FIELDS_ALIAS_DESC"
+				   label="PLG_FABRIK_FORM_EMUNDUSUPDATEPROFILE_FIELDS_ALIAS" />
+
+		</fieldset>
+	</fields>
+</form>
