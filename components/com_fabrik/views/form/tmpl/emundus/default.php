@@ -63,6 +63,11 @@ JText::script('PLEASE_CHECK_THIS_FIELD');
 JText::script('COM_EMUNDUS_FABRIK_NEW_FILE');
 JText::script('COM_EMUNDUS_FABRIK_NEW_FILE_DESC');
 
+JText::script('COM_EMUNDUS_COMMENTS_CONFIRM_DELETE');
+JText::script('COM_EMUNDUS_ACTIONS_CANCEL');
+JText::script('COM_EMUNDUS_OK');
+
+
 if ($pageClass !== '') :
 	echo '<div class="' . $pageClass . '">';
 endif;

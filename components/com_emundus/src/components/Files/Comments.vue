@@ -59,7 +59,7 @@
           </div>
         </div>
 
-        <div v-if="editable === comment.id">
+        <div v-if="editable == comment.id">
           <textarea :id="'editable-comment-' + comment.id" class="comment-body" v-model="comment.comment_body" @keyup.enter="updateComment(comment.id)"></textarea>
           <div class="flex flex-row justify-end mt-2">
             <button id="add-comment-btn" class="em-primary-button w-fit" @click="updateComment(comment.id)">
@@ -75,7 +75,7 @@
         <i v-if="comment.updated_by > 0" class="text-xs em-gray-color mt-3">{{ translate('COM_EMUNDUS_COMMENTS_EDITED') }}</i>
 
         <div class="comment-children"
-             :class="{'opened': openedCommentId === comment.id, 'hidden': openedCommentId !== comment.id}">
+             :class="{'opened': openedCommentId == comment.id, 'hidden': openedCommentId !== comment.id}">
           <hr>
           <div :id="'file-comment-' + child.id" v-for="child in childrenComments[comment.id]" :key="child.id" dir="ltr">
             <div class="child-comment flex flex-col border-s-4 my-3 px-3">
@@ -98,7 +98,7 @@
                 </div>
               </div>
 
-              <div v-if="editable === child.id">
+              <div v-if="editable == child.id">
                 <textarea :id="'editable-comment-' + child.id" class="comment-body" v-model="child.comment_body" @keyup.enter="updateComment(child.id)"></textarea>
                 <div class="flex flex-row justify-end mt-2">
                   <button id="add-comment-btn" class="em-primary-button w-fit" @click="updateComment(child.id)">
@@ -354,7 +354,7 @@ export default {
         target_type = 'elements';
       }
 
-      const target = this.targetableElements[target_type].find((element) => element.id === target_id);
+      const target = this.targetableElements[target_type].find((element) => element.id == target_id);
       if (target) {
         if (target_type === 'elements') {
           if (target.element_form_label.length > 0) {
@@ -368,7 +368,7 @@ export default {
 
         if (target_type === 'groups') {
           // find label of the form
-          const form = this.targetableElements.forms.find((form) => form.id === target.form_id);
+          const form = this.targetableElements.forms.find((form) => form.id == target.form_id);
           if (form) {
             label += `${form.label} > `;
           }
@@ -423,16 +423,16 @@ export default {
     replyToComment(commentId) {
       if (commentId > 0) {
         this.resetAddComment();
-        this.openedCommentId = this.openedCommentId === commentId ? 0 : commentId;
+        this.openedCommentId = this.openedCommentId == commentId ? 0 : commentId;
 
-        const openedComment = this.comments.find((comment) => comment.id === commentId);
+        const openedComment = this.comments.find((comment) => comment.id == commentId);
         this.visible_to_applicant = openedComment.visible_to_applicant == 1;
       }
     },
     goToCommentTarget(comment) {
       if (comment.id) {
         // find the target element
-        const target = this.targetableElements[comment.target_type].find((element) => element.id === comment.target_id);
+        const target = this.targetableElements[comment.target_type].find((element) => element.id == comment.target_id);
 
         if (target) {
           let form_id = 0;
@@ -464,8 +464,8 @@ export default {
       }
     },
     deleteComment(commentId) {
-      const comment = this.comments.find((comment) => comment.id === commentId);
-      if (commentId > 0 && (this.access.d || comment.user_id === this.user)) {
+      const comment = this.comments.find((comment) => comment.id == commentId);
+      if (commentId > 0 && (this.access.d || comment.user_id == this.user)) {
         this.alertConfirm('COM_EMUNDUS_COMMENTS_CONFIRM_DELETE').then((response) => {
           if (response.value) {
             this.comments = this.comments.filter((comment) => comment.id !== commentId);
@@ -483,8 +483,8 @@ export default {
     },
     makeCommentEditable(commentId) {
       if (commentId > 0) {
-        const comment = this.comments.find((comment) => comment.id === commentId);
-        if (comment && comment.user_id === this.user) {
+        const comment = this.comments.find((comment) => comment.id == commentId);
+        if (comment && comment.user_id == this.user) {
           this.editable = commentId;
           this.tmpComment = comment.comment_body;
 
@@ -498,14 +498,14 @@ export default {
       }
     },
     abortUpdateComment() {
-      this.comments.find((comment) => comment.id === this.editable).comment_body = this.tmpComment;
+      this.comments.find((comment) => comment.id == this.editable).comment_body = this.tmpComment;
       this.editable = null;
       this.tmpComment = null;
     },
     updateComment(commentId) {
       this.loading = true;
 
-      const commentToUpdate = this.comments.find((comment) => comment.id === commentId);
+      const commentToUpdate = this.comments.find((comment) => comment.id == commentId);
       if (this.access.u || commentToUpdate.user_id == this.user) {
         const commentContent = commentToUpdate.comment_body;
         commentsService.updateComment(commentId, commentContent).then((response) => {
@@ -551,7 +551,7 @@ export default {
           if (comment.target_id == 0) {
             return true;
           } else if (comment.target_type == 'elements') {
-            return this.targetableElements.elements.find((element) => element.id === comment.target_id && element.element_form_id === this.currentForm);
+            return this.targetableElements.elements.find((element) => element.id == comment.target_id && element.element_form_id == this.currentForm);
           } else if (comment.target_type == 'groups') {
             return this.targetableElements.groups.find((group) => group.id == comment.target_id).form_id == this.currentForm;
           } else if (comment.target_type == 'forms') {
@@ -568,7 +568,7 @@ export default {
       return this.isApplicant ? displayedComments.filter((comment) => comment.visible_to_applicant == 1) : displayedComments;
     },
     parentComments() {
-      let parentComments =  this.displayedComments.filter((comment) => parseInt(comment.parent_id) === 0);
+      let parentComments =  this.displayedComments.filter((comment) => parseInt(comment.parent_id) == 0);
 
       if (this.search.length > 0) {
         parentComments = parentComments.filter((comment) => {
