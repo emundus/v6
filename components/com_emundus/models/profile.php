@@ -242,6 +242,37 @@ class EmundusModelProfile extends JModelList {
         return $profile;
     }
 
+    /**
+     * @param $form_id
+     * @param $fnum
+     * @return int
+     */
+    public function getMenuItemForFormId($form_id, $fnum) {
+        $menu_id = 0;
+
+        if (!empty($form_id) && !empty($fnum)) {
+            $profile = $this->getProfileByFnum($fnum);
+
+            if (!empty($profile)) {
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+
+                $query->select('id')
+                    ->from('#__menu')
+                    ->where('menutype like ' . $db->quote('menu-profile' .  $profile))
+                    ->andwhere('link LIKE "%view=form&formid=' . $form_id .  '%"');
+                try {
+                    $db->setQuery($query);
+                    $menu_id = $db->loadResult();
+                } catch (Exception $e) {
+
+                }
+            }
+        }
+
+        return $menu_id;
+    }
+
     function getCurrentProfile($aid) {
         $query = 'SELECT eu.*,  esp.*
 						FROM #__emundus_users AS eu
@@ -974,7 +1005,7 @@ class EmundusModelProfile extends JModelList {
     }
 
     function getFnumDetails($fnum) {
-        $query = 'SELECT ecc.*, esc.*, ess.*, epd.profile as profile_id_form
+        $query = 'SELECT ecc.id as ccid, ecc.*, esc.*, ess.*, epd.profile as profile_id_form
 					FROM #__emundus_campaign_candidature AS ecc
 					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=ecc.campaign_id
 					LEFT JOIN #__emundus_setup_status as ess ON ess.step = ecc.status
@@ -984,7 +1015,7 @@ class EmundusModelProfile extends JModelList {
             $this->_db->setQuery($query);
             $res = $this->_db->loadAssoc();
         } catch(Exception $e) {
-            $query = 'SELECT ecc.*, esc.*, ess.*
+            $query = 'SELECT ecc.id as ccid, ecc.*, esc.*, ess.*
 					FROM #__emundus_campaign_candidature AS ecc
 					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=ecc.campaign_id
 					LEFT JOIN #__emundus_setup_status as ess ON ess.step = ecc.status
