@@ -502,7 +502,8 @@ class EmundusFiltersFiles extends EmundusFilters
 					'value'     => [1],
 					'default'   => true,
 					'available' => true,
-					'order'     => $config['filter_published_order']
+					'order'     => $config['filter_published_order'],
+                    'operator'  => '='
 				];
 			}
 
@@ -812,7 +813,7 @@ class EmundusFiltersFiles extends EmundusFilters
 
 			    foreach ($this->filters as $key => $filter)
                 {
-                    if (!in_array($filter['id'], $element_ids_available) && !in_array($filter['group_id'], $this->config['more_fabrik_forms']))
+                    if (!in_array($filter['id'], $element_ids_available) && (!empty($this->config['more_fabrik_forms']) && !in_array($filter['group_id'], $this->config['more_fabrik_forms'])))
                     {
 					    $this->filters[$key]['available'] = false;
 				    }

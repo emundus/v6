@@ -244,14 +244,19 @@ if (isset($user->fnum) && !empty($user->fnum)) {
     }
 
 	if ($show_preliminary_documents) {
-		include_once(JPATH_BASE . '/modules/mod_emundus_campaign_dropfiles/helper.php');
-		$dropfiles_helper = new modEmundusCampaignDropfilesHelper();
+        // if we are in view details, we do not want to show the preliminary documents
+        if ($view == 'details') {
+            $show_preliminary_documents = false;
+        } else {
+            include_once(JPATH_BASE . '/modules/mod_emundus_campaign_dropfiles/helper.php');
+            $dropfiles_helper = new modEmundusCampaignDropfilesHelper();
 
-		if (!empty($current_phase) && $current_phase->specific_documents) {
-			$preliminary_documents = $dropfiles_helper->getFiles(null, $user->campaign_id, $user->fnum);
-		} else {
-			$preliminary_documents = $dropfiles_helper->getFiles(null, $user->campaign_id);
-		}
+            if (!empty($current_phase) && $current_phase->specific_documents) {
+                $preliminary_documents = $dropfiles_helper->getFiles(null, $user->campaign_id, $user->fnum);
+            } else {
+                $preliminary_documents = $dropfiles_helper->getFiles(null, $user->campaign_id);
+            }
+        }
 	}
 
     require(JModuleHelper::getLayoutPath('mod_emundus_checklist'));

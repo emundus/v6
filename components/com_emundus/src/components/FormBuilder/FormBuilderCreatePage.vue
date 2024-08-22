@@ -81,8 +81,8 @@
 			</section>
 		</div>
 		<div class="actions em-flex-space-between em-flex-row em-w-100">
-			<button class="em-secondary-button em-w-auto em-white-bg" :disabled="loading" @click="close(false)">{{ translate('COM_EMUNDUS_FORM_BUILDER_CANCEL') }}</button>
-			<button class="em-primary-button em-w-auto em-ml-8" :disabled="loading" @click="createPage">{{ translate('COM_EMUNDUS_FORM_BUILDER_PAGE_CREATE_SAVE') }}</button>
+			<button class="em-secondary-button em-w-auto em-white-bg" :disabled="loading || globalLoading" @click="close(false)">{{ translate('COM_EMUNDUS_FORM_BUILDER_CANCEL') }}</button>
+			<button class="em-primary-button em-w-auto em-ml-8" :disabled="loading || globalLoading" @click="createPage">{{ translate('COM_EMUNDUS_FORM_BUILDER_PAGE_CREATE_SAVE') }}</button>
 		</div>
 
     <div class="em-page-loader" v-if="globalLoading"></div>
@@ -158,6 +158,10 @@ export default {
       });
     },
     createPage() {
+      if (this.globalLoading || this.loading) {
+        return;
+      }
+
       this.globalLoading = true;
       this.loading = true;
 
@@ -203,9 +207,6 @@ export default {
         'reload': reload,
         'newSelected': newSelected
       });
-
-      this.loading = false;
-      this.globalLoading = false;
     },
     isInitialStructureAlreadyUsed() {
       let used = false;
