@@ -4919,6 +4919,8 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 			}
 			$m_comments = new EmundusAdministratorModelComments();
 			$succeed['update_comments_table'] = $m_comments->install();
+
+			EmundusHelperUpdate::addColumn('jos_emundus_setup_action_tag', 'ordering', 'INT', null, 1, 0);
 		}
 
 		return $succeed;
