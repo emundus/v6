@@ -1,12 +1,11 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="[PROD] build" type="js.build_tools.npm" folderName="VUEJS">
-    <package-json value="$PROJECT_DIR$/components/com_emundus/package.json" />
+  <configuration default="false" name="[OLD][PROD] CSS" type="js.build_tools.npm" folderName="J3">
+    <package-json value="$PROJECT_DIR$/../core/package.json" />
     <command value="run" />
     <scripts>
       <script value="build" />
     </scripts>
     <node-interpreter value="project" />
-    <package-manager value="yarn" />
     <envs />
     <method v="2" />
   </configuration>

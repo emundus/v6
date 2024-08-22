@@ -194,7 +194,23 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
                                         <?php else:
                                             // Do not display the typical COM_EMUNDUS_PLEASE_SELECT text used for empty dropdowns.
                                             if ($value->val !== 'COM_EMUNDUS_PLEASE_SELECT') {
-                                                echo JText::_($value->val);
+                                                // value is saved as string '["value1", "value2"]' in the database
+                                                if ($value->type == 'checkbox' || ($value->type == 'dropdown' && json_decode($value->params, true)['multiple'] == 1)) {
+                                                    $trimmed_string = trim($value->val, '[]');
+                                                    $split_string = preg_split('/,(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)/', $trimmed_string);
+
+                                                    $values_array = array_map(function($element) {
+                                                        return trim($element, '"');
+                                                    }, $split_string);
+
+                                                    echo '<ul>';
+                                                    foreach($values_array as $single_value) {
+                                                        echo '<li>'.JText::_($single_value).'</li>';
+                                                    }
+                                                    echo '</ul>';
+                                                } else {
+                                                    echo JText::_($value->val);
+                                                }
                                             }
                                         endif; ?>
                                     <?php endif; ?>

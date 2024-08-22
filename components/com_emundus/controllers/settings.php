@@ -189,6 +189,29 @@ class EmundusControllersettings extends JControllerLegacy {
         exit;
     }
 
+    public function updatetagsorder() {
+        $response = ['status' => false, 'message' => JText::_('ACCESS_DENIED'), 'code' => 403];
+        $user = JFactory::getUser();
+
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $response['code'] = 500;
+            $response['message'] = JText::_('MISSING_PARAMS');
+
+            $jinput = JFactory::getApplication()->input;
+            $ordered_tags_string = $jinput->getString('tags', '');
+
+            if (!empty($ordered_tags_string)) {
+                $ordered_tags = explode(',', $ordered_tags_string);
+
+                $response['status'] = $this->m_settings->updateTagsOrder($ordered_tags);
+                $response['code'] = 200;
+            }
+        }
+
+        echo json_encode((object)$response);
+        exit;
+    }
+
     public function getarticle() {
         $user = JFactory::getUser();
 
