@@ -150,7 +150,7 @@ class EmundusControllerDashboard extends JControllerLegacy
             $jinput = JFactory::getApplication()->input;
             $widget = $jinput->getInt('widget');
 
-            $tab = array('msg' => 'success', 'filters' => JFactory::getSession()->get('widget_filters_' . $widget));
+            $tab = array('msg' => 'success', 'filters' => JFactory::getSession()->get('widget_filters_' . $widget,[]));
         } catch (Exception $e) {
             $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
         }
