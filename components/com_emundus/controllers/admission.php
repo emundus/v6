@@ -9,6 +9,8 @@
 
 // No direct access
 
+use Joomla\CMS\Language\Text;
+
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport('joomla.application.component.controller');
@@ -934,7 +936,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
 
             foreach ($colsup as $kOpt => $vOpt) {
                 if ($vOpt=="forms" || $vOpt=="attachment")
-                    $line .= $vOpt . "(%)\t";
+	                $line .= Text::_('COM_EMUNDUS_'.strtoupper($vOpt))." (%)\t";
                 else
                     $line .= $vOpt . "\t";
 

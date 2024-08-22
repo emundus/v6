@@ -520,8 +520,9 @@ class EmundusControllerCifre extends JControllerLegacy {
 					'user_id_from' => $this->user->id,
 					'user_id_to'   => $user_from->id,
 					'subject'      => $subject,
-					'message'      => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . JText::_('COM_EMUNDUS_TO') . ' ' . $user_from->email . '</i><br>' . $body,
-					'type'         => $template->type
+					'message'      => $body,
+					'type'         => $template->type,
+                    'email_to'     => $user_from->email
 				];
 				$m_emails->logEmail($log);
 
@@ -729,8 +730,9 @@ class EmundusControllerCifre extends JControllerLegacy {
 						'user_id_from' => $this->user->id,
 						'user_id_to'   => $user_from->id,
 						'subject'      => $subject,
-						'message'      => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$user_from->email.'</i><br>'.$body,
-						'type'         => $template->type
+						'message'      => $body,
+						'type'         => $template->type,
+                        'email_to'     => $user_from->email
 					];
 					$m_emails->logEmail($log);
 

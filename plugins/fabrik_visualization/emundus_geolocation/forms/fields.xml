@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+    <fields name="params">
+        <fieldset name="table_element" label="Table Cible">
+            <field
+                    name="geoloc_connection"
+                    type="connections"
+                    description="CONNECTIONONLYFABRIKTABLES"
+                    label="Connection"/>
+            <field
+                    name="table"
+                    type="fabriktables"
+                    label="Table"
+                    description="Table cible"
+                    connection_in_repeat="false"
+                    observe="params_geoloc_connection"
+            />
+            <field
+                    name="geoloc_element"
+                    type="listfields"
+                    label="Element"
+                    description="Element cible"
+                    connection_in_repeat="true"
+                    table="params_table"
+                    valueformat="raw"
+                    connection="params_geoloc_connection"
+            />
+
+        </fieldset>
+        <fieldset
+                name="elements_in_popup"
+                label="Élements de description des marqueurs"
+                description="Liste des éléments à afficher dans la popup"
+                repeat="1"
+                repeatcontrols="1"
+                repeatmin="1"
+        >
+            <field
+                    name="elements_in_popup"
+                    type="listfields"
+                    label="Élement"
+                    description="Liste des éléments à afficher dans la popup"
+                    connection_in_repeat="true"
+                    table="params_table"
+                    valueformat="raw"
+                    connection="params_geoloc_connection"
+            />
+        </fieldset>
+
+        <fieldset name="leaflet" label="Paramètres leaflet">
+            <field
+                    name="geoloc_lat"
+                    type="text"
+                    label="Latitude"
+                    description="Latitude de la carte"
+                    default="48.8566"
+            />
+            <field
+                    name="geoloc_lng"
+                    type="text"
+                    label="Longitude"
+                    description="Longitude de la carte"
+                    default="2.3522"
+            />
+            <field
+                    name="geoloc_zoom"
+                    type="text"
+                    label="Zoom"
+                    description="Niveau de zoom de la carte"
+                    default="13"
+            />
+        </fieldset>
+    </fields>
+</form>

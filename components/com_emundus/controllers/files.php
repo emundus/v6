@@ -10,6 +10,7 @@
 // No direct access
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
+use Joomla\CMS\Language\Text;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -533,52 +534,71 @@ class EmundusControllerFiles extends JControllerLegacy
      * @since 6.0
      */
     public function addcomment() {
-
-        $jinput = JFactory::getApplication()->input;
+        $response = ['status' => false, 'code' => 403, 'msg' => JText::_('ACCESS_DENIED')];
         $user   = JFactory::getUser()->id;
-        $fnums  = $jinput->getString('fnums', null);
-        $title  = $jinput->getString('title', '');
-        $comment = $jinput->getString('comment', null);
 
-        $fnums = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
-        $fnumErrorList = [];
-        $m_application = new EmundusModelApplication();
+        if (EmundusHelperAccess::asAccessAction(10, 'c', $user)) {
+            $jinput = JFactory::getApplication()->input;
+            $fnums  = $jinput->getString('fnums', null);
+            $title  = $jinput->getString('title', '');
+            $comment = $jinput->getString('comment', null);
 
-        foreach ($fnums as $fnum) {
-            if (EmundusHelperAccess::asAccessAction(10, 'c', $user, $fnum)) {
-                $aid = intval(substr($fnum, 21, 7));
-                $comment_content = array(
-                    'applicant_id' => $aid,
-                    'user_id' => $user,
-                    'reason' => $title,
-                    'comment_body' => $comment,
-                    'fnum' => $fnum,
-                    'status_from' => -1,
-                    'status_to' => -1
-                );
+            if (!empty($comment) && !empty($fnums)) {
+                $fnums = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
+                $fnumErrorList = [];
 
-                JPluginHelper::importPlugin('emundus', 'custom_event_handler');
-                $dispatcher = JEventDispatcher::getInstance();
-                $dispatcher->trigger('onBeforeCommentAdd', [$comment_content]);
-                $dispatcher->trigger('callEventHandler', ['onBeforeCommentAdd', ['comment' => $comment_content]]);
-
-                $res = $m_application->addComment((array('applicant_id' => $aid, 'user_id' => $user, 'reason' => $title, 'comment_body' => $comment, 'fnum' => $fnum, 'status_from' => -1, 'status_to' => -1,)));
-                if (empty($res)) {
-                    $fnumErrorList[] = $fnum;
-                } else {
-                    $dispatcher->trigger('onAfterCommentAdd', [$comment_content]);
-                    $dispatcher->trigger('callEventHandler', ['onAfterCommentAdd', ['comment' => $comment_content]]);
+                if (!class_exists('EmundusModelComments')) {
+                    require_once (JPATH_ROOT . '/components/com_emundus/models/comments.php');
                 }
-            } else {
-                $fnumErrorList[] = $fnum;
+                $m_comments = new EmundusModelComments();
+
+                foreach ($fnums as $fnum) {
+                    if (EmundusHelperAccess::asAccessAction(10, 'c', $user, $fnum)) {
+                        $aid = intval(substr($fnum, 21, 7));
+                        $comment_content = array(
+                            'applicant_id' => $aid,
+                            'user_id' => $user,
+                            'reason' => $title,
+                            'comment_body' => $comment,
+                            'fnum' => $fnum,
+                            'status_from' => -1,
+                            'status_to' => -1
+                        );
+
+                        JPluginHelper::importPlugin('emundus', 'custom_event_handler');
+                        $dispatcher = JEventDispatcher::getInstance();
+                        $dispatcher->trigger('onBeforeCommentAdd', [$comment_content]);
+                        $dispatcher->trigger('callEventHandler', ['onBeforeCommentAdd', ['comment' => $comment_content]]);
+
+                        $ccid = EmundusHelperFiles::getIdFromFnum($fnum);
+                        $new_comment_id = $m_comments->addComment($ccid, $comment_content, [], 0, 0, $user);
+                        if (empty($new_comment_id)) {
+                            $fnumErrorList[] = $fnum;
+                        }
+                    } else {
+                        $fnumErrorList[] = $fnum;
+                    }
+                }
+
+                if (empty($fnumErrorList)) {
+                    $response['status'] = true;
+                    $response['code'] = 200;
+                    $response['msg'] = JText::_('COM_EMUNDUS_COMMENTS_SUCCESS');
+                    $response['id'] = $new_comment_id;
+                } else {
+                    $response['code'] = 500;
+                    $response['msg'] = JText::_('COM_EMUNDUS_ERROR') . implode(', ', $fnumErrorList);
+                }
             }
         }
 
-        if(empty($fnumErrorList)) {
-            echo json_encode((object)(array('status' => true, 'msg' => JText::_('COM_EMUNDUS_COMMENTS_SUCCESS'), 'id' => $res)));
-        } else {
-            echo json_encode((object)(array('status' => false, 'msg' => JText::_('COM_EMUNDUS_ERROR'). implode(', ', $fnumErrorList))));
+        if ($response['code'] === 403) {
+            header('HTTP/1.1 403 Forbidden');
+            echo $response['msg'];
+            exit;
         }
+
+        echo json_encode($response);
         exit;
     }
 
@@ -1181,31 +1201,33 @@ class EmundusControllerFiles extends JControllerLegacy
 	        $formids    = $jinput->getVar('formids', null);
 	        $attachids  = $jinput->getVar('attachids', null);
 	        $options    = $jinput->getVar('options', null);
+            $params = $jinput->getString('params', null);
+            $params = !empty($params) ? json_decode($params, true) : [];
 
 	        $m_files  = new EmundusModelFiles();
 
 	        $fnums_post = $jinput->getVar('fnums', null);
-	        $fnums_array = ($fnums_post == 'all')? 'all' :(array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
+	        $fnums_array = ($fnums_post == 'all') ? 'all' : (array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
 
 	        if ($fnums_array == 'all') {
 		        $fnums = $m_files->getAllFnums();
 	        } else {
 		        $fnums = array();
-		        foreach ($fnums_array as $key => $value) {
+		        foreach ($fnums_array as $value) {
 			        $fnums[] = $value;
 		        }
 	        }
 
-	        $validFnums = array();
+	        $validFnums = [];
 	        foreach ($fnums as $fnum) {
-		        if (EmundusHelperAccess::asAccessAction(6, 'c', $this->_user->id, $fnum)) {
+		        if (is_numeric($fnum) && EmundusHelperAccess::asAccessAction(6, 'c', $this->_user->id, $fnum)) {
 			        $validFnums[] = $fnum;
 		        }
 	        }
 
 
 	        if (extension_loaded('zip')) {
-                $name = $m_files->exportZip($validFnums, $forms, $attachment, $assessment, $decision, $admission, $formids, $attachids, $options, false, $current_user);
+                $name = $m_files->exportZip($validFnums, $forms, $attachment, $assessment, $decision, $admission, $formids, $attachids, $options, false, $current_user, $params);
 	        } else {
 		        $name = $this->export_zip_pcl($validFnums);
 	        }
@@ -1486,6 +1508,7 @@ class EmundusControllerFiles extends JControllerLegacy
 			}
 		}
 
+	    $not_already_handled_fnums = [];
 		if ($methode != 2 || $failed_with_old_method) {
 			$not_already_handled_fnums = $fnums;
 			if ($start > 0) {
@@ -1645,7 +1668,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
 				foreach ($colsup as $kOpt => $vOpt) {
 					if ($vOpt == "forms" || $vOpt == "attachment") {
-						$line .= $vOpt."(%)\t";
+						$line .= Text::_('COM_EMUNDUS_'.strtoupper($vOpt))." (%)\t";
 					}
 					elseif ($vOpt == "overall")
 					{
@@ -2629,7 +2652,7 @@ class EmundusControllerFiles extends JControllerLegacy
         for ($i; $i<$nbcol; $i++) {
             $value = $objPHPExcel->getActiveSheet()->getCell(Coordinate::stringFromColumnIndex($i) . '1')->getValue();
 
-            if ($value=="forms(%)" || $value=="attachment(%)") {
+            if (strpos($value,'(%)')) {
                 $conditionalStyles = $objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$i].'1')->getConditionalStyles();
                 array_push($conditionalStyles, $objConditional1);
                 array_push($conditionalStyles, $objConditional2);

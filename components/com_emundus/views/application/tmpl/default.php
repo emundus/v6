@@ -663,6 +663,9 @@ function deleteComment(comment_id){
 }
 
 function deleteData(id, table){
+    // nope nope nope
+    return false;
+
 	var xhr = getXMLHttpRequest();
 	xhr.onreadystatechange = function()
 	{
@@ -670,21 +673,6 @@ function deleteData(id, table){
 		{
 			if(xhr.responseText!="SQL Error"){
 				return true;
-                /*var comment = (($('comment_'+comment_id).parentNode).parentNode).id;
-                var comment_content = ($('comment_'+comment_id).parentNode).id;
-                var comment_icon = $('comment_'+comment_id);
-                var i;
-                for (i=0;i<comment_icon.childNodes.length;i++)
-                {
-                    comment_icon.childNodes[i].src = "<?php echo JURI::base(); ?>/media/com_emundus/images/icones/trash.png";
-                    comment_icon.childNodes[i].onclick = null;
-                }
-                $(comment).style.background="#B0B4B3";
-                $(comment_content).style.background="#B0B4B3";
-                $(comment).style.color="#FFFFFF";
-                $(comment_content).style.color="#FFFFFF";
-                $(comment).style.textDecoration="line-through";
-                $(comment_content).style.textDecoration="line-through";*/
 			}else{
 				alert(xhr.responseText);
 			}

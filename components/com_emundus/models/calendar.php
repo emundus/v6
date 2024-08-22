@@ -480,8 +480,9 @@ class EmundusModelCalendar extends JModelLegacy {
                 'user_id_from' => $from_id,
                 'user_id_to' => $user->id,
                 'subject' => $subject,
-                'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$user->email.'</i><br>'.$body,
-	            'email_id' => $email->id
+                'message' => $body,
+	            'email_id' => $email->id,
+                'email_to' => $user->email
             );
             $m_emails->logEmail($message, $user->fnum);
         }
@@ -560,8 +561,9 @@ class EmundusModelCalendar extends JModelLegacy {
                         'user_id_from' => $from_id,
                         'user_id_to' => $recipient->id,
                         'subject' => $subject,
-                        'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$recipient->email.'</i><br>'.$body,
-	                    'email_id' => $email->id
+                        'message' => $body,
+	                    'email_id' => $email->id,
+                        'email_to' => $recipient->email
                     );
                     $m_emails->logEmail($message, $user->fnum);
                 }

@@ -4126,19 +4126,19 @@ if(in_array($applicant,$exceptions)){
 								'link'         => 'index.php?option=com_fabrik&view=list&listid=' . $list['id'],
 								'component_id' => ComponentHelper::getComponent('com_fabrik')->id,
 							];
-							EmundusHelperUpdate::addJoomlaMenu($datas,$menu_item->get('id'));
+							EmundusHelperUpdate::addJoomlaMenu($datas, $menu_item->get('id'));
 						}
 					}
 				}
 			}
 
 			if (version_compare($cache_version, '1.38.6', '<=') || $firstrun) {
-				EmundusHelperUpdate::installExtension('plg_fabrik_element_emundus_colorpicker','emundus_colorpicker','{"name":"plg_fabrik_element_emundus_colorpicker","type":"plugin","creationDate":"November 2023","author":"Media A-Team, Inc.","copyright":"Copyright (C) 2005-2023 Media A-Team, Inc. - All rights reserved.","authorEmail":"brice.hubinet@emundus.fr","authorUrl":"www.emundus.fr","version":"4.0Zeta","description":"PLG_ELEMENT_COLOURPICKER_DESCRIPTION","group":"","filename":"emundus_colorpicker"}','plugin',1,'fabrik_element');
+				EmundusHelperUpdate::installExtension('plg_fabrik_element_emundus_colorpicker', 'emundus_colorpicker', '{"name":"plg_fabrik_element_emundus_colorpicker","type":"plugin","creationDate":"November 2023","author":"Media A-Team, Inc.","copyright":"Copyright (C) 2005-2023 Media A-Team, Inc. - All rights reserved.","authorEmail":"brice.hubinet@emundus.fr","authorUrl":"www.emundus.fr","version":"4.0Zeta","description":"PLG_ELEMENT_COLOURPICKER_DESCRIPTION","group":"","filename":"emundus_colorpicker"}', 'plugin', 1, 'fabrik_element');
 
 				$query->clear()
-					->update($db->quoteName('#__fabrik_elements','fe'))
-					->leftJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('fe.group_id').' = '.$db->quoteName('ffg.group_id'))
-					->leftJoin($db->quoteName('#__fabrik_lists','fl').' ON '.$db->quoteName('ffg.form_id').' = '.$db->quoteName('fl.form_id'))
+					->update($db->quoteName('#__fabrik_elements', 'fe'))
+					->leftJoin($db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $db->quoteName('fe.group_id') . ' = ' . $db->quoteName('ffg.group_id'))
+					->leftJoin($db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $db->quoteName('ffg.form_id') . ' = ' . $db->quoteName('fl.form_id'))
 					->set($db->quoteName('fe.plugin') . ' = ' . $db->quote('emundus_colorpicker'))
 					->set($db->quoteName('fe.params') . ' = ' . $db->quote('{"rgaa":"1","save_label":"1","show_in_rss_feed":"0","show_label_in_rss_feed":"0","use_as_rss_enclosure":"0","rollover":"","tipseval":"0","tiplocation":"top-left","labelindetails":"0","labelinlist":"0","comment":"","edit_access":"1","edit_access_user":"","view_access":"1","view_access_user":"","list_view_access":"1","encrypt":"0","store_in_db":"1","default_on_copy":"0","can_order":"0","alt_list_heading":"","custom_link":"","custom_link_target":"","custom_link_indetails":"1","use_as_row_class":"0","include_in_list_query":"1","always_render":"0","icon_folder":"0","icon_hovertext":"1","icon_file":"","icon_subdir":"","filter_length":"20","filter_access":"1","full_words_only":"0","filter_required":"0","filter_build_method":"0","filter_groupby":"text","inc_in_adv_search":"1","filter_class":"input-medium","filter_responsive_class":"","tablecss_header_class":"","tablecss_header":"","tablecss_cell_class":"","tablecss_cell":"","sum_on":"0","sum_label":"Sum","sum_access":"8","sum_split":"","avg_on":"0","avg_label":"Average","avg_access":"8","avg_round":"0","avg_split":"","median_on":"0","median_label":"Median","median_access":"8","median_split":"","count_on":"0","count_label":"Count","count_condition":"","count_access":"8","count_split":"","custom_calc_on":"0","custom_calc_label":"Custom","custom_calc_query":"","custom_calc_access":"1","custom_calc_split":"","custom_calc_php":"","validations":[]}'))
 					->where($db->quoteName('fe.plugin') . ' LIKE ' . $db->quote('dropdown'))
@@ -4148,9 +4148,9 @@ if(in_array($applicant,$exceptions)){
 				$db->execute();
 
 				$query->clear()
-					->update($db->quoteName('#__fabrik_elements','fe'))
-					->leftJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('fe.group_id').' = '.$db->quoteName('ffg.group_id'))
-					->leftJoin($db->quoteName('#__fabrik_lists','fl').' ON '.$db->quoteName('ffg.form_id').' = '.$db->quoteName('fl.form_id'))
+					->update($db->quoteName('#__fabrik_elements', 'fe'))
+					->leftJoin($db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $db->quoteName('fe.group_id') . ' = ' . $db->quoteName('ffg.group_id'))
+					->leftJoin($db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $db->quoteName('ffg.form_id') . ' = ' . $db->quoteName('fl.form_id'))
 					->set($db->quoteName('fe.plugin') . ' = ' . $db->quote('emundus_colorpicker'))
 					->set($db->quoteName('fe.params') . ' = ' . $db->quote('{"rgaa":"1","save_label":"0","show_in_rss_feed":"0","show_label_in_rss_feed":"0","use_as_rss_enclosure":"0","rollover":"","tipseval":"0","tiplocation":"top-left","labelindetails":"0","labelinlist":"0","comment":"","edit_access":"1","edit_access_user":"","view_access":"1","view_access_user":"","list_view_access":"1","encrypt":"0","store_in_db":"1","default_on_copy":"0","can_order":"0","alt_list_heading":"","custom_link":"","custom_link_target":"","custom_link_indetails":"1","use_as_row_class":"0","include_in_list_query":"1","always_render":"0","icon_folder":"0","icon_hovertext":"1","icon_file":"","icon_subdir":"","filter_length":"20","filter_access":"1","full_words_only":"0","filter_required":"0","filter_build_method":"0","filter_groupby":"text","inc_in_adv_search":"1","filter_class":"input-medium","filter_responsive_class":"","tablecss_header_class":"","tablecss_header":"","tablecss_cell_class":"","tablecss_cell":"","sum_on":"0","sum_label":"Sum","sum_access":"8","sum_split":"","avg_on":"0","avg_label":"Average","avg_access":"8","avg_round":"0","avg_split":"","median_on":"0","median_label":"Median","median_access":"8","median_split":"","count_on":"0","count_label":"Count","count_condition":"","count_access":"8","count_split":"","custom_calc_on":"0","custom_calc_label":"Custom","custom_calc_query":"","custom_calc_access":"1","custom_calc_split":"","custom_calc_php":"","validations":[]}'))
 					->where($db->quoteName('fe.plugin') . ' LIKE ' . $db->quote('dropdown'))
@@ -4160,83 +4160,82 @@ if(in_array($applicant,$exceptions)){
 				$db->execute();
 			}
 
-            if (version_compare($cache_version, '1.38.10', '<=') || $firstrun) {
-                // Create new id_prog table
-                $columns       = [
-                    [
-                        'name'   => 'parent_id',
-                        'type'   => 'int',
-                        'null'   => 1
-                    ],
-                    [
-                        'name'   => 'id_prog',
-                        'type'   => 'int',
-                        'null'   => 1
-                    ],
-                    [
-                        'name'   => 'params',
-                        'type'   => 'text',
-                        'null'   => 1
-                    ]
-                ];
-                $foreign_keys = [
-                    [
-                        'name'           => 'jos_emundus_hikashop_programs_fk_id_prog',
-                        'from_column'    => 'id_prog',
-                        'ref_table'      => 'jos_emundus_setup_programmes',
-                        'ref_column'     => 'id',
-                        'update_cascade' => true,
-                        'delete_cascade' => true,
-                    ]
-                ];
-                EmundusHelperUpdate::createTable('jos_emundus_hikashop_programs_repeat_id_prog', $columns, $foreign_keys);
+			if (version_compare($cache_version, '1.38.10', '<=') || $firstrun) {
+				// Create new id_prog table
+				$columns      = [
+					[
+						'name' => 'parent_id',
+						'type' => 'int',
+						'null' => 1
+					],
+					[
+						'name' => 'id_prog',
+						'type' => 'int',
+						'null' => 1
+					],
+					[
+						'name' => 'params',
+						'type' => 'text',
+						'null' => 1
+					]
+				];
+				$foreign_keys = [
+					[
+						'name'           => 'jos_emundus_hikashop_programs_fk_id_prog',
+						'from_column'    => 'id_prog',
+						'ref_table'      => 'jos_emundus_setup_programmes',
+						'ref_column'     => 'id',
+						'update_cascade' => true,
+						'delete_cascade' => true,
+					]
+				];
+				EmundusHelperUpdate::createTable('jos_emundus_hikashop_programs_repeat_id_prog', $columns, $foreign_keys);
 
-                // Create Fabrik databasejoin for new table and trash the old one
-                // Get fabrik group of current list, if exists
-                $query->clear()
-                    ->select($db->quoteName('form_id'))
-                    ->from($db->quoteName('#__fabrik_lists'))
-                    ->where($db->quoteName('db_table_name').' = '.$db->quote('jos_emundus_hikashop_programs'));
-                $db->setQuery($query);
-                $form_id = $db->loadResult();
+				// Create Fabrik databasejoin for new table and trash the old one
+				// Get fabrik group of current list, if exists
+				$query->clear()
+					->select($db->quoteName('form_id'))
+					->from($db->quoteName('#__fabrik_lists'))
+					->where($db->quoteName('db_table_name') . ' = ' . $db->quote('jos_emundus_hikashop_programs'));
+				$db->setQuery($query);
+				$form_id = $db->loadResult();
 
-                if (!empty($form_id)) {
-                    $query->clear()
-                        ->select('DISTINCT '.$db->quoteName('group_id'))
-                        ->from($db->quoteName('#__fabrik_formgroup'))
-                        ->where($db->quoteName('form_id').' = '.$db->quote($form_id));
-                    $db->setQuery($query);
-                    $groups = $db->loadColumn();
+				if (!empty($form_id)) {
+					$query->clear()
+						->select('DISTINCT ' . $db->quoteName('group_id'))
+						->from($db->quoteName('#__fabrik_formgroup'))
+						->where($db->quoteName('form_id') . ' = ' . $db->quote($form_id));
+					$db->setQuery($query);
+					$groups = $db->loadColumn();
 
-                    if (!empty($groups)) {
-                        $query->clear()
-                            ->select('group_id, id')
-                            ->from($db->quoteName('#__fabrik_elements'))
-                            ->where($db->quoteName('group_id').' IN ('.implode(',', $groups).')')
-                            ->andWhere($db->quoteName('name').' = '.$db->quote('code_prog'));
-                        $db->setQuery($query);
-                        $code_prog_element = $db->loadObject();
+					if (!empty($groups)) {
+						$query->clear()
+							->select('group_id, id')
+							->from($db->quoteName('#__fabrik_elements'))
+							->where($db->quoteName('group_id') . ' IN (' . implode(',', $groups) . ')')
+							->andWhere($db->quoteName('name') . ' = ' . $db->quote('code_prog'));
+						$db->setQuery($query);
+						$code_prog_element = $db->loadObject();
 
-                        $element_id = $code_prog_element->id;
-                        $group_id = $code_prog_element->group_id;
-                    }
-                }
+						$element_id = $code_prog_element->id;
+						$group_id   = $code_prog_element->group_id;
+					}
+				}
 
-                $datas  = [
-                    'name'     => 'id_prog',
-                    'group_id' => $group_id,
-                    'plugin'   => 'databasejoin',
-                    'label'    => 'PROGRAMS'
-                ];
-                $params = [
-                    'join_db_name' => 'jos_emundus_setup_programmes',
-                    'join_key_column' => 'id',
-                    'join_val_column' => 'label'
-                ];
-                EmundusHelperUpdate::addFabrikElement($datas, $params);
+				$datas  = [
+					'name'     => 'id_prog',
+					'group_id' => $group_id,
+					'plugin'   => 'databasejoin',
+					'label'    => 'PROGRAMS'
+				];
+				$params = [
+					'join_db_name'    => 'jos_emundus_setup_programmes',
+					'join_key_column' => 'id',
+					'join_val_column' => 'label'
+				];
+				EmundusHelperUpdate::addFabrikElement($datas, $params);
 
-				if(!empty($element_id))
-				{
+				if (!empty($element_id)) {
 					$query->clear()
 						->update('#__fabrik_elements')
 						->set('published = 0')
@@ -4245,68 +4244,68 @@ if(in_array($applicant,$exceptions)){
 					$db->execute();
 				}
 
-                // Insert data from the code table to the id table, but only if id table is empty
-                $query->clear()
-                    ->select('COUNT(*)')
-                    ->from('#__emundus_hikashop_programs_repeat_id_prog');
-                $db->setQuery($query);
-                $count = $db->loadResult();
+				// Insert data from the code table to the id table, but only if id table is empty
+				$query->clear()
+					->select('COUNT(*)')
+					->from('#__emundus_hikashop_programs_repeat_id_prog');
+				$db->setQuery($query);
+				$count = $db->loadResult();
 
-                if ($count == 0) {
-                    $query->clear()
-                        ->select('parent_id, code_prog')
-                        ->from('#__emundus_hikashop_programs_repeat_code_prog');
-                    $db->setQuery($query);
-                    $codes = $db->loadAssocList();
+				if ($count == 0) {
+					$query->clear()
+						->select('parent_id, code_prog')
+						->from('#__emundus_hikashop_programs_repeat_code_prog');
+					$db->setQuery($query);
+					$codes = $db->loadAssocList();
 
-                    $ids_to_insert = [];
-                    foreach($codes as $code) {
-                        $query->clear()
-                            ->select('id')
-                            ->from('#__emundus_setup_programmes')
-                            ->where('code = '.$db->quote($code['code_prog']));
-                        $db->setQuery($query);
-                        $prog_id = $db->loadResult();
-                        $ids_to_insert[] = [
-                            'parent_id' => $code['parent_id'],
-                            'id_prog' => $prog_id
-                        ];
-                    }
+					$ids_to_insert = [];
+					foreach ($codes as $code) {
+						$query->clear()
+							->select('id')
+							->from('#__emundus_setup_programmes')
+							->where('code = ' . $db->quote($code['code_prog']));
+						$db->setQuery($query);
+						$prog_id         = $db->loadResult();
+						$ids_to_insert[] = [
+							'parent_id' => $code['parent_id'],
+							'id_prog'   => $prog_id
+						];
+					}
 
-                    if (!empty($ids_to_insert)) {
-                        $query->clear()
-                            ->insert('#__emundus_hikashop_programs_repeat_id_prog')
-                            ->columns('parent_id, id_prog');
-                        foreach($ids_to_insert as $id_to_insert) {
-                            $query->values($db->quote($id_to_insert['parent_id']).','.$db->quote($id_to_insert['id_prog']));
-                        }
-                        $db->setQuery($query);
-                        $db->execute();
-                    }
-                }
+					if (!empty($ids_to_insert)) {
+						$query->clear()
+							->insert('#__emundus_hikashop_programs_repeat_id_prog')
+							->columns('parent_id, id_prog');
+						foreach ($ids_to_insert as $id_to_insert) {
+							$query->values($db->quote($id_to_insert['parent_id']) . ',' . $db->quote($id_to_insert['id_prog']));
+						}
+						$db->setQuery($query);
+						$db->execute();
+					}
+				}
 
-                $query->clear()
-                    ->select('id,params')
-                    ->from($db->quoteName('#__menu'))
-                    ->where($db->quoteName('link') . ' LIKE ' . $db->quote('index.php?option=com_emundus&view=checklist'));
-                $db->setQuery($query);
-                $menus = $db->loadObjectList();
+				$query->clear()
+					->select('id,params')
+					->from($db->quoteName('#__menu'))
+					->where($db->quoteName('link') . ' LIKE ' . $db->quote('index.php?option=com_emundus&view=checklist'));
+				$db->setQuery($query);
+				$menus = $db->loadObjectList();
 
-                foreach ($menus as $menu) {
-                    $params = json_decode($menu->params);
-                    $params->show_info_panel = 0;
-                    $params->show_info_legend = 1;
-                    $params->show_browse_button = 0;
-                    $params->show_nb_column = 1;
+				foreach ($menus as $menu) {
+					$params                     = json_decode($menu->params);
+					$params->show_info_panel    = 0;
+					$params->show_info_legend   = 1;
+					$params->show_browse_button = 0;
+					$params->show_nb_column     = 1;
 
-                    $update = [
-                        'id' => $menu->id,
-                        'params' => json_encode($params)
-                    ];
-                    $update = (object) $update;
-                    $db->updateObject('#__menu', $update, 'id');
-                }
-            }
+					$update = [
+						'id'     => $menu->id,
+						'params' => json_encode($params)
+					];
+					$update = (object) $update;
+					$db->updateObject('#__menu', $update, 'id');
+				}
+			}
 
 			if (version_compare($cache_version, '1.38.11', '<=') || $firstrun) {
 				$query->clear()
@@ -4318,309 +4317,614 @@ if(in_array($applicant,$exceptions)){
 				$db->execute();
 			}
 
-            if (version_compare($cache_version, '1.39.0', '<=') || $firstrun) {
-                $succeed['get_attachments_for_profile_event_added'] = EmundusHelperUpdate::addCustomEvents([
-                    ['label' => 'onAfterGetAttachmentsForProfile', 'category' => 'Files']
-                ]);
-
-
-                EmundusHelperUpdate::addColumn('jos_emundus_setup_groups', 'filter_status', 'INT', 1, 1, '0');
-                EmundusHelperUpdate::addColumn('jos_emundus_setup_groups', 'status', 'INT', 11, 1);
-
-                $columns = [
-                    [
-                        'name' => 'parent_id',
-                        'type' => 'int',
-                        'length' => 11,
-                        'null' => 0,
-                    ],
-                    [
-                        'name' => 'status',
-                        'type' => 'int',
-                        'length' => 11,
-                        'null' => 0,
-                    ],
-                    [
-                        'name' => 'params',
-                        'type' => 'varchar',
-                        'length' => 255,
-                        'null' => 1,
-                    ]
-                ];
-                $repeat_status = EmundusHelperUpdate::createTable('jos_emundus_setup_groups_repeat_status', $columns);
-
-                $query->clear()
-                    ->select('ffg.group_id,fl.id')
-                    ->from($db->quoteName('#__fabrik_lists', 'fl'))
-                    ->leftJoin($db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $db->quoteName('ffg.form_id') . ' = ' . $db->quoteName('fl.form_id'))
-                    ->where($db->quoteName('fl.db_table_name') . ' LIKE ' . $db->quote('jos_emundus_setup_groups'))
-                    ->where($db->quoteName('fl.label') . ' LIKE ' . $db->quote('TABLE_SETUP_GROUPS'));
-                $db->setQuery($query);
-                $setup_groups = $db->loadAssoc();
-
-                if (!empty($setup_groups['group_id'])) {
-                    $datas = [
-                        'name' => 'filter_status',
-                        'group_id' => $setup_groups['group_id'],
-                        'plugin' => 'yesno',
-                        'label' => 'SETUP_GROUPS_FILTER_STATUS',
-                        'show_in_list_summary' => 1
-                    ];
-                    EmundusHelperUpdate::addFabrikElement($datas);
-
-                    $datas = [
-                        'name' => 'status',
-                        'group_id' => $setup_groups['group_id'],
-                        'plugin' => 'databasejoin',
-                        'label' => 'SETUP_GROUPS_AVAILABLE_STATUS',
-                        'show_in_list_summary' => 1
-                    ];
-                    $params = [
-                        'database_join_display_type' => 'multilist',
-                        'join_db_name' => 'jos_emundus_setup_status',
-                        'join_key_column' => 'step',
-                        'join_val_column' => 'value',
-                        'advanced_behavior' => 1
-                    ];
-                    $status_elt = EmundusHelperUpdate::addFabrikElement($datas, $params, false)['id'];
-
-                    $datas = [
-                        'list_id' => $setup_groups['id'],
-                        'element_id' => $status_elt,
-                        'join_from_table' => 'jos_emundus_setup_groups',
-                        'table_join' => 'jos_emundus_setup_groups_repeat_status',
-                        'table_key' => 'status',
-                        'table_join_key' => 'parent_id',
-                        'join_type' => 'left',
-                        'group_id' => 0,
-                    ];
-                    $params = [
-                        'type' => 'repeatElement',
-                        'pk' => '`jos_emundus_setup_groups_repeat_status`.`id`'
-                    ];
-                    EmundusHelperUpdate::addFabrikJoin($datas, $params);
-
-                    EmundusHelperUpdate::insertTranslationsTag('SETUP_GROUPS_FILTER_STATUS', 'Restreindre l\'accès à certains statuts');
-                    EmundusHelperUpdate::insertTranslationsTag('SETUP_GROUPS_FILTER_STATUS', 'Restricting access to certain statuses', 'override', null, null, null, 'en-GB');
-
-                    EmundusHelperUpdate::insertTranslationsTag('SETUP_GROUPS_AVAILABLE_STATUS', 'Statuts');
-                    EmundusHelperUpdate::insertTranslationsTag('SETUP_GROUPS_AVAILABLE_STATUS', 'Statuses', 'override', null, null, null, 'en-GB');
-
-                    $datas = [
-                        'menutype' => 'actions-users',
-                        'title' => 'Exporter',
-                        'alias' => 'export',
-                        'link' => '',
-                        'type' => 'heading',
-                        'component_id' => 0,
-                    ];
-                    $export_menu = EmundusHelperUpdate::addJoomlaMenu($datas);
-
-                    if ($export_menu['status']) {
-                        EmundusHelperUpdate::insertFalangTranslation(1, $export_menu['id'], 'menu', 'title', 'Export');
-
-                        $datas = [
-                            'menutype' => 'actions-users',
-                            'title' => 'Exporter vers Excel',
-                            'alias' => 'export-excel',
-                            'type' => 'url',
-                            'link' => 'index.php?option=com_emundus&view=users&format=raw&layout=export&Itemid={Itemid}',
-                            'component_id' => 0,
-                            'note' => '12|r|1|6'
-                        ];
-                        $export_action = EmundusHelperUpdate::addJoomlaMenu($datas, $export_menu['id']);
-
-                        if ($export_action['status']) {
-                            EmundusHelperUpdate::insertFalangTranslation(1, $export_action['id'], 'menu', 'title', 'Export to Excel');
-                        }
-                    }
-                }
-
-                EmundusHelperUpdate::insertTranslationsTag('COM_USERS_LOGIN_SHOW_PASSWORD', 'Afficher le mot de passe');
-                EmundusHelperUpdate::insertTranslationsTag('COM_USERS_LOGIN_SHOW_PASSWORD', 'Display password', 'override', null, null, null, 'en-GB');
-
-                EmundusHelperUpdate::insertTranslationsTag('COM_USERS_LOGIN_EMAIL_PLACEHOLDER', 'exemple@domaine.com');
-                EmundusHelperUpdate::insertTranslationsTag('COM_USERS_LOGIN_EMAIL_PLACEHOLDER', 'example@domain.com', 'override', null, null, null, 'en-GB');
-
-                EmundusHelperUpdate::addColumn('jos_emundus_widgets_repeat_access', 'access_level', 'INT', 11);
-
-
-                if (!class_exists('EmundusModelAdministratorCampaign')) {
-                    require_once(JPATH_ROOT . '/administrator/components/com_emundus/models/campaign.php');
-                }
-                $m_admin_campaign = new EmundusModelAdministratorCampaign();
-                $succeed['install_campaign_more'] = $m_admin_campaign->installCampaignMore();
-
-                $query->clear()
-                    ->select('id')
-                    ->from($db->quoteName('#__fabrik_groups'))
-                    ->where($db->quoteName('name') . ' LIKE ' . $db->quote('GROUP_PROGRAM_DETAIL'));
-                $db->setQuery($query);
-                $group_program_detail = $db->loadResult();
-
-                if (!empty($group_program_detail)) {
-                    EmundusHelperUpdate::addColumn('jos_emundus_setup_programmes', 'evaluation_form', 'INT', 11, 1);
-
-                    EmundusHelperUpdate::insertTranslationsTag('ELEMENT_PROGRAM_FORM_EVALUATION', 'Formulaire d\'évaluation');
-                    EmundusHelperUpdate::insertTranslationsTag('ELEMENT_PROGRAM_FORM_EVALUATION', 'Evaluation form', 'override', null, null, null, 'en-GB');
-
-                    $datas = [
-                        'name' => 'evaluation_form',
-                        'group_id' => $group_program_detail,
-                        'plugin' => 'databasejoin',
-                        'label' => 'ELEMENT_PROGRAM_FORM_EVALUATION',
-                    ];
-                    $params = [
-                        'join_db_name' => 'jos_fabrik_lists',
-                        'join_key_column' => 'form_id',
-                        'join_val_column' => "label",
-                        'join_val_column_concat' => "{thistable}.label",
-                        'database_join_where_sql' => "WHERE {thistable}.db_table_name = 'jos_emundus_evaluations'"
-                    ];
-                    $eid = EmundusHelperUpdate::addFabrikElement($datas, $params, false)['id'];
-
-                    if (!empty($eid)) {
-                        $datas = [
-                            'element_id' => $eid,
-                            'join_from_table' => '',
-                            'table_join' => 'jos_fabrik_lists',
-                            'table_key' => 'evaluation_form',
-                            'table_join_key' => 'form_id',
-                            'join_type' => 'left',
-                            'group_id' => $group_program_detail
-                        ];
-                        $params = [
-                            'join-label' => 'label',
-                            'type' => 'element',
-                            'pk' => "`jos_fabrik_lists`.`id`"
-                        ];
-                        EmundusHelperUpdate::addFabrikJoin($datas, $params);
-
-                        $query->clear()
-                            ->update($db->quoteName('#__fabrik_elements'))
-                            ->set($db->quoteName('hidden') . ' = 1')
-                            ->where($db->quoteName('name') . ' = ' . $db->quote('fabrik_group_id'));
-                        $db->setQuery($query);
-                        $db->execute();
-
-                        $query->clear()
-                            ->select('id,fabrik_group_id')
-                            ->from($db->quoteName('#__emundus_setup_programmes'))
-                            ->where($db->quoteName('fabrik_group_id') . ' IS NOT NULL');
-                        $db->setQuery($query);
-                        $programs = $db->loadAssocList();
-
-                        foreach ($programs as $program) {
-                            if (!empty($program['fabrik_group_id'])) {
-                                $fabrik_groups = explode(',', $program['fabrik_group_id']);
-
-                                $query->clear()
-                                    ->select('form_id')
-                                    ->from($db->quoteName('#__fabrik_formgroup'))
-                                    ->where($db->quoteName('group_id') . ' IN (' . implode(',', $db->quote($fabrik_groups)) . ')');
-                                $db->setQuery($query);
-                                $evaluation_form_id = $db->loadResult();
-
-                                if (!empty($evaluation_form_id)) {
-                                    $query->clear()
-                                        ->update($db->quoteName('#__emundus_setup_programmes'))
-                                        ->set($db->quoteName('evaluation_form') . ' = ' . $db->quote($evaluation_form_id))
-                                        ->where($db->quoteName('id') . ' = ' . $db->quote($program['id']));
-                                    $db->setQuery($query);
-                                    $db->execute();
-                                }
-                            }
-                        }
-                    }
-                }
-
-                $query->clear()
-                    ->select('extension_id,params')
-                    ->from($db->quoteName('#__extensions'))
-                    ->where($db->quoteName('name') . ' LIKE ' . $db->quote('plg_system_logrotation'));
-                $db->setQuery($query);
-                $logrotation = $db->loadObject();
-
-                if (!empty($logrotation->extension_id)) {
-                    $params = json_decode($logrotation->params, true);
-
-                    $params['cachetimeout'] = 7;
-                    $params['logstokeep'] = 4;
-
-                    $query->clear()
-                        ->update($db->quoteName('#__extensions'))
-                        ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
-                        ->where($db->quoteName('extension_id') . ' = ' . $logrotation->extension_id);
-                    $db->setQuery($query);
-                    $db->execute();
-                }
-                EmundusHelperUpdate::installExtension('plg_cron_logspurge', 'emunduslogsandmessagespurge', '{"name":"plg_cron_logspurge","type":"plugin","creationDate":"May 2024","author":"eMundus","copyright":"Copyright (C) 2024 emundus.fr - All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"www.emundus.fr","version":"1.39.0","description":"PLG_CRON_LOGSPURGE_DESC","group":"","filename":"emunduslogsandmessagespurge"}', 'plugin', 1, 'fabrik_cron', '{"amount_time":"1","unit_time":"year","export_zip":"1", "amount_time_tmp":"1","unit_time_tmp":"week"}');
-
-                $query->clear()
-                    ->select($db->quoteName('id'))
-                    ->from($db->quoteName('jos_fabrik_cron'))
-                    ->where($db->quoteName('plugin') . ' = ' . $db->quote('emunduslogsandmessagespurge'));
-
-                $db->setQuery($query);
-                $existing_cron = $db->loadResult();
-
-                if ($existing_cron !== null) {
-                    echo "Plugin cron already created.";
-                } else {
-                    $current_hour = date('G');
-                    if ($current_hour < 4) {
-                        $last_four_hour = date('Y-m-d 04:00:00', strtotime('yesterday'));
-                    } else {
-                        $last_four_hour = date('Y-m-d 04:00:00');
-                    }
-
-                    $inserted = [
-                        'label' => 'Logs and messages purge',
-                        'frequency' => 1,
-                        'unit' => 'day',
-                        'created' => date('0000-00-00 00:00:00'),
-                        'modified' => date('0000-00-00 00:00:00'),
-                        'checked_out_time' => date('0000-00-00 00:00:00'),
-                        'plugin' => 'emunduslogsandmessagespurge',
-                        'published' => 1,
-                        'lastrun' => date($last_four_hour),
-                        'params' => '{"connection":"1","table":"","cron_row_limit":"100","log":"0","log_email":"","require_qs":"0","require_qs_secret":"","cron_rungate":"1","cron_reschedule_manual":"0","amount_time":"1","unit_time":"year","export_zip":"1", "amount_time_tmp":"1","unit_time_tmp":"week"}'
-                    ];
-                    $inserted = (object)$inserted;
-                    $db->insertObject('jos_fabrik_cron', $inserted);
-                }
-
+			if (version_compare($cache_version, '1.38.12', '<=') || $firstrun) {
 				$query->clear()
 					->select('id,params')
 					->from($db->quoteName('#__fabrik_forms'))
 					->where($db->quoteName('label') . ' LIKE ' . $db->quote('FORM_REGISTRATION'));
 				$db->setQuery($query);
-				$form_registration = $db->loadObject();
+				$registration_form = $db->loadObject();
 
-				if (!empty($form_registration->id)) {
-					$params = json_decode($form_registration->params, true);
-					if(empty($params['outro'])) {
-						$params['outro'] = '<p style="text-align: center;">BACK_TO_LOGIN</p>';
+				if (!empty($registration_form)) {
+					$params                     = json_decode($registration_form->params, true);
+					$params['juser_auto_login'] = ["1"];
+
+					$query->clear()
+						->update($db->quoteName('#__fabrik_forms'))
+						->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+						->where($db->quoteName('id') . ' = ' . $db->quote($registration_form->id));
+					$db->setQuery($query);
+					$db->execute();
+				}
+
+				EmundusHelperUpdate::addColumn('jos_messages', 'email_to', 'TEXT');
+			}
+		}
+
+		if (version_compare($cache_version, '1.39.0', '<=') || $firstrun) {
+			$succeed['get_attachments_for_profile_event_added'] = EmundusHelperUpdate::addCustomEvents([
+				['label' => 'onAfterGetAttachmentsForProfile', 'category' => 'Files']
+			]);
+
+
+			EmundusHelperUpdate::addColumn('jos_emundus_setup_groups', 'filter_status', 'INT', 1, 1, '0');
+			EmundusHelperUpdate::addColumn('jos_emundus_setup_groups', 'status', 'INT', 11, 1);
+
+			$columns       = [
+				[
+					'name'   => 'parent_id',
+					'type'   => 'int',
+					'length' => 11,
+					'null'   => 0,
+				],
+				[
+					'name'   => 'status',
+					'type'   => 'int',
+					'length' => 11,
+					'null'   => 0,
+				],
+				[
+					'name'   => 'params',
+					'type'   => 'varchar',
+					'length' => 255,
+					'null'   => 1,
+				]
+			];
+			$repeat_status = EmundusHelperUpdate::createTable('jos_emundus_setup_groups_repeat_status', $columns);
+
+			$query->clear()
+				->select('ffg.group_id,fl.id')
+				->from($db->quoteName('#__fabrik_lists', 'fl'))
+				->leftJoin($db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $db->quoteName('ffg.form_id') . ' = ' . $db->quoteName('fl.form_id'))
+				->where($db->quoteName('fl.db_table_name') . ' LIKE ' . $db->quote('jos_emundus_setup_groups'))
+				->where($db->quoteName('fl.label') . ' LIKE ' . $db->quote('TABLE_SETUP_GROUPS'));
+			$db->setQuery($query);
+			$setup_groups = $db->loadAssoc();
+
+			if (!empty($setup_groups['group_id'])) {
+				$datas = [
+					'name'                 => 'filter_status',
+					'group_id'             => $setup_groups['group_id'],
+					'plugin'               => 'yesno',
+					'label'                => 'SETUP_GROUPS_FILTER_STATUS',
+					'show_in_list_summary' => 1
+				];
+				$filter_status_elt = EmundusHelperUpdate::addFabrikElement($datas)['id'];
+
+				$datas      = [
+					'name'                 => 'status',
+					'group_id'             => $setup_groups['group_id'],
+					'plugin'               => 'databasejoin',
+					'label'                => 'SETUP_GROUPS_AVAILABLE_STATUS',
+					'show_in_list_summary' => 1
+				];
+				$params     = [
+					'database_join_display_type' => 'multilist',
+					'join_db_name'               => 'jos_emundus_setup_status',
+					'join_key_column'            => 'step',
+					'join_val_column'            => 'value',
+					'advanced_behavior'          => 1
+				];
+				$status_elt = EmundusHelperUpdate::addFabrikElement($datas, $params, false)['id'];
+
+				$datas  = [
+					'list_id'         => $setup_groups['id'],
+					'element_id'      => $status_elt,
+					'join_from_table' => 'jos_emundus_setup_groups',
+					'table_join'      => 'jos_emundus_setup_groups_repeat_status',
+					'table_key'       => 'status',
+					'table_join_key'  => 'parent_id',
+					'join_type'       => 'left',
+					'group_id'        => 0,
+				];
+				$params = [
+					'type' => 'repeatElement',
+					'pk'   => '`jos_emundus_setup_groups_repeat_status`.`id`'
+				];
+				EmundusHelperUpdate::addFabrikJoin($datas, $params);
+
+				$query->clear()
+					->select('id')
+					->from($db->quoteName('#__fabrik_jsactions'))
+					->where($db->quoteName('element_id') . ' = ' . $filter_status_elt)
+					->where($db->quoteName('action') . ' = ' . $db->quote('load'));
+				$db->setQuery($query);
+				$js_action_load = $db->loadResult();
+
+				if(empty($js_action_load)) {
+					$status_load_jsaction = [
+						'action' => 'load',
+						'params' => '{"js_e_event":"","js_e_trigger":"fabrik_trigger_group_group139","js_e_condition":"","js_e_value":"","js_published":"1"}',
+						'code'   => "var value = this.get(&#039;value&#039;);
+const fab = this.form.elements;
+let {
+    jos_emundus_setup_groups___status
+} = fab;
+
+if(value == 1) {
+  showFabrikElt(jos_emundus_setup_groups___status);
+} else {
+  hideFabrikElt(jos_emundus_setup_groups___status);
+}"
+					];
+
+					$query->clear()
+						->insert($db->quoteName('#__fabrik_jsactions'))
+						->set($db->quoteName('element_id') . ' = ' . $filter_status_elt)
+						->set($db->quoteName('action') . ' = ' . $db->quote($status_load_jsaction['action']))
+						->set($db->quoteName('code') . ' = ' . $db->quote($status_load_jsaction['code']))
+						->set($db->quoteName('params') . ' = ' . $db->quote($status_load_jsaction['params']));
+					$db->setQuery($query);
+					$db->execute();
+				}
+
+				$query->clear()
+					->select('id')
+					->from($db->quoteName('#__fabrik_jsactions'))
+					->where($db->quoteName('element_id') . ' = ' . $filter_status_elt)
+					->where($db->quoteName('action') . ' = ' . $db->quote('change'));
+				$db->setQuery($query);
+				$js_action_change = $db->loadResult();
+
+				if(empty($js_action_change)) {
+					$status_change_jsaction = [
+						'action' => 'change',
+						'params' => '{"js_e_event":"","js_e_trigger":"fabrik_trigger_group_group139","js_e_condition":"","js_e_value":"","js_published":"1"}',
+						'code'   => "var value = this.get(&#039;value&#039;);
+const fab = this.form.elements;
+let {
+    jos_emundus_setup_groups___status
+} = fab;
+
+if(value == 1) {
+  showFabrikElt(jos_emundus_setup_groups___status);
+} else {
+  hideFabrikElt(jos_emundus_setup_groups___status,true);
+}"
+					];
+
+					$query->clear()
+						->insert($db->quoteName('#__fabrik_jsactions'))
+						->set($db->quoteName('element_id') . ' = ' . $filter_status_elt)
+						->set($db->quoteName('action') . ' = ' . $db->quote($status_change_jsaction['action']))
+						->set($db->quoteName('code') . ' = ' . $db->quote($status_change_jsaction['code']))
+						->set($db->quoteName('params') . ' = ' . $db->quote($status_change_jsaction['params']));
+					$db->setQuery($query);
+					$db->execute();
+				}
+
+				EmundusHelperUpdate::insertTranslationsTag('SETUP_GROUPS_FILTER_STATUS', 'Restreindre le changement de statut');
+				EmundusHelperUpdate::insertTranslationsTag('SETUP_GROUPS_FILTER_STATUS', 'Restricting changes of status', 'override', null, null, null, 'en-GB');
+
+				EmundusHelperUpdate::insertTranslationsTag('SETUP_GROUPS_AVAILABLE_STATUS', 'Statuts');
+				EmundusHelperUpdate::insertTranslationsTag('SETUP_GROUPS_AVAILABLE_STATUS', 'Statuses', 'override', null, null, null, 'en-GB');
+
+				$datas       = [
+					'menutype'     => 'actions-users',
+					'title'        => 'Exporter',
+					'alias'        => 'export',
+					'link'         => '',
+					'type'         => 'heading',
+					'component_id' => 0,
+				];
+				$export_menu = EmundusHelperUpdate::addJoomlaMenu($datas);
+
+				if ($export_menu['status']) {
+					EmundusHelperUpdate::insertFalangTranslation(1, $export_menu['id'], 'menu', 'title', 'Export');
+
+					$datas         = [
+						'menutype'     => 'actions-users',
+						'title'        => 'Exporter vers Excel',
+						'alias'        => 'export-excel',
+						'type'         => 'url',
+						'link'         => 'index.php?option=com_emundus&view=users&format=raw&layout=export&Itemid={Itemid}',
+						'component_id' => 0,
+						'note'         => '12|r|1|6'
+					];
+					$export_action = EmundusHelperUpdate::addJoomlaMenu($datas, $export_menu['id']);
+
+					if ($export_action['status']) {
+						EmundusHelperUpdate::insertFalangTranslation(1, $export_action['id'], 'menu', 'title', 'Export to Excel');
+					}
+				}
+			}
+
+			EmundusHelperUpdate::insertTranslationsTag('COM_USERS_LOGIN_SHOW_PASSWORD', 'Afficher le mot de passe');
+			EmundusHelperUpdate::insertTranslationsTag('COM_USERS_LOGIN_SHOW_PASSWORD', 'Display password', 'override', null, null, null, 'en-GB');
+
+			EmundusHelperUpdate::insertTranslationsTag('COM_USERS_LOGIN_EMAIL_PLACEHOLDER', 'exemple@domaine.com');
+			EmundusHelperUpdate::insertTranslationsTag('COM_USERS_LOGIN_EMAIL_PLACEHOLDER', 'example@domain.com', 'override', null, null, null, 'en-GB');
+
+			EmundusHelperUpdate::addColumn('jos_emundus_widgets_repeat_access', 'access_level', 'INT', 11);
+
+
+			if (!class_exists('EmundusModelAdministratorCampaign')) {
+				require_once(JPATH_ROOT . '/administrator/components/com_emundus/models/campaign.php');
+			}
+			$m_admin_campaign                 = new EmundusModelAdministratorCampaign();
+			$succeed['install_campaign_more'] = $m_admin_campaign->installCampaignMore();
+
+			$query->clear()
+				->select('id')
+				->from($db->quoteName('#__fabrik_groups'))
+				->where($db->quoteName('name') . ' LIKE ' . $db->quote('GROUP_PROGRAM_DETAIL'));
+			$db->setQuery($query);
+			$group_program_detail = $db->loadResult();
+
+			if (!empty($group_program_detail)) {
+				EmundusHelperUpdate::addColumn('jos_emundus_setup_programmes', 'evaluation_form', 'INT', 11, 1);
+
+				EmundusHelperUpdate::insertTranslationsTag('ELEMENT_PROGRAM_FORM_EVALUATION', 'Formulaire d\'évaluation');
+				EmundusHelperUpdate::insertTranslationsTag('ELEMENT_PROGRAM_FORM_EVALUATION', 'Evaluation form', 'override', null, null, null, 'en-GB');
+
+				$datas  = [
+					'name'     => 'evaluation_form',
+					'group_id' => $group_program_detail,
+					'plugin'   => 'databasejoin',
+					'label'    => 'ELEMENT_PROGRAM_FORM_EVALUATION',
+				];
+				$params = [
+					'join_db_name'            => 'jos_fabrik_lists',
+					'join_key_column'         => 'form_id',
+					'join_val_column'         => "label",
+					'join_val_column_concat'  => "{thistable}.label",
+					'database_join_where_sql' => "WHERE {thistable}.db_table_name = 'jos_emundus_evaluations'"
+				];
+				$eid    = EmundusHelperUpdate::addFabrikElement($datas, $params, false)['id'];
+
+				if (!empty($eid)) {
+					$datas  = [
+						'element_id'      => $eid,
+						'join_from_table' => '',
+						'table_join'      => 'jos_fabrik_lists',
+						'table_key'       => 'evaluation_form',
+						'table_join_key'  => 'form_id',
+						'join_type'       => 'left',
+						'group_id'        => $group_program_detail
+					];
+					$params = [
+						'join-label' => 'label',
+						'type'       => 'element',
+						'pk'         => "`jos_fabrik_lists`.`id`"
+					];
+					EmundusHelperUpdate::addFabrikJoin($datas, $params);
+
+					$query->clear()
+						->update($db->quoteName('#__fabrik_elements'))
+						->set($db->quoteName('hidden') . ' = 1')
+						->where($db->quoteName('name') . ' = ' . $db->quote('fabrik_group_id'));
+					$db->setQuery($query);
+					$db->execute();
+
+					$query->clear()
+						->select('id,fabrik_group_id')
+						->from($db->quoteName('#__emundus_setup_programmes'))
+						->where($db->quoteName('fabrik_group_id') . ' IS NOT NULL');
+					$db->setQuery($query);
+					$programs = $db->loadAssocList();
+
+					foreach ($programs as $program) {
+						if (!empty($program['fabrik_group_id'])) {
+							$fabrik_groups = explode(',', $program['fabrik_group_id']);
+
+							$query->clear()
+								->select('form_id')
+								->from($db->quoteName('#__fabrik_formgroup'))
+								->where($db->quoteName('group_id') . ' IN (' . implode(',', $db->quote($fabrik_groups)) . ')');
+							$db->setQuery($query);
+							$evaluation_form_id = $db->loadResult();
+
+							if (!empty($evaluation_form_id)) {
+								$query->clear()
+									->update($db->quoteName('#__emundus_setup_programmes'))
+									->set($db->quoteName('evaluation_form') . ' = ' . $db->quote($evaluation_form_id))
+									->where($db->quoteName('id') . ' = ' . $db->quote($program['id']));
+								$db->setQuery($query);
+								$db->execute();
+							}
+						}
+					}
+				}
+			}
+
+			$query->clear()
+				->select('extension_id,params')
+				->from($db->quoteName('#__extensions'))
+				->where($db->quoteName('name') . ' LIKE ' . $db->quote('plg_system_logrotation'));
+			$db->setQuery($query);
+			$logrotation = $db->loadObject();
+
+			if (!empty($logrotation->extension_id)) {
+				$params = json_decode($logrotation->params, true);
+
+				$params['cachetimeout'] = 7;
+				$params['logstokeep']   = 4;
+
+				$query->clear()
+					->update($db->quoteName('#__extensions'))
+					->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+					->where($db->quoteName('extension_id') . ' = ' . $logrotation->extension_id);
+				$db->setQuery($query);
+				$db->execute();
+			}
+			EmundusHelperUpdate::installExtension('plg_cron_logspurge', 'emunduslogsandmessagespurge', '{"name":"plg_cron_logspurge","type":"plugin","creationDate":"May 2024","author":"eMundus","copyright":"Copyright (C) 2024 emundus.fr - All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"www.emundus.fr","version":"1.39.0","description":"PLG_CRON_LOGSPURGE_DESC","group":"","filename":"emunduslogsandmessagespurge"}', 'plugin', 1, 'fabrik_cron', '{"amount_time":"1","unit_time":"year","export_zip":"1", "amount_time_tmp":"1","unit_time_tmp":"week"}');
+
+			$query->clear()
+				->select($db->quoteName('id'))
+				->from($db->quoteName('jos_fabrik_cron'))
+				->where($db->quoteName('plugin') . ' = ' . $db->quote('emunduslogsandmessagespurge'));
+
+			$db->setQuery($query);
+			$existing_cron = $db->loadResult();
+
+			if ($existing_cron !== null) {
+				echo "Plugin cron already created.";
+			}
+			else {
+				$current_hour = date('G');
+				if ($current_hour < 4) {
+					$last_four_hour = date('Y-m-d 04:00:00', strtotime('yesterday'));
+				}
+				else {
+					$last_four_hour = date('Y-m-d 04:00:00');
+				}
+
+				$inserted = [
+					'label'            => 'Logs and messages purge',
+					'frequency'        => 1,
+					'unit'             => 'day',
+					'created'          => date('0000-00-00 00:00:00'),
+					'modified'         => date('0000-00-00 00:00:00'),
+					'checked_out_time' => date('0000-00-00 00:00:00'),
+					'plugin'           => 'emunduslogsandmessagespurge',
+					'published'        => 1,
+					'lastrun'          => date($last_four_hour),
+					'params'           => '{"connection":"1","table":"","cron_row_limit":"100","log":"0","log_email":"","require_qs":"0","require_qs_secret":"","cron_rungate":"1","cron_reschedule_manual":"0","amount_time":"1","unit_time":"year","export_zip":"1", "amount_time_tmp":"1","unit_time_tmp":"week"}'
+				];
+				$inserted = (object) $inserted;
+				$db->insertObject('jos_fabrik_cron', $inserted);
+			}
+
+			$query->clear()
+				->select('id,params')
+				->from($db->quoteName('#__fabrik_forms'))
+				->where($db->quoteName('label') . ' LIKE ' . $db->quote('FORM_REGISTRATION'));
+			$db->setQuery($query);
+			$form_registration = $db->loadObject();
+
+			if (!empty($form_registration->id)) {
+				$params = json_decode($form_registration->params, true);
+				if (empty($params['outro'])) {
+					$params['outro'] = '<p style="text-align: center;">BACK_TO_LOGIN</p>';
+					$query->clear()
+						->update($db->quoteName('#__fabrik_forms'))
+						->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+						->where($db->quoteName('id') . ' = ' . $db->quote($form_registration->id));
+					$db->setQuery($query);
+					$db->execute();
+				}
+			}
+
+			EmundusHelperUpdate::insertTranslationsTag('BACK_TO_LOGIN', '<br />Déjà un compte ? <a href="connexion">Connectez-vous</a>');
+			EmundusHelperUpdate::insertTranslationsTag('BACK_TO_LOGIN', '<br />Already have an account? <a href="en/connexion">Log in</a>', 'override', null, null, null, 'en-GB');
+
+
+			$query->clear()
+				->select('ff.id,ff.params')
+				->from($db->quoteName('#__fabrik_forms', 'ff'))
+				->leftJoin($db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $db->quoteName('fl.form_id') . ' = ' . $db->quoteName('ff.id'))
+				->where($db->quoteName('fl.db_table_name') . ' LIKE ' . $db->quote('jos_emundus_setup_letters'));
+			$db->setQuery($query);
+			$form_letters = $db->loadObject();
+
+			if (!empty($form_letters->id)) {
+				$params                  = json_decode($form_letters->params, true);
+				$params['plugin_events'] = ['both'];
+				$query->clear()
+					->update($db->quoteName('#__fabrik_forms'))
+					->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+					->where($db->quoteName('id') . ' = ' . $db->quote($form_letters->id));
+				$db->setQuery($query);
+				$db->execute();
+			}
+
+			$old_values = [
+				'fr-FR' => 'Cet utilisateur et/ou ce mot de passe est incorrect',
+				'en-GB' => 'This user and/or password is incorrect'
+			];
+			$new_values = [
+				'fr-FR' => 'Cette combinaison adresse email/mot de passe est incorrecte',
+				'en-GB' => 'This email address/password combination is incorrect'
+			];
+			EmundusHelperUpdate::updateOverrideTag('JGLOBAL_AUTH_INVALID_PASS', $old_values, $new_values);
+			EmundusHelperUpdate::updateOverrideTag('JGLOBAL_AUTH_NO_USER', $old_values, $new_values);
+
+			EmundusHelperUpdate::installExtension('eMundus - Update profile', 'emundusupdateprofile','{"name":"eMundus - Update profile","type":"plugin","creationDate":"April 2024","author":"eMundus","copyright":"Copyright (C) 2024 eMundus.fr - All rights reserved.","authorEmail":"laura.grandin@emundus.fr","authorUrl":"www.emundus.fr","version":"2.0.0","description":"PLG_FORM_EMUNDUSUPDATEPROFILE_DESCRIPTION","group":"","filename":"emundusupdateprofile"}','plugin',1,'fabrik_form');
+
+			$query->clear()
+				->select('ff.id,ff.params')
+				->from($db->quoteName('#__emundus_setup_formlist','esf'))
+				->leftJoin($db->quoteName('#__fabrik_forms','ff').' ON '.$db->quoteName('ff.id').' = '.$db->quoteName('esf.form_id'))
+				->where($db->quoteName('esf.type') . ' = ' . $db->quote('profile'));
+			$db->setQuery($query);
+			$profile_form = $db->loadObject();
+
+			if(!empty($profile_form->id)) {
+				$params = json_decode($profile_form->params, true);
+				unset($params['form_php_file']);
+				unset($params['only_process_curl']);
+				unset($params['curl_code']);
+				$params['plugins'] = ['emundusupdateprofile'];
+				$params['emundusupdateprofile_field_alias'] = 'mon-profil';
+
+				$query->clear()
+					->update($db->quoteName('#__fabrik_forms'))
+					->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+					->where($db->quoteName('id') . ' = ' . $db->quote($profile_form->id));
+				$db->setQuery($query);
+				$db->execute();
+			}
+
+			$query->clear()
+				->select('id')
+				->from($db->quoteName('#__menu'))
+				->where($db->quoteName('link') . ' LIKE ' . $db->quote('index.php?option=com_emundus&view=users'))
+				->where($db->quoteName('menutype') . ' LIKE ' . $db->quote('coordinatormenu'))
+				->where($db->quoteName('type') . ' LIKE ' . $db->quote('component'));
+			$db->setQuery($query);
+			$users_menu = $db->loadResult();
+
+			if(!empty($users_menu)) {
+				EmundusHelperUpdate::insertFalangTranslation(1, $users_menu, 'menu', 'title', 'Users', true);
+			}
+
+			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_ERROR_404', 'La page que vous cherchez semble introuvable...');
+			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_ERROR_404', 'The page you\'re looking for doesn\'t seem to be there...', 'override', null, null, null, 'en-GB');
+			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_ERROR_404_BUTTON', 'Retour à la page d\'accueil');
+			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_ERROR_404_BUTTON', 'Back to home page', 'override', null, null, null, 'en-GB');
+
+			$error_particle = file_get_contents(JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/error.yaml');
+			if($error_particle == 'null') {
+				$error_particle = "enabled: '1'
+title: 'Oups !'
+image: /media/com_emundus/images/tchoozy/complex-illustrations/page-not-found.svg
+description: COM_EMUNDUS_ERROR_404
+css:
+  class: ''
+button: COM_EMUNDUS_ERROR_404_BUTTON";
+				file_put_contents(JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/error.yaml', $error_particle);
+			}
+			EmundusHelperUpdate::updateYamlVariable('description','COM_EMUNDUS_ERROR_404',JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/error.yaml');
+			EmundusHelperUpdate::updateYamlVariable('button','COM_EMUNDUS_ERROR_404_BUTTON',JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/error.yaml');
+
+			// Fix 404 styles
+			EmundusHelperUpdate::addYamlVariable('location', 'gantry-assets://custom/scss/custom.scss', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css', true, true);
+			EmundusHelperUpdate::addYamlVariable('inline', '', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+			EmundusHelperUpdate::addYamlVariable('extra', '{  }', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+			EmundusHelperUpdate::addYamlVariable('priority', '0', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+			EmundusHelperUpdate::addYamlVariable('name', 'Custom', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+
+			EmundusHelperUpdate::addYamlVariable('location', 'modules/mod_falang/style/mod_falang_emundus.css', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css', true, true);
+			EmundusHelperUpdate::addYamlVariable('inline', '', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+			EmundusHelperUpdate::addYamlVariable('extra', '{  }', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+			EmundusHelperUpdate::addYamlVariable('priority', '0', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+			EmundusHelperUpdate::addYamlVariable('name', 'Falang', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+
+			EmundusHelperUpdate::addYamlVariable('location', 'modules/mod_emundus_footer/css/mod_emundus_footer.css', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css', true, true);
+			EmundusHelperUpdate::addYamlVariable('inline', '', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+			EmundusHelperUpdate::addYamlVariable('extra', '{  }', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+			EmundusHelperUpdate::addYamlVariable('priority', '0', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+			EmundusHelperUpdate::addYamlVariable('name', 'Footer', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+
+			EmundusHelperUpdate::addYamlVariable('location', 'modules/mod_emundusmenu/style/mod_emundusmenu.css', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css', true, true);
+			EmundusHelperUpdate::addYamlVariable('inline', '', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+			EmundusHelperUpdate::addYamlVariable('extra', '{  }', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+			EmundusHelperUpdate::addYamlVariable('priority', '0', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+			EmundusHelperUpdate::addYamlVariable('name', 'Menu', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+			//
+
+			// References translations
+			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_SEND_REFERENCE_REQUEST', 'Envoyer la demande de référence');
+			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_SEND_REFERENCE_REQUEST', 'Send the request for individual assessment', 'override', null, null, null, 'en-GB');
+
+			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_EMAIL_REFERENCE_TIP', 'La demande de recommandation sera envoyée à l\'adresse suivante');
+			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_EMAIL_REFERENCE_TIP', 'The request for recommendation should be sent to the following address', 'override', null, null, null, 'en-GB');
+
+			$query->clear()
+				->select('ff.id,ff.submit_button_label')
+				->from($db->quoteName('#__fabrik_lists','fl'))
+				->leftJoin($db->quoteName('#__fabrik_forms','ff').' ON '.$db->quoteName('ff.id').' = '.$db->quoteName('fl.form_id'))
+				->where($db->quoteName('fl.db_table_name') . ' LIKE ' . $db->quote('jos_emundus_references'));
+			$db->setQuery($query);
+			$reference_forms = $db->loadObjectList();
+
+			foreach ($reference_forms as $reference_form) {
+				if($reference_form->submit_button_label == 'Send the request for individual assessment') {
+					$query->clear()
+						->update($db->quoteName('#__fabrik_forms'))
+						->set($db->quoteName('submit_button_label') . ' = ' . $db->quote('COM_EMUNDUS_SEND_REFERENCE_REQUEST'))
+						->where($db->quoteName('id') . ' = ' . $reference_form->id);
+					$db->setQuery($query);
+					$db->execute();
+				}
+
+				$query->clear()
+					->select('fe.id,fe.params')
+					->from($db->quoteName('#__fabrik_formgroup','ffg'))
+					->leftJoin($db->quoteName('#__fabrik_elements','fe').' ON '.$db->quoteName('fe.group_id').' = '.$db->quoteName('ffg.group_id'))
+					->where($db->quoteName('ffg.form_id') . ' = ' . $reference_form->id)
+					->where($db->quoteName('fe.name') . ' IN (' . implode(',',$db->quote(['Email_1','Email_2','Email_3'])) . ')');
+				$db->setQuery($query);
+				$emails_fields = $db->loadObjectList();
+
+				foreach ($emails_fields as $email_field) {
+					$params = json_decode($email_field->params, true);
+					if ($params['rollover'] == 'The recommendation letter will be sent to this address.' || empty($params['rollover'])) {
+						$params['rollover'] = 'COM_EMUNDUS_EMAIL_REFERENCE_TIP';
+
 						$query->clear()
-							->update($db->quoteName('#__fabrik_forms'))
+							->update($db->quoteName('#__fabrik_elements'))
 							->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
-							->where($db->quoteName('id') . ' = ' . $db->quote($form_registration->id));
+							->where($db->quoteName('id') . ' = ' . $email_field->id);
 						$db->setQuery($query);
 						$db->execute();
 					}
 				}
+			}
 
-				EmundusHelperUpdate::insertTranslationsTag('BACK_TO_LOGIN', '<br />Déjà un compte ? <a href="connexion">Connectez-vous</a>');
-				EmundusHelperUpdate::insertTranslationsTag('BACK_TO_LOGIN', '<br />Already have an account? <a href="en/connexion">Log in</a>', 'override', null, null, null, 'en-GB');
-            }
+			$query->clear()
+				->select('fe.id,fe.label,fe.params')
+				->from($db->quoteName('#__fabrik_formgroup','ffg'))
+				->leftJoin($db->quoteName('#__fabrik_elements','fe').' ON '.$db->quoteName('fe.group_id').' = '.$db->quoteName('ffg.group_id'))
+				->where($db->quoteName('ffg.form_id') . ' = 68')
+				->where($db->quoteName('fe.name') . ' LIKE ' . $db->quote('filename'));
+			$db->setQuery($query);
+			$fileupload_referent = $db->loadObject();
 
-            if (version_compare($cache_version, '1.40.0', '<=') || $firstrun) {
-                EmundusHelperUpdate::addColumn('jos_emundus_setup_action_tag', 'ordering', 'INT', null, 1, 0);
-            }
-        }
+			if(!empty($fileupload_referent->id)) {
+				$query->clear();
+				$params = json_decode($fileupload_referent->params,true);
+				if(empty($params['rollover'])) {
+					$params['rollover'] = '.pdf';
+					$query->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)));
+				}
+				if($fileupload_referent->label == 'FILE (.pdf)') {
+					$query->set($db->quoteName('label') . ' = ' . $db->quote('FILE'));
+				}
+				if(empty($params['rollover']) || $fileupload_referent->label == 'FILE (.pdf)') {
+					$query->update($db->quoteName('#__fabrik_elements'))
+						->where($db->quoteName('id') . ' = ' . $fileupload_referent->id);
+					$db->setQuery($query);
+					$db->execute();
+				}
+			}
 
-        return $succeed;
-    }
+			$query->clear()
+				->update($db->quoteName('#__fabrik_forms'))
+				->set($db->quoteName('submit_button_label') . ' = ' . $db->quote('SUBMIT'))
+				->where($db->quoteName('id') . ' = 68')
+				->where($db->quoteName('submit_button_label') . ' = ' . $db->quote('Upload'));
+			$db->setQuery($query);
+			$db->execute();
+			//
+		}
+
+		if (version_compare($cache_version, '1.39.1', '<=') || $firstrun) {
+			EmundusHelperUpdate::installExtension('System - eMundus', 'emundus','{"name":"System - eMundus","type":"plugin","creationDate":"15 juillet 2024","author":"eMundus","copyright":"Copyright (C) 2024 eMundus","authorEmail":"dev@emundus.io","authorUrl":"http:\/\/www.emundus.fr","version":"1.39.1","description":"eMundus plugin to call jQuery","group":"","filename":"emundus"}','plugin',1,'system');
+		}
+
+		if (version_compare($cache_version, '1.40.0', '<=') || $firstrun) {
+			if (!class_exists('EmundusAdministratorModelComments')) {
+				require_once(JPATH_ROOT . '/administrator/components/com_emundus/models/comments.php');
+			}
+			$m_comments = new EmundusAdministratorModelComments();
+			$succeed['update_comments_table'] = $m_comments->install();
+
+			EmundusHelperUpdate::addColumn('jos_emundus_setup_action_tag', 'ordering', 'INT', null, 1, 0);
+		}
+
+		return $succeed;
+	}
 
 
 	/**
@@ -4753,6 +5057,28 @@ if(in_array($applicant,$exceptions)){
 		if (!$payment_activated) {
 			EmundusHelperUpdate::insertIntoFile(JPATH_ROOT . '/.htaccess', "php_value session.cookie_samesite Lax" . PHP_EOL);
 		}
+
+		// We check at each update that no password fields are stored in the database
+		$query->clear()
+			->select('id,params')
+			->from($db->quoteName('#__fabrik_elements'))
+			->where('json_valid(`params`)')
+			->where('json_extract(`params`, "$.password") = "1"');
+		$db->setQuery($query);
+		$password_elements = $db->loadObjectList();
+
+		foreach ($password_elements as $password_element) {
+			$params                = json_decode($password_element->params, true);
+			$params['store_in_db'] = "0";
+
+			$query->clear()
+				->update($db->quoteName('#__fabrik_elements'))
+				->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+				->where($db->quoteName('id') . ' = ' . $db->quote($password_element->id));
+			$db->setQuery($query);
+			$db->execute();
+		}
+
 
 		return true;
 	}

@@ -13,10 +13,20 @@
 defined('_JEXEC') or die('Restricted access');
 
 $group = $this->group;
+$current_user_id = JFactory::getUser()->id;
+$i = 1;
+
 if (!$group->newGroup) :
 	foreach ($group->subgroups as $subgroup) :
+        $can_view = true;
+
+        if(!empty($subgroup['user']) && !EmundusHelperAccess::asPartnerAccessLevel($current_user_id) && $this->collaborator) {
+            if(!empty($subgroup['user']->element_raw[$i-1]) && $subgroup['user']->element_raw[$i-1] != $current_user_id) {
+                $can_view = false;
+            }
+        }
 		?>
-		<div class="fabrikSubGroup">
+        <div class="fabrikSubGroup <?php if(!$can_view) : ?> hidden<?php endif; ?>">
 		<?php
 			// Add the add/remove repeat group buttons
 			if ($group->editable) : ?>
@@ -46,5 +56,6 @@ if (!$group->newGroup) :
 			</div><!-- end fabrikSubGroupElements -->
 		</div><!-- end fabrikSubGroup -->
 		<?php
-	endforeach;
+        $i++;
+    endforeach;
 endif;

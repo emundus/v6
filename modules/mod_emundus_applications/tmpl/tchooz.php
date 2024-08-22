@@ -409,7 +409,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 											        <?php endif; ?>
                                                     <div class="em-w-100">
                                                         <div class="em-flex-row em-flex-space-between em-mb-12">
-                                                            <div>
+                                                            <div class="flex flex-row items-center">
                                                                 <?php
                                                                 if (empty($application->class)) {
                                                                     $application->class = 'default';
@@ -418,18 +418,29 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                                                                 <?php if (empty($visible_status)) : ?>
                                                                     <div class="mod_emundus_applications___status_<?= $application->class; ?> flex"
                                                                          id="application_status_<?php echo $application->fnum ?>">
-                                                                        <span class="label label-<?= $application->class; ?>"><?= $application->value; ?></span>
+                                                                        <span class="mod_emundus_applications___status_label label label-<?= $application->class; ?>"><?= $application->value; ?></span>
                                                                     </div>
                                                                 <?php elseif (in_array($application->status, $visible_status)) : ?>
                                                                     <div class="mod_emundus_applications___status_<?= $application->class; ?> flex"
                                                                          id="application_status_<?php echo $application->fnum ?>">
-                                                                        <span class="label label-<?= $application->class; ?>"><?= $application->value; ?></span>
+                                                                        <span class="mod_emundus_applications___status_label label label-<?= $application->class; ?>"><?= $application->value; ?></span>
                                                                     </div>
                                                                 <?php endif; ?>
                                                                 <?php if (!empty($application->order_status)): ?>
                                                                     <br>
                                                                     <p><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_ORDER_STATUS') ?> <span style="color: <?= $application->order_color; ?>"><?= JText::_(strtoupper($application->order_status)); ?></span></p>
                                                                 <?php endif; ?>
+                                                                <?php if ($show_nb_comments) {
+                                                                    $nb_comments = modemundusApplicationsHelper::getNbComments($application->ccid, $user->id);
+                                                                    if ($nb_comments > 0) {
+                                                                        ?>
+                                                                        <a href="<?= !empty($comments_page_alias) ? '/' . $comments_page_alias . '?tab=comments&ccid=' . $application->ccid . '&fnum=' . $application->fnum : '#'  ?>"  id="actions_button_comment" class="flex flex-row comments-icon-wrapper relative ml-2">
+                                                                            <span id="actions_button_comment_icon" class="material-icons em-neutral-300-color em-bg-main-500 p-2 rounded-full">comment</span>
+                                                                            <span id="actions_button_comment_nb" class="nb-comments em-border-main-500 em-font-size-12 em-main-500-color em-white-bg border-2 absolute rounded-full p-1"><?= $nb_comments; ?></span>
+                                                                        </a>
+                                                                        <?php
+                                                                    }
+                                                                }  ?>
                                                             </div>
                                                             <div class="mod_emundus_applications__container">
                                                                 <span class="material-icons em-text-neutral-600 em-font-weight-600"
@@ -781,12 +792,12 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 														<?php if (empty($visible_status)) : ?>
                                                             <div class="mod_emundus_applications___status_<?= $application->class; ?> em-flex-row"
                                                                  id="application_status_<?php echo $application->fnum ?>">
-                                                                <span class="label label-<?= $application->class; ?>"><?= $application->value; ?></span>
+                                                                <span class="mod_emundus_applications___status_label label label-<?= $application->class; ?>"><?= $application->value; ?></span>
                                                             </div>
 														<?php elseif (in_array($application->status, $visible_status)) : ?>
                                                             <div class="mod_emundus_applications___status_<?= $application->class; ?> em-flex-row"
                                                                  id="application_status_<?php echo $application->fnum ?>">
-                                                                <span class="label label-<?= $application->class; ?>"><?= $application->value; ?></span>
+                                                                <span class="mod_emundus_applications___status_label label label-<?= $application->class; ?>"><?= $application->value; ?></span>
                                                             </div>
 														<?php endif; ?>
 														<?php if (!empty($application->order_status)): ?>
@@ -929,6 +940,8 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 
 <script type="text/javascript">
+    var $ = jQuery.noConflict();
+
     window.addEventListener('DOMContentLoaded', (event) => {
         let selected_tab_session = sessionStorage.getItem('mod_emundus_applications___selected_tab');
         let selected_view = sessionStorage.getItem('mod_emundus_applications___selected_view');
