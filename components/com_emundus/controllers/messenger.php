@@ -279,6 +279,9 @@ class EmundusControllerMessenger extends JControllerLegacy
         $jinput = JFactory::getApplication()->input;
 
         $fnum = $jinput->getString('fnum');
-        $m_message->closeMessenger($fnum);
+
+	    if(!empty($fnum) && EmundusHelperAccess::asAccessAction(36, 'r', JFactory::getUser()->id, $fnum)) {
+		    $m_message->closeMessenger($fnum);
+	    }
     }
 }

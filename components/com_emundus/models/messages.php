@@ -1518,7 +1518,10 @@ class EmundusModelMessages extends JModelList {
 
 		return $csv_filename;
 	}
-    public function getStatusChatroom($fnum){
+
+    public function getStatusChatroom($fnum)
+    {
+		$chatroom_status = null;
 
         if(version_compare(JVERSION, '4.0', '>=')) {
             $db = Factory::getContainer()->get('DatabaseDriver');
@@ -1535,16 +1538,20 @@ class EmundusModelMessages extends JModelList {
         try
         {
             $db->setQuery($query);
-            $chatroom = $db->loadResult();
+            $chatroom_status = $db->loadResult();
         }
         catch (Exception $e)
         {
             Log::add('Could not retrieve chatroom for fnum: ' . $fnum. preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
         }
-        return $chatroom;
+
+        return $chatroom_status;
     }
+
     public function openChatroom($fnum)
     {
+		$opened = false;
+
         if(version_compare(JVERSION, '4.0', '>=')) {
             $db = Factory::getContainer()->get('DatabaseDriver');
         } else {
@@ -1565,12 +1572,22 @@ class EmundusModelMessages extends JModelList {
 
         $query->update($db->quoteName('#__emundus_chatroom'))->set($fields)->where($conditions);
 
-        $db->setQuery($query);
+	    try
+	    {
+		    $db->setQuery($query);
+		    $opened = $db->execute();
+	    }
+	    catch (Exception $e)
+	    {
+			Log::add('Could not update chatroom for fnum: ' . $fnum. preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+	    }
 
-        $result = $db->execute();
-
+		return $opened;
     }
-    public function closeMessenger($fnum){
+
+    public function closeMessenger($fnum,$redirect = true)
+    {
+		$closed = false;
 
         if(version_compare(JVERSION, '4.0', '>=')) {
             $db = Factory::getContainer()->get('DatabaseDriver');
@@ -1592,15 +1609,18 @@ class EmundusModelMessages extends JModelList {
             $query->update($db->quoteName('#__emundus_chatroom'))->set($fields)->where($conditions);
 
             $db->setQuery($query);
+            $closed = $db->execute();
 
-            $result = $db->execute();
-            $app = JFactory::getApplication();
-            $app->redirect('index.php');
-            return true;
+			if($closed && $redirect)
+			{
+				JFactory::getApplication()->redirect('index.php');
+			}
         }
         catch (Exception $e)
         {
             Log::add('Could not update chatroom for fnum: ' . $fnum. preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
         }
+
+		return $closed;
     }
 }
