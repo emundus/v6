@@ -1279,7 +1279,7 @@ class EmundusModelFiles extends JModelLegacy
 		$query = $db->getQuery(true);
 		$query->select('*')
 			->from($db->quoteName('#__emundus_setup_action_tag'))
-			->order('label');
+			->order('ordering, label ');
 
         try {
             $db->setQuery($query);

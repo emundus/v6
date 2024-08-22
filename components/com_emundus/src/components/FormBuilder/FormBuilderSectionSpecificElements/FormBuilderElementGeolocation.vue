@@ -10,8 +10,6 @@
 </template>
 
 <script>
-import formBuilderService from '../../../services/formbuilder';
-import Editor from "../../editor";
 
 export default {
   props: {
@@ -23,9 +21,6 @@ export default {
       type: String,
       required: true
     }
-  },
-  components: {
-    Editor
   },
   data() {
     return {
