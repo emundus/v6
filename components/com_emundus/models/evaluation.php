@@ -2153,27 +2153,16 @@ class EmundusModelEvaluation extends JModelList {
 				                    $params      = json_decode($elt['params']);
 				                    $groupParams = json_decode($elt['group_params']);
 
-                                    /*if (!empty($groupParams) && $groupParams->repeat_group_button == 1) {
+                                    if (!empty($groupParams) && $groupParams->repeat_group_button == 1)
+									{
                                         $fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, $groupParams->repeat_group_button == 1);
-                                    } else if ($elt['plugin'] == 'date') {
+                                    }
+									else if ($elt['plugin'] == 'date')
+									{
                                         $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name'], $params->date_form_format);
                                     }
-                                    else {
-                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
-                                    }*/
-                                    if ((!empty($groupParams) &&@$groupParams->repeat_group_button == 1) || $elt['plugin'] === 'databasejoin') {
-                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, $groupParams->repeat_group_button == 1);
-                                    }
-                                    else {
-                                        if ($elt['plugin'] == 'date') {
-                                            $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name'], $params->date_form_format);
-                                        }
-                                        else {
-                                            $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
-                                        }
-                                    }
-                                    if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown" || $elt['plugin'] == "radiobutton") {
-
+                                    else if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown" || $elt['plugin'] == "radiobutton")
+									{
                                         foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
                                             if ($elt['plugin'] == "checkbox" || (!empty($params->multiple) && $params->multiple == 1)) {
                                                 $val = json_decode($val['val']);
@@ -2192,8 +2181,9 @@ class EmundusModelEvaluation extends JModelList {
                                             }
                                         }
 
-                                    } elseif ($elt['plugin'] == "birthday") {
-
+                                    }
+									elseif ($elt['plugin'] == "birthday")
+									{
                                         foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
                                             $val = explode(',', $val['val']);
                                             foreach ($val as $k => $v) {
@@ -2205,7 +2195,8 @@ class EmundusModelEvaluation extends JModelList {
                                         }
 
 				                    }
-				                    elseif ($elt['plugin'] == 'textarea' && $whitespace_textarea == 1) {
+				                    elseif ($elt['plugin'] == 'textarea' && $whitespace_textarea == 1)
+				                    {
 					                    $formatted_text = explode('<br />',nl2br($fabrikValues[$elt['id']][$fnum]['val']));
 					                    $inline = new \PhpOffice\PhpWord\Element\TextRun();
 					                    foreach ($formatted_text as $key => $text) {
@@ -2221,19 +2212,26 @@ class EmundusModelEvaluation extends JModelList {
 					                    $fabrikValues[$elt['id']][$fnum]['val'] = $inline;
 					                    $fabrikValues[$elt['id']][$fnum]['complex_data'] = true;
 				                    }
-				                    elseif ($elt['plugin'] == 'emundus_phonenumber') {
+				                    elseif ($elt['plugin'] == 'emundus_phonenumber')
+				                    {
 					                    $fabrikValues[$elt['id']][$fnum]['val'] = substr($fabrikValues[$elt['id']][$fnum]['val'], 2, strlen($fabrikValues[$elt['id']][$fnum]['val']));
 				                    }
-                                    elseif ($elt['plugin'] == 'yesno') {
+                                    elseif ($elt['plugin'] == 'yesno')
+                                    {
                                         $fabrikValues[$elt['id']][$fnum]['val'] = $fabrikValues[$elt['id']][$fnum]['val'] == '1' ? JText::_('JYES') : JText::_('JNO');
                                     }
-                                    elseif ($elt['plugin'] == 'cascadingdropdown') {
+                                    elseif ($elt['plugin'] == 'cascadingdropdown')
+                                    {
                                         foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
                                             $fabrikValues[$elt['id']][$fnum]['val'] = $_mEmail->getCddLabel($elt, $val['val']);
                                         }
-                                    } else if ($elt['plugin'] === 'databasejoin') {
+                                    }
+									else if ($elt['plugin'] === 'databasejoin')
+									{
                                         $fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, $groupParams->repeat_group_button == 1);
-                                    } else {
+                                    }
+									else
+									{
                                         $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
                                     }
 
