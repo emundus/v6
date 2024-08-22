@@ -1,8 +1,8 @@
 import Vue from 'vue';
 import App from './App.vue';
 
-Vue.config.productionTip = true;
-Vue.config.devtools = false;
+Vue.config.productionTip = false;
+Vue.config.devtools = true;
 
 /** COMPONENTS **/
 import VModal from 'vue-js-modal';

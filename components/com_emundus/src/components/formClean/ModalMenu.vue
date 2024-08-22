@@ -41,16 +41,15 @@
 
         <div class="em-mb-16">
           <label>{{translations.Intro}}</label>
-                <editor v-for="(language,index_group) in languages"
+                <editor-quill v-for="(language,index_group) in languages"
                         v-if="language.sef === selectedLanguage"
                         :height="'30em'"
                         :text="intro[language.sef]"
-                        :lang="actualLanguage"
                         :enable_variables="false"
                         :id="'editor_' + language.sef"
                         :key="dynamicComponent"
                         v-model="intro[language.sef]">
-                </editor>
+                </editor-quill>
         </div>
       </div>
 
@@ -78,12 +77,12 @@
 import axios from "axios";
 const qs = require("qs");
 import translation from "@/components/translation";
-import Editor from "../editor";
+import EditorQuill from "@/components/editorQuill";
 
 export default {
   name: "modalMenu",
   components: {
-    Editor,
+    EditorQuill,
     translation
   },
   props: {
