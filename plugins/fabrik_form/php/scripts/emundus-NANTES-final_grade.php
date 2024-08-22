@@ -152,7 +152,8 @@ if (!empty($status)) {
 								'user_id_from' => $from_id,
 								'user_id_to' => $file['applicant_id'],
 								'subject' => $subject,
-								'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body
+								'message' => $body,
+                                'email_to' => $to
 							);
 							$m_email->logEmail($message);
 							$msg .= JText::_('EMAIL_SENT').' : '.$to.'<br>';
@@ -205,7 +206,8 @@ if (!empty($status)) {
 							'user_id_from' => $from_id,
 							'user_id_to' => $recipient['id'],
 							'subject' => $subject,
-							'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body
+							'message' => $body,
+                            'email_to' => $to
 						);
 						$m_email->logEmail($message);
 						$msg .= JText::_('EMAIL_SENT').' : '.$to.'<br>';

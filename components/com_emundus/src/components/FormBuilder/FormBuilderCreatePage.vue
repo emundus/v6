@@ -12,10 +12,7 @@
 							type="text"
 							v-model="page.label[shortDefaultLang]"
 							class="em-p-4"
-							:class="{
-								'em-color-white': -1 === selected,
-								'em-bg-main-500':  -1 === selected
-							}"
+							:class="{'em-color-white em-bg-main-500': -1 === selected}"
 					>
 				</div>
 			</section>
@@ -84,10 +81,12 @@
 			</section>
 		</div>
 		<div class="actions em-flex-space-between em-flex-row em-w-100">
-			<button class="em-secondary-button em-w-auto em-white-bg" @click="close(false)">{{ translate('COM_EMUNDUS_FORM_BUILDER_CANCEL') }}</button>
-			<button class="em-primary-button em-w-auto em-ml-8" @click="createPage">{{ translate('COM_EMUNDUS_FORM_BUILDER_PAGE_CREATE_SAVE') }}</button>
+			<button class="em-secondary-button em-w-auto em-white-bg" :disabled="loading" @click="close(false)">{{ translate('COM_EMUNDUS_FORM_BUILDER_CANCEL') }}</button>
+			<button class="em-primary-button em-w-auto em-ml-8" :disabled="loading" @click="createPage">{{ translate('COM_EMUNDUS_FORM_BUILDER_PAGE_CREATE_SAVE') }}</button>
 		</div>
-	</div>
+
+    <div class="em-page-loader" v-if="globalLoading"></div>
+  </div>
 </template>
 
 <script>
@@ -96,164 +95,171 @@ import formBuilderService from '../../services/formbuilder';
 import Skeleton from '../Skeleton'
 
 export default {
-	name: "FormBuilderCreatePage.vue",
-	components: {
-		Skeleton,
-		FormBuilderPreviewForm
-	},
-	props: {
-		profile_id: {
-			type: Number,
-			required: true
-		}
-	},
-	data() {
-		return {
-			loading: true,
-			selected: -1,
-			models: [],
-			page: {
-				label: {
-					fr: 'Nouvelle page',
-					en: 'New page'
-				},
-				intro: {
-					fr: '',
-					en: ''
-				},
-				prid: this.profile_id,
-				template: 0,
-			},
-			search: '',
-			structure: 'new', // new | initial, structure means data structure, to know if we keep same database tables or not
-			canUseInitialStructure: true
-		};
-	},
-	created() {
-		this.getModels();
-	},
-	methods: {
-		getModels() {
-			formBuilderService.getModels().then((response) => {
-				if (response.status) {
-					this.models = response.data.map((model) => {
-						model.displayed = true;
+  name: 'FormBuilderCreatePage.vue',
+  components: {
+    Skeleton,
+    FormBuilderPreviewForm
+  },
+  props: {
+    profile_id: {
+      type: Number,
+      required: true
+    }
+  },
+  data() {
+    return {
+      loading: true,
+      globalLoading: false,
+      selected: -1,
+      models: [],
+      page: {
+        label: {
+          fr: 'Nouvelle page',
+          en: 'New page'
+        },
+        intro: {
+          fr: '',
+          en: ''
+        },
+        prid: this.profile_id,
+        template: 0,
+      },
+      search: '',
+      structure: 'new', // new | initial, structure means data structure, to know if we keep same database tables or not
+      canUseInitialStructure: true
+    };
+  },
+  created() {
+    this.getModels();
+  },
+  methods: {
+    getModels() {
+      formBuilderService.getModels().then((response) => {
+        if (response.status) {
+          this.models = response.data.map((model) => {
+            model.displayed = true;
 
-						return model;
-					});
-				} else {
-					Swal.fire({
-						type: 'warning',
-						title: this.translate('COM_EMUNDUS_FORM_BUILDER_GET_PAGE_MODELS_ERROR'),
-						reverseButtons: true,
-						customClass: {
-							title: 'em-swal-title',
-							confirmButton: 'em-swal-confirm-button',
-							actions: "em-swal-single-action",
-						}
-					});
-				}
+            return model;
+          });
+        } else {
+          Swal.fire({
+            type: 'warning',
+            title: this.translate('COM_EMUNDUS_FORM_BUILDER_GET_PAGE_MODELS_ERROR'),
+            reverseButtons: true,
+            customClass: {
+              title: 'em-swal-title',
+              confirmButton: 'em-swal-confirm-button',
+              actions: "em-swal-single-action",
+            }
+          });
+        }
 
-				this.loading = false;
-			});
-		},
-		createPage() {
-			let model_form_id = -1;
-			if (this.selected > 0) {
-				const found_model = this.models.find((model) => {
-					return model.id === this.selected
-				});
+        this.loading = false;
+      });
+    },
+    createPage() {
+      this.globalLoading = true;
+      this.loading = true;
 
-				if (found_model) {
-					model_form_id = found_model.form_id;
-					this.page.label = found_model.label;
-					this.page.intro = found_model.intro;
-				}
+      let model_form_id = -1;
+      if (this.selected > 0) {
+        const found_model = this.models.find((model) => {
+          return model.id === this.selected
+        });
 
-				if (this.structure !== 'new' && !this.canUseInitialStructure) {
-					this.structure = 'new';
-				}
-			}
+        if (found_model) {
+          model_form_id = found_model.form_id;
+          this.page.label = found_model.label;
+          this.page.intro = found_model.intro;
+        }
 
-			const data = {...this.page, modelid: model_form_id, keep_structure: this.structure === 'initial'};
-			formBuilderService.addPage(data).then(response => {
-				if (!response.status) {
-					Swal.fire({
-						type: 'error',
-						title: this.translate('COM_EMUNDUS_FORM_BUILDER_CREATE_PAGE_ERROR'),
-						reverseButtons: true,
-						customClass: {
-							title: 'em-swal-title',
-							confirmButton: 'em-swal-confirm-button',
-							actions: "em-swal-single-action",
-						}
-					});
-					this.close(false);
-				} else {
-					this.close(true, response.data.id);
-				}
-			});
-		},
-		close(reload = true, newSelected = 0)
-		{
-			this.$emit('close', {
-				'reload': reload,
-				'newSelected': newSelected
-			});
-		},
-		isInitialStructureAlreadyUsed() {
-			let used = false;
+        if (this.structure !== 'new' && !this.canUseInitialStructure) {
+          this.structure = 'new';
+        }
+      }
 
-			if (this.selected !== -1) {
-				const found_model = this.models.find((model) => {
-					return model.id === this.selected;
-				});
+      const data = {...this.page, modelid: model_form_id, keep_structure: this.structure === 'initial'};
+      formBuilderService.addPage(data).then(response => {
+        if (!response.status) {
+          Swal.fire({
+            type: 'error',
+            title: this.translate('COM_EMUNDUS_FORM_BUILDER_CREATE_PAGE_ERROR'),
+            reverseButtons: true,
+            customClass: {
+              title: 'em-swal-title',
+              confirmButton: 'em-swal-confirm-button',
+              actions: "em-swal-single-action",
+            }
+          });
+          this.close(false);
+        } else {
+          this.close(true, response.data.id);
+        }
+      });
+    },
+    close(reload = true, newSelected = 0)
+    {
+      this.$emit('close', {
+        'reload': reload,
+        'newSelected': newSelected
+      });
 
-				if (found_model) {
-					formBuilderService.checkIfModelTableIsUsedInForm(found_model.form_id, this.profile_id).then((response) => {
-						if (response.status) {
-							used = response.data;
-						}
+      this.loading = false;
+      this.globalLoading = false;
+    },
+    isInitialStructureAlreadyUsed() {
+      let used = false;
 
-						if (used) {
-							this.structure = 'new';
-							this.canUseInitialStructure = false;
-						} else {
-							this.canUseInitialStructure = true;
-						}
+      if (this.selected !== -1) {
+        const found_model = this.models.find((model) => {
+          return model.id === this.selected;
+        });
 
-						return used;
-					}).catch(() => {
+        if (found_model) {
+          formBuilderService.checkIfModelTableIsUsedInForm(found_model.form_id, this.profile_id).then((response) => {
+            if (response.status) {
+              used = response.data;
+            }
+
+            if (used) {
+              this.structure = 'new';
+              this.canUseInitialStructure = false;
+            } else {
+              this.canUseInitialStructure = true;
+            }
+
+            return used;
+          }).catch(() => {
             this.canUseInitialStructure = false; // if error, we can't use initial structure, in doubt
             return true;
           });
-				} else {
-					return used;
-				}
-			} else {
-				return used;
-			}
-		}
-	},
-	computed: {
-		displayedModels() {
-			return this.models.filter((model) => {
-				return model.displayed;
-			})
-		}
-	},
-	watch: {
-		search: function() {
-			this.models.forEach((model) => {
-				model.displayed = model.label[this.shortDefaultLang].toLowerCase().includes(this.search.toLowerCase().trim());
-			});
-		},
-		selected: function() {
-			if (this.selected !== -1) {
-				this.isInitialStructureAlreadyUsed();
-			}
-		}
-	}
+        } else {
+          return used;
+        }
+      } else {
+        return used;
+      }
+    }
+  },
+  computed: {
+    displayedModels() {
+      return this.models.filter((model) => {
+        return model.displayed;
+      })
+    }
+  },
+  watch: {
+    search: function() {
+      this.models.forEach((model) => {
+        model.displayed = model.label[this.shortDefaultLang].toLowerCase().includes(this.search.toLowerCase().trim());
+      });
+    },
+    selected: function() {
+      if (this.selected !== -1) {
+        this.isInitialStructureAlreadyUsed();
+      }
+    }
+  }
 }
 </script>
 

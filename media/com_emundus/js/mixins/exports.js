@@ -12,7 +12,7 @@ function export_excel(fnums, letter) {
     if (selectedOption.value != '0') {
         year = selectedOption.getAttribute('data-year');
     }
-    const excel_file_name = code + '_' + year;
+    var excel_file_name = code + '_' + year;
 
     $('[class^="emundusitem"]:checkbox:checked').each(function () {
         if ($(this).attr('class') == 'emundusitem_evaluation otherForm') {
@@ -41,7 +41,7 @@ function export_excel(fnums, letter) {
     });
     objJson = JSON.stringify(objJson);
 
-    var methode = $('#em-export-methode:checked').val();
+    var methode = $('input[name=em-export-methode]:checked').val();
 
     var options = {};
     i = 0;
@@ -132,8 +132,8 @@ function export_excel(fnums, letter) {
 }
 
 function generate_csv(json, eltJson, objJson, options, objclass, letter) {
-    const maxcsv = 65000;
-    const maxxls = 65000;
+    var maxcsv = 65000;
+    var maxxls = 65000;
     var start = json.start;
     var limit = json.limit;
     var totalfile = json.totalfile;
@@ -484,7 +484,7 @@ function export_pdf(fnums, ids, default_export = false) {
 }
 
 function generate_pdf(json,pdf_elements= null) {
-    const maxfiles = 5000;
+    var maxfiles = 5000;
     var start       = json.start;
     var limit       = json.limit;
     var totalfile   = json.totalfile;
@@ -597,6 +597,7 @@ function export_zip(fnums){
     var form_checked = [];
     var attach_checked = [];
     var options = [];
+    var params = {};
 
     $('#felts input:checked').each(function() {
         form_checked.push($(this).val());
@@ -625,6 +626,12 @@ function export_zip(fnums){
         });
     } else {
         options.push("0");
+    }
+
+    if ($('#concat_attachments_with_form').is(":checked")) {
+        params.concat_attachments_with_form = 1;
+    } else {
+        params.concat_attachments_with_form = 0;
     }
 
     $('#data').hide();
@@ -671,7 +678,8 @@ function export_zip(fnums){
             admission: admission,
             formids: form_checked,
             attachids:attach_checked,
-            options:options
+            options:options,
+            params: JSON.stringify(params)
         },
         dataType:'json',
         success: function(result) {
@@ -862,10 +870,10 @@ function generate_letter() {
                             '<tbody>';
 
                         files.forEach(file => {
-                            const regex = /images\/emundus\/files\//g;
-                            const subst = `index.php?option=com_emundus&task=getfile&u=images/emundus/files/`;
+                            var regex = /images\/emundus\/files\//g;
+                            var subst = `index.php?option=com_emundus&task=getfile&u=images/emundus/files/`;
 
-                            const getfile_url = file.url.replace(regex, subst);
+                            var getfile_url = file.url.replace(regex, subst);
 
                             table += '<tr id="' + file.upload + '">' +
                                 '<td>' + file.filename +

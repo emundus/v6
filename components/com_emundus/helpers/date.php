@@ -63,13 +63,18 @@ class EmundusHelperDate {
                 $config = JFactory::getConfig();
                 $offset = $config->get('offset');
 
-                $date_time = new DateTime($date, new DateTimeZone($offset));
-                $date_time->setTimezone(new DateTimeZone('UTC'));
+                $timezone = date_default_timezone_get();
+                if (in_array($offset, timezone_identifiers_list())) {
+                    $timezone = $offset;
+                }
+
+                $date_time = new DateTime($date, new DateTimeZone($timezone));
+	            $date_time->setTimezone(new DateTimeZone('UTC'));
             } else {
                 $date_time = new DateTime($date);
             }
 
-            $display_date = HtmlHelper::date($date_time->format('Y-m-d H:i:s'), Text::_($format));
+            $display_date = HtmlHelper::date($date_time->format('Y-m-d H:i:s'), Text::_($format,false,false));
         }
 
         return $display_date;

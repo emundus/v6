@@ -2062,9 +2062,9 @@ class EmundusHelperFiles
             $fnum = $tag['fnum'];
 			$class = str_replace('label-','',$tag['class']);
             if (!isset($tagsList[$fnum])) {
-                $tagsList[$fnum] = '<div class="flex items-center gap-2 sticker label-'.$class.'" title="' . $tag['label'] . '"><span class="circle"></span><span class="text-white truncate font-semibold max-w-[150px] text-sm">'.$tag['label'].'</span></div>';
+                $tagsList[$fnum] = '<div class="flex items-center gap-2 sticker label-'.$class.'" title="' . $tag['label'] . '"><span class="circle"></span><span class="text-white truncate font-semibold w-[150px] text-sm">'.$tag['label'].'</span></div>';
             } else {
-                $tagsList[$fnum] .= '<div class="flex items-center gap-2 sticker label-'.$class.'" title="' . $tag['label'] . '"><span class="circle"></span><span class="text-white truncate font-semibold max-w-[150px] text-sm">'.$tag['label'].'</span></div>';
+                $tagsList[$fnum] .= '<div class="flex items-center gap-2 sticker label-'.$class.'" title="' . $tag['label'] . '"><span class="circle"></span><span class="text-white truncate font-semibold w-[150px] text-sm">'.$tag['label'].'</span></div>';
             }
         }
         return $tagsList;
@@ -2384,10 +2384,20 @@ class EmundusHelperFiles
             $str = '<br><hr>';
 			$str .= '<p><em style="font-size: 14px">' . JText::_('COM_EMUNDUS_EVALUATION_EVALUATED_ON') . ' : ' . JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')) . ' - ' . $fnumInfo['name'] . '</em></p>';
             $str .= '<h2>' . JText::_('COM_EMUNDUS_EVALUATION_EVALUATOR') . ': ' . $evaluator_name . '</h2>';
-			$str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
 
-			foreach ($elements as $element)
-			{
+            $element_groups = [];
+            foreach ($elements as $element)
+            {
+                if (!in_array($element->group_id, $element_groups) && JText::_(trim($element->group_label)) !== 'Hidden group') {
+                    if(sizeof($element_groups) != 0) {
+                        $str .= '</table>';
+                    }
+
+                    $element_groups[] = $element->group_id;
+                    $str .= '<h3 class="group">' . JText::_(trim($element->group_label)) . '</h3>';
+                    $str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
+                }
+
 				if ($element->table_join == null)
 				{
 					$k = $element->tab_name . '___' . $element->element_name;
@@ -3656,6 +3666,10 @@ class EmundusHelperFiles
 			$where['q'] .= ' AND (' . $programme_where_cond . $fnum_assoc_where_cond . ') ';
 		}
 
+        if ($caller == 'files') {
+            $where['q'] .= ' AND esc.published = ' . $db->quote('1');
+        }
+
 	    $menu = JFactory::getApplication()->getMenu();
 		if (!empty($menu)) {
 			$active = $menu->getActive();
@@ -3712,7 +3726,7 @@ class EmundusHelperFiles
 
 			    $at_least_one = false;
 
-			    $scopes = ['jecc.applicant_id', 'jecc.fnum', 'u.username', 'eu.firstname', 'eu.lastname', 'u.email', 'u.username'];
+			    $scopes = ['jecc.applicant_id', 'jecc.fnum', 'u.username', 'eu.firstname', 'eu.lastname', 'u.email'];
 			    foreach ($quick_search_filters as $index => $filter) {
 				    if (!empty($filter['scope'])) {
 					    if ($filter['scope'] === 'everywhere') {
@@ -3725,6 +3739,17 @@ class EmundusHelperFiles
 
 							    $quick_search_where .= $this->writeQueryWithOperator($scope, $filter['value'], 'LIKE');
 						    }
+
+                            // if filter value is a concat of firstname and lastname
+                            // in this case, we split the value and search for each part
+                            $pattern_fullname = '/^([a-zA-Z]+) ([a-zA-Z]+)$/';
+                            if (preg_match($pattern_fullname, $filter['value'])) {
+                                $quick_search_where .= ' OR ';
+                                $quick_search_where .= $this->writeQueryWithOperator('CONCAT(eu.firstname, " ", eu.lastname)', $filter['value'], 'LIKE');
+
+                                $quick_search_where .= ' OR ';
+                                $quick_search_where .= $this->writeQueryWithOperator('CONCAT(eu.lastname, " ", eu.firstname)', $filter['value'], 'LIKE');
+                            }
 					    } else if (in_array($filter['scope'], $scopes)) {
 						    $at_least_one = true;
 						    if ($index > 0) {
@@ -3887,15 +3912,45 @@ class EmundusHelperFiles
                                     $where['q'] .= ' AND ' . $this->writeQueryWithOperator('jecc.published', $filter['value'], $filter['operator']);
                                     break;
                                 case 'tags':
-                                    if ($filter['operator'] === 'NOT IN') {
-                                        $where['q'] .= ' AND jecc.fnum NOT IN (
-                                            SELECT DISTINCT jos_emundus_campaign_candidature.fnum
-                                            FROM jos_emundus_campaign_candidature
-                                            LEFT JOIN jos_emundus_tag_assoc ON jos_emundus_tag_assoc.fnum = jos_emundus_campaign_candidature.fnum
-                                            WHERE ' . $this->writeQueryWithOperator('jos_emundus_tag_assoc.id_tag', $filter['value'], 'IN') . '
-                                        )';
+                                    if ($filter['andorOperator'] === 'AND' && is_array($filter['value']) && sizeof($filter['value']) > 1) {
+
+                                        $first = true;
+                                        $subquery = '';
+                                        foreach ($filter['value'] as $value) {
+                                            if ($first) {
+                                                $first = false;
+                                            } else {
+                                                $subquery .= ' INTERSECT ';
+                                            }
+
+                                            $subquery .= ' SELECT DISTINCT jos_emundus_tag_assoc.fnum
+                                                FROM jos_emundus_tag_assoc
+                                                WHERE ' . $this->writeQueryWithOperator('jos_emundus_tag_assoc.id_tag', $value, 'IN');
+                                        }
+
+                                        try {
+                                            $db->setQuery($subquery);
+                                            $fnums_with_all_tags = $db->loadColumn();
+                                        } catch (Exception $e) {
+                                            JLog::add('Failed to get fnums for users_assoc filter ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                                        }
+
+                                        if (!empty($fnums_with_all_tags)) {
+                                            $where['q'] .= $filter['operator'] === 'NOT IN' ? ' AND jecc.fnum NOT IN (' : ' AND jecc.fnum IN (';
+                                            $where['q'] .= implode(',', $fnums_with_all_tags) . ')';
+                                        } else {
+                                            $where['q'] .= ' AND 1=2';
+                                        }
                                     } else {
-                                        $where['q'] .= ' AND ( ' . $this->writeQueryWithOperator('eta.id_tag', $filter['value'], $filter['operator']) . ' )';
+                                        if ($filter['operator'] === 'NOT IN') {
+                                            $where['q'] .= ' AND jecc.fnum NOT IN (
+                                                SELECT DISTINCT jos_emundus_tag_assoc.fnum
+                                                FROM jos_emundus_tag_assoc
+                                                WHERE ' . $this->writeQueryWithOperator('jos_emundus_tag_assoc.id_tag', $filter['value'], 'IN') . '
+                                            )';
+                                        } else {
+                                            $where['q'] .= ' AND ( ' . $this->writeQueryWithOperator('eta.id_tag', $filter['value'], $filter['operator']) . ' )';
+                                        }
                                     }
                                     break;
                                 case 'group_assoc':
@@ -3923,10 +3978,41 @@ class EmundusHelperFiles
                                         $setup_groups_alias = array_search('jos_emundus_setup_groups_repeat_course', $already_joined);
                                     }
 
-                                    if ($filter['operator'] === 'NOT IN') {
-                                        // not in necessits a different approach, because ther is a one to many relationship
-                                        // one jecc.id can have many group_assoc.id
-                                        $where['q'] .= 'AND ( jecc.fnum NOT IN (
+                                    if ($filter['andorOperator'] === 'AND' && is_array($filter['value']) && sizeof($filter['value']) > 1) {
+                                        $first = true;
+                                        $subquery = '';
+                                        foreach ($filter['value'] as $value) {
+                                            if ($first) {
+                                                $first = false;
+                                            } else {
+                                                $subquery .= ' INTERSECT ';
+                                            }
+
+                                            $subquery .= '(SELECT DISTINCT jos_emundus_group_assoc.fnum
+										        FROM jos_emundus_group_assoc
+										        LEFT JOIN jos_emundus_campaign_candidature as ecc on ecc.fnum = jos_emundus_group_assoc.fnum
+										        LEFT JOIN jos_emundus_setup_campaigns as esc on esc.id = ecc.campaign_id
+										        WHERE ' . $this->writeQueryWithOperator('jos_emundus_group_assoc.group_id', $value, 'IN') . '
+										        OR esc.training IN (
+									            SELECT jos_emundus_setup_groups_repeat_course.course
+									            FROM jos_emundus_setup_groups_repeat_course
+									            WHERE ' . $this->writeQueryWithOperator('jos_emundus_setup_groups_repeat_course.parent_id', $value, 'IN') . '))';
+                                        }
+
+                                        $db->setQuery($subquery);
+                                        $fnums_with_group_assocs = $db->loadColumn();
+
+                                        if (!empty($fnums_with_group_assocs)) {
+                                            $where['q'] .= $filter['operator'] === 'NOT IN' ? ' AND (jecc.fnum NOT IN (' : ' AND (jecc.fnum IN (';
+                                            $where['q'] .= implode(',', $fnums_with_group_assocs) . '))';
+                                        } else {
+                                            $where['q'] .= ' AND 1=2';
+                                        }
+                                    } else {
+                                        if ($filter['operator'] === 'NOT IN') {
+                                            // not in necessits a different approach, because ther is a one to many relationship
+                                            // one jecc.id can have many group_assoc.id
+                                            $where['q'] .= 'AND ( jecc.fnum NOT IN (
 												SELECT jos_emundus_group_assoc.fnum
 										        FROM jos_emundus_group_assoc
 										        WHERE ' . $this->writeQueryWithOperator('jos_emundus_group_assoc.group_id', $filter['value'], 'IN') . '
@@ -3938,10 +4024,10 @@ class EmundusHelperFiles
 									        )
 									    )';
 
-                                    } else {
-                                        $where['q'] .= ' AND (' . $this->writeQueryWithOperator($group_assoc_alias . '.group_id', $filter['value'], $filter['operator']) . ' OR ' . $this->writeQueryWithOperator($setup_groups_alias . '.id', $filter['value'], $filter['operator']). ')';
+                                        } else {
+                                            $where['q'] .= ' AND (' . $this->writeQueryWithOperator($group_assoc_alias . '.group_id', $filter['value'], $filter['operator']) . ' OR ' . $this->writeQueryWithOperator($setup_groups_alias . '.id', $filter['value'], $filter['operator']). ')';
+                                        }
                                     }
-
                                     break;
                                 case 'users_assoc':
                                     if (!in_array('jos_emundus_users_assoc', $already_joined)) {
@@ -3953,17 +4039,48 @@ class EmundusHelperFiles
                                         $users_assoc_alias = array_search('jos_emundus_group_assoc', $already_joined);
                                     }
 
-                                    if ($filter['operator'] === 'NOT IN') {
-                                        $where['q'] .= ' AND jecc.fnum NOT IN (
+                                    if ($filter['andorOperator'] === 'AND' && is_array($filter['value']) && sizeof($filter['value']) > 1) {
+                                        $user_assoc_fnums = [];
+
+                                        $first = true;
+                                        $subquery = '';
+                                        foreach ($filter['value'] as $value) {
+                                            if ($first) {
+                                                $first = false;
+                                            } else {
+                                                $subquery .= ' INTERSECT ';
+                                            }
+
+                                            $subquery .= ' SELECT DISTINCT jos_emundus_users_assoc.fnum
+                                            FROM jos_emundus_users_assoc
+                                            WHERE ' . $this->writeQueryWithOperator('jos_emundus_users_assoc.user_id', $value, 'IN')  . ' AND jos_emundus_users_assoc.fnum IS NOT NULL';
+                                        }
+
+                                        try {
+                                            $db->setQuery($subquery);
+                                            $user_assoc_fnums = $db->loadColumn();
+                                        } catch (Exception $e) {
+                                            JLog::add('Failed to get fnums for users_assoc filter ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                                        }
+
+                                        if (!empty($user_assoc_fnums)) {
+                                            $where['q'] .= $filter['operator'] === 'NOT IN' ? ' AND jecc.fnum NOT IN (' : ' AND jecc.fnum IN (';
+                                            $where['q'] .= implode(',', $user_assoc_fnums) . ')';
+                                        } else {
+                                            $where['q'] .= ' AND 1=2';
+                                        }
+                                    } else {
+                                        if ($filter['operator'] === 'NOT IN') {
+                                            $where['q'] .= ' AND jecc.fnum NOT IN (
                                             SELECT DISTINCT jos_emundus_users_assoc.fnum
                                             FROM jos_emundus_users_assoc
                                             WHERE ' . $this->writeQueryWithOperator('jos_emundus_users_assoc.user_id', $filter['value'], 'IN') . '
-                                            AND jeua.action_id = 1 AND jeua.r = 1
+                                            AND jos_emundus_users_assoc.action_id = 1 AND jos_emundus_users_assoc.r = 1
                                         )';
-                                    } else {
-                                        $where['q'] .= ' AND ' . $this->writeQueryWithOperator($users_assoc_alias . '.user_id', $filter['value'], $filter['operator']);
+                                        } else {
+                                            $where['q'] .= ' AND ' . $this->writeQueryWithOperator($users_assoc_alias . '.user_id', $filter['value'], $filter['operator']);
+                                        }
                                     }
-
                                     break;
                                 default:
                                     break;
@@ -4241,7 +4358,7 @@ class EmundusHelperFiles
 		return $left_joins;
 	}
 
-	public function writeQueryWithOperator($element, $values, $operator, $type = 'select', $fabrik_element_data = null) {
+	public function writeQueryWithOperator($element, $values, $operator, $type = 'select', $fabrik_element_data = null, $andor = 'OR') {
 		$query = '1=1';
 
 
@@ -4404,7 +4521,7 @@ class EmundusHelperFiles
                                     if ($key == 0) {
                                         $query = $element . ' LIKE ' . $db->quote('%"' . $value . '"%');
                                     } else {
-                                        $query .= ' OR ' . $element . ' LIKE ' . $db->quote('%"' . $value . '"%');
+                                        $query .=  $andor . ' ' . $element . ' LIKE ' . $db->quote('%"' . $value . '"%');
                                     }
                                 }
                             } else {
@@ -4686,9 +4803,9 @@ class EmundusHelperFiles
                                 if (!empty($row_values)) {
                                     foreach($row_values as $row_value) {
                                         if (!isset($available_values[$row_value])) {
-                                            $available_values[$row_value] = 1;
+                                            $available_values[$row_value] = ['count' => 1];
                                         } else {
-                                            $available_values[$row_value]++;
+                                            $available_values[$row_value]['count']++;
                                         }
                                     }
                                 }

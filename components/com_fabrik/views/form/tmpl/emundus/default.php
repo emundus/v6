@@ -106,7 +106,7 @@ endif;
 			$this->group = $group;
 			?>
 
-            <fieldset class="mb-6 <?php echo $group->class; ?> <?php if ($group->columns > 1) {
+            <div class="mb-6 <?php echo $group->class; ?> <?php if ($group->columns > 1) {
 				echo 'fabrikGroupColumns-' . $group->columns . ' fabrikGroupColumns';
 			} ?>" id="group<?php echo $group->id; ?>" style="<?php echo $group->css; ?>">
                 <?php if(($group->showLegend && !empty($group->title)) || !empty($group->intro)) : ?>
@@ -141,7 +141,7 @@ endif;
 				<?php
 				endif;
 				?>
-            </fieldset>
+            </div>
 		<?php
 		endforeach;
 		if ($model->editable) : ?>
@@ -171,7 +171,7 @@ endif;
         const headerNav = document.getElementById('g-navigation');
         const sidebar = document.querySelector('.view-form #g-sidebar');
         if (headerNav && sidebar) {
-            document.querySelector('.view-form #g-sidebar').style.top = headerNav.offsetHeight + 'px';
+            sidebar.style.top = headerNav.offsetHeight + 8 + 'px';
         }
 
         // Remove applicant-form class if needed

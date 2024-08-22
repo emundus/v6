@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+		<fieldset name="plg-cron-emundusfilemaker" label="COM_FABRIK_OPTIONS">
+			<field name="attribute_mapping_table_beetween_filemaker_emundus"
+				   type="text"
+				   description="PLG_CRON_FILEMAKER_ATTRIBUTE_MAPPING_TABLE_DESC"
+				   label="PLG_CRON_FILEMAKER_ATTRIBUTE_MAPPING_TABLE_LABEL"
+				   size="100"
+				   required="true"
+			/>
+			<field name="forms_mapping_table_beetween_filemaker_emundus"
+				   type="text"
+				   description="PLG_CRON_FILEMAKER_FORMS_MAPPING_TABLE_DESC"
+				   label="PLG_CRON_FILEMAKER_FORMS_MAPPING_TABLE_LABEL"
+				   size="100"
+				   required="true"/>
+			<field name="campaign_id"
+				   type="number"
+				   description="PLG_CRON_FILEMAKER_CAMPAIGN_ID_DESC"
+				   label="PLG_CRON_FILEMAKER_CAMPAIGN_ID_LABEL"
+				   required="true"
+				  />
+			<field name="profile"
+				   type="number"
+				   description="PLG_CRON_FILEMAKER_DEFAULT_USER_PROFILE_DESC"
+				   label="PLG_CRON_FILEMAKER_DEFAULT_USER_PROFILE_LABEL"
+				   required="true"
+			/>
+			<field name="admin_step"
+				   type="text"
+				   description="PLG_CRON_FILEMAKER_RECORD_ADMIN_STEP_DESC"
+				   label="PLG_CRON_FILEMAKER_RECORD_ADMIN_STEP_LABEL"
+				   size="30"
+				   required="true"
+			/>
+			<field name="filemaker_global_layout"
+				   type="text"
+				   description="PLG_CRON_FILEMAKER_GLOBAL_FORM_LAYOUT_DESC"
+				   label="PLG_CRON_FILEMAKER_GLOBAL_FORM_LAYOUT_LABEL"
+				   size="100"
+				   required="true"
+			/>
+			<field name="mail_trigger_state"
+				   type="number"
+				   description="PLG_CRON_MAIL_TRIGGER_STATE_DESC"
+				   label="PLG_CRON_MAIL_TRIGGER_STATE_LABEL"
+				   size="100"
+				   required="true"
+			/>
+			<field name="mail_template"
+				   type="number"
+				   description="PLG_CRON_MAIL_TEMPLATE_DESC"
+				   label="PLG_CRON_MAIL_TEMPLATE_LABEL"
+				   size="100"
+				   required="true"
+			/>
+
+		</fieldset>
+	</fields>
+</form>
