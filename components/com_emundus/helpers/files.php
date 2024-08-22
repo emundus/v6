@@ -2384,10 +2384,20 @@ class EmundusHelperFiles
             $str = '<br><hr>';
 			$str .= '<p><em style="font-size: 14px">' . JText::_('COM_EMUNDUS_EVALUATION_EVALUATED_ON') . ' : ' . JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')) . ' - ' . $fnumInfo['name'] . '</em></p>';
             $str .= '<h2>' . JText::_('COM_EMUNDUS_EVALUATION_EVALUATOR') . ': ' . $evaluator_name . '</h2>';
-			$str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
 
-			foreach ($elements as $element)
-			{
+            $element_groups = [];
+            foreach ($elements as $element)
+            {
+                if (!in_array($element->group_id, $element_groups) && JText::_(trim($element->group_label)) !== 'Hidden group') {
+                    if(sizeof($element_groups) != 0) {
+                        $str .= '</table>';
+                    }
+
+                    $element_groups[] = $element->group_id;
+                    $str .= '<h3 class="group">' . JText::_(trim($element->group_label)) . '</h3>';
+                    $str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
+                }
+
 				if ($element->table_join == null)
 				{
 					$k = $element->tab_name . '___' . $element->element_name;
@@ -5384,5 +5394,48 @@ class EmundusHelperFiles
 
 		return $linked;
 	}
+
+    public static function getFnumFromId($id) {
+        $fnum = '';
+
+        if (!empty($id)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+            $query->select('fnum')
+                ->from('#__emundus_campaign_candidature')
+                ->where('id = ' . $id);
+
+            try {
+                $db->setQuery($query);
+                $fnum = $db->loadResult();
+            } catch (Exception $e) {
+                $fnum = '';
+            }
+        }
+
+        return $fnum;
+    }
+
+    public static function getIdFromFnum($fnum) {
+        $id = '';
+
+        if (!empty($fnum)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('id')
+                ->from('#__emundus_campaign_candidature')
+                ->where('fnum = ' . $db->quote($fnum));
+
+            try {
+                $db->setQuery($query);
+                $id = $db->loadResult();
+            } catch (Exception $e) {
+                $id = '';
+            }
+        }
+
+        return $id;
+    }
 }
 

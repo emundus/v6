@@ -2160,22 +2160,23 @@ class EmundusModelEvaluation extends JModelList {
 			                    }
 
 			                    $fabrikValues = [];
+                                $textarea_elements = [];
 
 			                    // TODO: Move this to a global method by passing the fabrik element
 			                    foreach ($fabrikElts as $elt) {
 				                    $params      = json_decode($elt['params']);
 				                    $groupParams = json_decode($elt['group_params']);
 
-                                    if (!empty($groupParams) && $groupParams->repeat_group_button == 1) {
+                                    if (!empty($groupParams) && $groupParams->repeat_group_button == 1)
+									{
                                         $fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, $groupParams->repeat_group_button == 1);
-                                    } else if ($elt['plugin'] == 'date') {
+                                    }
+									else if ($elt['plugin'] == 'date')
+									{
                                         $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name'], $params->date_form_format);
                                     }
-                                    else {
-                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
-                                    }
-                                    if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown" || $elt['plugin'] == "radiobutton") {
-
+                                    else if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown" || $elt['plugin'] == "radiobutton")
+									{
                                         foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
                                             if ($elt['plugin'] == "checkbox" || (!empty($params->multiple) && $params->multiple == 1)) {
                                                 $val = json_decode($val['val']);
@@ -2186,7 +2187,7 @@ class EmundusModelEvaluation extends JModelList {
                                             if (count($val) > 0) {
                                                 foreach ($val as $k => $v) {
                                                     $index = array_search($v, $params->sub_options->sub_values);
-                                                    $val[$k] = JText::_($params->sub_options->sub_labels[$index]);
+                                                    $val[$k] = $index !== false ? JText::_($params->sub_options->sub_labels[$index]) : "";
                                                 }
                                                 $fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", $val);
                                             } else {
@@ -2194,8 +2195,9 @@ class EmundusModelEvaluation extends JModelList {
                                             }
                                         }
 
-                                    } elseif ($elt['plugin'] == "birthday") {
-
+                                    }
+									elseif ($elt['plugin'] == "birthday")
+									{
                                         foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
                                             $val = explode(',', $val['val']);
                                             foreach ($val as $k => $v) {
@@ -2207,7 +2209,8 @@ class EmundusModelEvaluation extends JModelList {
                                         }
 
 				                    }
-				                    elseif ($elt['plugin'] == 'textarea' && $whitespace_textarea == 1) {
+				                    elseif ($elt['plugin'] == 'textarea' && $whitespace_textarea == 1)
+				                    {
 					                    $formatted_text = explode('<br />',nl2br($fabrikValues[$elt['id']][$fnum]['val']));
 					                    $inline = new \PhpOffice\PhpWord\Element\TextRun();
 					                    foreach ($formatted_text as $key => $text) {
@@ -2223,19 +2226,29 @@ class EmundusModelEvaluation extends JModelList {
 					                    $fabrikValues[$elt['id']][$fnum]['val'] = $inline;
 					                    $fabrikValues[$elt['id']][$fnum]['complex_data'] = true;
 				                    }
-				                    elseif ($elt['plugin'] == 'emundus_phonenumber') {
+									elseif ($elt['plugin'] == 'textarea') {
+	                                    $textarea_elements[] = $elt['id'];
+	                                    $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
+                                    }
+                                    elseif ($elt['plugin'] == 'emundus_phonenumber')
+				                    {
 					                    $fabrikValues[$elt['id']][$fnum]['val'] = substr($fabrikValues[$elt['id']][$fnum]['val'], 2, strlen($fabrikValues[$elt['id']][$fnum]['val']));
 				                    }
-                                    elseif ($elt['plugin'] == 'yesno') {
+                                    elseif ($elt['plugin'] == 'yesno')
+                                    {
                                         $fabrikValues[$elt['id']][$fnum]['val'] = $fabrikValues[$elt['id']][$fnum]['val'] == '1' ? JText::_('JYES') : JText::_('JNO');
                                     }
                                     elseif ($elt['plugin'] == 'cascadingdropdown') {
                                         foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
                                             $fabrikValues[$elt['id']][$fnum]['val'] = $_mEmail->getCddLabel($elt, $val['val']);
                                         }
-                                    } else if ($elt['plugin'] === 'databasejoin') {
+                                    }
+									else if ($elt['plugin'] === 'databasejoin')
+									{
                                         $fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, $groupParams->repeat_group_button == 1);
-                                    } else {
+                                    }
+									else
+									{
                                         $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
                                     }
 
@@ -2246,8 +2259,41 @@ class EmundusModelEvaluation extends JModelList {
 
 			                    $preprocess = new \PhpOffice\PhpWord\TemplateProcessor($letter_file);
 			                    if (isset($fnumInfo[$fnum])) {
-				                    $tags = $_mEmail->setTagsWord(@$fnumInfo[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
 
+                                    foreach ($idFabrik as $id) {
+                                        if (isset($fabrikValues[$id][$fnum])) {
+                                            if (in_array($id, $textarea_elements)) {
+                                                /**
+                                                 * In order to make it work use this format in the word file :
+                                                 * ${textarea_<fabrik_id>}
+                                                 * ${<fabrik_id>}
+                                                 * ${/textarea_<fabrik_id>}
+                                                 * Documentation : https://phpword.readthedocs.io/en/latest/templates-processing.html#cloneblock
+                                                 */
+
+                                                $html = $fabrikValues[$id][$fnum]['val'];
+                                                $section = $phpWord->addSection();
+                                                \PhpOffice\PhpWord\Shared\Html::addHtml($section, $html);
+                                                $containers = $section->getElements();
+                                                $clone = $preprocess->cloneBlock('textarea_' . $id, count($containers), true, true);
+
+                                                for($i = 0; $i < count($containers); $i++) {
+                                                    $complex_block = $preprocess->setComplexBlock($id . '#' . ($i+1), $containers[$i]);
+                                                }
+
+                                            } else if($fabrikValues[$id][$fnum]['complex_data']){
+                                                $preprocess->setComplexValue($id, $fabrikValues[$id][$fnum]['val']);
+                                            } else {
+                                                $value = str_replace('\n', ', ', $fabrikValues[$id][$fnum]['val']);
+                                                $preprocess->setValue($id, $value);
+                                            }
+                                        }
+                                        else {
+                                            $preprocess->setValue($id, '');
+                                        }
+                                    }
+
+                                    $tags = $_mEmail->setTagsWord(@$fnumInfo[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
 				                    foreach ($setupTags as $tag) {
 					                    $val      = '';
 					                    $lowerTag = strtolower($tag);
@@ -2288,20 +2334,6 @@ class EmundusModelEvaluation extends JModelList {
 						                    else {
 							                    $preprocess->setValue($tag, $val);
 						                    }
-					                    }
-				                    }
-
-				                    foreach ($idFabrik as $id) {
-					                    if (isset($fabrikValues[$id][$fnum])) {
-						                    if($fabrikValues[$id][$fnum]['complex_data']){
-							                    $preprocess->setComplexValue($id, $fabrikValues[$id][$fnum]['val']);
-						                    } else {
-							                    $value = str_replace('\n', ', ', $fabrikValues[$id][$fnum]['val']);
-							                    $preprocess->setValue($id, $value);
-						                    }
-					                    }
-					                    else {
-						                    $preprocess->setValue($id, '');
 					                    }
 				                    }
 

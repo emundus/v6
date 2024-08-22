@@ -4911,6 +4911,19 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 
 		if (version_compare($cache_version, '1.39.1', '<=') || $firstrun) {
 			EmundusHelperUpdate::installExtension('System - eMundus', 'emundus','{"name":"System - eMundus","type":"plugin","creationDate":"15 juillet 2024","author":"eMundus","copyright":"Copyright (C) 2024 eMundus","authorEmail":"dev@emundus.io","authorUrl":"http:\/\/www.emundus.fr","version":"1.39.1","description":"eMundus plugin to call jQuery","group":"","filename":"emundus"}','plugin',1,'system');
+            EmundusHelperUpdate::addColumn('jos_emundus_chatroom','status','int');
+		}
+
+		if (version_compare($cache_version, '1.40.0', '<=') || $firstrun) {
+			if (!class_exists('EmundusAdministratorModelComments')) {
+				require_once(JPATH_ROOT . '/administrator/components/com_emundus/models/comments.php');
+			}
+			$m_comments = new EmundusAdministratorModelComments();
+			$succeed['update_comments_table'] = $m_comments->install();
+
+			EmundusHelperUpdate::addColumn('jos_emundus_setup_action_tag', 'ordering', 'INT', null, 1, 0);
+
+			EmundusHelperUpdate::addColumn('jos_emundus_chatroom','status','INT');
 		}
 
         if (version_compare($cache_version, '1.39.2', '<=') || $firstrun) {

@@ -49,21 +49,19 @@
 
 <script>
 /* COMPONENTS */
-import Editor from "@/components/editor";
+import EditorQuill from "@/components/editorQuill";
 import Multiselect from 'vue-multiselect';
 
 /* SERVICES */
 import client from "com_emundus/src/services/axiosClient";
 import translationsService from "com_emundus/src/services/translations";
 import mixin from "com_emundus/src/mixins/mixin";
-import EditorQuill from "@/components/editorQuill.vue";
 
 export default {
   name: "editArticle",
 
   components: {
     EditorQuill,
-    Editor,
     Multiselect
   },
 

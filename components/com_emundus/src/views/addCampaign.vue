@@ -248,7 +248,7 @@ import Translation from "../components/translation"
 
 /** SERVICES **/
 import campaignService from 'com_emundus/src/services/campaign';
-import EditorQuill from "../components/editorQuill";
+import EditorQuill from "@/components/editorQuill";
 
 const qs = require("qs");
 
