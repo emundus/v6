@@ -293,7 +293,7 @@ class Files
             $db = JFactory::getDbo();
             $query = $db->getQuery(true);
 
-            $query->select('DISTINCT esc.id as value, esc.label')
+            $query->select('DISTINCT esc.id as value, CONCAT(esc.label, \' (\', esc.year, \')\') as label')
                 ->from($db->quoteName('#__emundus_setup_campaigns', 'esc'))
                 ->join('inner', $db->quoteName('#__emundus_setup_groups_repeat_course', 'esgrc') . ' ON esgrc.course = esc.training')
                 ->join('inner', $db->quoteName('#__emundus_groups', 'eg') . ' ON eg.group_id = esgrc.parent_id')
