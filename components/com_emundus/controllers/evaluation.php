@@ -9,6 +9,8 @@
 
 // No direct access
 
+use Joomla\CMS\Language\Text;
+
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport('joomla.application.component.controller');
@@ -101,6 +103,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
             }
         }
 
+        $session->set('last-filters-use-adavanced', false);
         $session->set('filt_params', $params);
         $session->set('limitstart', 0);
         echo json_encode((object)(array('status' => true)));
@@ -637,8 +640,9 @@ class EmundusControllerEvaluation extends JControllerLegacy
 									    'user_id_from' => $from_id,
 									    'user_id_to' => $file['applicant_id'],
 									    'subject' => $subject,
-									    'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$to.'</i><br>'.$body,
-									    'email_id' => $trigger_email_id
+									    'message' => $body,
+									    'email_id' => $trigger_email_id,
+                                        'email_to' => $file['email']
 								    );
 								    $m_email->logEmail($message, $file['fnum']);
 								    $msg .= JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT').' : '.$to.'<br>';
@@ -695,8 +699,9 @@ class EmundusControllerEvaluation extends JControllerLegacy
 								    'user_id_from' => $from_id,
 								    'user_id_to' => $recipient['id'],
 								    'subject' => $subject,
-								    'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$to.'</i><br>'.$body,
-								    'email_id' => $trigger_email_id
+								    'message' => $body,
+								    'email_id' => $trigger_email_id,
+                                    'email_to' => $recipient['email']
 							    ];
 							    $m_email->logEmail($message, $fnum['fnum']);
 							    $msg .= JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT').' : '.$to.'<br>';
@@ -740,20 +745,13 @@ class EmundusControllerEvaluation extends JControllerLegacy
 
     public function getfnuminfos()
     {
-        $jinput = JFactory::getApplication()->input;
-        $fnum = $jinput->getString('fnum', null);
-        $res = false;
-        $fnumInfos = null;
+		if (!class_exists('EmundusControllerFiles'))
+			require_once(JPATH_ROOT.'/components/com_emundus/controllers/files.php');
 
-        if ($fnum != null)
-        {
-            $m_files = $this->getModel('Files');
-            $fnumInfos = $m_files->getFnumInfos($fnum);
-            if($fnum !== false)
-                $res = true;
-        }
-        JFactory::getSession()->set('application_fnum', $fnum);
-        echo json_encode((object)(array('status' => $res, 'fnumInfos' => $fnumInfos)));
+		$c_files = new EmundusControllerFiles();
+        $response = $c_files->getfnuminfos();
+
+        echo json_encode((object)$response);
         exit;
     }
 
@@ -1226,7 +1224,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
             }
             foreach ($colsup as $kOpt => $vOpt) {
                 if ($vOpt=="forms" || $vOpt=="attachment") {
-                    $line .= $vOpt . "(%)\t";
+	                $line .= Text::_('COM_EMUNDUS_'.strtoupper($vOpt))." (%)\t";
                 } else {
                     $line .= $vOpt . "\t";
                 }

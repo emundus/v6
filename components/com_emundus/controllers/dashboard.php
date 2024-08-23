@@ -91,7 +91,8 @@ class EmundusControllerDashboard extends JControllerLegacy
     public function getwidgets(){
         try {
             $user = JFactory::getUser();
-            $widgets = $this->model->getwidgets($user->id);
+            $profile = JFactory::getSession()->get('emundusUser')->profile;
+            $widgets = $this->model->getwidgets($user->id, $profile);
 
             $tab = array('status' => 0, 'msg' => 'success', 'data' => $widgets);
         } catch (Exception $e) {
@@ -149,7 +150,7 @@ class EmundusControllerDashboard extends JControllerLegacy
             $jinput = JFactory::getApplication()->input;
             $widget = $jinput->getInt('widget');
 
-            $tab = array('msg' => 'success', 'filters' => JFactory::getSession()->get('widget_filters_' . $widget));
+            $tab = array('msg' => 'success', 'filters' => JFactory::getSession()->get('widget_filters_' . $widget,[]));
         } catch (Exception $e) {
             $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
         }

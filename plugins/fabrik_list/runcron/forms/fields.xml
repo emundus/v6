@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+		<fieldset name="plg-list-runcron">
+
+			<field type="helplink"
+				url="PLG_LIST_RUNCRON_HELP_SERVER" />
+
+			<field name="runcron_access"
+				type="accesslevel"
+				default="1"
+				label="PLG_FABRIK_LIST_RUNCRON_ACCESS_LABEL"
+				repeat="true" />
+
+			<field name="runcron_button_label"
+			       type="text"
+			       label="PLG_FABRIK_LIST_RUNCRON_BUTTON_LABEL_LABEL"
+			       repeat="true"
+			       size="30"/>
+
+			<field name="list_runcron_image_name"
+			       type="text"
+			       default="play"
+			       description="PLG_FABRIK_LIST_RUNCRON_IMAGE_DESC"
+			       label="PLG_FABRIK_LIST_RUNCRON_IMAGE_LABEL"
+			       repeat="true"
+			       size="20"/>
+
+		</fieldset>
+	</fields>
+</form>

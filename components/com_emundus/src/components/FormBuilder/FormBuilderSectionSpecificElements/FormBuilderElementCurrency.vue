@@ -2,15 +2,15 @@
   <div id="form-builder-currency">
     <div v-if="loading" class="em-loader"></div>
     <div v-else class="w-full relative flex items-center currency-block">
-      <input class="currency" readonly type="text" value="10 000">
-      <span class="currency-icon">€</span>
+      <input class="currency" readonly type="text" :value="this.element.params['all_currencies_options']['all_currencies_options0'].minimal_value">
+      <span class="currency-icon">
+        {{ currencyIcon }}
+      </span>
     </div>
   </div>
 </template>
 
 <script>
-import formBuilderService from '../../../services/formbuilder';
-import Editor from "../../editor";
 
 export default {
   props: {
@@ -23,9 +23,6 @@ export default {
       required: true
     }
   },
-  components: {
-    Editor
-  },
   data() {
     return {
       loading: false,
@@ -37,7 +34,23 @@ export default {
   created () {},
   methods: {
   },
-  watch: {}
+  watch: {},
+  computed: {
+    currencyIcon() {
+      switch (this.element.params['all_currencies_options']['all_currencies_options0'].iso3) {
+        case 'USD':
+          return '$';
+        case 'EUR':
+          return '€';
+        case 'GBP':
+          return '£';
+        case 'JPY':
+          return '¥';
+        default:
+          return '€';
+      }
+    }
+  }
 }
 </script>
 

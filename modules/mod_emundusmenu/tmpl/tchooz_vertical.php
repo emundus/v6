@@ -85,6 +85,13 @@ defined('_JEXEC') or die;
         left: -20px;
         display: flex;
     }
+
+    @media screen and (min-width: 768px) and (max-width: 959px){
+        ul.tchooz-vertical-toplevel > li.active.tchooz-vertical-item > a.item::before {
+            left: -25px;
+        }
+    }
+
     .active .item .image-title{
         color: var(--em-profile-color);
     }
@@ -155,6 +162,11 @@ defined('_JEXEC') or die;
     /*** END ***/
 
     /*** Back button ***/
+
+    .g-main-nav .g-standard {
+        position: static;
+    }
+
     .g-main-nav .g-standard .g-go-back{
         display: block;
         border-bottom: solid 1px #e0e0e5;
@@ -196,19 +208,6 @@ defined('_JEXEC') or die;
         padding: 15px;
         border-radius: 5px;
         background: var(--neutral-0);
-    }
-    .message-tooltip-block::after{
-        content: "";
-        position: absolute;
-        height: 0;
-        width: 0;
-        right: 100%;
-        top: 10px;
-        border: 10px solid transparent;
-        border-right-color: transparent;
-        border-right-style: solid;
-        border-right-width: 10px;
-        border-right: 10px solid var(--neutral-0);
     }
 
     .g-main-nav .g-standard .g-sublevel .g-menu-item a.g-menu-item-container:hover   {
@@ -489,7 +488,7 @@ defined('_JEXEC') or die;
     const originalMargin = parseInt(jQuery("[id^=tooltip-]:first").css('margin-top'),10);
 
     function enableTooltip(menu){
-        if(jQuery(".image-title").css("display") != 'none') {
+        if(jQuery(".grey-navbar-icons").css("opacity") != '0') {
             if(typeof jQuery("#sublevel_list_" + menu)[0] != 'undefined'){
                 jQuery("#tooltip-" + menu).css('margin-left', '200px');
                 jQuery("#tooltip-" + menu).css('display', 'block');
@@ -537,14 +536,7 @@ defined('_JEXEC') or die;
                 jQuery("#footer-rgpd").css("padding-left", "280px");
                 jQuery("#g-container-main").css("padding-left", "280px");
                 jQuery("#header-a").css("opacity", "1");
-                jQuery(".logo").css("position", "absolute");
                 jQuery(".tchooz-vertical-logo").css("opacity", "0");
-            }
-            let elmnt = document.getElementById("g-top");
-            if(elmnt !== null) {
-                jQuery(".logo").css("top", "-37px");
-            } else {
-                jQuery(".logo").css("top", "0");
             }
             setTimeout(() =>{
                 jQuery(".image-title").css("display","block");
@@ -613,7 +605,5 @@ defined('_JEXEC') or die;
         }
     });
 
-    window.onload = function () {
-        this.enableTitles(localStorage.getItem('menu'));
-    }
+    this.enableTitles(localStorage.getItem('menu'));
 </script>

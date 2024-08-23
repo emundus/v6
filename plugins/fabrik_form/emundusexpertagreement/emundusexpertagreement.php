@@ -1,5 +1,8 @@
 <?php
 // No direct access
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Uri\Uri;
+
 defined('_JEXEC') or die('Restricted access');
 
 // Require the abstract plugin class
@@ -122,8 +125,9 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 			    }
 
 		    } else {
-			    $app->enqueueMessage(JText::_('PLEASE_LOGIN'), 'message');
-			    $app->redirect($baseurl.'index.php?option=com_users&view=login');
+			    $app->enqueueMessage(Text::_('PLEASE_LOGIN'), 'message');
+			    $menu = $app->getMenu()->getItems('link','index.php?option=com_users&view=login', true);
+			    $app->redirect(Uri::base().$menu->alias);
 		    }
 	    }
 
@@ -224,7 +228,10 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 		    $fnums = array_intersect($fnums, $accepted_fnums);
 	    }
 
-        try {
+	    $fnums = array_filter($fnums);
+
+
+	    try {
             $query->clear()
                 ->update($db->quoteName('#__emundus_files_request'))
                 ->set([$db->quoteName('uploaded').'=1', $db->quoteName('firstname').'='.$db->quote($firstname), $db->quoteName('lastname').'='.$db->quote($lastname), $db->quoteName('modified_date').'=NOW()'])
@@ -369,7 +376,8 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
                                     'user_id_from' => 62,
                                     'user_id_to' => $user->id,
                                     'subject' => $email->subject,
-                                    'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $user->email . '</i><br>' . $body
+                                    'message' => $body,
+                                    'email_to' => $user->email
                                 ];
                                 $m_emails->logEmail($message);
                             }
@@ -403,7 +411,8 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
                             'user_id_from' => 62,
                             'user_id_to' => $user->id,
                             'subject' => $email->subject,
-                            'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $user->email . '</i><br>' . $body
+                            'message' => $body,
+                            'email_to' => $user->email
                         ];
                         $m_emails->logEmail($message);
                     }
@@ -506,7 +515,8 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
                         'user_id_from' => 62,
                         'user_id_to' => $user->id,
                         'subject' => $email->subject,
-                        'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $user->email . '</i><br>' . $body
+                        'message' => $body,
+                        'email_to' => $user->email
                     ];
                     $m_emails->logEmail($message);
                 }
@@ -538,7 +548,8 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 							'user_id_from' => 62,
 							'user_id_to' => $user->id,
 							'subject' => $email->subject,
-							'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$user->email.'</i><br>'.$body
+							'message' => $body,
+                            'email_to' => $user->email
 						];
 						$m_emails->logEmail($message);
 					}

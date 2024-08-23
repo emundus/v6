@@ -445,7 +445,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 			if (file_exists(JPATH_SITE.$letter['file'])) {
 
 				$PHPWord = new \PhpOffice\PhpWord\PhpWord();
-				$document = $PHPWord->loadTemplate(JPATH_SITE.$letter['file']);
+				$document = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_SITE.$letter['file']);
 
 				for ($i = 0; $i < count($tags['patterns']); $i++) {
 					$document->setValue($tags['patterns'][$i], $tags['replacements'][$i]);
@@ -717,7 +717,7 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
 
 			$PHPWord = new PHPWord();
 
-			$document = $PHPWord->loadTemplate(JPATH_SITE.$letter['file']);
+			$document = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_SITE.$letter['file']);
 
 			for ($i = 0; $i < count($tags['patterns']); $i++) {
 				$document->setValue($tags['patterns'][$i], $tags['replacements'][$i]);

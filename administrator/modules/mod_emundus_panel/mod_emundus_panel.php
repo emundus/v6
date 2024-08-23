@@ -26,5 +26,6 @@ $confluence_link = $params->get('emundus_panel_confluence', '');
 
 $h_panel = new ModEmundusPanelHelper();
 $features = $h_panel->getFeaturesList();
+$h_panel->checkup();
 
 require JModuleHelper::getLayoutPath('mod_emundus_panel', $params->get('layout', 'default'));

@@ -9,6 +9,8 @@
 
 // No direct access
 
+use Joomla\CMS\Language\Text;
+
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport('joomla.application.component.controller');
@@ -670,20 +672,13 @@ class EmundusControllerDecision extends JControllerLegacy
 
     public function getfnuminfos()
     {
-        $jinput = JFactory::getApplication()->input;
-        $fnum = $jinput->getString('fnum', null);
-        $res = false;
-        $fnumInfos = null;
+	    if (!class_exists('EmundusControllerFiles'))
+		    require_once(JPATH_ROOT.'/components/com_emundus/controllers/files.php');
 
-        if($fnum != null)
-        {
-            $model = $this->getModel('Files');
-            $fnumInfos = $model->getFnumInfos($fnum);
-            if($fnum !== false)
-                $res = true;
-        }
-        JFactory::getSession()->set('application_fnum', $fnum);
-        echo json_encode((object)(array('status' => $res, 'fnumInfos' => $fnumInfos)));
+	    $c_files = new EmundusControllerFiles();
+	    $response = $c_files->getfnuminfos();
+
+	    echo json_encode((object)$response);
         exit;
     }
 
@@ -983,7 +978,7 @@ class EmundusControllerDecision extends JControllerLegacy
             }
             foreach ($colsup as $kOpt => $vOpt) {
                 if ($vOpt=="forms" || $vOpt=="attachment") {
-                    $line .= $vOpt . "(%)\t";
+					$line .= Text::_('COM_EMUNDUS_'.strtoupper($vOpt))." (%)\t";
                 } else {
                     $line .= $vOpt . "\t";
                 }

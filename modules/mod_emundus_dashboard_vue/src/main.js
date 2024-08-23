@@ -8,7 +8,7 @@ import { VTooltip, VPopover, VClosePopover } from 'v-tooltip';
 import translate from './mixins/translate';
 
 Vue.config.productionTip = false;
-Vue.config.devtools = true;
+Vue.config.devtools = false;
 
 Vue.directive('close-popover', VClosePopover);
 

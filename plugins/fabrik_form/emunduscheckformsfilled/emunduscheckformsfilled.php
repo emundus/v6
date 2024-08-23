@@ -77,63 +77,103 @@ class PlgFabrik_FormEmunduscheckformsfilled extends plgFabrik_Form {
 	 * Main script.
 	 *
 	 */
-	public function onBeforeLoad()
-	{
-		$form_to_check = $this->getParam('form_to_check', 0);
+    public function onLoad()
+    {
+        $form_to_check = $this->getParam('form_to_check', 0);
 
-		if (!empty($form_to_check)) {
-			$app = JFactory::getApplication();
-			$fnum = $app->input->get->getString('rowid', '');
+        if (!empty($form_to_check)) {
+            $app = JFactory::getApplication();
 
-			if (!empty($fnum)) {
-				$db = JFactory::getDBO();
-				$query = $db->getQuery(true);
+            $formModel = $this->getModel();
+            $current_table_name = $formModel->getForm()->db_table_name;
 
-				$query->select('jfl.db_table_name')
-					->from($db->quoteName('jos_fabrik_lists', 'jfl'))
-					->leftJoin($db->quoteName('jos_fabrik_forms', 'jff') . ' ON jff.id = jfl.form_id')
-					->where($db->quoteName('jff.id') . ' = ' . $db->quote($form_to_check));
+            $fnum_tag = '{'.$current_table_name.'___fnum}';
+            // get fnum using multiple options otherwise it could be empty
+            if (empty($fnum_tag) || strpos($fnum_tag, '{') === 0) {
+                $fnum = $app->input->get('rowid');
+            } else {
+                $fnum = $fnum_tag;
+            }
+            if (empty($fnum)) {
+                $fnum = $app->input->get($current_table_name.'___fnum');
+            }
+            if (empty($fnum)) {
+                $fnum = JFactory::getSession()->get('emundusUser')->fnum;
+            }
 
-				try {
-					$db->setQuery($query);
-					$table_name = $db->loadResult();
+            if (!empty($fnum)) {
+                $db = JFactory::getDBO();
+                $query = $db->getQuery(true);
 
-					if (!empty($table_name)) {
-						$query->clear()
-							->select('id')
-							->from($table_name)
-							->where('fnum LIKE ' . $db->quote($fnum));
+                $query->select('jfl.db_table_name')
+                    ->from($db->quoteName('jos_fabrik_lists', 'jfl'))
+                    ->leftJoin($db->quoteName('jos_fabrik_forms', 'jff') . ' ON jff.id = jfl.form_id')
+                    ->where($db->quoteName('jff.id') . ' = ' . $db->quote($form_to_check));
 
-						$db->setQuery($query);
-						$id = $db->loadResult();
+                try {
+                    $db->setQuery($query);
+                    $table_name = $db->loadResult();
 
-						if (empty($id)) {
-							$menu = $app->getMenu();
-							$current_menu = $menu->getActive();
-							$menutype = $current_menu->get('menutype');
+                    if (!empty($table_name)) {
+                        // Do not redirect if the user is not an applicant
+                        $session = JFactory::getSession();
+                        $current_user = $session->get('emundusUser');
 
-							$query->clear()
-								->select('path')
-								->from('jos_menu')
-								->where('menutype = ' . $db->quote($menutype))
-								->andWhere('link LIKE "%formid=' . $form_to_check . '"');
+                        if ($current_user->applicant == 1) {
+                            $query->clear()
+                                ->select('id')
+                                ->from($table_name)
+                                ->where('fnum LIKE ' . $db->quote($fnum));
+                            $db->setQuery($query);
+                            $id = $db->loadResult();
 
-							$db->setQuery($query);
-							$path = $db->loadResult();
+                            if (empty($id)) {
+                                $menu = $app->getMenu();
+                                $current_menu = $menu->getActive();
+                                if (JFactory::getUser()->id == 95) {
+                                    $menutype = 'menu-profile1015';
+                                } else {
+                                    $menutype = $current_menu->get('menutype');
+                                }
 
-							if (!empty($path)) {
-								$app->enqueueMessage(JText::_('PLG_FABRIK_FORM_EMUNDUS_CHECKFORMSFILLED_REDIRECT_MESSAGE'));
-								$app->redirect($path);
-							} else {
-								$app->enqueueMessage(JText::_('PLG_FABRIK_FORM_EMUNDUS_CHECKFORMSFILLED_ERROR_COULD_NOT_REDIRECT'), 'error');
-								$app->redirect('/');
-							}
-						}
-					}
-				} catch (Exception $e) {
-					JLog::add('Error occured ' .  $e->getMessage(), JLog::ERROR, 'plugin_emunduscheckformsfilled.error');
-				}
-			}
-		}
-	}
+                                $query->clear()
+                                    ->select('jm.id as `itemid`, jfl.db_table_name')
+                                    ->from($db->quoteName('#__menu','jm'))
+                                    ->leftJoin($db->quoteName('#__fabrik_forms','jff').' ON '.$db->quoteName('jff.id').' = SUBSTRING_INDEX(SUBSTRING('.$db->quoteName('jm.link').', LOCATE("formid=", '.$db->quoteName('jm.link').') + 7, 4), "&", 1)')
+                                    ->leftJoin($db->quoteName('#__fabrik_lists','jfl').' ON '.$db->quoteName('jfl.form_id').' = '.$db->quoteName('jff.id'))
+                                    ->where($db->quoteName('jm.menutype').' = '.$db->quote($menutype))
+                                    ->andWhere($db->quoteName('jm.link').' LIKE '.$db->quote('%formid%'));
+                                $db->setQuery($query);
+                                $menuforms = $db->loadObjectList();
+
+                                $form_to_redirect = '';
+                                foreach($menuforms as $form) {
+                                    if ($form->db_table_name == $table_name) {
+                                        $form_to_redirect = $form->itemid;
+                                    }
+                                }
+
+                                $query->clear()
+                                    ->select('path')
+                                    ->from('jos_menu')
+                                    ->where('id = '. $db->quote($form_to_redirect));
+                                $db->setQuery($query);
+                                $path = $db->loadResult();
+
+                                if (!empty($path)) {
+                                    $app->enqueueMessage(JText::_('PLG_FABRIK_FORM_EMUNDUS_CHECKFORMSFILLED_REDIRECT_MESSAGE'));
+                                    $app->redirect($path);
+                                } else {
+                                    $app->enqueueMessage(JText::_('PLG_FABRIK_FORM_EMUNDUS_CHECKFORMSFILLED_ERROR_COULD_NOT_REDIRECT'), 'error');
+                                    $app->redirect('/');
+                                }
+                            }
+                        }
+                    }
+                } catch (Exception $e) {
+                    JLog::add('Error occured ' .  $e->getMessage(), JLog::ERROR, 'plugin_emunduscheckformsfilled.error');
+                }
+            }
+        }
+    }
 }

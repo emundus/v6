@@ -40,15 +40,61 @@ if(strtotime($now) < strtotime($currentCampaign->end_date)  && strtotime($now) >
     $can_apply = -1;
 }
 
+if ($currentCampaign->is_limited == 1 && $currentCampaign->limit > 0) {
+    $db = JFactory::getDbo();
+    $query = $db->getQuery(true);
+
+    $query->clear()
+        ->select($db->quoteName('limit_status'))
+        ->from($db->quoteName('jos_emundus_setup_campaigns_repeat_limit_status'))
+        ->where($db->quoteName('parent_id').' = '.$db->quote($currentCampaign->id));
+    $db->setQuery($query);
+    $limit_status = $db->loadColumn();
+
+    $files_sent = 0;
+    if (!empty($limit_status)) {
+        $query->clear()
+            ->select('COUNT(id)')
+            ->from($db->quoteName('jos_emundus_campaign_candidature'))
+            ->where($db->quoteName('campaign_id').' = '.$db->quote($currentCampaign->id))
+            ->andWhere($db->quoteName('status').' IN ('.implode(',', $limit_status).')');
+        $db->setQuery($query);
+        $files_sent = $db->loadResult();
+    }
+
+    $files_sent = $files_sent > $currentCampaign->limit ? $currentCampaign->limit : $files_sent;
+    if ($files_sent == 1) {
+        $files_sent_tag = 'MOD_EM_CAMPAIGN_CAMPAIGN_SENT_NUMBER_SINGULAR';
+    } else {
+        $files_sent_tag = 'MOD_EM_CAMPAIGN_CAMPAIGN_SENT_NUMBER_PLURAL';
+    }
+
+    $is_limit_obtained = $m_campaign->isLimitObtained($currentCampaign->id);
+}
+
 if($currentCampaign->apply_online == 0){
     $can_apply = 0;
+}
+
+$campaigns_url = EmundusHelperMenu::getHomepageLink();
+if(!empty($mod_em_campaign_go_back_campaigns_link)) {
+	$menu = JFactory::getApplication()->getMenu();
+	$campaigns_url = $user->guest ? EmundusHelperMenu::getHomepageLink() : $menu->getItems('id', (int) $mod_em_campaign_go_back_campaigns_link, true)->route;
 }
 ?>
 
 <div class="mod_emundus_campaign__grid em-mt-24 em-mb-64" style="grid-gap: 64px">
     <div>
-        <div class="em-flex-row em-mb-12 em-pointer em-w-max-content" onclick="history.go(-1)">
-            <span class="material-icons">arrow_back</span><span class="em-ml-8"><?php echo JText::_('MOD_EM_CAMPAIGN_BACK'); ?></span>
+        <div class="em-flex-row em-mb-12 em-pointer em-w-max-content"
+             <?php if($mod_em_campaign_go_back_link == 1) : ?>
+                onclick="history.go(-1)"
+             <?php elseif($mod_em_campaign_go_back_link == 2) : ?>
+                onclick="window.location.href='<?php echo $campaigns_url; ?>'"
+             <?php elseif($mod_em_campaign_go_back_link == 3) : ?>
+                onclick="window.location.href='<?php echo $mod_em_campaign_go_back_external_url; ?>'"
+             <?php endif; ?>
+        >
+            <span class="material-icons">navigate_before</span><span class="em-ml-8 em-text-neutral-900"><?php echo JText::_('MOD_EM_CAMPAIGN_BACK'); ?></span>
         </div>
         <?php if($mod_em_campaign_details_show_programme == 1) : ?>
             <?php
@@ -124,16 +170,17 @@ if($currentCampaign->apply_online == 0){
             </div>
         <?php endif; ?>
 
+        <?php if ($mod_em_campaign_show_faq == 1 && !empty($faq_articles)) :?>
         <div class="mod_emundus_campaign__tabs em-flex-row">
             <a class="em-applicant-text-color current-tab em-mr-24" onclick="displayTab('campaign')" id="campaign_tab">
                 <span><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS') ?></span>
             </a>
-            <?php if ($mod_em_campaign_show_faq == 1 && !empty($faq_articles)) :?>
-                <a class="em-applicant-text-color" onclick="displayTab('faq')" id="faq_tab">
-                    <span><?php echo JText::_('MOD_EM_CAMPAIGN_FAQ') ?></span>
-                </a>
-            <?php endif; ?>
+
+            <a class="em-applicant-text-color" onclick="displayTab('faq')" id="faq_tab">
+                <span><?php echo JText::_('MOD_EM_CAMPAIGN_FAQ') ?></span>
+            </a>
         </div>
+        <?php endif; ?>
 
         <div class="g-block size-100 tchooz-single-campaign">
             <div class="single-campaign" id="campaign">
@@ -161,7 +208,7 @@ if($currentCampaign->apply_online == 0){
         </div>
     </div>
 
-    <div>
+    <aside id="campaign-sidebar" class="sticky">
         <!-- INFO BLOCK -->
         <?php if ($can_apply != 0 || $mod_em_campaign_show_registration == 1 && !empty($mod_em_campaign_show_registration_steps)) : ?>
         <div class="mod_emundus_campaign__details_content em-border-neutral-300 em-mb-24">
@@ -171,6 +218,9 @@ if($currentCampaign->apply_online == 0){
             <?php endif; ?>
 
             <h4 class="em-mb-24"><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_APPLY') ?></h4>
+            <?php  if ($currentCampaign->is_limited == 1 && $currentCampaign->limit > 0) : ?>
+                <div class="flex em-flex-center em-mb-24"><p class="mr-2 h-max em-p-5-12 em-font-weight-600 em-text-neutral-300 em-font-size-14 em-border-radius" style="background:var(--bg-3);"><?= $files_sent.' '.JText::_($files_sent_tag).' '.$currentCampaign->limit ?></p></div>
+            <?php endif; ?>
             <?php if ($mod_em_campaign_show_registration == 1 && !empty($mod_em_campaign_show_registration_steps)) : ?>
             <div class="em-mt-24">
                 <?php $index = 1; ?>
@@ -187,17 +237,24 @@ if($currentCampaign->apply_online == 0){
                     if(!isset($redirect_url) || empty($redirect_url)) {
                         $redirect_url = "index.php?option=com_users&view=registration";
                     }
-                    $register_url = $redirect_url."&course=".$currentCampaign->code."&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid;
-                } else {
-                    $register_url = $redirect_url."?course=".$currentCampaign->code."&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid;
                 }
+
+	            if (strpos($redirect_url, '?') !== false) {
+		            $register_url = $redirect_url."&course=".$currentCampaign->code."&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid;
+	            } else {
+		            $register_url = $redirect_url."?course=".$currentCampaign->code."&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid;
+	            }
+
                 if(!$user->guest) {
                     $register_url .= "&redirect=" . $formUrl;
                 }
-                ?>
-                <a class="btn btn-primary em-w-100 em-applicant-default-font" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
+                if ($is_limit_obtained) : ?>
+                    <button class="em-disabled-button em-w-100" role="button" data-toggle="sc-modal"><?= JText::_('MOD_EM_CAMPAIGN_DETAILS_LIMIT_OBTAINED'); ?></button>
+                <?php else : ?>
+                    <a class="btn btn-primary em-w-100 em-applicant-default-font" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
+                <?php endif; ?>
             <?php elseif ($can_apply == -1) : ?>
-                <button class="em-disabled-button em-w-100 em-mt-24" role="button" data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_IS_FINISH'); ?></button>
+                <button class="em-disabled-button em-w-100" role="button" data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_IS_FINISH'); ?></button>
             <?php endif; ?>
         </div>
         <?php endif; ?>
@@ -229,20 +286,31 @@ if($currentCampaign->apply_online == 0){
             <h4><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_CONTACT') ?></h4>
         </div>
         <?php endif; ?>
-    </div>
+    </aside>
 </div>
 
 <script>
     var current_tab = 'campaign';
 
     window.onload = function() {
+        const headerNav = document.getElementById('g-navigation');
+        const sidebar = document.querySelector('aside#campaign-sidebar');
+        if (headerNav && sidebar) {
+            sidebar.style.top = headerNav.offsetHeight + 8 + 'px';
+        }
         document.getElementById('campaign_tab').classList.add('current-tab');
-        <?php if (in_array('faq', $modules_tabs)) : ?>
-        document.getElementById('faq').style.display = 'none';
+        <?php if (is_array($modules_tabs) && in_array('faq', $modules_tabs)) : ?>
+        const faq = document.getElementById('faq');
+        if (faq) {
+            document.getElementById('faq').style.display = 'none';
+        }
         <?php endif; ?>
 
-        <?php if (in_array('documents', $modules_tabs)) : ?>
-        document.getElementById('documents').style.display = 'none';
+        <?php if (is_array($modules_tabs) && in_array('documents', $modules_tabs)) : ?>
+        const documents = document.getElementById('documents');
+        if (documents) {
+            documents.style.display = 'none';
+        }
         if(typeof document.getElementsByClassName('campaign-documents')[0] != 'undefined') {
             document.getElementsByClassName('campaign-documents')[0].parentElement.style.display = 'none';
         }

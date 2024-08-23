@@ -368,6 +368,19 @@ class EmundusModelFormbuilder extends JModelList {
             $db->setQuery($query);
             $menu_parent = $db->loadObject();
 
+            /**
+             * Case of old platforms. deprecated
+             */
+            if (empty($menu_parent) || empty($menu_parent->id)) {
+                $query->clear()
+                    ->select('*')
+                    ->from('#__menu')
+                    ->where($db->quoteName('menutype') . ' = ' . $db->quote($menutype))
+                    ->andWhere($db->quoteName('type') . ' = ' . $db->quote('url'));
+                $db->setQuery($query);
+                $menu_parent = $db->loadObject();
+            }
+
             $query->clear()
                 ->select('rgt')
                 ->from($db->quoteName('#__menu'))
@@ -976,7 +989,7 @@ class EmundusModelFormbuilder extends JModelList {
         }
     }*/
 
-    function createGroup($label, $fid, $repeat_group_show_first = 1) {
+    function createGroup($label, $fid, $repeat_group_show_first = 1, $mode = 'form') {
         $group = [];
 
         if (!empty($fid)) {
@@ -1108,6 +1121,18 @@ class EmundusModelFormbuilder extends JModelList {
                         'ordering' => $order,
                         'formid' => $fid
                     );
+
+					if($mode === 'eval') {
+						require_once (JPATH_SITE . '/components/com_emundus/models/form.php');
+						$m_form = new EmundusModelForm();
+
+						$programs = $m_form->getProgramsByForm($fid, $mode);
+						$codes = array_map(function($program) {
+							return $program['code'];
+						}, $programs);
+
+						$m_form->associateFabrikGroupsToProgram($fid,$codes,$mode);
+					}
                 }
             } catch(Exception $e){
 				error_log($e->getMessage());
@@ -1417,8 +1442,10 @@ class EmundusModelFormbuilder extends JModelList {
 				$dbtype = $this->h_fabrik->getDBType($plugin);
 				$dbnull = 'NULL';
 				$default = '';
+				$eval = 1;
 
 				if ($plugin === 'display' || $plugin === 'panel') {
+					$eval = 0;
 					$default = 'Ajoutez du texte personnalisé pour vos candidats';
 				}
 
@@ -1460,7 +1487,7 @@ class EmundusModelFormbuilder extends JModelList {
 					->set($db->quoteName('width') . ' = 0')
 					->set($db->quoteName('default') . ' = ' . $db->quote($default))
 					->set($db->quoteName('hidden') . ' = 0')
-					->set($db->quoteName('eval') . ' = 1')
+					->set($db->quoteName('eval') . ' = ' . $eval)
 					->set($db->quoteName('ordering') . ' = ' . $db->quote(array_values($orderings)[strval(sizeof($orderings) - 1)] + 1))
 					->set($db->quoteName('parent_id') . ' = 0')
 					->set($db->quoteName('published') . ' = 1')
@@ -1880,6 +1907,15 @@ class EmundusModelFormbuilder extends JModelList {
                     unset($element['params']['validations']['validate_hidden'][$key]);
                     unset($element['params']['validations']['must_validate'][$key]);
                     unset($element['params']['validations']['show_icon'][$key]);
+
+	                // Reindex validations
+	                $element['params']['validations']['plugin'] = array_values($element['params']['validations']['plugin']);
+	                $element['params']['validations']['plugin_published'] = array_values($element['params']['validations']['plugin_published']);
+	                $element['params']['validations']['validate_in'] = array_values($element['params']['validations']['validate_in']);
+	                $element['params']['validations']['validation_on'] = array_values($element['params']['validations']['validation_on']);
+	                $element['params']['validations']['validate_hidden'] = array_values($element['params']['validations']['validate_hidden']);
+	                $element['params']['validations']['must_validate'] = array_values($element['params']['validations']['must_validate']);
+	                $element['params']['validations']['show_icon'] = array_values($element['params']['validations']['show_icon']);
                 }
             } else {
                 if($key === false || $key === null) {
@@ -1892,7 +1928,6 @@ class EmundusModelFormbuilder extends JModelList {
                     $element['params']['validations']['show_icon'][] = "1";
                 }
             }
-
 
             // Filter by plugin
             if ($element['plugin'] === 'checkbox' || $element['plugin'] === 'radiobutton' || $element['plugin'] === 'dropdown' || $element['plugin'] === 'databasejoin') {
@@ -1995,6 +2030,7 @@ class EmundusModelFormbuilder extends JModelList {
             $fields = array(
                 $db->quoteName('plugin') . ' = ' . $db->quote($element['plugin']),
                 $db->quoteName('default') . ' = ' . $db->quote($element['default']),
+                $db->quoteName('eval') . ' = ' . $db->quote($element['eval']),
                 $db->quoteName('params') . ' = ' . $db->quote(json_encode($element['params'])),
                 $db->quoteName('modified_by') . ' = ' . $db->quote($user),
                 $db->quoteName('modified') . ' = ' . $db->quote($date),
@@ -2036,10 +2072,10 @@ class EmundusModelFormbuilder extends JModelList {
             return false;
         }
 
-        if($group_params['repeat_group_button'] == 1 && $params['repeat_group_button'] == 0){
+        if($group_params['repeat_group_button'] == 1 && (isset($params['repeat_group_button']) && $params['repeat_group_button'] == 0)){
             $this->disableRepeatGroup($group_id);
         }
-        if($group_params['repeat_group_button'] == 0 && $params['repeat_group_button'] == 1){
+        if($group_params['repeat_group_button'] == 0 && (isset($params['repeat_group_button']) && $params['repeat_group_button'] == 1)){
             $this->enableRepeatGroup($group_id);
         }
 

@@ -6,11 +6,16 @@
  * @copyright   Copyright (C) 2005 - 2018 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
+
+
+require_once (JPATH_SITE.'/components/com_emundus/helpers/cache.php');
+$hash = EmundusHelperCache::getCurrentGitHash();
+
 defined('_JEXEC') or die;
 JHtml::_('behavior.keepalive');
 JHtml::_('behavior.formvalidator');
 $document = JFactory::getDocument();
-$document->addStyleSheet("templates/g5_helium/html/com_users/login/style/com_users_login.css");
+$document->addStyleSheet("templates/g5_helium/html/com_users/login/style/com_users_login.css?".$hash);
 $eMConfig = JComponentHelper::getParams('com_emundus');
 
 if(!empty($this->campaign)){
@@ -18,10 +23,16 @@ if(!empty($this->campaign)){
 } else {
 	JFactory::getSession()->clear('login_campaign_id');
 }
+$config = JFactory::getConfig();
+if ($config->get('sef') == 0) {
+    echo '<iframe id="background-shapes2" class="background-shaped-top" src="modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_("MOD_EM_FORM_IFRAME") ?>"></iframe>
+<iframe id="background-shapes2" class="background-shaped-bottom" src="modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_("MOD_EM_FORM_IFRAME") ?>"></iframe>';
+}
+else{
+    echo '<iframe id="background-shapes2" class="background-shaped-top" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_("MOD_EM_FORM_IFRAME") ?>"></iframe>
+    <iframe id="background-shapes2" class="background-shaped-bottom" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_("MOD_EM_FORM_IFRAME") ?>"></iframe>';
+}
 ?>
-<iframe id="background-shapes2" class="background-shaped-top" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
-<iframe id="background-shapes2" class="background-shaped-bottom" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
-
 <div class="login<?php echo $this->pageclass_sfx; ?>">
     <?php if ($this->params->get('show_page_heading')) : ?>
         <div class="page-header">
@@ -58,7 +69,8 @@ if(!empty($this->campaign)){
                         <div class="controls" style="<?= $field->type === "Password" ? 'position:relative; ' : '' ?>">
                             <?php echo $field->input; ?>
                             <?php if ($eMConfig["reveal_password"] && $field->type === "Password"): ?>
-                                <span id="toggle-password-visibility" class="material-icons-outlined em-pointer" style="position: absolute;margin-top: 4px;right: 10px;opacity: 0.3;user-select: none;">visibility_off</span>
+                                <button type="button" title="<?php echo JText::_('COM_USERS_LOGIN_SHOW_PASSWORD'); ?>" id="toggle-password-visibility" class="material-icons-outlined em-pointer" aria-pressed="false" style="position: absolute;margin-top: 4px;right: 10px;opacity: 0.3;user-select: none;">visibility_off</button>
+                                <div aria-live="polite" aria-atomic="true" style="display: none" id="show_password_text"><p><?php echo JText::_('COM_USERS_LOGIN_SHOW_PASSWORD'); ?></p></div>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -123,21 +135,39 @@ if(!empty($this->campaign)){
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
+        let username_field = document.querySelector('#username');
+        if(username_field) {
+            username_field.setAttribute('placeholder', '<?php echo JText::_('COM_USERS_LOGIN_EMAIL_PLACEHOLDER'); ?>');
+            username_field.setAttribute('aria-describedby', 'alert-message-text');
+            username_field.setAttribute('autocomplete', 'email');
+            username_field.focus();
+        }
+        let password_field = document.querySelector('#password');
+        if(password_field) {
+            password_field.setAttribute('aria-describedby', 'alert-message-text');
+            password_field.setAttribute('autocomplete', 'current-password');
+        }
+
         document.querySelector('#header-a img').style.display = 'none';
 
         <?php if ($eMConfig['reveal_password']): ?>
             const spanVisibility = document.querySelector('#toggle-password-visibility');
             const inputPassword = document.querySelector('.controls #password');
+            const showPasswordText = document.querySelector('#show_password_text');
 
             if (spanVisibility && inputPassword) {
                 spanVisibility.addEventListener('click', function () {
                     if (spanVisibility && inputPassword) {
                         if (spanVisibility.innerText == "visibility") {
+                            spanVisibility.setAttribute('aria-pressed', 'false');
                             spanVisibility.innerText = "visibility_off";
                             inputPassword.type = "password";
+                            showPasswordText.innerHTML = "<p>Le mot de passe est masqué</p>";
                         } else {
+                            spanVisibility.setAttribute('aria-pressed', 'true');
                             spanVisibility.innerText = "visibility";
                             inputPassword.type = "text";
+                            showPasswordText.innerHTML = "<p>Le mot de passe est affiché</p>";
                         }
                     }
                 });

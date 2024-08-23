@@ -164,9 +164,9 @@ class EmundusControllerCampaign extends JControllerLegacy {
                     $config = JFactory::getConfig();
                     $offset = $config->get('offset');
                     $now_date_time = new DateTime('now', new DateTimeZone($offset));
-                    $now = $now_date_time->format('U');
-                    $start_date = strtotime($campaign->start_date);
-                    $end_date = strtotime($campaign->end_date);
+                    $now = $now_date_time->format('Y-m-d H:i:s');
+                    $start_date = date('Y-m-d H:i:s',strtotime($campaign->start_date));
+                    $end_date = date('Y-m-d H:i:s',strtotime($campaign->end_date));
 
                     if ($now < $start_date) {
                         $campaign_time_state_label = JText::_('COM_EMUNDUS_CAMPAIGN_YET_TO_COME');
@@ -219,7 +219,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
                         ],
                         [
                             'key' => JText::_('COM_EMUNDUS_ONBOARD_NB_FILES'),
-                            'value' => '<a target="_blank" href="/index.php?option=com_emundus&controller=campaign&task=gotocampaign&campaign_id=' . $campaign->id . '" style="line-height: unset;font-size: unset;">' . $campaign->nb_files . '</a>',
+                            'value' => '<a target="_blank" class="em-profile-color em-text-underline" href="/index.php?option=com_emundus&controller=campaign&task=gotocampaign&campaign_id=' . $campaign->id . '" style="line-height: unset;font-size: unset;">' . $campaign->nb_files . '</a>',
                             'classes' => 'go-to-campaign-link',
                             'display' => 'table'
                         ],
@@ -236,7 +236,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
                                 $state_values[1],
                                 [
                                     'key' => JText::_('COM_EMUNDUS_FILES_FILES'),
-                                    'value' => '<a class="go-to-campaign-link em-font-weight-600 em-profile-color em-flex-row" href="/index.php?option=com_emundus&controller=campaign&task=gotocampaign&campaign_id=' . $campaign->id . '" style="line-height: unset;font-size: unset;font-size:14px;text-decoration: underline;">' . $campaign->nb_files . ' ' . ( $campaign->nb_files > 1 ? JText::_('COM_EMUNDUS_FILES_FILES') : JText::_('COM_EMUNDUS_FILES_FILE')) . '</a>',
+                                    'value' => '<a class="go-to-campaign-link em-font-weight-600 em-profile-color em-flex-row em-text-underline" href="/index.php?option=com_emundus&controller=campaign&task=gotocampaign&campaign_id=' . $campaign->id . '" style="line-height: unset;font-size: unset;font-size:14px;">' . $campaign->nb_files . ' ' . ( $campaign->nb_files > 1 ? JText::_('COM_EMUNDUS_FILES_FILES') : JText::_('COM_EMUNDUS_FILES_FILE')) . '</a>',
                                     'classes' => 'py-1',
                                 ]
                             ],
@@ -290,10 +290,22 @@ class EmundusControllerCampaign extends JControllerLegacy {
                 'published' => 1
             ]);
 
+            require_once JPATH_ROOT . '/components/com_emundus/models/profile.php';
+            $m_profile = new EmundusModelProfile();
+            $current_profile = $m_profile->getProfileById(JFactory::getSession()->get('emundusUser')->profile);
             $menu = $app->getMenu();
-            $items = $menu->getItems('link', 'index.php?option=com_emundus&view=files', true);
-            if (!empty($items)) {
-                $app->redirect('/' . $items->alias);
+            
+            $items = $menu->getItems('link', 'index.php?option=com_emundus&view=files');
+
+            $redirect_item = $items[0];
+            foreach ($items as $item) {
+                if($item->menutype == $current_profile['menutype']) {
+                    $redirect_item = $item;
+                }
+            }
+
+            if (!empty($redirect_item)) {
+                $app->redirect('/' . $redirect_item->route);
             } else {
                 $response['msg'] = JText::_('NO_FILES_VIEW_AVAILABLE');
             }
@@ -987,6 +999,46 @@ class EmundusControllerCampaign extends JControllerLegacy {
         }
 
         echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function getProgrammeByCampaignID() {
+        $response = ['status' => 0, 'msg' => JText::_('ACCESS_DENIED'), 'code' => 403];
+
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+            $jinput = JFactory::getApplication()->input;
+            $campaign_id = $jinput->getInt('campaign_id', 0);
+            $programmes = $this->m_campaign->getProgrammeByCampaignID($campaign_id);
+
+            if (!empty($programmes)) {
+                $response = array('status' => 1, 'msg' => JText::_('PROGRAMMES_RETRIEVED'), 'data' => $programmes);
+            } else {
+                $response = array('status' => 0, 'msg' => JText::_('NO_PROGRAMMES'), 'data' => $programmes);
+            }
+        }
+
+        echo json_encode((object)$response);
+        exit;
+    }
+
+    public function getcampaignmoreformurl()
+    {
+        $response = ['status' => 0, 'msg' => JText::_('ACCESS_DENIED'), 'code' => 403];
+
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+            $jinput = JFactory::getApplication()->input;
+            $campaign_id = $jinput->getInt('cid', 0);
+
+            $url = $this->m_campaign->getCampaignMoreFormUrl($campaign_id);
+
+            if (!empty($url)) {
+                $response = ['status' => 1, 'msg' => JText::_('URL_RETRIEVED'), 'data' => $url, 'code' => 200];
+            } else {
+                $response = ['status' => 0, 'msg' => JText::_('NO_URL'), 'data' => $url, 'code' => 404];
+            }
+        }
+
+        echo json_encode((object)$response);
         exit;
     }
 }

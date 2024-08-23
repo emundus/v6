@@ -38,14 +38,14 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
   });
 
   $('select.testSelAll').on('sumo:closed', function(event) {
-   let newValues = [];
+   var newValues = [];
    [...event.target.options].forEach((option) => {
     if (option.selected) {
      newValues.push(option.value);
     };
    });
 
-   let differences = newValues
+   var differences = newValues
        .filter(newValue => !data[event.target.name].includes(newValue))
        .concat(data[event.target.name].filter(oldVal => !newValues.includes(oldVal)));
 

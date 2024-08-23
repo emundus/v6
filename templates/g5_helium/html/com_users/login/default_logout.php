@@ -8,8 +8,12 @@
  */
 
 defined('_JEXEC') or die;
+
+require_once (JPATH_SITE.'/components/com_emundus/helpers/cache.php');
+$hash = EmundusHelperCache::getCurrentGitHash();
+
 $document = JFactory::getDocument();
-$document->addStyleSheet("templates/g5_helium/html/com_users/login/style/com_users_login.css");
+$document->addStyleSheet("templates/g5_helium/html/com_users/login/style/com_users_login.css?".$hash);
 ?>
 <div class="logout<?php echo $this->pageclass_sfx; ?>">
 	<?php if ($this->params->get('show_page_heading')) : ?>

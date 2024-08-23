@@ -31,10 +31,13 @@ if ($applicant) {
     $files_count = $m_messenger->getFilesByUser();
 
     if(count($files_count) > 0) {
+	    require_once (JPATH_SITE.'/components/com_emundus/helpers/cache.php');
+	    $hash = EmundusHelperCache::getCurrentGitHash();
+
         $document = JFactory::getDocument();
-        $document->addStyleSheet("modules/mod_emundus_messenger_notifications/src/assets/mod_emundus_messenger_notifications.css");
-        $document->addScript('media/mod_emundus_messenger_notifications/chunk-vendors.js');
-        $document->addStyleSheet('media/mod_emundus_messenger_notifications/app.css');
+        $document->addStyleSheet("modules/mod_emundus_messenger_notifications/src/assets/mod_emundus_messenger_notifications.css?".$hash);
+        $document->addScript('media/mod_emundus_messenger_notifications/chunk-vendors.js?'.$hash);
+        $document->addStyleSheet('media/mod_emundus_messenger_notifications/app.css?'.$hash);
 
         require(JModuleHelper::getLayoutPath('mod_emundus_messenger_notifications'));
     }

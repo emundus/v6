@@ -62,7 +62,13 @@
 					    <select class="mr-3" v-model="filter.selectedOperator">
 							    <option v-for="operator in filter.operators" :key="operator.value" :value="operator.value">{{ operator.label }}</option>
 					    </select>
-					    <input v-if="filter.type == 'field'" :name="filter.id + '-' + filter.key" type="text" :placeholder="filter.label" v-model="filter.selectedValue"/>
+					    <input v-if="filter.type == 'field'" 
+                :name="filter.id + '-' + filter.key" 
+                type="text" 
+                :placeholder="filter.label" 
+                v-model="filter.selectedValue"
+                @keyup.enter="applyFilters" 
+              />
 					    <input v-else-if="filter.type == 'date'" :name="filter.id + '-' + filter.key" type="date" v-model="filter.selectedValue">
 					    <multiselect
 							  v-else-if="filter.type == 'select'"

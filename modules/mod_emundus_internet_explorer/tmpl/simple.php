@@ -1,26 +1,30 @@
 <?php
+
+use Joomla\CMS\Language\Text;
+
 defined('_JEXEC') or die;
 header('Content-Type: text/html; charset=utf-8');
 ?>
 
-<center>
-	<div class="container">
-		<div class="bandeau-internet-explorer">
-			<a class="closeButton" onclick="deleteMessage()">&#10006;</a>
-			<b><?= stripslashes(JText::_($message)) ?></b>
-		</div>
-	</div>
-</center>
-
-<script>
-	function deleteMessage() {
-		jQuery.ajax({
-			url : "index.php?option=com_ajax&module=emundus_internet_explorer&method=closeMessage&format=json",
-			async: true,
-			cache: false,
-			success : function(data) {
-				document.getElementsByClassName('bandeau-internet-explorer')[0].style.display = "none";
-			}
-		});
-	}
-</script>
+<?php if (!$compatible) : ?>
+    <div class="alerte-message-container text-center w-full bg-red-500" style="padding: 8px 24px;">
+        <p style="font-weight: 500; color: #fff;">
+        <span style="font-size: 16pt;">
+            <?php echo Text::_($message); ?>
+            <noscript>
+                <?php echo Text::_('ENABLE_JAVASCRIPT'); ?>
+            </noscript>
+        </span>
+        </p>
+    </div>
+<?php else : ?>
+    <noscript>
+        <div class="alerte-message-container text-center w-full bg-red-500" style="padding: 8px 24px;">
+            <p style="font-weight: 500; color: #fff;">
+                <span style="font-size: 16pt;">
+                    <?php echo Text::_('ENABLE_JAVASCRIPT'); ?>
+                </span>
+            </p>
+        </div>
+    </noscript>
+<?php endif; ?>

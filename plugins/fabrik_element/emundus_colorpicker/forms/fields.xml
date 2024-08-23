@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields">
+		<fieldset label="COM_FABRIK_OPTIONS" name="plg-element-emundus_colorpicker">
+
+			<field type="helplink"
+				   url="PLG_ELEMENT_COLOURPICKER_HELP_SERVER" />
+
+			<field name="hidden"
+				   type="radio"
+				   default="0"
+				   class="btn-group"
+				   description="PLG_ELEMENT_COLOURPICKER_HIDDEN_DESC"
+				   label="PLG_ELEMENT_COLOURPICKER_HIDDEN">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+
+			<field name="default"
+				   type="fabrikeditor"
+				   mode="php"
+				   label="PLG_ELEMENT_COLOURPICKER_DEFAULT" />
+
+		</fieldset>
+	</fields>
+
+	<fields name="params">
+		<fieldset label="PLG_ELEMENT_COLOURPICKER_ADVANCED_LABEL" addfieldpath="/administrator/components/com_fabrik/models/fields" name="plg-element-emundus_colorpicker-advanced">
+
+			<field name="rgaa"
+				   type="radio"
+				   default="1"
+				   class="btn-group"
+				   description="PLG_ELEMENT_COLOURPICKER_DISPLAY_RGAA_DESC"
+				   label="PLG_ELEMENT_COLOURPICKER_DISPLAY_RGAA">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+
+			<field name="save_label"
+				   type="radio"
+				   default="1"
+				   class="btn-group"
+				   description="PLG_ELEMENT_COLOURPICKER_SAVE_LABEL_DESC"
+				   label="PLG_ELEMENT_COLOURPICKER_SAVE_LABEL">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+
+		</fieldset>
+	</fields>
+</form>

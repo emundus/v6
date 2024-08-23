@@ -9,8 +9,12 @@
 // no direct access
 
 defined('_JEXEC') or die;
+
+require_once (JPATH_SITE.'/components/com_emundus/helpers/cache.php');
+$hash = EmundusHelperCache::getCurrentGitHash();
+
 $document 	= JFactory::getDocument();
-$document->addStyleSheet("modules/mod_emundusmenu/style/mod_emundusmenu.css" );
+$document->addStyleSheet("modules/mod_emundusmenu/style/mod_emundusmenu.css?".$hash );
 // Include the syndicate functions only once
 require_once dirname(__FILE__).'/helper.php';
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');

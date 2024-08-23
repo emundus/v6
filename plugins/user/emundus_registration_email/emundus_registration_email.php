@@ -8,6 +8,8 @@
  */
 
 // Protect from unauthorized access
+use Joomla\CMS\Uri\Uri;
+
 defined('_JEXEC') or die('Restricted access');
 defined('DS') or define('DS', DIRECTORY_SEPARATOR);
 
@@ -141,46 +143,82 @@ class plgUserEmundus_registration_email extends JPlugin {
             }
         }
 
+
+	    if (JPluginHelper::getPlugin('system','emundusproxyredirect')) {
+		    $params = json_decode(JPluginHelper::getPlugin('system','emundusproxyredirect')->params, true);
+			$http_headers = $_SERVER;
+
+		    if($params['test_mode'] == 1) {
+			    $http_headers = [
+				    'username' => 'developer',
+				    'email'    => 'dev@emundus.io'
+			    ];
+
+			    $login_route = Uri::root().'connexion';
+			    $current_route = Uri::getInstance()->toString();
+
+			    if($current_route != $login_route) {
+				    return false;
+			    }
+		    }
+
+			if(!empty($http_headers[$params['username']]) && !empty($http_headers[$params['email']])) {
+				return;
+			}
+	    }
+
         // if saving user's data was successful
         if ($result && !$error) {
-            // for anonym sessions
+	        // Set the user table instance to include the new token.
+	        $table = JTable::getInstance('user', 'JTable');
+	        $table->load($userId);
+
+			// for anonym sessions
             $allow_anonym_files = $eMConfig->get('allow_anonym_files', 0);
-            if ($allow_anonym_files && preg_match('/^fake.*@emundus\.io$/', $user->email)) {
+            if (($allow_anonym_files && preg_match('/^fake.*@emundus\.io$/', $user->email)) || $user->getParam('saml') == 1) {
                 $user->setParam('skip_activation', true);
                 $user->setParam('send_mail', false);
             }
 
-            // Generate the activation token.
-            $activation = md5(mt_rand());
+            if ($user->getParam('skip_activation', false) || JFactory::getSession()->get('skip_activation', false)) {
+                $user->activation = 1;
+            }
+            else
+            {
+                // Generate the activation token.
+                $activation = md5(mt_rand());
 
-            // Store token in User's Parameters
-            $user->setParam('emailactivation_token', $activation);
+                // Store token in User's Parameters
+                $user->setParam('emailactivation_token', $activation);
 
-            // Get the raw User Parameters
-            $params = $user->getParameters();
-            $user->set('params', $params);
+                // Get the raw User Parameters
+                $params = $user->getParameters();
+                $user->set('params', $params);
 
-            // Set the user table instance to include the new token.
-            $table = JTable::getInstance('user', 'JTable');
-            $table->load($userId);
-            $table->params = $params->toString();
+                // Set the user table instance to include the new token.
+                $table = JTable::getInstance('user', 'JTable');
+                $table->load($userId);
+                $table->params = $params->toString();
 
-            // Block the user (until he activates).
-            $table->block = $eMConfig->get('block_user',1);
+                // Block the user (until he activates).
+                $table->block = $eMConfig->get('block_user', 1);
 
-            // Save user data
-            if (!$table->store()) {
-                throw new RuntimeException($table->getError());
+	            // Save user data
+	            if (!$table->store()) {
+		            throw new RuntimeException($table->getError());
+	            }
+
+	            // Send activation email
+	            if ($this->sendActivationEmail($user->getProperties(), $activation)) {
+		            //Force user logout
+		            if ($this->params->get('logout', null) && $userId === (int) JFactory::getUser()->id) {
+			            $app->logout();
+			            $app->redirect(JRoute::_(''), false);
+		            }
+	            }
             }
 
-            // Send activation email
-            if ($this->sendActivationEmail($user->getProperties(), $activation)) {
-                //Force user logout
-                if ($this->params->get('logout', null) && $userId === (int) JFactory::getUser()->id) {
-                    $app->logout();
-                    $app->redirect(JRoute::_(''), false);
-                }
-            }
+
 
             $this->onUserAfterLogin($new);
         }
@@ -222,14 +260,6 @@ class plgUserEmundus_registration_email extends JPlugin {
             $query->update($db->quoteName('#__users'))->set($fields)->where($conditions);
             $db->setQuery($query);
             $db->execute();
-
-            $credentials = array();
-            $credentials['username'] = $options['username'];
-            $credentials['password'] = $options['password_clear'];
-
-            $options = array();
-            $options['redirect'] = '/index.php?option=com_emundus&view=user';
-            $app->login($credentials,$options);
         } else {
             $query = $db->getQuery(true);
             $fields = array(
@@ -258,6 +288,8 @@ class plgUserEmundus_registration_email extends JPlugin {
      */
     private function sendActivationEmail($data, $token) {
 
+        define('JPATH_COMPONENT', 'com_emundus');
+
         $params = json_decode($data['params']);
         if (isset($params->skip_activation)) {
             return false;
@@ -281,7 +313,7 @@ class plgUserEmundus_registration_email extends JPlugin {
         // WARNING: This requires making a root level menu item in the backoffice going to com_users&task=edit on the slug /activation.
         // TODO: Possibly use JRoute to make this work without needing a menu item?
         if ($config->get('sef') == 0) {
-            $activation_url_rel = '/index.php?option=com_users&task=edit&emailactivation=1&u='.$userID.'&'.$md5Token.'=1';
+            $activation_url_rel = 'index.php?option=com_users&task=edit&emailactivation=1&u='.$userID.'&'.$md5Token.'=1';
         } else {
             $activation_url_rel = '/activation?emailactivation=1&u='.$userID.'&'.$md5Token.'=1';
         }

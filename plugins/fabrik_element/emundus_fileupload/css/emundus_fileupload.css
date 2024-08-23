@@ -14,9 +14,24 @@
     padding-top: 10px;
     align-items: center;
 }
-.em-fileAttachment-link > a {
+.em-fileAttachment-link > a:not(.em-deleteFile) {
     display: flex;
     align-items: center;
     min-height: 20px;
+    text-decoration: underline;
 }
 
+.em-fileAttachment-link > a:not(.em-deleteFile):hover {
+    text-decoration: none;
+}
+
+.label-description-document {
+    font-size: var(--em-form-label-size);
+    font-family: var(--em-applicant-font);
+    font-style: normal;
+    font-weight: var(--em-form-label-weight);
+}
+
+.plg-emundus_fileupload .fabrik_element___emundus_file_upload_parent {
+    margin-top: 20px;
+}

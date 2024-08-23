@@ -10,11 +10,8 @@
 	<files>
 		<filename module="mod_emundus_panel">mod_emundus_panel.php</filename>
 		<folder>tmpl</folder>
+		<filename>mod_emundus_panel.xml</filename>
 	</files>
-	<languages>
-		<language tag="fr-FR">fr-FR.mod_emundus_panel.ini</language>
-		<language tag="fr-FR">fr-FR.mod_emundus_panel.sys.ini</language>
-	</languages>
 	<config>
 		<fields name="params">
 			<fieldset name="basic">

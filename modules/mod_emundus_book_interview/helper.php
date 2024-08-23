@@ -53,7 +53,7 @@ class modEmundusBookInterviewHelper {
                 SELECT GROUP_CONCAT(id)
                 FROM jos_categories
                 WHERE extension LIKE \"com_dpcalendar\"
-                AND params LIKE '%\"program\":\"".$user->fnums[$fnum]->training."\"%'
+                AND json_extract(params, '$.program') LIKE '%".$user->fnums[$fnum]->training."%'
                 GROUP BY id
             )
             ORDER BY catid ASC";

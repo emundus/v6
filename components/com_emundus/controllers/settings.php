@@ -136,20 +136,19 @@ class EmundusControllersettings extends JControllerLegacy {
     }
 
     public function updatestatus() {
+        $changeresponse = array('status' => 0, 'msg' => JText::_('ACCESS_DENIED'));
         $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 	        $jinput = JFactory::getApplication()->input;
 
 	        $status = $jinput->getInt('status');
 	        $label = $jinput->getString('label');
 	        $color = $jinput->getString('color');
 
-            $changeresponse = $this->m_settings->updateStatus($status,$label,$color);
+            $changeresponse = $this->m_settings->updateStatus($status, $label, $color);
         }
+
         echo json_encode((object)$changeresponse);
         exit;
     }
@@ -187,6 +186,29 @@ class EmundusControllersettings extends JControllerLegacy {
             $changeresponse = $this->m_settings->updateTags($tag,$label,$color);
         }
         echo json_encode((object)$changeresponse);
+        exit;
+    }
+
+    public function updatetagsorder() {
+        $response = ['status' => false, 'message' => JText::_('ACCESS_DENIED'), 'code' => 403];
+        $user = JFactory::getUser();
+
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $response['code'] = 500;
+            $response['message'] = JText::_('MISSING_PARAMS');
+
+            $jinput = JFactory::getApplication()->input;
+            $ordered_tags_string = $jinput->getString('tags', '');
+
+            if (!empty($ordered_tags_string)) {
+                $ordered_tags = explode(',', $ordered_tags_string);
+
+                $response['status'] = $this->m_settings->updateTagsOrder($ordered_tags);
+                $response['code'] = 200;
+            }
+        }
+
+        echo json_encode((object)$response);
         exit;
     }
 

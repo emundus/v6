@@ -37,16 +37,19 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 	$m_application = new EmundusModelApplication();
 
+	require_once (JPATH_SITE.'/components/com_emundus/helpers/cache.php');
+	$hash = EmundusHelperCache::getCurrentGitHash();
+
     $document = JFactory::getDocument();
     $document->addStyleSheet("media/com_emundus/lib/bootstrap-336/css/bootstrap.min.css" );
     $document->addStyleSheet("media/com_emundus/lib/jquery-plugin-circliful-master/css/material-design-iconic-font.min.css" );
-    $document->addStyleSheet("modules/mod_emundus_applications/style/mod_emundus_applications.css" );
+    $document->addStyleSheet("modules/mod_emundus_applications/style/mod_emundus_applications.css?".$hash);
 
     $document->addCustomTag('<!--[if lt IE 9]><script language="javascript" type="text/javascript" src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script><![endif]-->');
     $document->addCustomTag('<!--[if lt IE 9]><script language="javascript" type="text/javascript" src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->');
 
-    $document->addScript("media/jui/js/jquery.min.js" );
-    $document->addScript("media/com_emundus/lib/bootstrap-336/js/bootstrap.min.js");
+    //$document->addScript("media/jui/js/jquery.min.js" );
+    //$document->addScript("media/com_emundus/lib/bootstrap-336/js/bootstrap.min.js");
     $document->addScript("media/com_emundus/lib/jquery-plugin-circliful-master/js/jquery.circliful.js" );
 
     $app = JFactory::getApplication();
@@ -106,6 +109,11 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $show_archive_files = $params->get('show_archived_files', 1);
     $show_state_files = $params->get('show_state_files', 0);
     $show_payment_status = $params->get('show_payment_status', 0);
+    $show_nb_comments = $params->get('show_nb_comments', 0) &&  $eMConfig->get('allow_applicant_to_comment', 0);
+    if ($show_nb_comments) {
+        $comments_page_alias = modemundusApplicationsHelper::getCommentsPageBaseUrl();
+    }
+
     $visible_status = $params->get('visible_status', '');
     if ($visible_status != "") {
       $visible_status = explode(',', $params->get('visible_status', ''));
@@ -123,6 +131,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $query_order_by = $order_applications . ' ' . $applications_as_desc;
 
     $file_status = $params->get('file_status', 1);
+	$title_override = JText::_($params->get('title_override', ''));
     $file_tags = JText::_($params->get('tags', ''));
     $cc_list_url = $params->get('cc_list_url', 'index.php?option=com_fabrik&view=form&formid=102');
 
@@ -173,7 +182,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $attachments = $progress['attachments'];
     $forms = $progress['forms'];
 
-    if ($show_add_application) {
+    if ($show_add_application || in_array('copy', $actions)) {
         if (EmundusHelperAccess::asAccessAction(1, 'c')) {
             $applicant_can_renew = 1;
         } else {

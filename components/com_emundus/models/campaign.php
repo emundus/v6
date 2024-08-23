@@ -731,7 +731,8 @@ class EmundusModelCampaign extends JModelList {
                 $query->select('COUNT(id)')
                     ->from($this->_db->quoteName('#__emundus_campaign_candidature'))
                     ->where($this->_db->quoteName('status') . ' IN (' . $limit->steps . ')')
-                    ->andWhere($this->_db->quoteName('campaign_id') . ' = ' . $id);
+                    ->andWhere($this->_db->quoteName('campaign_id') . ' = ' . $id)
+                    ->andWhere($this->_db->quoteName('published').' = 1');
 
                 try {
                     $this->_db->setQuery($query);
@@ -1143,32 +1144,40 @@ class EmundusModelCampaign extends JModelList {
 						$new_category_id = $this->getCampaignCategory($new_campaign_id);
 
 						if (!empty($new_category_id)) {
-							$old_category_id = $this->getCampaignCategory($id);
-							$old_campaign_documents = $this->getCampaignDropfilesDocuments($old_category_id);
+                            // TODO: add message if copy of dropfiles documents failed
+                            if (mkdir(JPATH_ROOT.'/media/com_dropfiles/' . $new_category_id, 0755)) {
+                                $old_category_id = $this->getCampaignCategory($id);
+                                $old_campaign_documents = $this->getCampaignDropfilesDocuments($old_category_id);
 
-							if (!empty($old_campaign_documents)) {
-								foreach($old_campaign_documents as $document) {
-									$document->catid = $new_category_id;
-									$document->author = $this->_user->id;
+                                if (!empty($old_campaign_documents)) {
+                                    foreach($old_campaign_documents as $document) {
+                                        $document->catid = $new_category_id;
+                                        $document->author = $this->_user->id;
 
-									$columns = array_keys($this->_db->getTableColumns('#__dropfiles_files'));
-									$columns = array_filter($columns, function ($k) {return $k != 'id';});
+                                        $columns = array_keys($this->_db->getTableColumns('#__dropfiles_files'));
+                                        $columns = array_filter($columns, function ($k) {return $k != 'id';});
 
-									$values = '';
-									foreach ($columns as $column) {
-										$values .= $this->_db->quote($document->$column) . ', ';
-									}
-									$values = rtrim($values, ', ');
+                                        $values = '';
+                                        foreach ($columns as $column) {
+                                            $values .= $this->_db->quote($document->$column) . ', ';
+                                        }
+                                        $values = rtrim($values, ', ');
 
-									$query->clear()
-										->insert($this->_db->quoteName('#__dropfiles_files'))
-										->columns(implode(',', $this->_db->quoteName($columns)))
-										->values($values);
+                                        $query->clear()
+                                            ->insert($this->_db->quoteName('#__dropfiles_files'))
+                                            ->columns(implode(',', $this->_db->quoteName($columns)))
+                                            ->values($values);
 
-									$this->_db->setQuery($query);
-									$this->_db->execute();
-								}
-							}
+                                        $this->_db->setQuery($query);
+                                        $this->_db->execute();
+
+                                        // Copy documents on server
+                                        $old_path = JPATH_ROOT.'/media/com_dropfiles/' . $old_category_id . '/' . $document->file;
+                                        $new_path = JPATH_ROOT.'/media/com_dropfiles/' . $new_category_id . '/' . $document->file;
+                                        copy($old_path, $new_path);
+                                    }
+                                }
+                            }
 						}
 					}
 				}
@@ -1273,6 +1282,11 @@ class EmundusModelCampaign extends JModelList {
                             $data['published'] = 0;
                         }
                     }
+					if($key == 'start_date' || $key == 'end_date'){
+						$dateStr = str_replace(' ', 'T', $val);
+						$date = new DateTime($dateStr);
+						$data[$key] = $date->format('Y-m-d H:i:s');
+					}
                 }
                 $i++;
             }
@@ -1396,7 +1410,9 @@ class EmundusModelCampaign extends JModelList {
                         break;
                     case 'end_date':
                     case 'start_date':
-                        $display_date = EmundusHelperDate::displayDate($val,'Y-m-d H:i:s', 1);
+		                $dateStr = str_replace(' ', 'T', $val);
+		                $date = new DateTime($dateStr);
+		                $display_date = $date->format('Y-m-d H:i:s');
                         if (!empty($display_date)) {
                             $fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($display_date);
                         } else {
@@ -2017,7 +2033,8 @@ class EmundusModelCampaign extends JModelList {
 			try {
 				$query->select('id')
 					->from($this->_db->quoteName('#__categories'))
-					->where('json_extract(`params`, "$.idCampaign") LIKE ' . $this->_db->quote('"'.$cid.'"'))
+                    ->where('json_valid(`params`)')
+                    ->andWhere('json_extract(`params`, "$.idCampaign") LIKE ' . $this->_db->quote('"'.$cid.'"'))
 					->andWhere($this->_db->quoteName('extension') . ' = ' . $this->_db->quote('com_dropfiles'));
 				$this->_db->setQuery($query);
 				$campaign_dropfile_cat = $this->_db->loadResult();
@@ -2051,7 +2068,7 @@ class EmundusModelCampaign extends JModelList {
             $query->select('*')
                 ->from($this->_db->quoteName('#__dropfiles_files'))
                 ->where($this->_db->quoteName('catid') . ' = ' . $this->_db->quote($campaign_cat))
-                ->group($this->_db->quoteName('ordering'));
+                ->order($this->_db->quoteName('ordering'));
             $this->_db->setQuery($query);
             return $this->_db->loadObjectList();
         }  catch (Exception $e) {
@@ -2938,5 +2955,106 @@ class EmundusModelCampaign extends JModelList {
         }
 
         return $incoherences;
+    }
+
+    /**
+     * @param $campaign_id int
+     * @return string
+     */
+    public function getCampaignMoreFormUrl($campaign_id): string
+    {
+        $form_url = '';
+
+        if (!empty($campaign_id)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            // get the form id where the table is jos_emundus_setup_campaigns_more
+            $query->select('form_id')
+                ->from($db->quoteName('#__fabrik_lists'))
+                ->where($db->quoteName('db_table_name') . ' = ' . $db->quote('jos_emundus_setup_campaigns_more'));
+
+            $db->setQuery($query);
+            $form_id = $db->loadResult();
+
+            if (!empty($form_id)) {
+                // check if there are more elements other than id, date_time and campaign_id
+                // otherwhise, we don't need to display the form
+                $query->clear()
+                    ->select('COUNT(jfe.id)')
+                    ->from($db->quoteName('#__fabrik_elements', 'jfe'))
+                    ->leftJoin($db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON ' . $db->quoteName('jffg.group_id') . ' = ' . $db->quoteName('jfe.group_id'))
+                    ->where($db->quoteName('jffg.form_id') . ' = ' . $db->quote($form_id))
+                    ->andWhere('jfe.published = 1')
+                    ->andWhere('jfe.name NOT IN ("id", "date_time", "campaign_id")');
+                $db->setQuery($query);
+                $nb_elements = $db->loadResult();
+
+                if ($nb_elements > 0) {
+                    $query->clear()
+                        ->select('id')
+                        ->from($db->quoteName('#__emundus_setup_campaigns_more'))
+                        ->where('campaign_id = ' . $db->quote($campaign_id));
+
+                    $db->setQuery($query);
+                    $row_id = $db->loadResult();
+
+                    if (!empty($row_id)) {
+                        $form_url = '/index.php?option=com_fabrik&view=form&formid=' . $form_id . '&rowid=' . $row_id . '&tmpl=component&iframe=1';
+                    } else {
+                        $form_url = '/index.php?option=com_fabrik&view=form&formid=' . $form_id . '&rowid=0&tmpl=component&iframe=1&jos_emundus_setup_campaigns_more___campaign_id=' . $campaign_id . '&Itemid=0';
+                    }
+                }
+            }
+        }
+
+        return $form_url;
+    }
+
+    function getProfilesFromCampaignId($campaign_ids) {
+        $profile_ids = [];
+
+        if (!empty($campaign_ids)) {
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('DISTINCT profile_id')
+                ->from('#__emundus_setup_campaigns')
+                ->where('id IN (' . implode(',', $db->quote($campaign_ids)) . ')');
+
+            $db->setQuery($query);
+            $profiles = $db->loadColumn();
+            foreach ($profiles as $profile)
+            {
+                if (!in_array($profile, $profile_ids))
+                {
+                    $profile_ids[] = $profile;
+                }
+            }
+
+            // profiles from workflows
+            $workflows  = $this->getWorkflows();
+
+            if (!empty($workflows)) {
+                $programme_codes = [];
+                foreach ($campaign_ids as $cid) {
+                    $programme = $this->getProgrammeByCampaignID($cid);
+
+                    if (!in_array($programme['code'], $programme_codes)) {
+                        $programme_codes[] = $programme->code;
+                    }
+                }
+
+                foreach ($workflows as $workflow)
+                {
+                    if (!in_array($workflow->profile, $profile_ids) && (!empty(array_intersect($workflow->campaigns, $campaign_ids)) || !empty(array_intersect($workflow->programs, $programme_codes))))
+                    {
+                        $profile_ids[] = $workflow->profile;
+                    }
+                }
+            }
+        }
+
+        return $profile_ids;
     }
 }

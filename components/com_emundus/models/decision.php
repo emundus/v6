@@ -225,8 +225,7 @@ class EmundusModelDecision extends JModelList
 						$element_attribs = json_decode($def_elmt->element_attribs);
 						$select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
 						foreach ($element_attribs->sub_options->sub_values as $key => $value) {
-							$select = 'REPLACE(' . $select . ', "' . $value . '", "' .
-								JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+							$select = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
 						}
 						$this->_elements_default[] = $select . ' AS ' . $def_elmt->tab_name . '___' . $def_elmt->element_name;
 					}
@@ -381,6 +380,7 @@ class EmundusModelDecision extends JModelList
     public function getAllDecisionElements($show_in_list_summary=1, $programme_code) {
         $session = JFactory::getSession();
 
+		$get_all = false;
         if ($session->has('filt_params')) {
             $elements_id = array();
 			$filt_params = $session->get('filt_params');
@@ -400,17 +400,24 @@ class EmundusModelDecision extends JModelList
                     }
                 }
             } else {
-				$groups = $this->getGroupsDecisionByProgramme($programme_code);
-                if (!empty($groups)) {
-                    $eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary); // $show_in_list_summary
-                    if (count($eval_elt_list)>0) {
-                        foreach ($eval_elt_list as $eel) {
-                            $elements_id[] = $eel->element_id;
-                        }
-                    }
-                }
+				$get_all = true;
             }
+		} else {
+	        $get_all = true;
         }
+
+		if ($get_all) {
+			$groups = $this->getGroupsDecisionByProgramme($programme_code);
+			if (!empty($groups)) {
+				$eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary); // $show_in_list_summary
+				if (count($eval_elt_list)>0) {
+					foreach ($eval_elt_list as $eel) {
+						$elements_id[] = $eel->element_id;
+					}
+				}
+			}
+		}
+
         return @$elements_id;
     }
 
@@ -1017,7 +1024,7 @@ class EmundusModelDecision extends JModelList
 
         $pageNavigation = "<div class='em-container-pagination-selectPage'>";
         $pageNavigation .= "<ul class='pagination pagination-sm'>";
-        $pageNavigation .= "<li><a href='#em-data' id='" . $this->getPagination()->pagesStart . "'><span class='material-icons'>navigate_before</span></a></li>";
+	    $pageNavigation .= "<li><a href='#em-data' id='" . ($this->getPagination()->pagesCurrent - 1) . "'><span class='material-icons'>navigate_before</span></a></li>";
         if ($this->getPagination()->pagesTotal > 15) {
             for ($i = 1; $i <= 5; $i++ ) {
                 $pageNavigation .= "<li ";
@@ -1063,7 +1070,7 @@ class EmundusModelDecision extends JModelList
                 $pageNavigation .= "><a id='" . $i . "' href='#em-data'>" . $i . "</a></li>";
             }
         }
-        $pageNavigation .= "<li><a href='#em-data' id='" .$this->getPagination()->pagesTotal . "'><span class='material-icons'>navigate_next</span></a></li></ul></div>";
+	    $pageNavigation .= "<li><a href='#em-data' id='" . ($this->getPagination()->pagesCurrent + 1) . "'><span class='material-icons'>navigate_next</span></a></li></ul></div>";
 
         return $pageNavigation;
     }
@@ -1353,37 +1360,40 @@ class EmundusModelDecision extends JModelList
     }
 
     /*
-* 	Get Decision form ID By programme code
-*	@param code 		code of the programme
-* 	@return int
-*/
-    function getDecisionFormByProgramme($code=null) {
-        if ($code === NULL) {
-            $session = JFactory::getSession();
-            if ($session->has('filt_params'))
-            {
-                $filt_params = $session->get('filt_params');
-                if (count(@$filt_params['programme'])>0) {
-                    $code = $filt_params['programme'][0];
-                }
-            }
-        }
-        try {
-            $query = 'SELECT ff.form_id
-					FROM #__fabrik_formgroup ff
-					WHERE ff.group_id IN (SELECT fabrik_decision_group_id FROM #__emundus_setup_programmes WHERE code like ' .
-                $this->_db->Quote($code) . ')';
-//die(str_replace('#_', 'jos', $query));
-            $this->_db->setQuery($query);
+	* 	Get Decision form ID By programme code
+	*	@param code 		code of the programme
+	* 	@return int
+	*/
+	function getDecisionFormByProgramme($code = null)
+	{
+		$decision_form = 0;
 
-            return $this->_db->loadResult();
-        }
-        catch(Exception $e)
-        {
-            echo $e->getMessage();
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-        }
-    }
+		if ($code === NULL) {
+			$session = JFactory::getSession();
+			if ($session->has('filt_params')) {
+				$filt_params = $session->get('filt_params');
+				if (!empty($filt_params['programme'])) {
+					$code = $filt_params['programme'][0];
+				}
+			}
+		}
+
+		if (!empty($code)) {
+			try {
+				$query = 'SELECT ff.form_id
+                    FROM #__fabrik_formgroup ff
+                    WHERE ff.group_id IN (SELECT fabrik_decision_group_id FROM #__emundus_setup_programmes WHERE code like ' .
+					$this->_db->Quote($code) . ') AND ff.group_id <> \'\'';
+
+				$this->_db->setQuery($query);
+				$decision_form = $this->_db->loadResult();
+			} catch (Exception $e) {
+				JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		return $decision_form;
+	}
 
 	public function getDecisionUrl($fnum, $formid, $rowid = 0, $student_id = 0, $redirect = 0, $view = 'form') {
 		$url = 'index.php';

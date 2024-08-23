@@ -14,8 +14,11 @@ JLoader::register('UsersHelperRoute', JPATH_SITE . '/components/com_users/helper
 JHtml::_('behavior.keepalive');
 JHtml::_('bootstrap.tooltip');
 
+require_once (JPATH_SITE.'/components/com_emundus/helpers/cache.php');
+$hash = EmundusHelperCache::getCurrentGitHash();
+
 $doc = JFactory::getDocument();
-$doc->addStyleSheet('templates/g5_helium/html/mod_login/style/mod_login.css');
+$doc->addStyleSheet('templates/g5_helium/html/mod_login/style/mod_login.css?'.$hash);
 
 ?>
 

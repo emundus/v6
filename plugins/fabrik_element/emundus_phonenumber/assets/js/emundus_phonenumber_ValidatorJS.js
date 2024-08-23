@@ -60,26 +60,25 @@ class ValidatorJS {
     inputValidation(e)
     {
         const countryCode = this.countrySelected.country_code;
-        this.frontMessage('invalid');
 
         if (countryCode !== '+')
         {
             const number = this.renderCountryCode.value + this.input.value;
             let format;
 
-            try // test number.lengh > 1
-            {
-                format = libphonenumber.parsePhoneNumber(number.substring(countryCode.length, number.length), this.countrySelected.iso2).format('E.164')
-            }
-            catch (e)
-            {
-                // too short, meh
-            }
+            if(this.input.value.length > 0) {
+                try // test number.lengh > 1
+                {
+                    format = libphonenumber.parsePhoneNumber(number.substring(countryCode.length, number.length), this.countrySelected.iso2).format('E.164')
+                } catch (e) {
+                    // too short, meh
+                }
 
-            if (format && libphonenumber.isValidNumber(format))
-            {
-                this.input.value = format.substring(this.renderCountryCode.value.length, format.length);
-                this.frontMessage('valid');
+                if (format && libphonenumber.isValidPhoneNumber(format)) {
+                    this.frontMessage('valid');
+                } else {
+                    this.frontMessage('invalid');
+                }
             }
         }
         else // unsupported country
@@ -101,21 +100,14 @@ class ValidatorJS {
 
         this.frontMessage('default'); // we consider its good everytime
 
-        if(this.input.value.length !== 0)
+        if (this.input.value.length !== 0) // if not empty, we validate, mandatory
         {
-            if(this.mustValidate) // mandatory so we validate everytime
-            {
-                this.inputValidation(props);
-            } else // not mandatory but valid only if numbers in it
-            {
-                this.inputValidation(props);
-            }
+            this.inputValidation(props);
         }
     }
 
     handlerSelectChange()
     {
-        this.mustValidate ? this.frontMessage('invalid') : this.frontMessage('default');
         this.newCountry(document.querySelector(this.select_chosen).selectedIndex);
         this.changeRenderCountryCode();
     }
@@ -150,10 +142,11 @@ class ValidatorJS {
         else if (this.countrySelected.country_code) {
 
             this.renderCountryCode.value = this.countrySelected.country_code;
-            this.setMaskToInput();
         }
+        this.setMaskToInput();
     }
 
+    // will remove all unnecessary 0 at the beginning of the phone number
     setMaskToInput()
     {
         if(this.mask) {

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-	<extension type="module" version ="2.5.0" method="upgrade">
+	<extension type="module" version="2.5.0" method="upgrade">
 		<name>MOD_EMUNDUS_CAMPAIGN</name>
         <author>Benjamin Rivalland</author>
         <creationDate>June 2015</creationDate>
@@ -130,6 +130,7 @@
 					<field showon="mod_em_campaign_show_filters:1" type="checkboxes" name="mod_em_campaign_show_filters_list" label="MOD_EM_CAMPAIGN_SHOW_FILTERS_LIST">
 						<option checked="true" value="programme">MOD_EM_CAMPAIGN_SHOW_FILTERS_LIST_PROGRAMME</option>
 						<option checked="false" value="category">MOD_EM_CAMPAIGN_SHOW_FILTERS_LIST_CATEGORY</option>
+						<option checked="false" value="reseau">MOD_EM_CAMPAIGN_SHOW_FILTERS_LIST_RESEAU</option>
 					</field>
 					<field showon="mod_em_campaign_layout:default_tchooz" type="list" name="mod_em_campaign_show_sort" label="MOD_EM_CAMPAIGN_SHOW_SORT" default="1">
 						<option value="0">JNO</option>
@@ -169,6 +170,14 @@
 						<option value="0">JNO</option>
 						<option value="1">JYES</option>
 					</field>
+					<field showon="mod_em_campaign_layout:default_tchooz" type="list" name="mod_em_campaign_single_campaign_line" label="MOD_EM_CAMPAIGN_LIST_SINGLE_CAMPAIGN_LINE" default="0">
+						<option value="0">JNO</option>
+						<option value="1">JYES</option>
+					</field>
+					<field showon="mod_em_campaign_layout:default_tchooz" type="list" name="mod_em_campaign_show_info_button" label="MOD_EM_CAMPAIGN_LIST_SHOW_INFO_BUTTON" default="0">
+						<option value="0">JNO</option>
+						<option value="1">JYES</option>
+					</field>
 					<field showon="mod_em_campaign_layout:default_tchooz" type="list" name="mod_em_campaign_show_apply_button" label="MOD_EM_CAMPAIGN_LIST_SHOW_APPLY_BUTTON" default="0">
 						<option value="0">JNO</option>
 						<option value="1">JYES</option>
@@ -183,6 +192,16 @@
                         <option value="program">MOD_EM_CAMPAIGN_SHOW_FILTERS_LIST_PROGRAMME</option>
 						<option value="category">MOD_EM_CAMPAIGN_SHOW_FILTERS_LIST_CATEGORY</option>
                     </field>
+
+					<field showon="mod_em_campaign_groupby:category" type="list" name="mod_em_campaign_display_tmpl" label="MOD_EM_CAMPAIGN_DISPLAY_TMPL" default="1">
+						<option value="0">JNO</option>
+						<option value="1">JYES</option>
+					</field>
+
+					<field showon="mod_em_campaign_layout:default_tchooz" type="list" name="mod_em_campaign_groupby_closed" label="MOD_EM_CAMPAIGN_DISPLAY_GROUPBY_CLOSED" default="0">
+						<option value="0">JNO</option>
+						<option value="1">JYES</option>
+					</field>
 					<field type="list" name="mod_em_campaign_orderby" default="start_date" label="MOD_EM_CAMPAIGN_ORDER" description="MOD_EM_CAMPAIGN_ORDER_DESC">
 						<option value="start_date">MOD_EM_CAMPAIGN_LIST_DATE_START</option>
 						<option value="end_date">MOD_EM_CAMPAIGN_LIST_DATE_END</option>
@@ -207,6 +226,14 @@
 					<field type="text" name="mod_em_program_code" label="MOD_EM_PROGRAM_CODE" description="MOD_EM_PROGRAM_CODE_DESC"/>
 
 					<field type="text" name="mod_em_ignored_program_code" label="MOD_EM_PROGRAM_CODE_IGNORE" description="MOD_EM_PROGRAM_CODE_IGNORE_DESC"/>
+
+					<field  showon="mod_em_campaign_layout:default_tchooz"
+							name="mod_em_campaign_tags"
+						   	type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
+						   	default=""
+						   	label="MOD_EMUNDUS_TAGS"
+						   	description="MOD_EMUNDUS_TAGS_DESC">
+					</field>
 				</fieldset>
 
 				<fieldset name="single" label="Paramètres des détails">
@@ -269,6 +296,27 @@
 						<option value="0">JNO</option>
 						<option value="1">JYES</option>
 					</field>
+
+					<field showon="mod_em_campaign_layout:tchooz_single_campaign" type="list" name="mod_em_campaign_go_back_link" label="MOD_EM_CAMPAIGN_GO_BACK_LINK" description="MOD_EM_CAMPAIGN_GO_BACK_LINK_DESC" default="1">
+						<option value="1">MOD_EM_CAMPAIGN_GO_BACK_LINK_PREVIOUS_PAGE</option>
+						<option value="2">MOD_EM_CAMPAIGN_GO_BACK_LINK_CAMPAIGNS_LIST</option>
+						<option value="3">MOD_EM_CAMPAIGN_GO_BACK_LINK_URL</option>
+					</field>
+
+					<field  showon="mod_em_campaign_go_back_link:2"
+							name="mod_em_campaign_go_back_campaigns_link"
+							type="sql"
+							label="MOD_EM_CAMPAIGN_GO_BACK_LINK_CAMPAIGNS_LIST_MENU"
+							query="select id,title from #__menu where published = 1"
+							key_field="id"
+							value_field="title"
+					/>
+
+					<field name="mod_em_campaign_go_back_external_url"
+						   showon="mod_em_campaign_go_back_link:3"
+						   type="text"
+						   label="MOD_EM_CAMPAIGN_GO_BACK_EXTERNAL_URL" description="MOD_EM_CAMPAIGN_GO_BACK_EXTERNAL_URL_DESC"
+					/>
 
 				</fieldset>
 

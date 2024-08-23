@@ -133,7 +133,15 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                     } else {
                         if (typeOf(this.container) !== 'null') {
                             this.container.addEvent('keydown', function (e) {
-                                this.informKeyPress(e);
+                                setTimeout(() => {
+                                    this.informKeyPress(e);
+                                },0);
+                            }.bind(this));
+
+                            this.container.addEvent('paste', function (e) {
+                                setTimeout(() => {
+                                    this.informKeyPress(e);
+                                },0);
                             }.bind(this));
 
                             this.container.addEvent('blur', function (e) {

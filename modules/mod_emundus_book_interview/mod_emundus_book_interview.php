@@ -11,8 +11,12 @@ $helper = new modEmundusBookInterviewHelper;
 
 $evaluated_status = $params->get('evaluated_status');
 
-$status = $helper->getLastFileInterviewStatus($user->id)->status;
-$fnum = $helper->getLastFileInterviewStatus($user->id)->fnum;
+$jinput = JFactory::getApplication()->input;
+$fnum = $jinput->get->get('fnum');
+
+if(empty($fnum)){
+    $fnum = $user->fnum;
+}
 
 if (isset($fnum)) {
 
@@ -33,7 +37,7 @@ if (isset($fnum)) {
 
         require(JModuleHelper::getLayoutPath('mod_emundus_book_interview','showInterview_'.$params->get('mod_em_book_interview_layout')));
 
-    } elseif ($status == $evaluated_status) {
+    } elseif ($user->status == $evaluated_status) {
 
         $available_events = $helper->getEvents($user,$fnum);
 

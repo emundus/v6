@@ -1,24 +1,41 @@
 <template>
   <div>
     <div v-for="param in params" v-if="(param.published && !param.sysadmin_only) || (sysadmin && param.sysadmin_only && param.published)" class="form-group mb-4">
-      <label>{{ translate(param.label) }}</label>
+      <label :class="param.type === 'repeatable' ? 'font-bold' : ''">{{ translate(param.label) }}</label>
 
       <!-- DROPDOWN -->
       <div v-if="param.type === 'dropdown' || param.type === 'sqldropdown'">
-        <select v-model="element.params[param.name]" class="em-w-100" v-if="param.options.length > 0">
+        <select v-if="repeat_name !== '' && param.options.length > 0" v-model="element.params[repeat_name][index_name][param.name]" class="em-w-100">
+          <option v-for="option in param.options" :value="option.value">{{ translate(option.label) }}</option>
+        </select>
+
+        <select v-else-if="param.options.length > 0" v-model="element.params[param.name]" class="em-w-100">
           <option v-for="option in param.options" :value="option.value">{{ translate(option.label) }}</option>
         </select>
       </div>
 
       <!-- TEXTAREA -->
+      <textarea v-else-if="param.type === 'textarea' && repeat_name !== ''" v-model="element.params[repeat_name][index_name][param.name]" class="em-w-100"></textarea>
       <textarea v-else-if="param.type === 'textarea'" v-model="element.params[param.name]" class="em-w-100"></textarea>
 
       <!-- DATABASEJOIN -->
+      <div v-else-if="param.type === 'databasejoin' && repeat_name !== ''">
+        <select v-model="element.params[repeat_name][index_name][param.name]" :key="reloadOptions" :id="param.name" @change="updateDatabasejoinParams" class="em-w-100" :class="databasejoin_description ? 'em-mb-4' : ''">
+          <option v-for="option in param.options" :value="option.database_name">{{ option.label }}</option>
+        </select>
+        <label v-if="databasejoin_description" style="font-size: small">{{ databasejoin_description }}</label>
+      </div>
       <div v-else-if="param.type === 'databasejoin'">
         <select v-model="element.params[param.name]" :key="reloadOptions" :id="param.name" @change="updateDatabasejoinParams" class="em-w-100" :class="databasejoin_description ? 'em-mb-4' : ''">
           <option v-for="option in param.options" :value="option.database_name">{{ option.label }}</option>
         </select>
         <label v-if="databasejoin_description" style="font-size: small">{{ databasejoin_description }}</label>
+      </div>
+
+      <div v-else-if="param.type === 'databasejoin_cascade' && repeat_name !== ''">
+        <select v-model="element.params[repeat_name][index_name][param.name]" :key="reloadOptionsCascade" class="em-w-100">
+          <option v-for="option in param.options" :value="option.COLUMN_NAME">{{ option.COLUMN_NAME }}</option>
+        </select>
       </div>
       <div v-else-if="param.type === 'databasejoin_cascade'">
         <select v-model="element.params[param.name]" :key="reloadOptionsCascade" class="em-w-100">
@@ -26,7 +43,27 @@
         </select>
       </div>
 
+      <!-- REPEATABLE -->
+      <div v-else-if="param.type === 'repeatable'">
+        <div v-for="(repeat_param, key) in Object.entries(element.params[param.name])">
+          <hr/>
+          <div class="flex justify-between items-center">
+            <label>-- {{ (key+1) }} --</label>
+            <button v-if="key != 0 && (key+1) == Object.entries(element.params[param.name]).length" type="button" @click="removeRepeatableField(param.name,key)" class="mt-2 w-auto">
+              <span class="material-icons-outlined text-red-500">close</span>
+            </button>
+          </div>
+
+          <form-builder-element-params  :key="param.name+key" :element="element" :params="param.fields" :repeat_name="param.name" :index="key" :databases="databases"></form-builder-element-params>
+        </div>
+
+        <div class="flex justify-end">
+          <button type="button" @click="addRepeatableField(param.name)" class="em-tertiary-button mt-2 w-auto">{{ translate('COM_EMUNDUS_ONBOARD_PARAMS_ADD_REPEATABLE') }}</button>
+        </div>
+      </div>
+
       <!-- INPUT (TEXT,NUMBER) -->
+      <input v-else-if="repeat_name !== ''" :type="param.type" v-model="element.params[repeat_name][index_name][param.name]" class="em-w-100" :placeholder="translate(param.placeholder)"/>
       <input v-else :type="param.type" v-model="element.params[param.name]" class="em-w-100" :placeholder="translate(param.placeholder)"/>
 
       <!-- HELPTEXT -->
@@ -58,6 +95,16 @@ export default {
     databases: {
       type: Array,
       required: false
+    },
+    repeat_name: {
+      type: String,
+      required: false,
+      default: ''
+    },
+    index: {
+      type: Number,
+      required: false,
+      default: 0
     }
   },
   data: () => ({
@@ -144,10 +191,24 @@ export default {
         });
       }
     },
+    addRepeatableField(param) {
+      let index = Object.entries(this.element.params[param]).length;
+      this.element.params[param][param+index] = {};
+      //this.element.params[param][param+index] = this.element.params[param][param+'0'];
+
+      this.$forceUpdate();
+    },
+    removeRepeatableField(param,key) {
+      delete this.element.params[param][param+key];
+      this.$forceUpdate();
+    }
   },
   computed: {
     sysadmin: function(){
       return parseInt(this.$store.state.global.sysadminAccess);
+    },
+    index_name: function() {
+      return this.repeat_name !== '' ? this.repeat_name+this.index : '';
     }
   }
 }

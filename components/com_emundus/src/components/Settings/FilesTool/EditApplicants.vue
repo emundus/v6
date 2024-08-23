@@ -2,17 +2,17 @@
   <div class="em-settings-menu">
     <div class="em-w-80" v-if="!loading">
 
-      <div class="form-group em-flex-center em-w-100 em-mb-16" v-for="(param, index) in params" :key="index">
-          <label :for="'param_' + index" class="flex items-center">
+      <div class="form-group em-flex-center em-w-100 em-mb-16" v-for="(param) in displayedParams" :key="param.param">
+          <label :for="'param_' + param.param" class="flex items-center">
             {{ translate(param.label) }}
             <span v-if="param.helptext" class="material-icons-outlined ml-2" @click="displayHelp(param.helptext)">help_outline</span>
           </label>
 
 
-        <select v-if="param.options" class="dropdown-toggle w-select" :id="'param_' + index" v-model="param.value" style="margin-bottom: 0" @change="saveEmundusParam(param)">
+        <select v-if="param.options" class="dropdown-toggle w-select" :id="'param_' + param.param" v-model="param.value" style="margin-bottom: 0" @change="saveEmundusParam(param)">
           <option v-for="option in param.options" :key="option.value" :value="option.value">{{ translate(option.label) }}</option>
         </select>
-        <input v-else type="text" class="form-control" :id="'param_' + index" v-model="param.value" :maxlength="param.maxlength" style="margin-bottom: 0" @change="saveEmundusParam(param)">
+        <input v-else type="text" class="form-control" :id="'param_' + param.param" v-model="param.value" :maxlength="param.maxlength" style="margin-bottom: 0" @change="saveEmundusParam(param)">
       </div>
 
     </div>
@@ -102,6 +102,13 @@ export default {
       });
     }
   },
+	computed: {
+		displayedParams() {
+			return Object.values(this.params).filter((param) => {
+				return param.displayed;
+			});
+		}
+	}
 };
 </script>
 <style scoped>

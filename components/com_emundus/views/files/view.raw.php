@@ -72,9 +72,21 @@ class EmundusViewFiles extends JViewLegacy
 		$menu = JFactory::getApplication()->getMenu();
 		$current_menu = $menu->getActive();
 		$menu_params = $menu->getParams(@$current_menu->id);
-		$this->use_module_for_filters = boolval($menu_params->get('em_use_module_for_filters', 0));
+        $session = JFactory::getSession();
 
-		parent::__construct($config);
+        if (!empty($menu_params)) {
+            $this->use_module_for_filters = boolval($menu_params->get('em_use_module_for_filters', 0));
+        } else {
+            $this->use_module_for_filters = false;
+        }
+
+        if ($this->use_module_for_filters) {
+            $session->set('last-filters-use-adavanced', true);
+        } else {
+            $session->set('last-filters-use-adavanced', false);
+        }
+
+        parent::__construct($config);
 	}
 
 	/** @noinspection PhpInconsistentReturnPointsInspection */

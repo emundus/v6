@@ -111,14 +111,12 @@ class EmundusViewForm extends FabrikViewFormBase
                 $returnObject->show_title = $show_title;
             endif;
 
-            if ($form->getIntro()) :
-                $returnObject->intro_value = $form->getIntro();
-                $returnObject->intro = new stdClass;
-                foreach ($languages as $language) {
-                    $returnObject->intro->{$language->sef} = $formbuilder->getTranslation($form->form->intro,$language->lang_code);
-                }
-                $returnObject->intro_raw = strip_tags($form->form->intro);
-            endif;
+			$returnObject->intro_value = $form->getIntro();
+			$returnObject->intro = new stdClass;
+			foreach ($languages as $language) {
+				$returnObject->intro->{$language->sef} = $formbuilder->getTranslation($form->form->intro,$language->lang_code);
+			}
+			$returnObject->intro_raw = strip_tags($form->form->intro);
 
             if ($form->attribs) :
                 $returnObject->attribs = $form->attribs;
@@ -235,6 +233,7 @@ class EmundusViewForm extends FabrikViewFormBase
                         ${"element" . $o_element->id}->group_id = $GroupProperties->id;
                         ${"element" . $o_element->id}->hidden = $content_element->hidden;
                         ${"element" . $o_element->id}->default = $o_element->default;
+                        ${"element" . $o_element->id}->eval = $o_element->eval;
                         ${"element" . $o_element->id}->labelsAbove = $labelsAbove;
                         ${"element" . $o_element->id}->plugin = $o_element->plugin;
                         if ($el_parmas->validations->plugin != null) {

@@ -134,10 +134,28 @@ $obj=$db->loadObject();
 $patterns = array ('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[DOCUMENT_TYPE\]/','/\n/');
 $replacements = array ($student->id, $student->name, $student->email, $attachement_params->value, '<br />');
 
+$config = JFactory::getConfig();
+
+// Get default mail sender info
+$mail_from_sys = $config->get('mailfrom');
+$mail_from_sys_name = $config->get('fromname');
+
+// If no mail sender info is provided, we use the system global config.
+if(!empty($obj->emailfrom)) {
+    $mail_from = $obj->emailfrom;
+} else {
+    $mail_from = $mail_from_sys;
+}
+if(!empty($obj->name)){
+    $mail_from_name = $obj->name;
+} else {
+    $mail_from_name = $mail_from_sys_name;
+}
+
+$mail_from_address = $mail_from_sys;
+
 // Mail au candidat
 $fileURL = $baseurl.'/'.EMUNDUS_PATH_REL.$upload->user_id.'/'.$nom;
-$from = $obj->emailfrom;
-$fromname =$obj->name;
 $recipient[] = $student->email;
 $subject = $obj->subject;
 $body = preg_replace($patterns, $replacements, $obj->message);
@@ -145,11 +163,11 @@ $mode = 1;
 //$cc = $user->email;
 //$bcc = $user->email;
 //$attachment[] = $path_file;
-$replyto = $obj->emailfrom;
-$replytoname = $obj->name;
+$replyto = $mail_from;
+$replytoname = $mail_from_name;
 
-$from = $obj->emailfrom;
-$fromname =$obj->name;
+$from = $mail_from_address;
+$fromname = $mail_from_name;
 $sender = array($from, $fromname);
 
 $mailer->setSender($sender);

@@ -25,8 +25,11 @@ if(!empty($user)){
 }
 
 if($display) {
+	require_once (JPATH_SITE.'/components/com_emundus/helpers/cache.php');
+	$hash = EmundusHelperCache::getCurrentGitHash();
+
     $document = JFactory::getDocument();
-    $document->addStyleSheet('modules/mod_emundus_banner/style/mod_emundus_banner.css');
+    $document->addStyleSheet('modules/mod_emundus_banner/style/mod_emundus_banner.css?'.$hash);
 
 	$image_link = $params->get('mod_em_banner_image','/images/custom/default_banner.png');
 

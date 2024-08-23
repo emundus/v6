@@ -7,13 +7,18 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
+use Joomla\CMS\Component\ComponentHelper;
+
 defined('_JEXEC') or die;
 
 // Include the login functions only once
 JLoader::register('ModLoginHelper', __DIR__ . '/helper.php');
 
+require_once (JPATH_SITE.'/components/com_emundus/helpers/cache.php');
+$hash = EmundusHelperCache::getCurrentGitHash();
+
 $document 	= JFactory::getDocument();
-$document->addStyleSheet("modules/mod_emundus_cas/css/mod_emundus_cas.css" );
+$document->addStyleSheet("modules/mod_emundus_cas/css/mod_emundus_cas.css?".$hash);
 
 $params->def('greeting', 1);
 
@@ -35,6 +40,9 @@ $return           = ModLoginHelper::getReturnUrl($params, $type);
 $twofactormethods = JAuthenticationHelper::getTwoFactorMethods();
 $user             = JFactory::getUser();
 $layout           = $params->get('layout', 'default');
+
+$eMConfig = ComponentHelper::getParams('com_emundus');
+$forgottenLink = $eMConfig->get('forgotten_password_link','index.php?option=com_users&view=reset');
 
 /*Logged users must load the logout sublayout
 if (!$user->guest)

@@ -8,8 +8,12 @@
 
 // No direct access to this file
 defined('_JEXEC') or die;
+
+require_once (JPATH_SITE.'/components/com_emundus/helpers/cache.php');
+$hash = EmundusHelperCache::getCurrentGitHash();
+
 $document = JFactory::getDocument();
-$document->addStyleSheet("modules/mod_falang/style/mod_falang_emundus.css");
+$document->addStyleSheet("modules/mod_falang/style/mod_falang_emundus.css?".$hash);
 
 // mod_falang helper set display to false because of the parameter layout=edit
 // we need to set it to true to switch language

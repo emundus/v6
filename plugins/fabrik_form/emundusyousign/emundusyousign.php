@@ -507,7 +507,7 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
                 JLog::add('Error removing assoc users : '.$e->getMessage(), JLog::ERROR, 'com_emundus.yousign');
             }
 
-            JLog::add('Failed yousign api request.' . $e->getMessage(), JLog::ERROR, 'com_emundus.yousign');
+            JLog::add('Failed yousign api request.' . $e->getMessage() . ' file name was : ' . $file->name, JLog::ERROR, 'com_emundus.yousign');
             throw new Exception($e->getMessage());
         }
 	}

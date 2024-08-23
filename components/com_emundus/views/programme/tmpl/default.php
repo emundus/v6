@@ -1,8 +1,14 @@
 <?php
 defined('_JEXEC') or die('Restricted access');
 
-JHTML::stylesheet('media/com_emundus/css/emundus.css' );
-JHTML::stylesheet('media/com_emundus/css/emundus_programme.css' );
+require_once (JPATH_SITE.'/components/com_emundus/helpers/cache.php');
+$hash = EmundusHelperCache::getCurrentGitHash();
+
+$document = JFactory::getDocument();
+
+$document->addStyleSheet('media/com_emundus/css/emundus.css?'.$hash);
+$document->addStyleSheet('media/com_emundus/css/emundus_programme.css?'.$hash);
+
 $config = JFactory::getConfig();
 $site_offset = $config->get('offset');
 ?>

@@ -2,10 +2,10 @@
 $d = $displayData;
 ?>
 
-<div id="<?php echo $d->id; ?>" class="fabrikinput fabrikElementReadOnly" style="background-color: <?php echo $d->backgroundColor ?>">
+<div id="<?php echo $d->id; ?>" class="fabrikinput fabrikElementReadOnly" style="background-color: <?php echo $d->backgroundColor ?>;<?php if ($d->type == 4): ?>padding: 0;<?php endif; ?>" name="<?php echo $d->name; ?>">
     <span class="material-icons<?php echo $d->iconType ?>" style="color: <?php echo $d->iconColor ?>"><?php echo $d->icon ?></span>
 
-    <div class="fabrikElementContent w-full">
+    <div class="fabrikElementContent w-full" <?php if ($d->type == 4): ?>style="margin-left: 0;"<?php endif; ?>>
 	    <?php if ($d->accordion == 1) : ?>
             <div class="flex items-center justify-between cursor-pointer"
                  href="#<?php echo $d->id; ?>-content" data-te-collapse-init data-toggle="collapse" aria-expanded="false" aria-controls="<?php echo $d->id; ?>-content" id="<?php echo $d->id; ?>-heading">
@@ -22,9 +22,9 @@ $d = $displayData;
 		    <?php if (!empty($d->title) && $d->accordion == 0) : ?>
                 <h3><?php echo $d->title ?></h3>
 		    <?php endif; ?>
-            <div class="<?php if (!empty($d->title)) : ?>mt-2<?php endif; ?>">
-		        <?php echo $d->value;?>
-            </div>
+            <p class="<?php if (!empty($d->title)) : ?>mt-2<?php endif; ?>">
+                <span class="whitespace-pre-line" id="<?php echo $d->id; ?>-value"><?php echo $d->value;?></span>
+            </p>
         </div>
     </div>
 </div>

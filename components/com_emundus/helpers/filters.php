@@ -320,10 +320,8 @@ class EmundusHelperFilters {
 					AND element.plugin != "display"
 				ORDER BY formgroup.ordering, element.ordering';
 		try {
-			//die(str_replace("#_", "jos", $query));
 			$db->setQuery($query);
 			return $db->loadObjectList();
-
 		} catch (Exception $e) {
 			throw $e;
 		}
@@ -359,7 +357,7 @@ class EmundusHelperFilters {
 			if ($hidden !== null) {
 				$query->andWhere('jfe.hidden = ' . $hidden);
 			}
-			$query->order('find_in_set(jfg.id, "'. $groups . '"), jfe.ordering');
+			$query->order('jffg.ordering, jfe.ordering');
 			try {
 				$db->setQuery($query);
 				$elements = $db->loadObjectList();

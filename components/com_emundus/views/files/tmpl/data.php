@@ -14,7 +14,30 @@
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+
+$eMConfig = JComponentHelper::getParams('com_emundus');
+$fix_header = $eMConfig->get('fix_file_header', 0);
 ?>
+
+<style>
+    .em-double-scroll-bar {
+        position: sticky;
+        padding: 0 !important;
+        z-index: 2;
+    }
+    div.top-scrollbars::-webkit-scrollbar, .em-double-scroll-bar::-webkit-scrollbar {
+        -webkit-appearance: none;
+        width: 7px;
+        height: 10px;
+        background-color: white !important;
+    }
+
+    div.top-scrollbars::-webkit-scrollbar-thumb, .em-double-scroll-bar::-webkit-scrollbar-thumb {
+        border-radius: 8px;
+        background-color: var(--neutral-400);
+        box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+    }
+</style>
 
 <input type="hidden" id="view" name="view" value="files">
 <div class="panel panel-default em-data">
@@ -41,7 +64,8 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
             <?php echo $this->pageNavigation ?>
             <div id="countCheckedCheckbox" class="countCheckedCheckbox" style="display: none"></div>
         </div>
-        <div class="em-data-container" style="padding-bottom: unset">
+
+        <div class="em-data-container top-scrollbars" style="padding-bottom: unset">
             <table class="table table-striped table-hover" id="em-data">
                 <thead>
                 <tr>
@@ -170,7 +194,23 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
                                         <?php else:
                                             // Do not display the typical COM_EMUNDUS_PLEASE_SELECT text used for empty dropdowns.
                                             if ($value->val !== 'COM_EMUNDUS_PLEASE_SELECT') {
-                                                echo JText::_($value->val);
+                                                // value is saved as string '["value1", "value2"]' in the database
+                                                if ($value->type == 'checkbox' || ($value->type == 'dropdown' && json_decode($value->params, true)['multiple'] == 1)) {
+                                                    $trimmed_string = trim($value->val, '[]');
+                                                    $split_string = preg_split('/,(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)/', $trimmed_string);
+
+                                                    $values_array = array_map(function($element) {
+                                                        return trim($element, '"');
+                                                    }, $split_string);
+
+                                                    echo '<ul>';
+                                                    foreach($values_array as $single_value) {
+                                                        echo '<li>'.JText::_($single_value).'</li>';
+                                                    }
+                                                    echo '</ul>';
+                                                } else {
+                                                    echo JText::_($value->val);
+                                                }
                                             }
                                         endif; ?>
                                     <?php endif; ?>
@@ -250,10 +290,11 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
         containerResult = document.querySelector('.container-result');
         setTimeout(() => {
             $('.container-result').css('top', (headerNav.offsetHeight + menuAction.offsetHeight) + 'px');
+            $('.em-double-scroll-bar').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight - 2) + 'px');
             $('#em-data th').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight) + 'px');
         },2000);
 
-        const dataContainer = document.querySelector('.em-data-container')
+        var dataContainer = document.querySelector('.em-data-container')
         if (dataContainer) {
             DoubleScroll(document.querySelector('.em-data-container'));
         }
@@ -263,8 +304,8 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 
 
 <script>
-    const selectDropdownContainer = document.querySelector('.selectAll');
-    const countFiles = document.querySelector('#countCheckedCheckbox');
+    var selectDropdownContainer = document.querySelector('.selectAll');
+    var countFiles = document.querySelector('#countCheckedCheckbox');
     selectDropdownContainer.style.display = 'none';
 
     $('.selectDropdown').click(function() {
@@ -303,7 +344,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
     }
 
     function selectAllFiles(){
-        let allCheck = $('.em-check-all-all#em-check-all-all').is(':checked');
+        var allCheck = $('.em-check-all-all#em-check-all-all').is(':checked');
 
         if(allCheck === true) {
             $('.em-check-all-page#em-check-all-page').prop('checked', false);
@@ -351,8 +392,8 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
     })
 
     $(document).on('change', '.em-check-all-page,.selectPage #em-check-all', function(e) {
-        let pageCheckAll = $('.selectPage #em-check-all').is(':checked');
-        let is_checked = false;
+        var pageCheckAll = $('.selectPage #em-check-all').is(':checked');
+        var is_checked = false;
 
         if(e.target.id === 'em-check-all'){
             if(pageCheckAll === false){
@@ -362,7 +403,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
             }
         }
 
-        let pageCheck = $('.em-check-all-page#em-check-all-page').is(':checked');
+        var pageCheck = $('.em-check-all-page#em-check-all-page').is(':checked');
 
         if(e.target.id === 'em-check-all-page'){
             if(pageCheck === false){
@@ -376,12 +417,12 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
             $('.em-check-all-all#em-check-all-all').prop('checked', false);
             $('.em-check').prop('checked', true);
 
-            let countCheckedCheckbox = $('.em-check').not('#em-check-all.em-check,#em-check-all-all.em-check').filter(':checked').length;
-            let files = countCheckedCheckbox === 1 ? Joomla.JText._('COM_EMUNDUS_FILES_FILE') : Joomla.JText._('COM_EMUNDUS_FILES_FILES');
+            var countCheckedCheckbox = $('.em-check').not('#em-check-all.em-check,#em-check-all-all.em-check').filter(':checked').length;
+            var files = countCheckedCheckbox === 1 ? Joomla.JText._('COM_EMUNDUS_FILES_FILE') : Joomla.JText._('COM_EMUNDUS_FILES_FILES');
 
             if (countCheckedCheckbox !== 0) {
                 displayCount();
-                countFiles.innerHTML = '<p>' + Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + countCheckedCheckbox + ' ' + files + '. <a class="em-pointer" onclick="checkAllFiles()">'+Joomla.JText._('COM_EMUNDUS_FILES_SELECT_ALL_FILES')+'</a></p>';
+                countFiles.innerHTML = '<p>' + Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + countCheckedCheckbox + ' ' + files + '. <a class="em-pointer em-text-underline em-profile-color" onclick="checkAllFiles()">'+Joomla.JText._('COM_EMUNDUS_FILES_SELECT_ALL_FILES')+'</a></p>';
             } else {
                 hideCount();
                 countFiles.innerHTML = '';
@@ -407,15 +448,37 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
     })
 
     $(document).on('change', '.em-check', function(e) {
-        let countCheckedCheckbox = $('.em-check').not('#em-check-all.em-check,#em-check-all-all.em-check').filter(':checked').length;
-        let files = countCheckedCheckbox === 1 ? Joomla.JText._('COM_EMUNDUS_FILES_FILE') : Joomla.JText._('COM_EMUNDUS_FILES_FILES');
+        var countCheckedCheckbox = $('.em-check').not('#em-check-all.em-check,#em-check-all-all.em-check').filter(':checked').length;
+        var files = countCheckedCheckbox === 1 ? Joomla.JText._('COM_EMUNDUS_FILES_FILE') : Joomla.JText._('COM_EMUNDUS_FILES_FILES');
 
         if (countCheckedCheckbox !== 0) {
             displayCount();
-            countFiles.innerHTML ='<p>' + Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + countCheckedCheckbox + ' ' + files + '. <a class="em-pointer" onclick="checkAllFiles()">'+Joomla.JText._('COM_EMUNDUS_FILES_SELECT_ALL_FILES')+'</a></p>';
+            countFiles.innerHTML ='<p>' + Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + countCheckedCheckbox + ' ' + files + '. <a class="em-pointer em-text-underline em-profile-color" onclick="checkAllFiles()">'+Joomla.JText._('COM_EMUNDUS_FILES_SELECT_ALL_FILES')+'</a></p>';
         } else {
             hideCount();
             countFiles.innerHTML = '';
         }
+
+	    <?php if($fix_header == 1): ?>
+            document.querySelector('.em-data-container table thead').style.top = (window.scrollY - 16) + 'px';
+        <?php endif; ?>
     });
+
+    <?php if($fix_header == 1): ?>
+    document.addEventListener('scroll', function(e) {
+        if(window.scrollY > document.querySelector('.em-data-container table thead').offsetHeight) {
+            document.querySelector('.em-data-container table thead').style.position = 'relative';
+            var containerResult = document.querySelector('.container-result').offsetHeight;
+            var countBlock = document.getElementById('countCheckedCheckbox');
+            if(countBlock.style.display === 'block') {
+                document.querySelector('.em-data-container table thead').style.top = (window.scrollY - 16) + 'px';
+            } else {
+                document.querySelector('.em-data-container table thead').style.top = (window.scrollY - 4) + 'px';
+            }
+        } else {
+            document.querySelector('.em-data-container table thead').style.position = 'static';
+            document.querySelector('.em-data-container table thead').style.top = '0px';
+        }
+    });
+    <?php endif; ?>
 </script>

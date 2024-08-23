@@ -6,6 +6,8 @@
  * @license     GNU General Public License
  */
 use \setasign\Fpdi\Fpdi;
+use Joomla\CMS\Factory;
+
 // ensure this file is being included by a parent file
 defined( '_JEXEC' ) or die( JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS') );
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
@@ -18,6 +20,21 @@ require_once (JPATH_COMPONENT . '/models/application.php');
  */
 class EmundusControllerApplication extends JControllerLegacy
 {
+
+    private $app;
+    private $_user;
+
+    public function __construct($config = array())
+    {
+        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
+        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'export.php');
+
+        $this->app   = Factory::getApplication();
+        $this->_user = Factory::getUser();
+
+        parent::__construct($config);
+    }
+
     public function display($cachable = false, $urlparams = false) {
         // Set a default view if none exists
         if ( ! JRequest::getCmd( 'view' ) ) {
@@ -345,29 +362,6 @@ class EmundusControllerApplication extends JControllerLegacy
         exit;
     }
 
-    public function deletetraining(){
-        $user = JFactory::getUser();
-
-        if(!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) die(JText::_("ACCESS_DENIED"));
-
-        $view = JRequest::getVar('view', null, 'GET', 'none',0);
-        $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
-
-        $id = JRequest::getVar('id', null, 'GET', 'none',0);
-        $sid = JRequest::getVar('sid', null, 'GET', 'none',0);
-        $table = JRequest::getVar('t', null, 'GET', 'none',0);
-
-        $m_application = new EmundusModelApplication();
-        $result = $m_application->deleteData($id, $table);
-
-        $row['applicant_id'] = $sid;
-        $row['user_id'] = $user->id;
-        $row['reason'] = JText::_('COM_EMUNDUS_APPLICATION_DATA_DELETED');
-        $row['comment_body'] = JText::_('COM_EMUNDUS_APPLICATION_LINE').' '.$id.' '.JText::_('COM_EMUNDUS_APPLICATION_FROM').' '.$table;
-        $m_application->addComment($row);
-
-        echo $result;
-    }
     /*
      * Get Menu for application file
      */
@@ -380,7 +374,7 @@ class EmundusControllerApplication extends JControllerLegacy
         $jinput = JFactory::getApplication()->input;
         $fnum = $jinput->get('fnum', null, 'STRING');
 
-	    require_once (JPATH_COMPONENT.DS.'models'.DS.'application.php');
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'application.php');
         $m_application = new EmundusModelApplication();
         $menus = $m_application->getApplicationMenu();
         $res = false;
@@ -392,18 +386,18 @@ class EmundusControllerApplication extends JControllerLegacy
                 $i=0;
 
                 foreach($menus as $k => $menu) {
-					$access = false;
-					$actions_for_access = explode(',', $menu['note']);
-					
-					foreach ($actions_for_access as $action_for_access) {
-						$action = explode('|', $action_for_access);
-						$action_id = $action[0];
-						
-						if (EmundusHelperAccess::asAccessAction($action[0], $action[1], $user->id, $fnum)) {
-							$access = true;
-							break;
-						}
-					}
+                    $access = false;
+                    $actions_for_access = explode(',', $menu['note']);
+
+                    foreach ($actions_for_access as $action_for_access) {
+                        $action = explode('|', $action_for_access);
+                        $action_id = $action[0];
+
+                        if (EmundusHelperAccess::asAccessAction($action[0], $action[1], $user->id, $fnum)) {
+                            $access = true;
+                            break;
+                        }
+                    }
 
                     if ($access) {
                         if($action_id == 36){
@@ -722,36 +716,25 @@ class EmundusControllerApplication extends JControllerLegacy
     public function updateattachment()
     {
         $update = false;
-        $msg = '';
+        $msg    = '';
 
-        // get post data
-        $jinput = JFactory::getApplication()->input;
-        $data = $jinput->post->getArray();
+        $fnum = $this->input->getString('fnum', '');
 
-        if (EmundusHelperAccess::asAccessAction(4, 'u', JFactory::getUser()->id, $data['fnum'])) {
-            $m_application = new EmundusModelApplication();
+        if (!empty($fnum) && EmundusHelperAccess::asAccessAction(4, 'u', $this->_user->id, $fnum)) {
+            $data = $this->input->post->getArray();
 
-            if ($jinput->files->get('file')) {
-                $data['file'] = $jinput->files->get('file');
+            if (empty($data['user'])) {
+                $data['user'] = $this->_user->id;
+            }
+            if ($this->input->files->get('file')) {
+                $data['file'] = $this->input->files->get('file');
             }
 
-            if ($data['fnum'] && $data['user']) {
-                $update = $m_application->updateAttachment($data);
-
-                # get logged user id
-                # get application id
-                # get fnum
-
-                # GET FNUM INFO
-                require_once(JPATH_SITE.'/components/com_emundus/models/files.php');
-                $mFile = new EmundusModelFiles();
-                $applicant_id = ($mFile->getFnumInfos($data['fnum']))['applicant_id'];
-
-            } else {
-                $msg = JText::_('INVALID_PARAMETERS');
-            }
-        } else {
-           $msg = JText::_('ACCESS_DENIED');
+            $m_application = $this->getModel('Application');
+            $update = $m_application->updateAttachment($data);
+        }
+        else {
+            $msg = JText::_('ACCESS_DENIED');
         }
 
         echo json_encode(array('status' => $update, 'msg' => $msg));

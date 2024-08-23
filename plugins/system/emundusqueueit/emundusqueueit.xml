@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="plugin" group="system" method="upgrade">
+	<name>plg_system_emundusqueueit</name>
+	<author>eMundus</author>
+	<creationDate>2024-03</creationDate>
+	<copyright>(C) 2024 Open Source Matters, Inc.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>dev@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>1.39.0</version>
+	<description>PLG_SYSTEM_EMUNDUSQUEUEIT_XML_DESCRIPTION</description>
+	<namespace path="src">Emundus\Plugin\System\EmundusQueueIt</namespace>
+	<files>
+		<folder>forms</folder>
+		<folder plugin="emundusqueueit">services</folder>
+		<folder>src</folder>
+	</files>
+	<languages>
+		<language tag="en-GB">language/en-GB/plg_system_emundusqueueit.ini</language>
+		<language tag="en-GB">language/en-GB/plg_system_emundusqueueit.sys.ini</language>
+		<language tag="fr-FR">language/fr-FR/plg_system_emundusqueueit.ini</language>
+		<language tag="fr-FR">language/fr-FR/plg_system_emundusqueueit.sys.ini</language>
+	</languages>
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field
+						name="customer_id"
+						type="text"
+						label="PLG_SYSTEM_EMUNDUSQUEUEIT_CUSTOMER_ID"
+						default=""
+						required="true"
+				/>
+				<field
+						name="secret_key"
+						type="text"
+						label="PLG_SYSTEM_EMUNDUSQUEUEIT_SECRET_KEY"
+						default=""
+						required="true"
+				/>
+				<field
+						name="json_config"
+						type="textarea"
+						label="PLG_SYSTEM_EMUNDUSQUEUEIT_JSON_CONFIG"
+						default=""
+				/>
+			</fieldset>
+		</fields>
+	</config>
+</extension>

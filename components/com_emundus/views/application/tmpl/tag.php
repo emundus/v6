@@ -6,8 +6,8 @@ JFactory::getSession()->set('application_layout', 'tag');
 
 <div class="tags">
     <div class="row">
-        <div class="panel panel-default widget em-container-tags">
-            <div class="panel-heading em-container-tags-heading">
+        <div class="panel panel-default widget em-container-tag">
+            <div class="panel-heading em-container-tag-heading">
                 <h3 class="panel-title">
                     <span class="glyphicon glyphicon-tags"></span>
 					<?php echo JText::_('COM_EMUNDUS_TAGS'); ?>
@@ -40,7 +40,7 @@ JFactory::getSession()->set('application_layout', 'tag');
                                 class="material-icons">arrow_forward</span></button>
                 </div>
             </div>
-            <div class="panel-body em-container-tags-body">
+            <div class="panel-body em-container-tag-body">
                 <ul class="list-group">
 					<?php
 					if (count($this->tags) > 0)
@@ -69,9 +69,9 @@ JFactory::getSession()->set('application_layout', 'tag');
                                             </div>
                                         </div>
                                         <div class="comment-text em-tags-action">
-                                                <div class="flex sticker label-border-<?php echo $color ?>">
-                                                    <span class="circle label-<?php echo $color ?>"></span>
-                                                    <span class="label-text-<?php echo $color; ?>"
+                                                <div class="flex items-center gap-2 sticker label-<?php echo $color ?>" title="<?= $tag['label']; ?>">
+                                                    <span class="circle bg-white"></span>
+                                                    <span class="text-white font-semibold"
                                                           style="float:unset"><?php echo $tag['label']; ?></span>
                                                 </div>
                                         </div>
@@ -102,40 +102,62 @@ JFactory::getSession()->set('application_layout', 'tag');
 
     function deleteTag(id, fnum) {
         if (id && fnum) {
-            let formData = new FormData();
-            formData.append('fnum', fnum);
-            formData.append('id_tag', id);
-
-            fetch('index.php?option=com_emundus&controller=application&task=deletetag', {
-                method: 'POST',
-                body: formData
-            }).then((response) => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    throw new Error('Server response wasn\'t OK');
+            Swal.fire({
+                title: "<?php echo JText::_('COM_EMUNDUS_APPLICATION_DELETE_TAG'); ?>",
+                text: "<?php echo JText::_('COM_EMUNDUS_APPLICATION_DELETE_TAG_CONFIRM'); ?>",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: '<?php echo JText::_('COM_EMUNDUS_DELETE_ITEM'); ?>',
+                cancelButtonText: '<?php echo JText::_('CANCEL'); ?>',
+                reverseButtons: true,
+                customClass: {
+                    title: 'em-swal-title',
+                    cancelButton: 'em-swal-cancel-button',
+                    confirmButton: 'em-swal-confirm-button',
                 }
             }).then((result) => {
-                if (result.status) {
-                    document.querySelectorAll('.tags li[id="' + id + '"]').forEach(e => {
-                        if (e.querySelector('.material-icons') !== null) {
-                            // remove all children of e
-                            while (e.firstChild) {
-                                e.removeChild(e.firstChild);
-                            }
+                if (result.value) {
+                    var formData = new FormData();
+                    formData.append('fnum', fnum);
+                    formData.append('id_tag', id);
 
-                            e.innerText = result.msg;
+                    fetch('index.php?option=com_emundus&controller=application&task=deletetag', {
+                        method: 'POST',
+                        body: formData
+                    }).then((response) => {
+                        if (response.ok) {
+                            return response.json();
+                        } else {
+                            throw new Error('Server response wasn\'t OK');
                         }
-                    });
+                    }).then((result) => {
+                        if (result.status) {
+                            document.querySelectorAll('.tags li[id="' + id + '"]').forEach(e => {
+                                if (e.querySelector('.material-icons') !== null) {
+                                    // remove all children of e
+                                    while (e.firstChild) {
+                                        e.removeChild(e.firstChild);
+                                    }
+                                }
+                            });
 
-                    var nbCom = parseInt($('.panel-default.widget .panel-heading .label.label-info').text().trim())
-                    nbCom--;
-                    $('.panel-default.widget .panel-heading .label.label-info').html(nbCom);
-                } else {
-                    $('#form').append('<p class="text-danger"><strong>' + result.msg + '</strong></p>');
+                            Swal.fire({
+                                title: "<?php echo JText::_('COM_EMUNDUS_APPLICATION_DELETE_TAG_SUCCESS'); ?>",
+                                text: "",
+                                type: 'success',
+                                showConfirmButton: false,
+                                timer: 1500,
+                                customClass: {
+                                    title: 'em-swal-title',
+                                }
+                            });
+                        } else {
+                            $('#form').append('<p class="text-danger"><strong>' + result.msg + '</strong></p>');
+                        }
+                    }).catch((error) => {
+                        console.error('Error:', error);
+                    });
                 }
-            }).catch((error) => {
-                console.error('Error:', error);
             });
         }
     }
