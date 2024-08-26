@@ -1,5 +1,5 @@
 <template>
-	<div class="com_emundus_vue em-flex-col-center">
+	<div class="com_emundus_vue em-flex-col-center w-full">
 		<Attachments
 			v-if="component === 'attachments'"
 			:fnum="data.fnum"
@@ -22,7 +22,25 @@
         :type="data.type"
         :user="data.user"
         :ratio="data.ratio"
+        :context="data.context || ''"
     ></ApplicationSingle>
+
+    <Comments
+        v-else-if="component === 'comments'"
+        :ccid="datas.ccid.value"
+        :fnum="datas.fnum && datas.fnum.value ? datas.fnum.value : ''"
+        :user="datas.user.value"
+        :is-applicant="datas.is_applicant && datas.is_applicant.value == 1"
+        :current-form="datas.current_form && datas.current_form.value"
+        :access="datas.access && datas.access.value ? JSON.parse(datas.access.value) : {
+          'c': false,
+          'r': true,
+          'u': false,
+          'd': false
+        }"
+    >
+
+    </Comments>
 
     <transition v-else name="slide-right">
       <component v-bind:is="$props.component"/>
@@ -35,12 +53,13 @@ import moment from "moment";
 
 import Attachments from "./views/Attachments.vue";
 import Files from './views/Files/Files.vue';
+import Comments from '@/components/Files/Comments.vue';
 
 import fileService from "./services/file.js";
 import list_v2 from "./views/list.vue";
 import addcampaign from "./views/addCampaign"
 import addemail from "./views/addEmail"
-import addformnextcampaign from "./views/addFormNextCampaign"
+import campaignedition from "./views/CampaignEdition"
 import formbuilder from "./views/formBuilder"
 import settings from "./views/globalSettings"
 import messagescoordinator from "./components/Messages/MessagesCoordinator";
@@ -75,7 +94,7 @@ export default {
     ApplicationSingle,
 		Attachments,
     addcampaign,
-    addformnextcampaign,
+    campaignedition,
     addemail,
     formbuilder,
     settings,
@@ -83,7 +102,8 @@ export default {
     messages,
     Files,
 		list_v2,
-		TranslationTool
+		TranslationTool,
+    Comments
 	},
 
   created() {

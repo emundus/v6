@@ -629,13 +629,20 @@ class plgUserEmundus extends JPlugin
 
 
             // Init first_login parameter
-            $user = JFactory::getUser();
             $table = JTable::getInstance('user', 'JTable');
 
             $user = JFactory::getSession()->get('emundusUser');
             if(empty($user) || empty($user->id)) {
+                include_once(JPATH_SITE . '/components/com_emundus/models/users.php');
                 include_once(JPATH_SITE . '/components/com_emundus/models/profile.php');
+                $m_users = new EmundusModelUsers();
                 $m_profile = new EmundusModelProfile();
+
+                $user_repaired = $m_users->repairEmundusUser(JFactory::getUser()->id);
+                if (!$user_repaired) {
+                    return false;
+                }
+
                 $m_profile->initEmundusSession();
                 $user = JFactory::getSession()->get('emundusUser');
 
@@ -696,18 +703,9 @@ class plgUserEmundus extends JPlugin
         $app        = JFactory::getApplication();
 
         include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
+        include_once(JPATH_SITE.'/components/com_emundus/helpers/menu.php');
 
-        // Get by position instead of id and type (2 mod_emundus_user_dropdown are present)
-        $modules = JModuleHelper::getModules('header-c');
-
-        foreach ($modules as $module) {
-            $params = new JRegistry($module->params);
-            $url = $params->get('url_logout','index.php');
-        }
-
-        if($url == '') {
-            $url = 'index.php';
-        }
+       $url = EmundusHelperMenu::getHomepageLink();
 
         // Make sure we're a valid user first
         if ($user['id'] == 0 && !$my->get('tmp_user')) {

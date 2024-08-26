@@ -146,7 +146,7 @@ class EmundusController extends JControllerLegacy {
 			require_once($file);
 
 			if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
-				application_form_pdf(!empty($student_id) ? $student_id : $user->id, $fnum, true, 1, null, $options, null, $profile, null, null);
+				application_form_pdf(!empty($student_id) ? $student_id : $user->id, $fnum, true, 1, $formid, $options, null, $profile, null, null);
 				exit;
 			}
 			elseif (EmundusHelperAccess::isApplicant($user->id)) {
@@ -1020,11 +1020,17 @@ class EmundusController extends JControllerLegacy {
 	            $mtype = finfo_file( $finfo, $file['tmp_name'] );
 	            finfo_close( $finfo );
 
-				if(!empty($mtype)) {
-					if($file['type'] !== $mtype) {
-						$pos = false;
-					}
-				}
+	            if(!empty($mtype)) {
+		            if($mtype == 'application/zip') {
+						// Check if the file is a zip file, check if the file type is application/x-zip-compressed for windows users
+			            if($file['type'] !== $mtype && $file['type'] !== 'application/x-zip-compressed') {
+				            $pos = false;
+			            }
+		            }
+		            elseif($file['type'] !== $mtype) {
+			            $pos = false;
+		            }
+	            }
 
                 if ($pos === false) {
                     $error = JUri::getInstance().' :: USER ID : '.$user->id.' '.$file_ext.' -> type is not allowed, please send a doc with type : '.$attachment['allowed_types'];

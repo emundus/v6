@@ -141,73 +141,92 @@ class EmundusModelDashboard extends JModelList
         }
     }
 
-    public function getwidgets($user_id){
-        $this->_db = JFactory::getDbo();
-        $query = $this->_db->getQuery(true);
+    /**
+     * @param $user_id
+     * @return array
+     */
+    public function getwidgets($user_id, $profile = null)
+    {
+        $widgets = [];
 
-        $profile = JFactory::getSession()->get('emundusUser')->profile;
-		if(empty($profile))
-		{
-			$query->select('profile')
-				->from($this->_db->quoteName('#__emundus_users'))
-				->where($this->_db->quoteName('user_id') . ' = ' . $user_id);
-			$this->_db->setQuery($query);
-			$profile = $this->_db->loadResult();
-		}
+        if (!empty($user_id)) {
+            $this->_db = JFactory::getDbo();
+            $query = $this->_db->getQuery(true);
 
-        try {
-            $query->clear()
-	            ->select('ew.id,ew.name,ew.label,ew.params,ew.size,ew.size_small,ew.type,ew.class,esdr.position,ew.chart_type,ew.article_id')
-                ->from($this->_db->quoteName('#__emundus_setup_dashbord_repeat_widgets','esdr'))
-                ->leftJoin($this->_db->quoteName('#__emundus_setup_dashboard','esd').' ON '.$this->_db->quoteName('esd.id').' = '.$this->_db->quoteName('esdr.parent_id'))
-                ->leftJoin($this->_db->quoteName('#__emundus_widgets','ew').' ON '.$this->_db->quoteName('ew.id').' = '.$this->_db->quoteName('esdr.widget'))
-                ->where($this->_db->quoteName('esd.user') . ' = ' . $this->_db->quote($user_id))
-                ->andWhere($this->_db->quoteName('esd.profile') . ' = ' . $this->_db->quote($profile))
-                ->order('esdr.position');
-            $this->_db->setQuery($query);
-	        $widgets = $this->_db->loadObjectList();
-
-            if(empty($widgets)) {
-                $query->clear()
-                    ->select('params')
-                    ->from($this->_db->quoteName('#__modules'))
-                    ->where($this->_db->quoteName('module') . ' LIKE ' . $this->_db->quote('mod_emundus_dashboard_vue'));
-
+            if (empty($profile)) {
+                $query->select('profile')
+                    ->from($this->_db->quoteName('#__emundus_users'))
+                    ->where($this->_db->quoteName('user_id') . ' = ' . $user_id);
                 $this->_db->setQuery($query);
-                $modules = $this->_db->loadColumn();
+                $profile = $this->_db->loadResult();
+            }
 
-                $widgets = array();
+            try {
+                $query->clear()
+                    ->select('ew.id,ew.name,ew.label,ew.params,ew.size,ew.size_small,ew.type,ew.class,esdr.position,ew.chart_type,ew.article_id, ewra.access_level')
+                    ->from($this->_db->quoteName('#__emundus_setup_dashbord_repeat_widgets', 'esdr'))
+                    ->leftJoin($this->_db->quoteName('#__emundus_setup_dashboard', 'esd') . ' ON ' . $this->_db->quoteName('esd.id') . ' = ' . $this->_db->quoteName('esdr.parent_id'))
+                    ->leftJoin($this->_db->quoteName('#__emundus_widgets', 'ew') . ' ON ' . $this->_db->quoteName('ew.id') . ' = ' . $this->_db->quoteName('esdr.widget'))
+                    ->leftJoin($this->_db->quoteName('#__emundus_widgets_repeat_access', 'ewra') . ' ON ' . $this->_db->quoteName('ew.id') . ' = ' . $this->_db->quoteName('ewra.parent_id'))
+                    ->where($this->_db->quoteName('esd.user') . ' = ' . $this->_db->quote($user_id))
+                    ->andWhere($this->_db->quoteName('esd.profile') . ' = ' . $this->_db->quote($profile))
+                    ->andWhere('ewra.profile = ' . $this->_db->quote($profile))
+                    ->order('esdr.position');
+                $this->_db->setQuery($query);
+                $widgets = $this->_db->loadObjectList();
 
-                foreach ($modules as $module) {
-                    $params = json_decode($module, true);
-                    if (in_array(JFactory::getSession()->get('emundusUser')->profile, $params['profile'])) {
-                        $widgets = $params['widgets'];
+                if (empty($widgets)) {
+                    $query->clear()
+                        ->select('params')
+                        ->from($this->_db->quoteName('#__modules'))
+                        ->where($this->_db->quoteName('module') . ' LIKE ' . $this->_db->quote('mod_emundus_dashboard_vue'));
+
+                    $this->_db->setQuery($query);
+                    $modules = $this->_db->loadColumn();
+
+                    $widgets = array();
+
+                    foreach ($modules as $module) {
+                        $params = json_decode($module, true);
+                        if (in_array($profile, $params['profile'])) {
+                            $widgets = $params['widgets'];
+                        }
+                    }
+
+                    if (!empty($widgets)) {
+                        $query->clear()
+                            ->select('ew.id,ew.name,ew.label,ew.params,ew.size,ew.size_small,ew.class,ew.type,ew.chart_type,ew.article_id,ew.params, ewra.access_level')
+                            ->from($this->_db->quoteName('#__emundus_widgets', 'ew'))
+                            ->leftJoin($this->_db->quoteName('#__emundus_widgets_repeat_access', 'ewra') . ' ON ' . $this->_db->quoteName('ew.id') . ' = ' . $this->_db->quoteName('ewra.parent_id'))
+                            ->where($this->_db->quoteName('ew.name') . ' IN (' . implode(',', $this->_db->quote($widgets)) . ')')
+                            ->andWhere($this->_db->quoteName('esdr.profile') . ' = ' . $this->_db->quote($profile));
+
+                        $this->_db->setQuery($query);
+                        $widgets = $this->_db->loadObjectList();
                     }
                 }
 
                 if (!empty($widgets)) {
-                    $query->clear()
-                        ->select('id,name,label,params,size,size_small,class,type,chart_type,article_id,params')
-                        ->from($this->_db->quoteName('#__emundus_widgets'))
-                        ->where($this->_db->quoteName('name') . ' IN (' . implode(',', $this->_db->quote($widgets)) . ')');
-                    $this->_db->setQuery($query);
+                    foreach ($widgets as $key => $widget) {
+                        if (!empty($widget->access_level)) {
+                            if (!EmundusHelperAccess::isAllowedAccessLevel($user_id, $widget->access_level)) {
+                                unset($widgets[$key]);
+                                continue;
+                            }
+                        }
 
+                        $widgets[$key]->label = JText::_($widget->label);
+                    }
 
-                    $widgets = $this->_db->loadObjectList();
+                    $widgets = array_values($widgets);
                 }
-            }
 
-            if (!empty($widgets)) {
-                foreach ($widgets as $key => $widget) {
-                    $widgets[$key]->label = JText::_($widget->label);
-                }
+            } catch (Exception $e) {
+                JLog::add('component/com_emundus/models/dashboard | Error when try to get widgets : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
             }
-
-            return $widgets;
-        } catch (Exception $e) {
-            JLog::add('component/com_emundus/models/dashboard | Error when try to get widgets : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return [];
         }
+
+        return $widgets;
     }
 
     public function updatemydashboard($widget,$position,$user_id){

@@ -51,17 +51,35 @@ require_once(JPATH_SITE .'/components/com_emundus/models/users.php');
 $m_users = new EmundusModelUsers();
 $profile_form = $m_users->getProfileForm();
 
+$this->display_comments = false;
+$is_applicant = 1;
+$allow_to_comment = $eMConfig->get('allow_applicant_to_comment', 0);
+if ($allow_to_comment) {
+    // check if form is an applicant form, there should be a column fnum in the table
+    $db = JFactory::getDbo();
+    $query = 'SHOW COLUMNS FROM `'. $form->db_table_name . '` LIKE "fnum"';
+
+    $db->setQuery($query);
+    $result = $db->loadObject();
+
+    if (!empty($result)) {
+        $this->display_comments = true;
+    }
+}
+
+$session = JFactory::getSession();
+$emundus_user = $session->get('emundusUser');
 $current_user_profile = $emundus_user->profile;
 $applicant_profiles = $m_users->getApplicantProfiles();
 $applicant_profiles_ids = array_map(function($profile) {
-    return $profile->id;
+	return $profile->id;
 }, $applicant_profiles);
 
 if (!in_array($current_user_profile, $applicant_profiles_ids)) {
-    $is_applicant = 0;
-    $this->is_applicant = false;
+	$is_applicant = 0;
+	$this->is_applicant = false;
 } else {
-    $this->is_applicant = true;
+	$this->is_applicant = true;
 }
 
 JText::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TITLE');
@@ -72,6 +90,11 @@ JText::script('PLEASE_CHECK_THIS_FIELD');
 
 JText::script('COM_EMUNDUS_FABRIK_NEW_FILE');
 JText::script('COM_EMUNDUS_FABRIK_NEW_FILE_DESC');
+
+JText::script('COM_EMUNDUS_COMMENTS_CONFIRM_DELETE');
+JText::script('COM_EMUNDUS_ACTIONS_CANCEL');
+JText::script('COM_EMUNDUS_OK');
+
 
 if ($pageClass !== '') :
 	echo '<div class="' . $pageClass . '">';
@@ -95,12 +118,24 @@ endif;
     <div class="mb-8">
         <div class="em-mt-8">
 	        <?php if ($this->params->get('show-title', 1)) : ?>
-                <?php if($display_required_icon == 0) : ?>
-                    <p class="mb-5 text-neutral-600"><?= JText::_('COM_FABRIK_REQUIRED_ICON_NOT_DISPLAYED') ?></p>
-                <?php endif; ?>
-                <div class="page-header">
-			        <?php $title = trim(preg_replace('/^([^-]+ - )/', '', $form->label)); ?>
-                    <h2 class="after-em-border after:bg-red-800"><?= JText::_($title) ?></h2>
+                <div class="flex flex-row">
+                    <?php if($this->display_comments) {
+                        ?>
+                        <div class="fabrik-element-emundus-container flex flex-row justify-items-start items-start mr-5">
+                            <span class="material-icons-outlined cursor-pointer comment-icon" id="'forms-'<?= $form->id ?>" data-target-type="forms" data-target-id="<?= $form->id ?>">comment</span>
+                        </div>
+                        <?php
+                    }
+                    ?>
+                    <div>
+                        <?php if($display_required_icon == 0) : ?>
+                            <p class="mb-5 text-neutral-600"><?= JText::_('COM_FABRIK_REQUIRED_ICON_NOT_DISPLAYED') ?></p>
+                        <?php endif; ?>
+                        <div class="page-header">
+                            <?php $title = trim(preg_replace('/^([^-]+ - )/', '', $form->label)); ?>
+                            <h2 class="after-em-border after:bg-red-800"><?= JText::_($title) ?></h2>
+                        </div>
+                    </div>
                 </div>
 	        <?php endif; ?>
         </div>
@@ -118,7 +153,7 @@ endif;
 		<?php
 		echo $this->plugintop;
 		?>
-        
+
         <?php
         $buttons_tmpl = $this->loadTemplate('buttons');
         $related_datas_tmpl = $this->loadTemplate('relateddata');
@@ -140,28 +175,41 @@ endif;
         <?php endif; ?>
 
 		<?php
-		foreach ($this->groups as $group) :
+        $this->index_element_id = 0;
+        foreach ($this->groups as $group) :
 			$this->group = $group;
 			?>
 
-            <fieldset class="mb-6 <?php echo $group->class; ?> <?php if ($group->columns > 1) {
+            <div class="mb-6 <?php echo $group->class; ?> <?php if ($group->columns > 1) {
 				echo 'fabrikGroupColumns-' . $group->columns . ' fabrikGroupColumns';
 			} ?>" id="group<?php echo $group->id; ?>" style="<?php echo $group->css; ?>">
                 <?php if(($group->showLegend && !empty($group->title)) || !empty($group->intro)) : ?>
-                <div class="mb-7">
+                <div class="flex flex-row mb-7">
                     <?php
-                    if ($group->showLegend) :?>
-                        <h3 class="after-em-border after:bg-neutral-500"><?php echo $group->title; ?></h3>
-                    <?php
-                    endif;
+                    if($this->display_comments) {
+                        ?>
+                        <div class="fabrik-element-emundus-container flex flex-row justify-items-start items-start mr-5">
+                            <span class="material-icons-outlined cursor-pointer comment-icon" id="groups-<?= $group->id ?>" data-target-type="groups" data-target-id="<?= $group->id ?>">comment</span>
+                        </div>
+                        <?php
+                    }
+                    ?>
 
-                    if (!empty($group->intro)) : ?>
-                        <div class="groupintro mt-4"><?php echo $group->intro ?></div>
-                    <?php endif; ?>
+                    <div>
+                        <?php
+                        if ($group->showLegend) :?>
+                            <h3 class="after-em-border after:bg-neutral-500"><?php echo $group->title; ?></h3>
+                        <?php
+                        endif;
 
-	                <?php if(!empty($group->maxRepeat) && $group->maxRepeat > 1) : ?>
-                        <p class="em-text-neutral-600 mt-2"><?php echo JText::sprintf('COM_FABRIK_REPEAT_GROUP_MAX',$group->maxRepeat) ?></p>
-	                <?php endif; ?>
+                        if (!empty($group->intro)) : ?>
+                            <div class="groupintro mt-4"><?php echo $group->intro ?></div>
+                        <?php endif; ?>
+
+                        <?php if(!empty($group->maxRepeat) && $group->maxRepeat > 1) : ?>
+                            <p class="em-text-neutral-600 mt-2"><?php echo JText::sprintf('COM_FABRIK_REPEAT_GROUP_MAX',$group->maxRepeat) ?></p>
+                        <?php endif; ?>
+                    </div>
                 </div>
                 <?php endif; ?>
                 <?php
@@ -172,14 +220,14 @@ endif;
 				 *  * default_repeatgroup_table.php - repeat group rendered in a table.
 				 */
 				$this->elements = $group->elements;
-				echo $this->loadTemplate($group->tmpl);
+                echo $this->loadTemplate($group->tmpl);
 
 				if (!empty($group->outro)) : ?>
                     <div class="groupoutro"><?php echo $group->outro ?></div>
 				<?php
 				endif;
 				?>
-            </fieldset>
+            </div>
 		<?php
 		endforeach;
 		if ($model->editable) : ?>
@@ -203,13 +251,116 @@ endif;
 	endif; ?>
 </div>
 
+
+
+
+<?php
+$user = JFactory::getUser();
+$app = JFactory::getApplication();
+$fnum = $app->input->getString('rowid', '');
+if (empty($fnum)) {
+    $fnum = JFactory::getSession()->get('emundusUser')->fnum;
+}
+
+if ($this->display_comments) {
+    JText::script('COM_EMUNDUS_COMMENTS_ADD_COMMENT');
+    JText::script('COM_EMUNDUS_COMMENTS_ERROR_PLEASE_COMPLETE');
+    JText::script('COM_EMUNDUS_COMMENTS_ENTER_COMMENT');
+    JText::script('COM_EMUNDUS_COMMENTS_SENT');
+    JText::script('COM_EMUNDUS_FILES_ADD_COMMENT');
+    JText::script('COM_EMUNDUS_FILES_CANNOT_ACCESS_COMMENTS');
+    JText::script('COM_EMUNDUS_FILES_CANNOT_ACCESS_COMMENTS_DESC');
+    JText::script('COM_EMUNDUS_FILES_COMMENT_TITLE');
+    JText::script('COM_EMUNDUS_FILES_COMMENT_BODY');
+    JText::script('COM_EMUNDUS_FILES_VALIDATE_COMMENT');
+    JText::script('COM_EMUNDUS_FILES_COMMENT_DELETE');
+    JText::script('COM_EMUNDUS_COMMENTS_VISIBLE_PARTNERS');
+    JText::script('COM_EMUNDUS_COMMENTS_VISIBLE_ALL');
+    JText::script('COM_EMUNDUS_COMMENTS_ANSWERS');
+    JText::script('COM_EMUNDUS_COMMENTS_ANSWER');
+    JText::script('COM_EMUNDUS_COMMENTS_ADD_COMMENT_ON');
+    JText::script('COM_EMUNDUS_COMMENTS_CANCEL');
+    JText::script('COM_EMUNDUS_COMMENTS_UPDATE_COMMENT');
+    JText::script('COM_EMUNDUS_COMMENTS_ADD_COMMENT_PLACEHOLDER');
+    JText::script('COM_EMUNDUS_COMMENTS_CLOSE_COMMENT_THREAD');
+    JText::script('COM_EMUNDUS_COMMENTS_REOPEN_COMMENT_THREAD');
+    JText::script('COM_EMUNDUS_COMMENTS_SEARCH');
+    JText::script('COM_EMUNDUS_COMMENTS_ALL_THREAD');
+    JText::script('COM_EMUNDUS_COMMENTS_OPENED_THREAD');
+    JText::script('COM_EMUNDUS_COMMENTS_CLOSED_THREAD');
+    JText::script('COM_EMUNDUS_COMMENTS_EDITED');
+    JText::script('COM_EMUNDUS_COMMENTS_NO_COMMENTS');
+    JText::script('COM_EMUNDUS_COMMENTS_ADD_GLOBAL_COMMENT');
+    JText::script('COM_EMUNDUS_COMMENTS_VISIBLE_ALL_OPT');
+
+    require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
+    $ccid = EmundusHelperFiles::getIdFromFnum($fnum);
+    $coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
+    $sysadmin_access = EmundusHelperAccess::isAdministrator($user->id);
+    $current_lang = JFactory::getLanguage();
+    $short_lang = substr($current_lang->getTag(), 0 , 2);
+    $languages = JLanguageHelper::getLanguages();
+    if (count($languages) > 1) {
+        $many_languages = '1';
+        require_once JPATH_SITE . '/components/com_emundus/models/translations.php';
+        $m_translations = new EmundusModelTranslations();
+        $default_lang = $m_translations->getDefaultLanguage()->lang_code;
+    } else {
+        $many_languages = '0';
+        $default_lang = $current_lang;
+    }
+
+    $xmlDoc = new DOMDocument();
+    if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
+        $release_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
+    }
+
+    $user_comment_access = [
+        'c' => EmundusHelperAccess::asAccessAction(10, 'c', $user->id, $fnum),
+        'r' => EmundusHelperAccess::asAccessAction(10, 'r', $user->id, $fnum),
+        'u' => EmundusHelperAccess::asAccessAction(10, 'u', $user->id, $fnum),
+        'd' => EmundusHelperAccess::asAccessAction(10, 'd', $user->id, $fnum),
+    ];
+
+    ?>
+    <aside id="aside-comment-section" class="fixed right-0 em-white-bg shadow-[0_4px_3px_0px_rgba(0,0,0,0.1)] ease-out closed">
+        <!-- Comments -->
+        <div class="flex flex-row relative">
+            <span class="open-comment material-icons-outlined cursor-pointer absolute top-14 em-bg-main-500 rounded-l-lg em-text-neutral-300" onclick="openCommentAside()">
+                comment
+            </span>
+            <span class="close-comment material-icons-outlined cursor-pointer absolute top-14 em-bg-main-500 rounded-l-lg em-text-neutral-300" onclick="openCommentAside()">
+                close
+            </span>
+            <div id="em-component-vue"
+                 component="comments"
+                 user="<?= $user->id ?>"
+                 ccid="<?= $ccid ?>"
+                 access='<?= json_encode($user_comment_access); ?>'
+                 is_applicant="<?= $is_applicant ?>"
+                 current_form="<?= $form->id ?>"
+                 currentLanguage="<?= $current_lang->getTag() ?>"
+                 shortLang="<?= $short_lang ?>"
+                 coordinatorAccess="<?= $coordinator_access ?>"
+                 sysadminAccess="<?= $sysadmin_access ?>"
+                 manyLanguages="<?= $many_languages ?>"
+            >
+            </div>
+        </div>
+    </aside>
+    <script src="/media/com_emundus_vue/app_emundus.js?<?php echo $release_version ?>"></script>
+    <script src="/media/com_emundus_vue/chunk-vendors_emundus.js?<?php echo $release_version ?>"></script>
+    <script src="media/com_emundus/js/comment.js?<?php echo $release_version ?>"></script>
+    <?php
+}
+?>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         // Set sidebar sticky depends on height of header
         const headerNav = document.getElementById('g-navigation');
         const sidebar = document.querySelector('.view-form #g-sidebar');
         if (headerNav && sidebar) {
-            document.querySelector('.view-form #g-sidebar').style.top = headerNav.offsetHeight + 'px';
+            sidebar.style.top = headerNav.offsetHeight + 8 + 'px';
         }
 
         // Remove applicant-form class if needed

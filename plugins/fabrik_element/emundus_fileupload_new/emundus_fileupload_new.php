@@ -354,7 +354,7 @@ class PlgFabrik_ElementEmundus_fileupload_new extends PlgFabrik_Element
 			$nbMaxFile        = (int) $attachmentResult->nbmax;
 			$result           = array('status' => true,'files' => [],'limitObtained' => $nbMaxFile <= sizeof($uploadResult));
 
-			foreach ($uploadResult as $upload) {
+			foreach ($uploadResult as $key => $upload) {
 				if (is_array($upload)) {
 					$upload = (object) $upload;
 				}
@@ -773,6 +773,7 @@ class PlgFabrik_ElementEmundus_fileupload_new extends PlgFabrik_Element
 				$session      = $this->getFormSession($fnum, $this->getFormModel()->id);
 				$session_data = !empty($session->data) ? $session->data : [];
 				$files_data   = $session_data[str_replace('[]', '', $this->getFullName())];
+
 
 				foreach ($val as $file) {
 					if (!empty($files_data[$file])) {

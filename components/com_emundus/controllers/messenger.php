@@ -273,4 +273,15 @@ class EmundusControllerMessenger extends JControllerLegacy
         echo json_encode((object)$data);
         exit;
     }
+    public function closeMessenger(){
+        require_once (JPATH_ROOT . '/components/com_emundus/models/messages.php');
+        $m_message = new EmundusModelMessages();
+        $jinput = JFactory::getApplication()->input;
+
+        $fnum = $jinput->getString('fnum');
+
+	    if(!empty($fnum) && EmundusHelperAccess::asAccessAction(36, 'r', JFactory::getUser()->id, $fnum)) {
+		    $m_message->closeMessenger($fnum);
+	    }
+    }
 }

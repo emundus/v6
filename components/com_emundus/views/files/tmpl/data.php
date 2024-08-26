@@ -194,7 +194,23 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
                                         <?php else:
                                             // Do not display the typical COM_EMUNDUS_PLEASE_SELECT text used for empty dropdowns.
                                             if ($value->val !== 'COM_EMUNDUS_PLEASE_SELECT') {
-                                                echo JText::_($value->val);
+                                                // value is saved as string '["value1", "value2"]' in the database
+                                                if ($value->type == 'checkbox' || ($value->type == 'dropdown' && json_decode($value->params, true)['multiple'] == 1)) {
+                                                    $trimmed_string = trim($value->val, '[]');
+                                                    $split_string = preg_split('/,(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)/', $trimmed_string);
+
+                                                    $values_array = array_map(function($element) {
+                                                        return trim($element, '"');
+                                                    }, $split_string);
+
+                                                    echo '<ul>';
+                                                    foreach($values_array as $single_value) {
+                                                        echo '<li>'.JText::_($single_value).'</li>';
+                                                    }
+                                                    echo '</ul>';
+                                                } else {
+                                                    echo JText::_($value->val);
+                                                }
                                             }
                                         endif; ?>
                                     <?php endif; ?>
@@ -278,7 +294,7 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
             $('#em-data th').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight) + 'px');
         },2000);
 
-        const dataContainer = document.querySelector('.em-data-container')
+        var dataContainer = document.querySelector('.em-data-container')
         if (dataContainer) {
             DoubleScroll(document.querySelector('.em-data-container'));
         }
@@ -288,8 +304,8 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
 
 
 <script>
-    const selectDropdownContainer = document.querySelector('.selectAll');
-    const countFiles = document.querySelector('#countCheckedCheckbox');
+    var selectDropdownContainer = document.querySelector('.selectAll');
+    var countFiles = document.querySelector('#countCheckedCheckbox');
     selectDropdownContainer.style.display = 'none';
 
     $('.selectDropdown').click(function() {
@@ -328,7 +344,7 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
     }
 
     function selectAllFiles(){
-        let allCheck = $('.em-check-all-all#em-check-all-all').is(':checked');
+        var allCheck = $('.em-check-all-all#em-check-all-all').is(':checked');
 
         if(allCheck === true) {
             $('.em-check-all-page#em-check-all-page').prop('checked', false);
@@ -376,8 +392,8 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
     })
 
     $(document).on('change', '.em-check-all-page,.selectPage #em-check-all', function(e) {
-        let pageCheckAll = $('.selectPage #em-check-all').is(':checked');
-        let is_checked = false;
+        var pageCheckAll = $('.selectPage #em-check-all').is(':checked');
+        var is_checked = false;
 
         if(e.target.id === 'em-check-all'){
             if(pageCheckAll === false){
@@ -387,7 +403,7 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
             }
         }
 
-        let pageCheck = $('.em-check-all-page#em-check-all-page').is(':checked');
+        var pageCheck = $('.em-check-all-page#em-check-all-page').is(':checked');
 
         if(e.target.id === 'em-check-all-page'){
             if(pageCheck === false){
@@ -401,8 +417,8 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
             $('.em-check-all-all#em-check-all-all').prop('checked', false);
             $('.em-check').prop('checked', true);
 
-            let countCheckedCheckbox = $('.em-check').not('#em-check-all.em-check,#em-check-all-all.em-check').filter(':checked').length;
-            let files = countCheckedCheckbox === 1 ? Joomla.JText._('COM_EMUNDUS_FILES_FILE') : Joomla.JText._('COM_EMUNDUS_FILES_FILES');
+            var countCheckedCheckbox = $('.em-check').not('#em-check-all.em-check,#em-check-all-all.em-check').filter(':checked').length;
+            var files = countCheckedCheckbox === 1 ? Joomla.JText._('COM_EMUNDUS_FILES_FILE') : Joomla.JText._('COM_EMUNDUS_FILES_FILES');
 
             if (countCheckedCheckbox !== 0) {
                 displayCount();
@@ -432,8 +448,8 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
     })
 
     $(document).on('change', '.em-check', function(e) {
-        let countCheckedCheckbox = $('.em-check').not('#em-check-all.em-check,#em-check-all-all.em-check').filter(':checked').length;
-        let files = countCheckedCheckbox === 1 ? Joomla.JText._('COM_EMUNDUS_FILES_FILE') : Joomla.JText._('COM_EMUNDUS_FILES_FILES');
+        var countCheckedCheckbox = $('.em-check').not('#em-check-all.em-check,#em-check-all-all.em-check').filter(':checked').length;
+        var files = countCheckedCheckbox === 1 ? Joomla.JText._('COM_EMUNDUS_FILES_FILE') : Joomla.JText._('COM_EMUNDUS_FILES_FILES');
 
         if (countCheckedCheckbox !== 0) {
             displayCount();
@@ -452,8 +468,8 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
     document.addEventListener('scroll', function(e) {
         if(window.scrollY > document.querySelector('.em-data-container table thead').offsetHeight) {
             document.querySelector('.em-data-container table thead').style.position = 'relative';
-            let containerResult = document.querySelector('.container-result').offsetHeight;
-            let countBlock = document.getElementById('countCheckedCheckbox');
+            var containerResult = document.querySelector('.container-result').offsetHeight;
+            var countBlock = document.getElementById('countCheckedCheckbox');
             if(countBlock.style.display === 'block') {
                 document.querySelector('.em-data-container table thead').style.top = (window.scrollY - 16) + 'px';
             } else {

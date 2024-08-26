@@ -214,7 +214,6 @@ const qs = require("qs");
 import "@fortawesome/fontawesome-free/css/all.css";
 import "@fortawesome/fontawesome-free/js/all.js";
 import Swal from "sweetalert2";
-import Editor from "../editor";
 
 export default {
   name: "BuilderViewer",
@@ -233,7 +232,6 @@ export default {
     pid: Number
   },
   components: {
-    Editor,
     datePicker,
     draggable,
     modalEditElement,

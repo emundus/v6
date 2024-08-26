@@ -56,9 +56,9 @@ $hidden_class = '';
             <span class="fabrikElementTip"><?php echo $element->tipSide ?></span>
 		<?php endif ?>
 
-		<?php if ($this->tipLocation == 'below') : ?>
-            <span class="fabrikElementTip fabrikElementTipBelow"><?php echo $element->tipBelow ?></span>
-		<?php endif ?>
+<?php if ($this->tipLocation == 'below') :?>
+	<p class="fabrikElementTip fabrikElementTipBelow"><?php echo $element->tipBelow ?></p>
+<?php endif ?>
 
     </div>
 </div>

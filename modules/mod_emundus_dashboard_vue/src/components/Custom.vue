@@ -337,5 +337,8 @@ export default {
 	height: 48px;
 	padding: 0 24px 0 12px;
 	border-radius: 8px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 </style>

@@ -25,7 +25,7 @@ if (!$group->newGroup) :
                 $can_view = false;
             }
         }
-        ?>
+		?>
         <div class="fabrikSubGroup <?php if(!$can_view) : ?> hidden<?php endif; ?>">
 		<?php
 			// Add the add/remove repeat group buttons
@@ -55,7 +55,7 @@ if (!$group->newGroup) :
 				?>
 			</div><!-- end fabrikSubGroupElements -->
 		</div><!-- end fabrikSubGroup -->
-    <?php
+		<?php
         $i++;
-	endforeach;
+    endforeach;
 endif;

@@ -172,6 +172,9 @@ class Evaluations extends Files
 							$evaluation->status       = $file->status;
 							$evaluation->status_color = $file->status_color;
 						}
+						if (isset($file->campaign_label)) {
+							$evaluation->campaign_label       = $file->campaign_label;
+						}
 
 						$key = false;
 						if (!empty($more_elements_by_campaign->campaign)) {
@@ -230,6 +233,13 @@ class Evaluations extends Files
                 $tags_column->show_in_list_summary = 1;
                 $eval_elements['tags'] = $tags_column;
             }
+	        if(isset($params->display_filter_campaigns) && $params->display_filter_campaigns == 1){
+		        $campaign_label_column = new stdClass();
+		        $campaign_label_column->name = 'campaign_label';
+		        $campaign_label_column->label = JText::_('COM_EMUNDUS_CAMPAIGN');
+		        $campaign_label_column->show_in_list_summary = 1;
+		        $eval_elements[] = $campaign_label_column;
+	        }
                 parent::setColumns($eval_elements);
         } catch (Exception $e) {
             JLog::add('Problem to get files associated to user '.$this->current_user->id.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');

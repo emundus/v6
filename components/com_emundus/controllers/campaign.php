@@ -164,9 +164,9 @@ class EmundusControllerCampaign extends JControllerLegacy {
                     $config = JFactory::getConfig();
                     $offset = $config->get('offset');
                     $now_date_time = new DateTime('now', new DateTimeZone($offset));
-                    $now = $now_date_time->format('U');
-                    $start_date = strtotime($campaign->start_date);
-                    $end_date = strtotime($campaign->end_date);
+                    $now = $now_date_time->format('Y-m-d H:i:s');
+                    $start_date = date('Y-m-d H:i:s',strtotime($campaign->start_date));
+                    $end_date = date('Y-m-d H:i:s',strtotime($campaign->end_date));
 
                     if ($now < $start_date) {
                         $campaign_time_state_label = JText::_('COM_EMUNDUS_CAMPAIGN_YET_TO_COME');
@@ -999,6 +999,46 @@ class EmundusControllerCampaign extends JControllerLegacy {
         }
 
         echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function getProgrammeByCampaignID() {
+        $response = ['status' => 0, 'msg' => JText::_('ACCESS_DENIED'), 'code' => 403];
+
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+            $jinput = JFactory::getApplication()->input;
+            $campaign_id = $jinput->getInt('campaign_id', 0);
+            $programmes = $this->m_campaign->getProgrammeByCampaignID($campaign_id);
+
+            if (!empty($programmes)) {
+                $response = array('status' => 1, 'msg' => JText::_('PROGRAMMES_RETRIEVED'), 'data' => $programmes);
+            } else {
+                $response = array('status' => 0, 'msg' => JText::_('NO_PROGRAMMES'), 'data' => $programmes);
+            }
+        }
+
+        echo json_encode((object)$response);
+        exit;
+    }
+
+    public function getcampaignmoreformurl()
+    {
+        $response = ['status' => 0, 'msg' => JText::_('ACCESS_DENIED'), 'code' => 403];
+
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+            $jinput = JFactory::getApplication()->input;
+            $campaign_id = $jinput->getInt('cid', 0);
+
+            $url = $this->m_campaign->getCampaignMoreFormUrl($campaign_id);
+
+            if (!empty($url)) {
+                $response = ['status' => 1, 'msg' => JText::_('URL_RETRIEVED'), 'data' => $url, 'code' => 200];
+            } else {
+                $response = ['status' => 0, 'msg' => JText::_('NO_URL'), 'data' => $url, 'code' => 404];
+            }
+        }
+
+        echo json_encode((object)$response);
         exit;
     }
 }

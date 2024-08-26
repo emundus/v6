@@ -55,6 +55,8 @@ function getUserCheck() {
 	return checkInput;
 }
 
+
+
 function formCheck(id) {
 	let check = true;
 	let field = document.querySelector('#' + id);
@@ -687,9 +689,10 @@ $(document).ready(function () {
 			Itemid: itemId
 		});
 
-		const checkInput = getUserCheck();
+		var checkInput = getUserCheck();
 
 		/**
+		 * 6: export user CSV format
 		 * 19: create group
 		 * 20: create user
 		 * 21: activate
@@ -878,6 +881,34 @@ $(document).ready(function () {
 				});
 				break;
 
+			case 6:
+				addLoader();
+
+				await fetch(url, {
+					method: 'POST',
+					body: new URLSearchParams({})
+				})
+					.then((response) => {
+						if (!response.ok) {
+							throw new Error('Network response was not ok');
+						}
+						return response.text();
+					})
+					.then((result) => {
+						removeLoader();
+						swalForm = true;
+						title = 'COM_EMUNDUS_EXPORT_EXCEL';
+						swal_confirm_button = 'COM_EMUNDUS_EXPORTS_GENERATE_EXCEL';
+						preconfirm = "var atLeastOneChecked = false; $('.form-group input[type=\"checkbox\"], .all-boxes input[type=\"checkbox\"]').each(function() { if ($(this).is(':checked')) { atLeastOneChecked = true; return false; } }); if (!atLeastOneChecked) { Swal.showValidationMessage(Joomla.JText._('COM_EMUNDUS_EXPORTS_SELECT_AT_LEAST_ONE_INFORMATION')); }";
+						html = result;
+					})
+					.catch((error) => {
+						removeLoader();
+						console.error('Error:', error);
+					});
+				break;
+
+
 			case 26:
 				Swal.fire({
 					title: $(this).children('a').text(),
@@ -961,7 +992,7 @@ $(document).ready(function () {
 					if (result.value) {
 						addLoader();
 
-						const formData = new FormData();
+						var formData = new FormData();
 						formData.append('users', checkInput);
 
 						fetch('index.php?option=com_emundus&controller=users&task=passrequest&Itemid=' + itemId, {
@@ -1101,6 +1132,7 @@ $(document).ready(function () {
 		}
 
 		/**
+		 * 6: export user CSV format
 		 * 19: create group
 		 * 20: create user
 		 * 21: activate
@@ -1113,6 +1145,73 @@ $(document).ready(function () {
 		 * 34: send email
 		 */
 		switch (id) {
+
+			case 6:
+				addLoader();
+
+				let checkedBoxes = {};
+				let allChecked = $('#checkbox-all').prop('checked');
+
+				// Verify which checkboxes have been selected
+				$('input[type="checkbox"]').each(function () {
+					if ($(this).attr('value') !== 'all') {
+						let checkboxValue = $(this).attr('value');
+						if (allChecked || $(this).prop('checked')) {
+							checkedBoxes[checkboxValue] = true;
+						}
+					}
+				});
+
+				var formData = new FormData();
+				formData.append('users', getUserCheck());
+				formData.append('checkboxes', JSON.stringify(checkedBoxes));
+
+				fetch('index.php?option=com_emundus&controller=users&task=exportusers&Itemid=' + itemId, {
+					method: 'POST',
+					body: formData
+				})
+					.then(function (response) {
+						if (!response.ok) {
+							throw new Error('Network response was not ok');
+						}
+						return response.json();
+					})
+					.then(function (result) {
+						removeLoader();
+
+						Swal.fire({
+							position: 'center',
+							type: 'success',
+							title: Joomla.JText._('COM_EMUNDUS_ATTACHMENTS_DOWNLOAD_READY'),
+							showCancelButton: true,
+							showConfirmButton: true,
+							confirmButtonText: Joomla.JText._('COM_EMUNDUS_ATTACHMENTS_DOWNLOAD'),
+							cancelButtonText: Joomla.JText._('JCANCEL'),
+							reverseButtons: true,
+							allowOutsideClick: false,
+							customClass: {
+								cancelButton: 'em-swal-cancel-button',
+								confirmButton: 'em-swal-confirm-button btn btn-success',
+								title: 'w-full justify-center',
+							},
+							preConfirm: function () {
+								var link = document.createElement('a');
+								link.href = '/tmp/' + result.fileName;
+								link.download = result.fileName;
+								document.body.appendChild(link);
+								link.click();
+								document.body.removeChild(link);
+							}
+						});
+					})
+
+					.catch(function (error) {
+						removeLoader();
+						console.error('Error:', error);
+					});
+
+				break;
+
 			case 19:
 				var programs = $('#gprogs');
 				var progs = "";
@@ -1264,7 +1363,6 @@ $(document).ready(function () {
 					}
 				});
 				break;
-
 			case 23:
 				var checkInput = getUserCheck();
 
@@ -1372,7 +1470,7 @@ $(document).ready(function () {
 					university_id: $('#univ').val()
 				}
 
-				const action = document.getElementById('em-add-user').getAttribute('action');
+				var action = document.getElementById('em-add-user').getAttribute('action');
 				if(action.indexOf('edituser') !== -1) {
 					addUserData.id =  $('.em-check:checked').attr('id').split('_')[0];
 				}
@@ -1481,16 +1579,16 @@ $(document).ready(function () {
 							if (result.failed.length > 0) {
 
 								// add sibling to #em-mails-sent
-								const emailNotSentMessage = document.createElement('p');
+								var emailNotSentMessage = document.createElement('p');
 								emailNotSentMessage.classList.add('em-mt-16');
 								emailNotSentMessage.innerText = "Certains utilisateurs n'ont pas reçu l'email";
 
-								const emailNotSent = document.createElement('div');
+								var emailNotSent = document.createElement('div');
 								emailNotSent.classList.add('alert', 'alert-danger', 'em-mt-16');
 								emailNotSent.innerHTML = '<span class="badge">'+result.failed.length+'</span>';
 								emailNotSent.appendChild(document.createElement('ul'));
 								result.failed.forEach(element => {
-									const emailNotSentItem = document.createElement('li');
+									var emailNotSentItem = document.createElement('li');
 									emailNotSentItem.innerHTML = element;
 									emailNotSent.querySelector('ul').appendChild(emailNotSentItem);
 								});
@@ -1563,7 +1661,7 @@ $(document).ready(function () {
 })
 
 function DoubleScroll(element) {
-	const id = Math.random();
+	var id = Math.random();
 	if (element.scrollWidth > element.offsetWidth) {
 		createScrollbarForElement(element, id);
 	}
@@ -1612,3 +1710,28 @@ function createScrollbarForElement(element, id) {
 	};
 	element.parentNode.insertBefore(new_scrollbar, element);
 }
+
+/*
+ * Check/Uncheck checkboxes according to the "all" checkbox
+ * (Only use in the file components/com_emundus/views/users/tmpl/export.php for now)
+ */
+function checkAllUserElement(checkboxAll){
+	let allChecked = checkboxAll.checked;
+	var checkboxes = document.querySelectorAll('input[type=checkbox][id^=checkbox-]');
+	checkboxes.forEach(function (checkbox) {
+		checkbox.checked = allChecked;
+	});
+}
+
+/*
+ * Uncheck the "all" checkbox when an another checkbox is uncheck
+ * (Only use in the file components/com_emundus/views/users/tmpl/export.php for now)
+ */
+function uncheckCheckboxAllElement(checkbox)
+{
+	var checkboxAll = document.getElementById('checkbox-all');
+	if (!checkbox.checked && checkboxAll.checked) {
+		checkboxAll.checked = false;
+	}
+}
+

@@ -101,4 +101,130 @@ class EmundusModelLogsTest extends TestCase
         $logs = $this->m_logs->getActionsOnFnum($fnum, null, 1, 'd');
         $this->assertEmpty($logs, 'Logs should not be returned if fnum is given but not the crud');
     }
+
+	/**
+	 * @covers EmundusModelUsers::deleteLogsBeforeADate
+	 * Function deleteLogsBeforeADate deletes logs before a certain date
+	 * It should return the amount of logs deleted
+	 * @return void
+	 * @throws Exception
+	 */
+	public function testDeleteLogsBeforeADate()
+	{
+
+		$logs = $this->m_logs->deleteLogsBeforeADate('');
+		$this->assertEquals(0, $logs, 'No logs should be deleted if no date is given');
+		$db = JFactory::getDbo();
+
+		$user_from      = 95;
+		$user_to        = $this->user_sample_id;
+		$crud           = 'r';
+		$params         = '';
+		$action         = 1;
+		$reference_date1 = '2000-01-01 10:00:00';
+		$reference_date2 = '2000-01-01 12:00:00';
+
+		for ($i = 0; $i < 10; $i++)
+		{
+			$message = 'test' . rand(0, 1000);
+			$logged  = $this->m_logs->log($user_from, $user_to, 1, $action, $crud, $message, $params);
+			$this->assertTrue($logged, 'Log should be created if all information are given');
+
+			$query = $db->getQuery(true);
+
+			$query->clear()
+				->update($db->quoteName('#__emundus_logs'))
+				->set($db->quoteName('timestamp') . ' = ' . $db->quote($reference_date1))
+				->where($db->quoteName('user_id_from') . ' = ' . $db->quote($user_from))
+				->where($db->quoteName('user_id_to') . ' = ' . $db->quote($user_to))
+				->where($db->quoteName('fnum_to') . ' = ' . $db->quote(1))
+				->where($db->quoteName('action_id') . ' = ' . $db->quote($action))
+				->where($db->quoteName('verb') . ' = ' . $db->quote($crud))
+				->where($db->quoteName('message') . ' = ' . $db->quote($message))
+				->order($db->quoteName('timestamp') . ' DESC')
+				->limit(1);
+
+			$db->setQuery($query);
+			$db->execute();
+		}
+
+		// Create a single log different from the others (timestamp change)
+		$message = 'test' . rand(0, 1000);
+		$logged  = $this->m_logs->log($user_from, $user_to, 1, $action, $crud, $message, $params);
+		$this->assertTrue($logged, 'Log should be created if all information are given');
+
+		$query = $db->getQuery(true);
+
+		$query->clear()
+			->update($db->quoteName('#__emundus_logs'))
+			->set($db->quoteName('timestamp') . ' = ' . $db->quote($reference_date2))
+			->where($db->quoteName('user_id_from') . ' = ' . $db->quote($user_from))
+			->where($db->quoteName('user_id_to') . ' = ' . $db->quote($user_to))
+			->where($db->quoteName('fnum_to') . ' = ' . $db->quote(1))
+			->where($db->quoteName('action_id') . ' = ' . $db->quote($action))
+			->where($db->quoteName('verb') . ' = ' . $db->quote($crud))
+			->where($db->quoteName('message') . ' = ' . $db->quote($message))
+			->order($db->quoteName('timestamp') . ' DESC')
+			->limit(1);
+
+		$db->setQuery($query);
+		$db->execute();
+
+		$logs = $this->m_logs->deleteLogsBeforeADate(new DateTime('2000-01-01 11:00:00'));
+		$this->assertEquals(10, $logs, 'All logs created before 2000-01-01 11:00:00 should be deleted');
+
+		$logs = $this->m_logs->deleteLogsBeforeADate(new DateTime('2000-01-01 13:00:00'));
+		$this->assertEquals(1, $logs, 'Log created before 2000-01-01 13:00:00 should be deleted');
+	}
+
+	/**
+	 * @covers EmundusModelUsers::exportLogsBeforeADate
+	 * Function exportLogsBeforeADate exports logs before a certain date
+	 * It should return the name of the csv file created
+	 * @return void
+	 * @throws Exception
+	 */
+	public function testExportLogsBeforeADate()
+	{
+
+		$file_logs = $this->m_logs->exportLogsBeforeADate('');
+		$this->assertEquals( '', $file_logs, 'No file should be created if no date is given');
+		$file_logs = $this->m_logs->exportLogsBeforeADate(new DateTime('2000-01-01 13:00:00'));
+		$this->assertEquals( '', $file_logs, 'No file should be created if no logs are found before the given date');
+		$db = JFactory::getDbo();
+
+		$user_from      = 95;
+		$user_to        = $this->user_sample_id;
+		$crud           = 'r';
+		$params         = '';
+		$action         = 1;
+		$reference_date = '2000-01-01 10:00:00';
+
+		$log_text = 'test' . rand(0, 1000);
+		$log      = $this->m_logs->log($user_from, $user_to, 1, $action, $crud, $log_text, $params);
+		$this->assertTrue($log, 'Log should be created if all minimum information are given');
+
+		$query = $db->getQuery(true);
+
+		$query->clear()
+			->update($db->quoteName('#__emundus_logs'))
+			->set($db->quoteName('timestamp') . ' = ' . $db->quote($reference_date))
+			->where($db->quoteName('user_id_from') . ' = ' . $db->quote($user_from))
+			->where($db->quoteName('user_id_to') . ' = ' . $db->quote($user_to))
+			->where($db->quoteName('fnum_to') . ' = ' . $db->quote(1))
+			->where($db->quoteName('action_id') . ' = ' . $db->quote($action))
+			->where($db->quoteName('verb') . ' = ' . $db->quote($crud))
+			->where($db->quoteName('message') . ' = ' . $db->quote($log_text))
+			->order($db->quoteName('timestamp') . ' DESC')
+			->limit(1);
+
+		$db->setQuery($query);
+		$db->execute();
+
+		$file_logs = $this->m_logs->exportLogsBeforeADate(new DateTime('2000-01-01 13:00:00'));
+		$this->m_logs->deleteLogsBeforeADate(new DateTime('2000-01-01 13:00:00'));
+		$this->assertNotEquals('', $file_logs, 'A file should be created if a date is given');
+
+		unlink($file_logs);
+	}
 }
