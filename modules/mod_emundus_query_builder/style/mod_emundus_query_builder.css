@@ -221,7 +221,6 @@
 .etiquette .filter form{
 	display: grid;
 	grid-template-columns: repeat(3,1fr);
-	width: max-content;
 	gap: 16px;
 	margin-top: 24px;
 }
@@ -295,6 +294,13 @@
 	grid-template-columns: repeat(3, minmax(290px, 1fr));
 	gap: 16px;
 	margin-top: 24px;
+}
+
+@media screen and (max-width: 959px) {
+
+	.etiquette .filter form {
+		grid-template-columns: 1fr;
+	}
 }
 
 #validation {

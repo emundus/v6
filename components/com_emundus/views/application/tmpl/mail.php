@@ -26,6 +26,10 @@ $fnum = JFactory::getApplication()->input->getString('fnum', 0);
         border-radius: var(--em-coordinator-br);
     }
 
+    .em-container-mail-content-body img {
+        display:initial;
+    }
+
     div.em-container-mail-content-heading.panel-heading small {
         font-size: 12px;
         color: var(--neutral-800);
@@ -85,10 +89,16 @@ $fnum = JFactory::getApplication()->input->getString('fnum', 0);
                                     <small><?= JText::_('COM_EMUNDUS_EMAIL_ON_FILE') ?> <a href="#<?php echo $message->fnum_to ?>" target="_blank"><?php echo $message->fnum_to ?></a> </small>
                                     <?php endif; ?>
                                 </div>
+                                <?php if (!empty($message->email_to)): ?>
+                                    <div class="panel-body em-container-mail-content-body">
+                                    <i><?= JText::_('COM_EMUNDUS_EMAILS_MESSAGE_SENT_TO') . ' ' . $message->email_to; ?></i>
+                                    </div>
+                                <?php endif; ?>
                                 <?php if (!empty($message->email_cc)): ?>
                                     <div class="panel-body em-container-mail-content-body">
                                     <i><?= JText::_('COM_EMUNDUS_EMAIL_PEOPLE_CC') . ' ' . $message->email_cc; ?></i>
-                                    </div><?php endif; ?>
+                                    </div>
+                                <?php endif; ?>
                                 <div class="panel-body em-container-mail-content-body">
                                     <?php
                                         $length = strlen($message->message);

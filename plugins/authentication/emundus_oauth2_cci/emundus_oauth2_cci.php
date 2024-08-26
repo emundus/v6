@@ -260,8 +260,9 @@ class plgAuthenticationEmundus_Oauth2_cci extends JPlugin {
                 $log = [
                     'user_id_to'    => $user_id,
                     'subject'       => $subject,
-                    'message'       => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$user['email'].'</i><br>'.$body,
-                    'type'          => $template->type
+                    'message'       => $body,
+                    'type'          => $template->type,
+                    'email_to'      => $user['email']
                 ];
                 $m_emails->logEmail($log);
 

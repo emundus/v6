@@ -103,12 +103,20 @@ if (!empty($this->custom_title)) :?>
 <?php if (count($this->attachments) > 0) :?>
 
     <div id="attachment_list" class="em-attachmentList em-repeat-card p-6">
-        <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
+        <?php
+        $config = JFactory::getConfig();
+        if ($config->get('sef') == 0) {
+            echo '<iframe id="background-shapes" src="modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_("MOD_EM_FORM_IFRAME") ?>"></iframe>';
+        }
+        else{
+            echo '<iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_("MOD_EM_FORM_IFRAME") ?>"></iframe>';
+        }
+        ?>
         <h2 class="after-em-border after:bg-red-800 mb-4"><?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_TITLE') ?></h2>
         <div class="alert alert-info flex items-center gap-1 mt-1">
             <span class="material-icons">info</span>
             <div>
-                <p><?= JText::_('COM_EMUNDUS_ATTACHMENTS_INFO_UPLOAD_MAX_FILESIZE') . ' ' . ini_get("upload_max_filesize") . ' '. JText::_('COM_EMUNDUS_ATTACHMENTS_BYTES'); ?> </p>
+                <p><?= JText::_('COM_EMUNDUS_ATTACHMENTS_INFO_UPLOAD_MAX_FILESIZE') . ' ' . ini_get("upload_max_filesize") . JText::_('COM_EMUNDUS_ATTACHMENTS_BYTES'); ?> </p>
             </div>
         </div>
     <?php if ($this->show_info_legend) :?>
@@ -637,14 +645,14 @@ if (!empty($this->custom_title)) :?>
                         </div>
                     </div>
                 </div>
-                <div class="em-submit-form-button">
+                <div class="btn-group cursor-pointer"  <?php if ($block_upload || $this->attachments_prog < 100 || $this->forms_prog < 100) :?> style="opacity: 0.6; cursor: not-allowed !important;" <?php endif; ?>>
                     <div class="btn-group">
 
                         <button type="button"
 	                        <?php if (!$block_upload && $this->attachments_prog >= 100 && $this->forms_prog >= 100) :?>
                                 onclick="window.location.href='<?php echo $this->confirm_form_url; ?>'" style="opacity: 1"
 	                        <?php else: ?>
-                                style="opacity: 0.6; cursor: not-allowed"
+                                style="opacity: 0.6; cursor: not-allowed !important;" disabled
 	                        <?php endif; ?>
                                 class="btn btn-primary save-btn sauvegarder button save_continue" name="Submit" id="fabrikSubmit_287">
                             <?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_SEND_FILE') ?>

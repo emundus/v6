@@ -2,9 +2,9 @@
 
 {% block particle %}
     <div class="left-side-404 container-404" >
-        <h2 class="gradient-404">{{ particle.title }}</h2>
-        <p>{{ particle.description }}</p>
+        <h2 class="gradient-404">{{ particle.title|trans }}</h2>
+        <p>{{ particle.description|trans }}</p>
         <img src="{{ url(particle.image) }}" alt="Erreur 404" />
-        <p><a href="/">{{ particle.button }}</a></p>
+        <p><a href="/">{{ particle.button|trans }}</a></p>
     </div>
 {% endblock %}

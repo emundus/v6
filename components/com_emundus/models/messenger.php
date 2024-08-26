@@ -106,7 +106,9 @@ class EmundusModelMessenger extends JModelList
         $notifications_on_send = $eMConfig->get('messenger_notifications_on_send', '1');
 
 	    require_once (JPATH_SITE . '/components/com_emundus/models/files.php');
+        require_once (JPATH_SITE . '/components/com_emundus/models/messages.php');
 	    $m_files = new EmundusModelFiles;
+        $m_messages = new EmundusModelMessages;
 
         $fnum_detail = $m_files->getFnumInfos($fnum);
 
@@ -122,8 +124,6 @@ class EmundusModelMessenger extends JModelList
 				$chatroom = $db->loadResult();
 
 				if(empty($chatroom)){
-					require_once (JPATH_SITE . '/components/com_emundus/models/messages.php');
-					$m_messages = new EmundusModelMessages;
 					$chatroom = $m_messages->createChatroom($fnum);
 				}
 
@@ -139,6 +139,12 @@ class EmundusModelMessenger extends JModelList
 					$db->execute();
 
 					$new_message = $db->insertid();
+
+                    $statusMessage = $m_messages->getStatusChatroom($fnum);
+
+                    if($statusMessage == 0){
+                        $m_messages->openChatroom($fnum);
+                    }
 
 					$notify_applicant = 0;
 					if($fnum_detail['applicant_id'] != $user->id){
@@ -419,7 +425,7 @@ class EmundusModelMessenger extends JModelList
         return $moved;
     }
 
-    function notifyByMail($applicant_fnum, $notify_applicant = 0, $message = '') {
+    function notifyByMail($applicant_fnum, $notify_applicant = 0) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
@@ -532,6 +538,17 @@ class EmundusModelMessenger extends JModelList
             }
 
             if (!empty($users_to_send)) {
+                $message = '';
+                if ($add_message_notif) {
+                    $query->clear()
+                        ->select($db->quoteName('m.message'))
+                        ->from($db->quoteName('#__messages','m'))
+                        ->leftJoin($db->quoteName('#__emundus_chatroom','ec').' ON '.$db->quoteName('ec.id').' = '.$db->quoteName('m.page'))
+                        ->where($db->quoteName('ec.fnum').' LIKE '.$db->quote($applicant_fnum))
+                        ->order($db->quoteName('m.message_id').' DESC');
+                    $db->setQuery($query);
+                    $message = $db->loadResult();
+                }
                 foreach ($users_to_send as $user_to_send) {
                     $query->clear()
                         ->select($db->quoteName(array('id','email','name')))
@@ -621,15 +638,14 @@ class EmundusModelMessenger extends JModelList
                         $fnumListCampaign .= '<li>'.$applicant_fnum.' ('.$fnumTagsInfos['campaign_label'].')';
                         $fnumListProgramme .= '<li>'.$applicant_fnum.' ('.$fnumTagsInfos['training_programme'].')';
                     }
-                    if ($add_message_notif && !empty($message)) {
-                        $fnumList .= '<br />"'.$message.'"</li></ul>';
-                        $fnumListCampaign .= '<br />"'.$message.'"</li></ul>';
-                        $fnumListProgramme .= '<br />"'.$message.'"</li></ul>';
-                    } else {
-                        $fnumList .= '</li></ul>';
-                        $fnumListCampaign .= '</li></ul>';
-                        $fnumListProgramme .= '</li></ul>';
+                    if (!empty($message)) {
+                        $fnumList .= '<br />"'.$message.'"';
+                        $fnumListCampaign .= '<br />"'.$message.'"';
+                        $fnumListProgramme .= '<br />"'.$message.'"';
                     }
+                    $fnumList .= '</li></ul>';
+                    $fnumListCampaign .= '</li></ul>';
+                    $fnumListProgramme .= '</li></ul>';
 
                     $post = array(
                         'FNUMS' => $fnumList,

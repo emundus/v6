@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension group="fabrik_form" method="upgrade" type="plugin" version="2">
+	<name>eMundus - Update profile</name>
+	<author>eMundus</author>
+	<creationDate>April 2024</creationDate>
+	<copyright>Copyright (C) 2024 eMundus.fr - All rights reserved.</copyright>
+	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+	<authorEmail>laura.grandin@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>2.0.0</version>
+	<description>PLG_FORM_EMUNDUSUPDATEPROFILE_DESCRIPTION</description>
+	<files>
+		<filename>emundusupdateprofile.xml</filename>
+		<filename plugin="emundusupdateprofile">emundusupdateprofile.php</filename>
+		<filename>index.html</filename>
+		<folder>forms</folder>
+		<folder>language</folder>
+	</files>
+	<languages>
+		<language tag="en-GB">en-GB.plg_fabrik_form_emundusupdateprofile.ini</language>
+		<language tag="en-GB">en-GB.plg_fabrik_form_emundusupdateprofile.sys.ini</language>
+		<language tag="fr-FR">fr-FR.plg_fabrik_form_emundusupdateprofile.ini</language>
+		<language tag="fr-FR">fr-FR.plg_fabrik_form_emundusupdateprofile.sys.ini</language>
+	</languages>
+</extension>
