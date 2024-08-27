@@ -44,7 +44,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
     }
 
     public function getprogrammes(){
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -63,7 +63,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
     public function addprogrammes(){
         $data = JRequest::getVar('data', null, 'POST', 'none',0);
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -82,7 +82,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
     public function editprogrammes() {
         $data = JRequest::getVar('data', null, 'POST', 'none',0);
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -150,7 +150,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
 	public function getallprogramforfilter() {
 		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$programs = $this->m_programme->getAllPrograms();
 
 			if (count((array)$programs) > 0) {
@@ -174,7 +174,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
     public function getallprogram() {
 	    $response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
 
-	    if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+	    if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $jinput = JFactory::getApplication()->input;
 
             $filter = $jinput->getString('filter');
@@ -255,7 +255,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
     }
 
     public function getallsessions() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -272,7 +272,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
     }
 
     public function getprogramcount() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -290,7 +290,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
     }
 
     public function getprogrambyid() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -335,7 +335,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
     public function updateprogram() {
         $tab = array('status' => 0, 'msg' => JText::_('ACCESS_DENIED'));
 
-        if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $jinput = JFactory::getApplication()->input;
 
             $data = $jinput->getRaw('body');
@@ -380,7 +380,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
     public function unpublishprogram() {
 	    $response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
 
-	    if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+	    if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getInt('id');
             $result = $this->m_programme->unpublishProgram($data);
@@ -398,7 +398,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
     public function publishprogram() {
 	    $response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
 
-	    if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+	    if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getInt('id');
 
@@ -417,7 +417,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
     public function getprogramcategories() {
 	    $response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
 
-        if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $categories = $this->m_programme->getProgramCategories();
 
             if (!empty($categories)) {
@@ -431,7 +431,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
     }
 
     public function getuserstoaffect() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -452,7 +452,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
     }
 
     public function getuserstoaffectbyterm() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -474,7 +474,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
     }
 
     public function getmanagers() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -495,7 +495,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
     }
 
     public function getevaluators() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -517,7 +517,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
     }
 
     public function affectusertogroup() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -534,7 +534,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
     }
 
     public function affectuserstogroup() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -551,7 +551,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
     }
 
     public function removefromgroup() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -568,7 +568,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
     }
 
     public function getusers() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -590,7 +590,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
     }
 
     public function getuserswithoutapplicants() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -607,7 +607,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
     }
 
     public function searchuserbytermwithoutapplicants() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -627,7 +627,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
     }
 
     public function updatevisibility() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -644,7 +644,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
     }
 
     public function getevaluationgrid() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -665,7 +665,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
     }
 
     public function getgridsmodel() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -684,7 +684,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
     public function creategrid() {
 
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -723,7 +723,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
     }
 
     public function affectgrouptoprogram() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -739,7 +739,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
     }
 
     public function deletegroupfromprogram() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -755,7 +755,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
     }
 
     public function getgroupsbyprograms() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -772,7 +772,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
     }
 
     public function getcampaignsbyprogram() {
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {

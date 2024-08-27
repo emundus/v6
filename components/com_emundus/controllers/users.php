@@ -426,7 +426,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 	public function changeblock() {
 		$user = JFactory::getUser();
 
-		if (!EmundusHelperAccess::asAdministratorAccessLevel($user->id) && !EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+		if (!EmundusHelperAccess::asAdministratorAccessLevel($user->id) && !EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
 			$this->setRedirect('index.php', JText::_('ACCESS_DENIED'), 'error');
 			return;
 		}
@@ -477,7 +477,7 @@ class EmundusControllerUsers extends JControllerLegacy {
     public function changeactivation() {
         $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asAdministratorAccessLevel($user->id) && !EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (!EmundusHelperAccess::asAdministratorAccessLevel($user->id) && !EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $this->setRedirect('index.php', JText::_('ACCESS_DENIED'), 'error');
             return;
         }

@@ -38,7 +38,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
 	    $update = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
         $user = JFactory::getUser();
 
-        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $jinput = JFactory::getApplication()->input;
 
             $elements = $jinput->getString('elements');
@@ -66,7 +66,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
         );
 
         $user = JFactory::getUser();
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $return['msg'] = JText::_("ACCESS_DENIED");
         } else {
             $jinput = JFactory::getApplication()->input;
@@ -88,7 +88,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
     public function updategroupparams() {
         $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $result = 0;
             $update = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -119,7 +119,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
     public function changerequire() {
         $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $result = 0;
             $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -137,7 +137,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
     public function publishunpublishelement() {
         $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $result = 0;
             $update = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -172,7 +172,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
     public function updateparams() {
         $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $result = 0;
             $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -190,7 +190,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
     public function duplicateelement() {
         $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $result = 0;
             $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -216,7 +216,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
 	    $response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
 	    $user = JFactory::getUser();
 
-        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $jinput = JFactory::getApplication()->input;
 
             $element = $jinput->getInt('element', null);
@@ -245,7 +245,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
     public function updateelementlabelwithouttranslation() {
         $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $result = 0;
             $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -264,7 +264,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
     public function updategrouplabelwithouttranslation() {
         $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $result = 0;
             $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -283,7 +283,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
     public function updatepagelabelwithouttranslation() {
         $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $result = 0;
             $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -302,7 +302,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
     public function updatepageintrowithouttranslation() {
         $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $result = 0;
             $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -322,7 +322,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
         $response = array('status' => false, 'msg' => JText::_("ACCESS_DENIED"));
         $user = JFactory::getUser();
 
-        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $app = JFactory::getApplication();
             $jinput = $app->input;
             $toJTEXT = $jinput->getString('toJTEXT');
@@ -348,7 +348,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
     public function getalltranslations() {
         $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $result = 0;
             $getJtext = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -381,7 +381,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
         $user = JFactory::getUser();
         $response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
 
-        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $jinput = JFactory::getApplication()->input;
             $label = $jinput->getRaw('label');
             $intro = $jinput->getRaw('intro');
@@ -408,7 +408,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
 		$user = JFactory::getUser();
 		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+		if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
 			$jinput = JFactory::getApplication()->input;
 			$model_id = $jinput->getInt('model_id', 0);
 			$profile_id = $jinput->getInt('profile_id', 0);
@@ -448,7 +448,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
     public function savemenuastemplate() {
         $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $result = 0;
             $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -468,7 +468,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
         $response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
         $user = JFactory::getUser();
 
-        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $jinput = JFactory::getApplication()->input;
 
             $fid = $jinput->getInt('fid');
@@ -514,7 +514,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
     public function getElement() {
         $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $result = 0;
             $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -545,7 +545,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
         $user = JFactory::getUser();
         $response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
 
-        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
 	        $response['msg'] = JText::_('MISSING_PLUGIN_OR_GROUP');
 			$jinput = JFactory::getApplication()->input;
 
@@ -582,7 +582,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
         $user = JFactory::getUser();
 		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
 
-        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $jinput = JFactory::getApplication()->input;
             $gid = $jinput->getInt('gid', 0);
             $fid = $jinput->getInt('fid', 0);
@@ -690,7 +690,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
     public function createcriteria() {
         $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $result = 0;
             $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -728,7 +728,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
 		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
         $user = JFactory::getUser();
 
-        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $jinput = JFactory::getApplication()->input;
 			$menus = json_decode($_POST['menus']);
             $profile = $jinput->getInt('profile');
@@ -749,7 +749,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
     public function getGroupOrdering() {
         $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $result = 0;
             $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -767,7 +767,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
     public function reordergroups() {
         $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $result = 0;
             $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -791,7 +791,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
     public function getPagesModel() {
         $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $result = 0;
             $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -805,7 +805,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
     public function checkconstraintgroup() {
         $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -824,7 +824,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
     public function checkvisibility() {
         $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -844,7 +844,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
     public function getdatabasesjoin() {
         $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -859,7 +859,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
     public function getDatabaseJoinOrderColumns() {
         $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -881,7 +881,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
     public function enablegrouprepeat() {
         $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -900,7 +900,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
     public function disablegrouprepeat() {
         $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -919,7 +919,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
     public function displayhidegroup() {
         $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -938,7 +938,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
     public function updatemenulabel(){
         $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -958,7 +958,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
     public function gettestingparams(){
         $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -977,7 +977,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
     public function createtestingfile(){
         $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -996,7 +996,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
     public function deletetestingfile(){
         $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -1017,7 +1017,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
         $response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
 	    $user = JFactory::getUser();
 
-        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $jinput = JFactory::getApplication()->input;
             $document_id = $jinput->getInt('document_id');
             $profile_id = $jinput->getInt('profile_id');
@@ -1051,7 +1051,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
      public function updatedefaultvalue(){
          $user = JFactory::getUser();
 
-         if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+         if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
              $result = 0;
              $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
          } else {
@@ -1071,7 +1071,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
      public function getalldatabases(){
          $user = JFactory::getUser();
 
-         if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+         if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
              $result = 0;
              $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
          } else {
@@ -1086,7 +1086,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
      public function getsection(){
          $user = JFactory::getUser();
 
-         if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+         if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
              $result = 0;
              $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
          } else {
@@ -1106,7 +1106,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
      {
          $user = JFactory::getUser();
 
-         if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+         if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
              $result = 0;
              $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
          } else {
@@ -1133,7 +1133,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
      {
          $user = JFactory::getUser();
 
-         if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+         if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
              $result = 0;
              $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
          } else {
@@ -1155,7 +1155,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
      public function addElementSubOption() {
          $user = JFactory::getUser();
 
-         if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+         if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
              $result = 0;
              $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
          } else {
@@ -1180,7 +1180,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
      {
          $user = JFactory::getUser();
 
-         if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+         if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
              $result = 0;
              $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
          } else {
@@ -1204,7 +1204,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
      {
          $user = JFactory::getUser();
 
-         if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+         if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
              $result = 0;
              $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
          } else {
@@ -1229,7 +1229,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
      {
          $user = JFactory::getUser();
          $response = array('status' => false, 'msg' => JText::_("ACCESS_DENIED"));
-         if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+         if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
              $models = $this->m_formbuilder->getPagesModel();
              $response['status'] = true;
              $response['data'] = $models;
@@ -1260,7 +1260,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
         $user = JFactory::getUser();
         $response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
 
-        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             $jinput = JFactory::getApplication()->input;
             $form_id = $jinput->getInt('form_id');
             $label = $jinput->getString('label');
@@ -1326,7 +1326,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
 		$user = JFactory::getUser();
 		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'), 'code' => 403);
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+		if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
 			$response = array('status' => false, 'msg' => JText::_('MISSING_PARAMS'));
 
 			$jinput = JFactory::getApplication()->input;
@@ -1348,7 +1348,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
 		$user     = JFactory::getUser();
 		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'), 'code' => 403, 'data' => []);
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+		if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
 			$response = array('status' => false, 'msg' => JText::_('MISSING_PARAMS'));
 
 			$jinput = JFactory::getApplication()->input;
