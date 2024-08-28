@@ -122,13 +122,15 @@ export default {
         console.log('emit new value', this.newValue);
         this.$emit('update-value', this.newValue);
       } else {
-        this.existingValues.forEach((value, index) => {
+        this.existingValues.forEach((value) => {
           if (value.id == this.selectedExistingValue) {
-            if (this.newExistingLabel != value.label) {
+            if (this.newExistingLabel !== value.label) {
               value.label = this.newExistingLabel;
-              this.existingValues[index] = value;
               this.originalOptions = JSON.parse(JSON.stringify(this.existingValues));
 
+              this.$emit('update-existing-values', this.existingValues);
+              this.$emit('update-value', value);
+            } else {
               this.$emit('update-existing-values', this.existingValues);
               this.$emit('update-value', value);
             }
