@@ -1390,12 +1390,12 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                 $fondFonce = 'modules/mod_emundus_campaign/assets/fond-fonce.svg';
                 $fondClair = 'modules/mod_emundus_campaign/assets/fond-clair.svg';
             } ?>
-            divHover.addEventListener('mouseenter', function () {
-                iframeElementHover.style.maskImage = 'url("<?= $fondFonce; ?>")';
+            divHover.addEventListener('mouseenter', () => {
+                iframeElementHover.style.maskImage = "url('<?php echo $fondFonce; ?>')";
             });
 
-            divHover.addEventListener('mouseleave', function () {
-                iframeElementHover.style.maskImage = 'url("<?= $fondClair; ?>")';
+            divHover.addEventListener('mouseleave', () => {
+                iframeElementHover.style.maskImage = "url('<?php echo $fondClair; ?>')";
             });
         }
     })
