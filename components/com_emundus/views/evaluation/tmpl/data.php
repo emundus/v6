@@ -287,7 +287,11 @@ if ($this->open_file_in_modal) {
             var container = $(".selectDropdown");
 
             if (!container.is(e.target) && container.has(e.target).length === 0){
-                selectDropdownContainer.style.display = 'none';
+                selectDropdownContainer = document.querySelector('.selectAll');
+
+                if (selectDropdownContainer) {
+                    selectDropdownContainer.style.display = 'none';
+                }
             }
         });
     }
@@ -301,11 +305,21 @@ if ($this->open_file_in_modal) {
     function displayCount(){
         countFiles.style.display = 'block';
         countFiles.style.backgroundColor = '#EDEDED';
+
+        if (!containerResult) {
+            containerResult = document.querySelector('.container-result');
+        }
+
         $('#em-data th').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight) + 'px');
     }
 
     function hideCount(){
         countFiles.style.display = 'none';
+
+        if (!containerResult) {
+            containerResult = document.querySelector('.container-result');
+        }
+
         $('#em-data th').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight) + 'px');
         countFiles.style.backgroundColor = 'transparent';
         $('.em-close-minimise').remove();

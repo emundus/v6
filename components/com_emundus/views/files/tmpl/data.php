@@ -306,23 +306,30 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
 <script>
     var selectDropdownContainer = document.querySelector('.selectAll');
     var countFiles = document.querySelector('#countCheckedCheckbox');
-    selectDropdownContainer.style.display = 'none';
 
-    $('.selectDropdown').click(function() {
-        if(selectDropdownContainer.style.display === 'none'){
-            selectDropdownContainer.style.display = 'flex';
-        } else {
-            selectDropdownContainer.style.display = 'none';
-        }
-    });
+    if (selectDropdownContainer) {
+        selectDropdownContainer.style.display = 'none';
 
-    $(document).click(function (e) {
-        var container = $(".selectDropdown");
+        $('.selectDropdown').click(function() {
+            if(selectDropdownContainer.style.display === 'none'){
+                selectDropdownContainer.style.display = 'flex';
+            } else {
+                selectDropdownContainer.style.display = 'none';
+            }
+        });
 
-        if (!container.is(e.target) && container.has(e.target).length === 0){
-            selectDropdownContainer.style.display = 'none';
-        }
-    });
+        $(document).click(function (e) {
+            var container = $(".selectDropdown");
+
+            if (!container.is(e.target) && container.has(e.target).length === 0) {
+                selectDropdownContainer = document.querySelector('.selectAll');
+
+                if (selectDropdownContainer) {
+                    selectDropdownContainer.style.display = 'none';
+                }
+            }
+        });
+    }
 
     function checkAllFiles(){
         $('#em-check-all-all').prop('checked',true);
@@ -333,11 +340,22 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
     function displayCount(){
         countFiles.style.display = 'block';
         countFiles.style.backgroundColor = '#EDEDED';
+
+        if (!containerResult) {
+            containerResult = document.querySelector('.container-result');
+        }
+
         $('#em-data th').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight) + 'px');
     }
 
     function hideCount(){
         countFiles.style.display = 'none';
+
+
+        if (!containerResult) {
+            containerResult = document.querySelector('.container-result');
+        }
+
         $('#em-data th').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight) + 'px');
         countFiles.style.backgroundColor = 'transparent';
         $('.em-close-minimise').remove();
