@@ -779,7 +779,6 @@ function setFiltersSumo(event) {
 
         var id = event.currentTarget.id;
         var my_element = $('#' + id);
-        console.log(my_element);
         if (!id.includes('elements-')) {
             var multi = false;
             if (typeof my_element.attr('multiple') !== 'undefined') {

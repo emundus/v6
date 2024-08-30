@@ -11,6 +11,10 @@
  */
 
 return array (
+  4168 => 'Swisscom',
+  4169 => 'Swisscom',
+  4172 => 'Swisscom',
+  4173 => 'Swisscom',
   417500 => 'Swisscom',
   417507 => 'Swisscom',
   417508 => 'Swisscom',
@@ -70,14 +74,10 @@ return array (
   4178461 => 'Tismi',
   4178462 => 'Tismi',
   4178463 => 'Tismi',
-  4178470 => 'MTEL',
-  4178471 => 'MTEL',
-  4178472 => 'MTEL',
-  4178473 => 'MTEL',
-  4178474 => 'MTEL',
-  4178475 => 'MTEL',
-  4178476 => 'MTEL',
+  417847 => 'MTEL',
   4178480 => 'Nexphone',
+  4178481 => 'Nexphone',
+  4178482 => 'Nexphone',
   4178490 => 'Telecom26 AG',
   41785 => 'Salt',
   41786 => 'Salt',

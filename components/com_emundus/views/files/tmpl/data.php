@@ -302,9 +302,11 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
     </script>
 
 
-    <script>
-        var selectDropdownContainer = document.querySelector('.selectAll');
-        var countFiles = document.querySelector('#countCheckedCheckbox');
+<script>
+    var selectDropdownContainer = document.querySelector('.selectAll');
+    var countFiles = document.querySelector('#countCheckedCheckbox');
+
+    if (selectDropdownContainer) {
         selectDropdownContainer.style.display = 'none';
 
         $('.selectDropdown').click(function() {
@@ -318,10 +320,15 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
         $(document).click(function (e) {
             var container = $(".selectDropdown");
 
-            if (!container.is(e.target) && container.has(e.target).length === 0){
-                selectDropdownContainer.style.display = 'none';
+            if (!container.is(e.target) && container.has(e.target).length === 0) {
+                selectDropdownContainer = document.querySelector('.selectAll');
+
+                if (selectDropdownContainer) {
+                    selectDropdownContainer.style.display = 'none';
+                }
             }
         });
+    }
 
         function checkAllFiles(){
             $('#em-check-all-all').prop('checked',true);
@@ -329,18 +336,29 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
             selectAllFiles();
         }
 
-        function displayCount(){
-            countFiles.style.display = 'block';
-            countFiles.style.backgroundColor = '#EDEDED';
-            $('#em-data th').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight) + 'px');
+    function displayCount(){
+        countFiles.style.display = 'block';
+        countFiles.style.backgroundColor = '#EDEDED';
+
+        if (!containerResult) {
+            containerResult = document.querySelector('.container-result');
         }
 
-        function hideCount(){
-            countFiles.style.display = 'none';
-            $('#em-data th').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight) + 'px');
-            countFiles.style.backgroundColor = 'transparent';
-            $('.em-close-minimise').remove();
+        $('#em-data th').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight) + 'px');
+    }
+
+    function hideCount(){
+        countFiles.style.display = 'none';
+
+
+        if (!containerResult) {
+            containerResult = document.querySelector('.container-result');
         }
+
+        $('#em-data th').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight) + 'px');
+        countFiles.style.backgroundColor = 'transparent';
+        $('.em-close-minimise').remove();
+    }
 
         function selectAllFiles(){
             var allCheck = $('.em-check-all-all#em-check-all-all').is(':checked');

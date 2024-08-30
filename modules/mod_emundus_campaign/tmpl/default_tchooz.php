@@ -669,7 +669,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             <?php elseif($group_by == 'category' || $group_by == 'program'|| $group_by == 'month') : ?>
 	            <?php if($mod_em_campaign_display_tmpl == 1) : ?>
 
-                        <button id="mod_emundus_campaign__tchoozy_tabs_<?php echo $key ?>" type="button" class="em-mb-32 em-mt-32 flex items-center justify-between <?php if (sizeof($campaigns) > 1) : ?>cursor-pointer<?php endif; ?>" <?php if (sizeof($campaigns) > 1) : ?> tabindex="0" aria-expanded="false" onclick="hideTchoozyGroup('<?php echo $key ?>')" <?php endif; ?>>
+                        <button id="mod_emundus_campaign__tchoozy_tabs_<?php echo $key ?>" type="button" class="em-mb-32 em-mt-32 flex items-center justify-between <?php if (sizeof($campaigns) > 1) : ?>cursor-pointer<?php endif; ?>  <?= $mod_em_campaign_groupby_closed ? '' : 'open' ?> " <?php if (sizeof($campaigns) > 1) : ?> tabindex="0" aria-expanded="false" onclick="hideTchoozyGroup('<?php echo $key ?>')" <?php endif; ?>>
 				            <?php if ($mod_em_campaign_display_svg == 1) : ?>
                                 <div id="background-shapes-tabs" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></div>
 				            <?php endif; ?>

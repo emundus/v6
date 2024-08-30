@@ -285,7 +285,11 @@ if (is_array($this->datas)) {
                 var container = $(".selectDropdown");
 
                 if (!container.is(e.target) && container.has(e.target).length === 0){
-                    selectDropdownContainer.style.display = 'none';
+                    selectDropdownContainer = document.querySelector('.selectAll');
+
+                    if (selectDropdownContainer) {
+                        selectDropdownContainer.style.display = 'none';
+                    }
                 }
             });
         }
@@ -296,18 +300,28 @@ if (is_array($this->datas)) {
             selectAllFiles();
         }
 
-        function displayCount(){
-            countFiles.style.display = 'block';
-            countFiles.style.backgroundColor = '#EDEDED';
-            $('#em-data th').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight) + 'px');
+    function displayCount(){
+        countFiles.style.display = 'block';
+        countFiles.style.backgroundColor = '#EDEDED';
+
+        if (!containerResult) {
+            containerResult = document.querySelector('.container-result');
         }
 
-        function hideCount(){
-            countFiles.style.display = 'none';
-            $('#em-data th').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight) + 'px');
-            countFiles.style.backgroundColor = 'transparent';
-            $('.em-close-minimise').remove();
+        $('#em-data th').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight) + 'px');
+    }
+
+    function hideCount(){
+        countFiles.style.display = 'none';
+
+        if (!containerResult) {
+            containerResult = document.querySelector('.container-result');
         }
+
+        $('#em-data th').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight) + 'px');
+        countFiles.style.backgroundColor = 'transparent';
+        $('.em-close-minimise').remove();
+    }
 
         function selectAllFiles(){
             var allCheck = $('.em-check-all-all#em-check-all-all').is(':checked');

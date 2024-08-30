@@ -30,21 +30,21 @@ class ExcelWorkbook implements \Countable
 		/**
 		 * The ZipArchive representation of the workbook
 		 *
-		 * @var ZipArchive
+		 * @var \ZipArchive
 		 */
 		protected $xlsx;
 
 		/**
 		 * The DomDocument representation of the workbook
 		 *
-		 * @var DOMDocument
+		 * @var \DOMDocument
 		 */
 		protected $workbook;
 
 		/**
 		 * The DOMDocument representation of the styles.xml included in the workbook
 		 *
-		 * @var DOMDocument
+		 * @var \DOMDocument
 		 */
 		protected $styles;
 
@@ -69,7 +69,7 @@ class ExcelWorkbook implements \Countable
 		 *
 		 * @var string
 		 */
-		protected $sheetName = 'data';
+		protected $sheetName = 'Data';
 
 		/**
 		 * Instantiate a new object of the type ExcelWorkbook. Expects a filename which
@@ -144,7 +144,7 @@ class ExcelWorkbook implements \Countable
 		 *
 		 * @return int
 		 */
-		public function count() {
+		public function count(): int {
 				$sheets = $this->getWorkbook()->getElementsByTagName('sheet');
 				return $sheets->length;
 
@@ -336,7 +336,7 @@ class ExcelWorkbook implements \Countable
 				if ($id === null) $id = $this->getSheetIdByName($name);
 
 				if(is_null($id) || $id <= 0) {
-					throw new \Exception('Sheet with name "'.$name.'" not found in file '.$this->targetFilename.'. Appending is not yet implemented.');
+					throw new \Exception('Sheet with name "'.$name.'" not found in file '.$this->srcFilename.'. Appending is not yet implemented.');
 					/*
 					// find a unused id in the worksheets
 					$id = 1;
