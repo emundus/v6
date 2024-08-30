@@ -102,10 +102,12 @@ class EmundusModelExport extends JModelList {
 
 					Gotenberg::save($request, $dest_path .'/', $client);
 				} else {
-					$request = Gotenberg::chromium($gotenberg_url)
-						->html(Stream::string('my.html', $src));
+	                $request = Gotenberg::chromium($gotenberg_url)
+		                ->pdf()
+		                ->outputFilename($dest_file)
+		                ->html(Stream::path($src));
 
-					Gotenberg::save($request, $dest_path .'/', $client);
+	                Gotenberg::save($request, $dest_path .'/', $client);
 				}
 				$res->file = $dest_path .'/' . $dest_file . '.pdf';
             } catch (\Gotenberg\Exceptions\GotenbergApiErroed $e) {
