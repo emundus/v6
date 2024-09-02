@@ -233,6 +233,9 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
         $config = hikashop_config();
         $confirmed_statuses = explode(',', trim($config->get('invoice_order_statuses','confirmed,shipped'), ','));
 
+		JPluginHelper::importPlugin('emundus','custom_event_handler');
+		\Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopAfterOrderUpdate', ['order' => $order, 'em_order' => $em_order]]);
+
         if ($status_after_payment[$key] > 0 && in_array($order->order_status, $confirmed_statuses)) {
             require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
             $m_files = new EmundusModelFiles();
@@ -275,9 +278,6 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
             JLog::add('Could not set application file status on order ID -> '. $order_id, JLog::ERROR, 'com_emundus');
             return false;
         }
-
-        JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopAfterOrderUpdate', ['order' => $order, 'em_order' => $em_order]]);
 
         $this->onAfterOrderCreate($order);
     }
