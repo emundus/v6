@@ -811,9 +811,12 @@ class EmundusFiltersFiles extends EmundusFilters
 			{
 				$element_ids_available = $this->getElementIdsAssociatedToProfile($filtered_profiles);
 
+				$config_more_fabrik_forms = $this->config['more_fabrik_forms'];
+				$config_more_fabrik_forms = empty($config_more_fabrik_forms) ? [] : $config_more_fabrik_forms;
+
 			    foreach ($this->filters as $key => $filter)
                 {
-                    if (!in_array($filter['id'], $element_ids_available) && (!empty($this->config['more_fabrik_forms']) && !in_array($filter['group_id'], $this->config['more_fabrik_forms'])))
+                    if (!in_array($filter['id'], $element_ids_available) && !in_array($filter['group_id'], $config_more_fabrik_forms))
                     {
 					    $this->filters[$key]['available'] = false;
 				    }
