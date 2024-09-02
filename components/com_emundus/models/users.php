@@ -247,26 +247,32 @@ class EmundusModelUsers extends JModelList {
             $query.= ' u.id='.(int)$uid;
         } else {
             $and = true;
-            /*if(isset($this->filts_details['profile']) && !empty($this->filts_details['profile'])){
-                $query.= ' AND e.profile IN ('.implode(',', $this->filts_details['profile']).') ';
-                $and = true;
-            }*/
-            if (isset($profile) && !empty($profile) && is_numeric($profile)) {
-                $query.= ' AND e.profile = '.$profile;
-                $and = true;
+
+            if (!empty($profile)) {
+				if (is_numeric($profile)) {
+					$query.= ' AND e.profile = '.$profile;
+				} else if ($profile === 'applicant') {
+					$query.= ' AND espr.published = 1';
+				}
             }
-            if (isset($oprofiles) && !empty($oprofiles) ) {
-                $query.= ' AND eup.profile_id IN ("'.implode('","', $oprofiles).'")';
-                $and = true;
+            if (!empty($oprofiles)) {
+				if (in_array('applicant', $oprofiles)) {
+					$query.= 'AND (eup.profile_id IN ("'.implode('","', $oprofiles).'") OR espr.published = 1)';
+
+				} else {
+					$query.= ' AND eup.profile_id IN ("'.implode('","', $oprofiles).'")';
+				}
+
+				$and = true;
             }
-            if (isset($final_grade) && !empty($final_grade)) {
+            if (!empty($final_grade)) {
                 if ($and) $query .= ' AND ';
-                else { $and = true;  $query .='WHERE '; }
+                else { $query .='WHERE '; }
 
                 $query.= 'efg.Final_grade = "'.$final_grade.'"';
                 $and = true;
             }
-            if (isset($search) && !empty($search)) {
+            if (!empty($search)) {
 
                 if ($and) {
                     $query .= ' AND ';
@@ -308,12 +314,7 @@ class EmundusModelUsers extends JModelList {
                 $q = substr($q, 3);
                 $query .= '('.$q.')' ;
             }
-            /*if(isset($schoolyears) &&  !empty($schoolyears)) {
-                if($and) $query .= ' AND ';
-                else { $and = true; $query .='WHERE '; }
-                $query.= 'e.schoolyear="'.$schoolyears.'"';
-            }*/
-            if (isset($spam_suspect) &&  !empty($spam_suspect) && $spam_suspect == 1) {
+            if (!empty($spam_suspect) && $spam_suspect == 1) {
                 if ($and) {
                     $query .= ' AND ';
                 } else {
@@ -338,7 +339,7 @@ class EmundusModelUsers extends JModelList {
                     $query .= 'u.id IN ( '.$list_user.' )';
             }
 
-            if (isset($newsletter) &&  !empty($newsletter)) {
+            if (!empty($newsletter)) {
                 if ($and) {
                     $query .= ' AND ';
                 } else {
