@@ -1,8 +1,8 @@
 <?php
 defined('_JEXEC') or die('Access Deny');
-require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'files.php');
-require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
-require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+require_once(JPATH_ROOT.DS.'components/com_emundus/helpers/files.php');
+require_once(JPATH_ROOT.DS.'components/com_emundus/helpers/list.php');
+require_once(JPATH_ROOT.DS.'components/com_emundus/models/users.php');
 require JPATH_LIBRARIES . '/emundus/vendor/autoload.php';
 ini_set("xdebug.var_display_max_children", -1);
 ini_set("xdebug.var_display_max_data", -1);
@@ -633,58 +633,38 @@ class modEmundusQueryBuilderHelper {
 	/**
 	  * Create pdf with images of selected graphs
 	  */
-	public function convertPdfAjax() {
-		$eMConfig = JComponentHelper::getParams('com_emundus');
-        $gotenberg_activation = $eMConfig->get('gotenberg_activation', 1);
-        $gotenberg_url = $eMConfig->get('gotenberg_url', 'http://localhost:3000');
-		$res = new stdClass();
-
-		if ($gotenberg_activation !== '1') {
-			$res->status = false;
-			$res->msg = 'Please activate Gotenberg in eMundus config.';
-			return json_encode($res);
-		}
-
-		$fichier = JPATH_BASE;
+	public static function convertPdfAjax() {
+		$response = ['status' => false, 'msg' => 'Error'];
 
 		$jinput = JFactory::getApplication()->input;
-		$src = $jinput->get('src', '','RAW');
+		$dom = $jinput->get('src', '','RAW');
 
-		$doc = new DOMDocument();
-		@$doc->loadHTML($src);
-		$imgList = $doc->getElementsBytagName('div');
-		for ($i = 0 ; $i < count($imgList) ; $i++) {
-			file_put_contents($fichier.DS."tmp".DS.'image'.$i.".svg", utf8_decode((new modEmundusQueryBuilderHelper)->getInnerHtml($imgList->item($i))));
-			$oldNode = $imgList->item($i)->firstChild;
-			$imgList->item($i)->removeChild($oldNode);
-			$newNode = $doc->createElement("img");
-			$newNode->setAttribute('src',$fichier.DS."tmp".DS.'image'.$i.".svg");
-			$imgList->item($i)->appendChild($newNode);
+		try {
+			$doc = new DOMDocument();
+			$doc->loadHTML($dom);
+			$doc->saveHTMLFile(JPATH_ROOT . '/tmp/tmp_export_graph.html');
+			$src = JPATH_ROOT . '/tmp/tmp_export_graph.html';
+		} catch (Exception $e) {
+			$src = '';
 		}
 
-		$index = DocumentFactory::makeFromString("index.html", '<html><body style="width:10%;">'.$src.'</body></html>');
-
-		$client  = new Client($gotenberg_url, new \Http\Adapter\Guzzle6\Client());
-		$request = new HTMLRequest($index);
-		$request->setPaperSize(Request::A4);
-		$request->setMargins(Request::NO_MARGINS);
-		$dest = $fichier.DS."tmp".DS.'Graph.pdf';
-		$client->store($request, $dest);
-
-		for ($i = 0; $i < count($imgList); $i++) {
-			unlink($fichier.DS."tmp".DS.'image'.$i.".svg");
+		if (!empty($src)) {
+			if (!class_exists('EmundusModelExport')) {
+				require_once(JPATH_ROOT . '/components/com_emundus/models/export.php');
+			}
+			$m_export = new EmundusModelExport();
+			$response = $m_export->toPdf($src, JPATH_ROOT . '/tmp/Graph.pdf', 'html');
+			unlink(JPATH_ROOT . '/tmp/tmp_export_graph.html');
 		}
 
-		$res->status = true;
-		$res->msg = 'It\'s ok';
-		return json_encode($res);
+		return json_encode($response);
 	}
 
 	/**
 	  * Delete pdf in tmp folder
 	  */
 	public function deleteFileAjax() {
-		unlink(JPATH_BASE.DS."tmp".DS."Graph.pdf");
+		unlink(JPATH_ROOT.DS."tmp".DS."Graph.pdf");
 
 		return json_encode((object)['status' => true, 'msg' => 'It\'s ok']);
 	}
