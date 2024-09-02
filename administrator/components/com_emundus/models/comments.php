@@ -98,7 +98,9 @@ class EmundusAdministratorModelComments extends JModelList
 
         $tasks[] = EmundusHelperUpdate::addCustomEvents([['label' => 'onAfterCommentDeleted', 'category' => 'Comments']]);
 
-        $tasks_status = array_map(function ($task) { return $task['status']; }, $tasks);
+        $tasks_status = array_map(function ($task) {
+			return is_array($task) && isset($task['status']) ? $task['status'] : $task;
+		}, $tasks);
         if (!in_array(false, $tasks_status)) {
             $installed = true;
         }
