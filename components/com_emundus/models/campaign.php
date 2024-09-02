@@ -1463,7 +1463,9 @@ class EmundusModelCampaign extends JModelList {
                         break;
                     case 'end_date':
                     case 'start_date':
-                        $display_date = EmundusHelperDate::displayDate($val,'Y-m-d H:i:s', 1);
+		                $dateStr = str_replace(' ', 'T', $val);
+		                $date = new DateTime($dateStr);
+		                $display_date = $date->format('Y-m-d H:i:s');
                         if (!empty($display_date)) {
                             $fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($display_date);
                         } else {
@@ -2136,7 +2138,7 @@ class EmundusModelCampaign extends JModelList {
             $query->select('*')
                 ->from($this->_db->quoteName('#__dropfiles_files'))
                 ->where($this->_db->quoteName('catid') . ' = ' . $this->_db->quote($campaign_cat))
-                ->group($this->_db->quoteName('ordering'));
+                ->order($this->_db->quoteName('ordering'));
             $this->_db->setQuery($query);
             return $this->_db->loadObjectList();
         }  catch (Exception $e) {

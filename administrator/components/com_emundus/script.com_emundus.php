@@ -4909,6 +4909,26 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 			//
 		}
 
+		if (version_compare($cache_version, '1.39.1', '<=') || $firstrun) {
+			EmundusHelperUpdate::installExtension('System - eMundus', 'emundus','{"name":"System - eMundus","type":"plugin","creationDate":"15 juillet 2024","author":"eMundus","copyright":"Copyright (C) 2024 eMundus","authorEmail":"dev@emundus.io","authorUrl":"http:\/\/www.emundus.fr","version":"1.39.1","description":"eMundus plugin to call jQuery","group":"","filename":"emundus"}','plugin',1,'system');
+		}
+
+        if (version_compare($cache_version, '1.39.2', '<=') || $firstrun) {
+            $db->setQuery("alter table jos_emundus_evaluations modify user int null");
+            $db->execute();
+
+            $db->setQuery("alter table jos_emundus_evaluations drop foreign key jos_emundus_evaluations_ibfk_4");
+            $db->execute();
+
+            $db->setQuery("alter table jos_emundus_evaluations
+                add constraint jos_emundus_evaluations_ibfk_4
+                foreign key (user) references jos_emundus_users (user_id)
+                on update cascade on delete set null");
+            $db->execute();
+
+	        EmundusHelperUpdate::installExtension('plg_fabrik_element_iban','iban','{"name":"plg_fabrik_element_iban","type":"plugin","creationDate":"March 2024","author":"Media A-Team, Inc.","copyright":"Copyright (C) 2005-2024 Media A-Team, Inc. - All rights reserved.","authorEmail":"brice.hubinet@emundus.fr","authorUrl":"www.emundus.fr","version":"4.0Zeta","description":"PLG_ELEMENT_IBAN_DESCRIPTION","group":"","filename":"iban"}','plugin',1,'fabrik_element');
+        }
+
 		if (version_compare($cache_version, '1.40.0', '<=') || $firstrun) {
 			EmundusHelperUpdate::addColumn('jos_emundus_setup_campaigns', 'alias', 'VARCHAR', 255);
 
