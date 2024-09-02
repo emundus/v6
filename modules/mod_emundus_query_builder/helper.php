@@ -11,11 +11,6 @@ ini_set("xdebug.var_display_max_depth", -1);
 jimport('joomla.log.log');
 JLog::addLogger(['text_file' => 'com_emundus.query_builder.php'], JLog::ALL, ['com_emundus']);
 
-use TheCodingMachine\Gotenberg\Client;
-use TheCodingMachine\Gotenberg\Request;
-use TheCodingMachine\Gotenberg\DocumentFactory;
-use TheCodingMachine\Gotenberg\HTMLRequest;
-
 class modEmundusQueryBuilderHelper {
 
 	/**
