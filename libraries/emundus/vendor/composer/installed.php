@@ -3,7 +3,7 @@
         'name' => 'benj/emundus',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => 'eaa894b99b8f8890acd76ac4e1df6eebd6569afe',
+        'reference' => '21e725ba1dd4a7087446650c9ed78f56a1692318',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'benj/emundus' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => 'eaa894b99b8f8890acd76ac4e1df6eebd6569afe',
+            'reference' => '21e725ba1dd4a7087446650c9ed78f56a1692318',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -624,7 +624,7 @@
         'setasign/fpdi_pdf-parser' => array(
             'pretty_version' => '2.1.2',
             'version' => '2.1.2.0',
-            'reference' => NULL,
+            'reference' => null,
             'type' => 'library',
             'install_path' => __DIR__ . '/../setasign/fpdi_pdf-parser',
             'aliases' => array(),
