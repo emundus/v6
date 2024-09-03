@@ -45,12 +45,14 @@ class EmundusModelApplication extends JModelList
         require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'menu.php');
         require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'fabrik.php');
         require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
-        require_once (JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'date.php');
+		require_once (JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'date.php');
+		require_once (JPATH_SITE . '/components/com_emundus/helpers/cache.php');
 
         $this->_mainframe = JFactory::getApplication();
 
         $this->_db = JFactory::getDBO();
         $this->_user = JFactory::getSession()->get('emundusUser');
+		$this->h_cache = new EmundusHelperCache();
 
         $this->locales = substr(JFactory::getLanguage()->getTag(), 0, 2);
     }

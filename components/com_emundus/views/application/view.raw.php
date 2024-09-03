@@ -693,7 +693,7 @@ class EmundusViewApplication extends JViewLegacy {
 
 	            case 'collaborate':
 		            $this->collaborators = $m_application->getSharedFileUsers($ccid, $fnum);
-
+					break;
             }
 
             $this->assignRef('_user', $this->_user);
