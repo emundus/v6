@@ -117,7 +117,7 @@ class Standard extends SecHandler
 
         throw new SecHandlerException(
             sprintf('Revision %s not implemented yet.', $revision),
-            SecHandlerException::NOT_IMPLEMENTED
+            PdfParserException::NOT_IMPLEMENTED
         );
     }
 
@@ -208,17 +208,22 @@ class Standard extends SecHandler
     }
 
     /**
-     * @param string $value
+     * @param mixed $value
      * @return string
+     * @internal
      */
-    private static function getStringValue($value)
+    public static function getStringValue($value)
     {
         if ($value instanceof PdfString) {
             return PdfString::unescape($value->value);
         }
 
         if ($value instanceof PdfHexString) {
-            return (string)\hex2bin($value->value);
+            $v = $value->value;
+            if ((strlen($v) % 2) === 1) {
+                $v .= '0';
+            }
+            return (string)\hex2bin($v);
         }
 
         throw new \InvalidArgumentException('Value is not a pdf string.');
@@ -454,14 +459,19 @@ class Standard extends SecHandler
         return false;
     }
 
-    private static function ensure32BitInteger($value)
+    /**
+     * @param int $value
+     * @return int
+     * @internal
+     */
+    public static function ensure32BitInteger($value)
     {
-        if (PHP_INT_SIZE === 4 || ($value) < (2147483647)) {
+        $value = (int)$value;
+        if (PHP_INT_SIZE === 4 || ($value <= 2147483647)) {
             return $value;
         }
-        //x need to be a var otherwise a zend_guard 5.2 encrypted package will make this to -1
-        $x = 4294967295;
-        return ($value | ($x << 32));
+
+        return ($value | (4294967295 << 32));
     }
 
     protected function computeEncryptionKey($password = '')
