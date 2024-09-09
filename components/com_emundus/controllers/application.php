@@ -12,7 +12,6 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use \setasign\Fpdi\Fpdi;
-use Joomla\CMS\Factory;
 
 // ensure this file is being included by a parent file
 defined( '_JEXEC' ) or die( JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS') );
