@@ -859,7 +859,7 @@ class EmundusControllerForm extends JControllerLegacy {
 		$response = array('status' => 0, 'msg' => Text::_('ACCESS_DENIED'));
 		$user = JFactory::getUser();
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+		if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
 			$table_name   = $this->input->getString('table_name');
 			$column_name  = $this->input->getString('column_name');
 			$value        = $this->input->getString('value');
