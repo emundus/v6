@@ -85,7 +85,7 @@ if(!empty($mod_em_campaign_go_back_campaigns_link)) {
 
 <div class="mod_emundus_campaign__grid em-mt-24 em-mb-64" style="grid-gap: 64px">
     <div>
-        <div class="em-flex-row em-mb-12 em-pointer em-w-max-content"
+        <button type="button" class="em-flex-row em-mb-12 em-pointer em-w-max-content"
              <?php if($mod_em_campaign_go_back_link == 1) : ?>
                 onclick="history.go(-1)"
              <?php elseif($mod_em_campaign_go_back_link == 2) : ?>
@@ -94,8 +94,8 @@ if(!empty($mod_em_campaign_go_back_campaigns_link)) {
                 onclick="window.location.href='<?php echo $mod_em_campaign_go_back_external_url; ?>'"
              <?php endif; ?>
         >
-            <span class="material-icons">navigate_before</span><span class="em-ml-8 em-text-neutral-900"><?php echo JText::_('MOD_EM_CAMPAIGN_BACK'); ?></span>
-        </div>
+            <span class="material-icons em-text-neutral-600">navigate_before</span><span class="em-ml-8 em-text-neutral-900"><?php echo JText::_('MOD_EM_CAMPAIGN_BACK'); ?></span>
+        </button>
         <?php if($mod_em_campaign_details_show_programme == 1) : ?>
             <?php
             $color = '#0A53CC';
