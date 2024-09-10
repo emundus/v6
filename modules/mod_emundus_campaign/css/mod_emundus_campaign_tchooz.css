@@ -376,6 +376,12 @@ a.em-blue-400-color:hover {
     color: var(--em-default-title-color-1);
 }
 
+.mod_emundus_campaign_empty__programme_cat_title {
+    font-family: var(--em-applicant-font-title);
+    font-style: normal;
+    color: var(--em-default-title-color-1);
+}
+
 
 [id*="mod_emundus_campaign__tchoozy_tabs_"] {
     background: var(--neutral-0) !important;

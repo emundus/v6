@@ -652,7 +652,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             <div class="mod_emundus_campaign__list em-mt-32">
 				<?php if (empty($campaigns)) : ?>
                     <div class="em-mb-48">
-                        <h2 class="mod_emundus_campaign__programme_cat_title"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_FOUND') ?></h2>
+                        <p class="mod_emundus_campaign_empty__programme_cat_title"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_FOUND') ?></p>
                         <hr style="margin-top: 8px">
                     </div>
 				<?php endif; ?>
