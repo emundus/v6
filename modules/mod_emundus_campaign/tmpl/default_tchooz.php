@@ -1400,5 +1400,10 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
         }
     })
 
+    document.addEventListener("DOMContentLoaded", function() {
+	    <?php if(empty($campaigns)) : ?>
+        document.title = "<?php echo JText::_('EMPTY_CAMPAIGNS'); ?>";
+	    <?php endif; ?>
+    });
 
 </script>
