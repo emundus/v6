@@ -59,7 +59,6 @@ else{
     </div>
 <?php endif; ?>
     <form id="login_form" action="<?php echo (!empty($this->redirect)) ? 'index.php?option=com_users&task=user.login&redirect='.$this->redirect : 'index.php?option=com_users&task=user.login'; ?>" method="post" class="form-validate form-horizontal well">
-        <fieldset>
             <?php foreach ($this->form->getFieldset('credentials') as $field) : ?>
                 <?php if (!$field->hidden) : ?>
                     <div class="control-group mb-8">
@@ -119,7 +118,6 @@ else{
             <?php $return = $this->form->getValue('return', '', $this->params->get('login_redirect_url', $this->params->get('login_redirect_menuitem'))); ?>
             <input type="hidden" name="return" value="<?php echo base64_encode($return); ?>" />
             <?php echo JHtml::_('form.token'); ?>
-        </fieldset>
     </form>
 
     <?php $usersConfig = JComponentHelper::getParams('com_users'); ?>

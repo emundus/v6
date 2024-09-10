@@ -116,7 +116,7 @@ ul.nav.nav-tabs.nav-stacked {
     margin-bottom: 50px;
 }
 
-.login form > fieldset .control-group:nth-child(3) .controls {
+.login form .control-group:nth-child(3) .controls {
     justify-content: center;
     margin-top: 20px;
     width: 100%;
@@ -339,7 +339,7 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
     .form-validate.form-horizontal.well {
         width: 100%;
     }
-    .view-login .form-horizontal fieldset .control-group {
+    .view-login .form-horizontal .control-group {
         width: 100% !important;
     }
 
@@ -370,7 +370,7 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
         margin-top: 0;
     }
 
-    .view-login .form-horizontal fieldset .control-group {
+    .view-login .form-horizontal .control-group {
         width: 100% !important;
     }
 
@@ -440,7 +440,7 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
     .form-validate.form-horizontal.well {
         width: 50%;
     }
-    .em-formRegistrationCenter .form-horizontal fieldset .control-group {
+    .em-formRegistrationCenter .form-horizontal .control-group {
         width: 100% !important;
     }
 }
