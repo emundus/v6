@@ -217,7 +217,7 @@ if(!empty($mod_em_campaign_go_back_campaigns_link)) {
                 <div id="background-shapes" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></div>
             <?php endif; ?>
 
-            <h4 class="em-mb-24"><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_APPLY') ?></h4>
+            <h2 class="em-mb-24"><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_APPLY') ?></h2>
             <?php  if ($currentCampaign->is_limited == 1 && $currentCampaign->limit > 0) : ?>
                 <div class="flex em-flex-center em-mb-24"><p class="mr-2 h-max em-p-5-12 em-font-weight-600 em-text-neutral-300 em-font-size-14 em-border-radius" style="background:var(--bg-3);"><?= $files_sent.' '.JText::_($files_sent_tag).' '.$currentCampaign->limit ?></p></div>
             <?php endif; ?>
@@ -251,7 +251,7 @@ if(!empty($mod_em_campaign_go_back_campaigns_link)) {
                 if ($is_limit_obtained) : ?>
                     <button class="em-disabled-button em-w-100" role="button" data-toggle="sc-modal"><?= JText::_('MOD_EM_CAMPAIGN_DETAILS_LIMIT_OBTAINED'); ?></button>
                 <?php else : ?>
-                    <a class="btn btn-primary em-w-100 em-applicant-default-font" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
+                    <a class="btn btn-primary em-w-100 em-applicant-default-font" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
                 <?php endif; ?>
             <?php elseif ($can_apply == -1) : ?>
                 <button class="em-disabled-button em-w-100" role="button" data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_IS_FINISH'); ?></button>
