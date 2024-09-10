@@ -418,69 +418,69 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                     <div class="em-flex-row">
                         <!-- BUTTONS -->
 						<?php if ($mod_em_campaign_show_sort == 1 && !empty($mod_em_campaign_sort_list)) : ?>
-                            <div id="mod_emundus_campaign__header_sort"
+                            <button type="button" id="mod_emundus_campaign__header_sort"
                                  class="mod_emundus_campaign__header_filter em-border-neutral-400 em-neutral-800-color em-pointer em-mr-8"
                                  onclick="displaySort()">
-                                <span class="material-icons-outlined">swap_vert</span>
+                                <span class="material-icons-outlined" aria-hidden="true">swap_vert</span>
                                 <span class="em-ml-8"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_SORT') ?></span>
-                            </div>
+                            </button>
 						<?php endif; ?>
 
 						<?php if ($mod_em_campaign_show_filters == 1 && !empty($mod_em_campaign_show_filters_list)) : ?>
-                            <div id="mod_emundus_campaign__header_filter"
+                            <button type="button" id="mod_emundus_campaign__header_filter"
                                  class="mod_emundus_campaign__header_filter em-border-neutral-400 em-neutral-800-color em-pointer em-mr-8"
                                  onclick="displayFilters()">
-                                <span class="material-icons-outlined">filter_list</span>
+                                <span class="material-icons-outlined" aria-hidden="true">filter_list</span>
                                 <span class="em-ml-8"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER') ?></span>
                                 <span id="mod_emundus_campaign__header_filter_count"
                                       class="mod_emundus_campaign__header_filter_count em-mr-8"></span>
-                            </div>
+                            </button>
 						<?php endif; ?>
 
                         <!-- TAGS ENABLED -->
 						<?php if ($mod_em_campaign_order == 'start_date' && $order == 'end_date') : ?>
                             <div class="mod_emundus_campaign__header_filter em-mr-8 em-border-neutral-400 em-neutral-800-color em-white-bg">
                                 <span><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_END_DATE_NEAR') ?></span>
-                                <a class="em-flex-column em-ml-8 em-text-neutral-900 em-pointer"
+                                <button type="button" class="em-flex-column em-ml-8 em-text-neutral-900 em-pointer"
                                    onclick="deleteSort(['order_date','order_time'])">
-                                    <span class="material-icons-outlined">close</span>
-                                </a>
+                                    <span class="material-icons-outlined" aria-hidden="true">close</span>
+                                </button>
                             </div>
 						<?php endif; ?>
 						<?php if ($mod_em_campaign_order == 'end_date' && $order == 'start_date') : ?>
                             <div class="mod_emundus_campaign__header_filter em-mr-8 em-border-neutral-400 em-neutral-800-color em-white-bg">
                                 <span ><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_START_DATE_NEAR') ?></span>
-                                <a class="em-flex-column em-ml-8 em-text-neutral-900 em-pointer"
+                                <button type="button" class="em-flex-column em-ml-8 em-text-neutral-900 em-pointer"
                                    onclick="deleteSort(['order_date','order_time'])">
-                                    <span class="material-icons-outlined">close</span>
-                                </a>
+                                    <span class="material-icons-outlined" aria-hidden="true">close</span>
+                                </button>
                             </div>
 						<?php endif; ?>
 						<?php if ($mod_em_campaign_show_sort == 1 && $group_by == 'program') : ?>
                             <div class="mod_emundus_campaign__header_filter em-mr-8 em-border-neutral-400 em-neutral-800-color em-white-bg">
                                 <span><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_PROGRAM') ?></span>
-                                <a class="em-flex-column em-ml-8 em-text-neutral-900 em-pointer"
+                                <button type="button" class="em-flex-column em-ml-8 em-text-neutral-900 em-pointer"
                                    onclick="deleteSort(['group_by'])">
-                                    <span class="material-icons-outlined">close</span>
-                                </a>
+                                    <span class="material-icons-outlined" aria-hidden="true">close</span>
+                                </button>
                             </div>
 						<?php endif; ?>
 						<?php if ($mod_em_campaign_show_sort == 1 && $group_by == 'category') : ?>
                             <div class="mod_emundus_campaign__header_filter em-mr-8 em-border-neutral-400 em-neutral-800-color em-white-bg">
                                 <span><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_CATEGORY') ?></span>
-                                <a class="em-flex-column em-ml-8 em-text-neutral-900 em-pointer"
+                                <button type="button" class="em-flex-column em-ml-8 em-text-neutral-900 em-pointer"
                                    onclick="deleteSort(['group_by'])">
-                                    <span class="material-icons-outlined">close</span>
-                                </a>
+                                    <span class="material-icons-outlined" aria-hidden="true">close</span>
+                                </button>
                             </div>
 						<?php endif; ?>
 						<?php if ($mod_em_campaign_show_sort == 1 && $group_by == 'month') : ?>
                             <div class="mod_emundus_campaign__header_filter em-mr-8 em-border-neutral-400 em-neutral-800-color em-white-bg">
                                 <span><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_MONTH') ?></span>
-                                <a class="em-flex-column em-ml-8 em-text-neutral-900 em-pointer"
+                                <button type="button" class="em-flex-column em-ml-8 em-text-neutral-900 em-pointer"
                                    onclick="deleteSort(['month'])">
-                                    <span class="material-icons-outlined">close</span>
-                                </a>
+                                    <span class="material-icons-outlined" aria-hidden="true">close</span>
+                                </button>
                             </div>
 						<?php endif; ?>
                     </div>
@@ -521,11 +521,11 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 					<?php if ($mod_em_campaign_show_filters == 1 && !empty($mod_em_campaign_show_filters_list)) : ?>
                         <div class="mod_emundus_campaign__header_filter__values em-border-neutral-400 em-neutral-800-color"
                              id="filters_block" style="display: none">
-                            <a class="em-mb-8 em-flex-row em-font-size-14 em-pointer" onclick="addFilter()"
+                            <button type="button" class="add-filter-btn em-mb-8 em-flex-row em-font-size-14 em-pointer" onclick="addFilter()"
                                title="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_ADD_FILTER') ?>">
-                                <span class="material-icons-outlined em-font-size-14">add</span>
+                                <span class="material-icons-outlined em-font-size-14" aria-hidden="true">add</span>
 								<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_ADD_FILTER') ?>
-                            </a>
+                            </button>
 
                             <div id="filters_list">
 								<?php $i = 0; ?>
@@ -551,9 +551,9 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                             </select>
                                         </div>
                                         <div class="em-flex-row">
-                                            <span class="material-icons-outlined em-red-500-color em-pointer"
+                                            <button type="button" class="material-icons-outlined em-red-500-color em-pointer"
                                                   onclick="deleteFilter('<?php echo $i ?>')"
-                                                  title="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_DELETE') ?>">delete</span>
+                                                  title="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_DELETE') ?>">delete</button>
                                         </div>
                                     </div>
 									<?php $i++; ?>
@@ -582,9 +582,9 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                             </select>
                                         </div>
                                         <div class="em-flex-row">
-                                            <span class="material-icons-outlined em-red-500-color em-pointer"
+                                            <button type="button" class="material-icons-outlined em-red-500-color em-pointer"
                                                   onclick="deleteFilter('<?php echo $i ?>')"
-                                                  title="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_DELETE') ?>">delete</span>
+                                                  title="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_DELETE') ?>">delete</button>
                                         </div>
                                     </div>
 									<?php $i++; ?>
@@ -613,9 +613,9 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                             </select>
                                         </div>
                                         <div class="em-flex-row">
-                                            <span class="material-icons-outlined em-red-500-color em-pointer"
+                                            <button type="button" class="material-icons-outlined em-red-500-color em-pointer"
                                                   onclick="deleteFilter('<?php echo $i ?>')"
-                                                  title="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_DELETE') ?>">delete</span>
+                                                  title="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_DELETE') ?>">delete</button>
                                         </div>
                                     </div>
                                     <?php $i++; ?>
@@ -874,7 +874,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 												<?php if (strtotime($now) < strtotime($result->start_date)) : //pas commencé ?>
 
                                                     <div class="mod_emundus_campaign__date em-flex-row em-mb-4">
-                                                        <span class="material-icons em-text-neutral-600 em-mr-4">schedule</span>
+                                                        <span class="material-icons em-text-neutral-600 em-mr-4" aria-hidden="true">schedule</span>
                                                         <p class="em-text-neutral-600 em-mr-4"> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_START_DATE'); ?></p>
                                                         <span class="em-camp-start em-text-neutral-600"> <?php echo JFactory::getDate(new JDate($result->start_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                                                     </div>
@@ -882,7 +882,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
 												<?php if ($mod_em_campaign_show_camp_end_date && strtotime($now) > strtotime($result->end_date)) :    //fini  ?>
                                                     <div class="mod_emundus_campaign__date em-flex-row em-mb-4">
-                                                        <span class="material-icons em-text-neutral-600 em-mr-4">alarm_off</span>
+                                                        <span class="material-icons em-text-neutral-600 em-mr-4" aria-hidden="true">alarm_off</span>
                                                         <p class="em-text-neutral-600"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_CLOSED'); ?></p>
                                                     </div>
 												<?php endif; ?>
@@ -908,12 +908,12 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 													?>
                                                     <div class="mod_emundus_campaign__date em-flex-row em-mb-4">
 														<?php if (!$displayInterval) : ?>
-                                                            <span class="material-icons em-text-neutral-600 em-mr-4">schedule</span>
+                                                            <span class="material-icons em-text-neutral-600 em-mr-4" aria-hidden="true">schedule</span>
                                                             <p class="em-text-neutral-600  em-mr-4"> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_END_DATE'); ?>
                                                             </p>
                                                             <span class="em-camp-end em-text-neutral-600"> <?php echo JFactory::getDate(new JDate($result->end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
 														<?php else : ?>
-                                                            <span class="material-icons em-text-neutral-600 em-red-500-color em-mr-4">schedule</span>
+                                                            <span class="material-icons em-text-neutral-600 em-red-500-color em-mr-4" aria-hidden="true">schedule</span>
                                                             <p class="em-red-500-color"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_LAST_DAY'); ?>
 																<?php if ($interval->h > 0)
 																{
@@ -948,7 +948,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 												?>
 												<?php if (!empty($mod_em_campaign_show_timezone) && !(strtotime($now) > strtotime($result->end_date))) : ?>
                                                     <div class="mod_emundus_campaign__date em-flex-row">
-                                                        <span class="material-icons em-text-neutral-600 em-mr-4">public</span>
+                                                        <span class="material-icons em-text-neutral-600 em-mr-4" aria-hidden="true">public</span>
                                                         <p class="em-text-neutral-600"><?php echo JText::_('MOD_EM_CAMPAIGN_TIMEZONE') . $offset; ?></p>
                                                     </div>
 												<?php endif; ?>
@@ -1175,7 +1175,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             '<span class="em-text-neutral-800"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_IS') ?></span> ' +
             '<div id="filters_options_' + index + '"></div>' +
             '<div class="em-flex-row">' +
-            '<span class="material-icons-outlined em-red-500-color em-pointer" onclick="deleteFilter(' + index + ')">delete</span>' +
+            '<button type="button" class="material-icons-outlined em-red-500-color em-pointer" onclick="deleteFilter(' + index + ')">delete</span>' +
             '</div>' +
             '</div>';
         document.getElementById('filters_list').insertAdjacentHTML('beforeend', html);
