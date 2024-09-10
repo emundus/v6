@@ -186,12 +186,12 @@ if(!empty($mod_em_campaign_go_back_campaigns_link)) {
             <div class="single-campaign" id="campaign">
                 <?php if ($showprogramme) :?>
                     <div class="em-mt-16 em-w-100">
-                        <span><?php echo $currentCampaign->notes ?></span>
+                        <div><?php echo $currentCampaign->notes ?></div>
                     </div>
                 <?php endif; ?>
                 <?php if ($showcampaign) :?>
                     <div class="em-mt-16 em-w-100">
-                        <span><?php echo $currentCampaign->description ?></span>
+                        <div><?php echo $currentCampaign->description ?></div>
                     </div>
                 <?php endif; ?>
             </div><!-- Close campaign-content -->
