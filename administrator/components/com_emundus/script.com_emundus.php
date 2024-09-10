@@ -4929,6 +4929,46 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 	        EmundusHelperUpdate::installExtension('plg_fabrik_element_iban','iban','{"name":"plg_fabrik_element_iban","type":"plugin","creationDate":"March 2024","author":"Media A-Team, Inc.","copyright":"Copyright (C) 2005-2024 Media A-Team, Inc. - All rights reserved.","authorEmail":"brice.hubinet@emundus.fr","authorUrl":"www.emundus.fr","version":"4.0Zeta","description":"PLG_ELEMENT_IBAN_DESCRIPTION","group":"","filename":"iban"}','plugin',1,'fabrik_element');
         }
 
+		if (version_compare($cache_version, '1.39.3', '<=') || $firstrun) {
+			$columns       = [
+				[
+					'name'   => 'date_time',
+					'type'   => 'datetime',
+					'null'   => 1,
+				],
+				[
+					'name'   => 'category_label',
+					'type'   => 'varchar',
+					'length' => 255,
+					'null'   => 1,
+				],
+				[
+					'name'   => 'group_id',
+					'type'   => 'int',
+					'length' => 11,
+					'null'   => 1,
+				],
+				[
+					'name'   => 'published',
+					'type'   => 'tinyint',
+					'length' => 1,
+					'null'   => 0,
+					'default' => 1
+				]
+			];
+			EmundusHelperUpdate::createTable('jos_emundus_intranet_categories', $columns);
+
+			$query = $db->getQuery(true);
+			$query->clear()
+				->update($db->quoteName('#__extensions'))
+				->set($db->quoteName('enabled') . ' = 0')
+				->where($db->quoteName('name') . ' LIKE ' . $db->quote('plg_system_p3p'))
+				->where($db->quoteName('element') . ' LIKE ' . $db->quote('p3p'))
+				->where($db->quoteName('type') . ' LIKE ' . $db->quote('plugin'));
+			$db->setQuery($query);
+			$db->execute();
+		}
+
 		return $succeed;
 	}
 
