@@ -262,10 +262,9 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
         <div class="em-flex-row-justify-end" style="gap: 24px">
             <?php if ($mod_em_applications_show_search): ?>
                 <div class="em-searchbar em-flex-row-justify-end">
-                    <label for="searchword" style="display: inline-block;margin-bottom: unset">
                         <input name="searchword" type="text" id="applications_searchbar" class="form-control"
-                               placeholder="<?php echo JText::_('MOD_EM_APPLICATIONS_SEARCH') ?>">
-                    </label>
+                               placeholder=" ">
+                    <label for="searchword" style="display: inline-block;margin-bottom: unset"><?php echo JText::_('MOD_EM_APPLICATIONS_SEARCH') ?></label>
                 </div>
             <?php endif; ?>
             <div class="em-flex-row" style="gap: 8px">
@@ -342,8 +341,8 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
             </div>
         </div>
 	<?php else : ?>
-        <h4 id="no_file_tab_message_view" class="em-display-none"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_TAB') ?></h4>
-        <h4 id="no_file_search_message_view" class="em-display-none"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_SEARCH') ?></h4>
+        <p id="no_file_tab_message_view" class="em-display-none"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_TAB') ?></p>
+        <p id="no_file_search_message_view" class="em-display-none"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_SEARCH') ?></p>
         <?php foreach ($applications as $key => $group) : ?>
 			<?php foreach ($group as $g_key => $sub_group) : ?>
                 <?php if ((!empty($order_by_session) && !empty($sub_group['applications'])) || !empty($sub_group['applications'][0])) : ?>

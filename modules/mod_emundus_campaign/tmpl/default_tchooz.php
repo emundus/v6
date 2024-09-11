@@ -635,14 +635,12 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
 				<?php if ($mod_em_campaign_show_search): ?>
                     <div class="em-searchbar">
-                        <label for="searchword" style="display: inline-block">
-                            <input name="searchword" type="text" class="form-control"
-                                   placeholder="<?php echo JText::_('MOD_EM_CAMPAIGN_SEARCH') ?>"
+                            <input name="searchword" type="text" class="form-control" id="searchword"
+                                   placeholder=" "
 								<?php if (isset($searchword) && !empty($searchword)) : ?>
                                     value="<?= htmlspecialchars($searchword); ?>"
-								<?php endif; ?>
-                            >
-                        </label>
+								<?php endif; ?> >
+                             <label for="searchword" style="display: inline-block"><?php echo JText::_('MOD_EM_CAMPAIGN_SEARCH') ?></label>
                     </div>
 				<?php endif; ?>
             </div>
@@ -653,7 +651,6 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 				<?php if (empty($campaigns)) : ?>
                     <div class="em-mb-48">
                         <p class="mod_emundus_campaign_empty__programme_cat_title"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_FOUND') ?></p>
-                        <hr style="margin-top: 8px">
                     </div>
 				<?php endif; ?>
 

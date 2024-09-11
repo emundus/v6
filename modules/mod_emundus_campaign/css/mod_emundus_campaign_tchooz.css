@@ -1,17 +1,3 @@
-.em-searchbar label input[type="text"]:hover {
-    border: 1px solid var(--neutral-600);
-    box-shadow: none;
-}
-
-.em-searchbar label input[type="text"]:focus {
-    outline: 5px auto -webkit-focus-ring-color;
-    box-shadow: none;
-}
-
-.em-searchbar label input[type="text"]::placeholder {
-   color: var(--neutral-600);
-}
-
 .mod_emundus_campaign__list_content hr {
     margin: var(--m-16) 0;
 }
