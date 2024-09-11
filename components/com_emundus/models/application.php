@@ -1697,7 +1697,7 @@ class EmundusModelApplication extends JModelList
                                                 if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
 
                                                     if ($elements[$j]->plugin == 'date') {
-                                                        if (!empty($r_elt) && $r_elt != '0000-00-00 00:00:00') {
+                                                        if (!empty($r_elt) && ($r_elt != '0000-00-00 00:00:00' || $r_elt != '0000-00-00')) {
                                                             $elt = date($params->date_form_format, strtotime($r_elt));
                                                         } else {
                                                             $elt = '';
@@ -1973,7 +1973,7 @@ class EmundusModelApplication extends JModelList
 
                                             if ($element->plugin == 'date' && !empty($element->content))
 											{
-                                                if ($element->content != '0000-00-00 00:00:00') {
+                                                if ($element->content != '0000-00-00 00:00:00' || $element->content != '0000-00-00') {
                                                     $date_params = json_decode($element->params);
                                                     $elt = date($date_params->date_form_format, strtotime($element->content));
                                                 } else {

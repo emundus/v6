@@ -242,7 +242,7 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
 
 			if(!empty($fnum)) {
 				$m_files->updateState($fnum, $status_after_payment[$key]);
-				JLog::add('Application file status updated to -> ' . $status_after_payment[$key], JLog::INFO, 'com_emundus');
+				JLog::add('Application file status updated to -> ' . $status_after_payment[$key]. ' after order confirmed', JLog::INFO, 'com_emundus');
 			}
 
             $query = $db->getQuery(true);
@@ -264,7 +264,7 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
 
             if(empty($hika_order->order_payment_method)){
                 $user = JFactory::getSession()->get('emundusUser');
-                require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+                require_once (JPATH_SITE . '/components/com_emundus/models/application.php');
 
                 $app = JFactory::getApplication();
                 $app->enqueueMessage( JText::_('THANK_YOU_FOR_PURCHASE') );
