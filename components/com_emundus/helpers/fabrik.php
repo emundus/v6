@@ -1307,8 +1307,13 @@ die("<script>
 			}
 
 			//Data to encrypt
-			if (is_array(json_decode($value))) {
+			$contents = $value;
+			if (is_string($value) && is_array(json_decode($value)))
+			{
 				$contents = json_decode($value);
+			}
+
+			if(is_array($contents)) {
 				foreach ($contents as $key => $content)
 				{
 					$encrypted_data = openssl_encrypt($content, $cipher, $encryption_key, 0 ,$iv);
@@ -1333,7 +1338,7 @@ die("<script>
 		return $result;
 	}
 
-	static function decryptDatas($value, $encryption_key = null, $cipher = 'aes-128-cbc') {
+	static function decryptDatas($value, $encryption_key = null, $cipher = 'aes-128-cbc', $plugin = null) {
 		$result = $value;
 
 		if (empty($encryption_key))
@@ -1343,31 +1348,45 @@ die("<script>
 
 		if (!empty($encryption_key))
 		{
-			if (is_array(json_decode($value)))
+			$contents = $value;
+			if (is_string($value) && is_array(json_decode($value)))
 			{
 				$contents = json_decode($value);
+			}
+
+			if (is_array($contents))
+			{
 				foreach ($contents as $key => $content)
 				{
 					$content = explode('|', $content);
-					$iv = base64_decode($content[1]);
+					$decrypted_data = false;
 
-					try {
-                        $decrypted_data = openssl_decrypt($content[0], $cipher, $encryption_key, 0, $iv);
-                    } catch (Exception $e) {
-                        $decrypted_data = false;
-                    }
+					if(is_array($content))
+					{
+						$iv = base64_decode($content[1]);
+
+						try
+						{
+							$decrypted_data = openssl_decrypt($content[0], $cipher, $encryption_key, 0, $iv);
+						}
+						catch (Exception $e)
+						{
+							$decrypted_data = false;
+						}
+					}
 
                     if ($decrypted_data !== false) {
 						$contents[$key] = $decrypted_data;
 					}
 					else {
-						$decrypted_data = self::oldDecryptDatas($content[0],$encryption_key);
+						$decrypted_data = self::oldDecryptDatas((is_array($content) ? $content[0] : $content),$encryption_key);
 						if ($decrypted_data !== false)
 						{
 							$contents[$key] = $decrypted_data;
 						}
 					}
 				}
+
 				$result = json_encode($contents);
 			}
 			else
@@ -1385,7 +1404,7 @@ die("<script>
 					$result = $decrypted_data;
 				}
 				else {
-					$decrypted_data = self::oldDecryptDatas($value[0],$encryption_key);
+					$decrypted_data = self::oldDecryptDatas((is_array($value) ? $value[0] : $value),$encryption_key,$plugin);
 					if ($decrypted_data !== false)
 					{
 						$result = $decrypted_data;
@@ -1397,7 +1416,7 @@ die("<script>
 		return $result;
 	}
 
-	public static function oldDecryptDatas($value,$encryption_key = null)
+	public static function oldDecryptDatas($value,$encryption_key = null,$plugin = null)
 	{
 		$cipher = 'aes-128-cbc';
 		$result = $value;
@@ -1409,9 +1428,18 @@ die("<script>
 
 		if(!empty($encryption_key))
 		{
-			if (is_array(json_decode($value)))
+			if($plugin == 'emundus_phonenumber') {
+				$value = explode('==',$value);
+			}
+
+			$contents = $value;
+			if (is_string($value) && is_array(json_decode($value)))
 			{
 				$contents = json_decode($value);
+			}
+
+			if (is_array($contents))
+			{
 				foreach ($contents as $key => $content)
 				{
 					$decrypted_data = openssl_decrypt($content, $cipher, $encryption_key, 0);
@@ -1420,7 +1448,11 @@ die("<script>
 						$contents[$key] = $decrypted_data;
 					}
 				}
+
 				$result = json_encode($contents);
+				if($plugin == 'emundus_phonenumber') {
+					$result = implode('',$contents);
+				}
 			}
 			else
 			{
