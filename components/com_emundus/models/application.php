@@ -1967,7 +1967,7 @@ class EmundusModelApplication extends JModelList
 
                                             // Decrypt datas encoded
                                             if($form_params->note == 'encrypted'){
-	                                            $element->content = EmundusHelperFabrik::decryptDatas($element->content);
+	                                            $element->content = EmundusHelperFabrik::decryptDatas($element->content,null,'aes-128-cbc',$element->plugin);
                                             }
                                             //
 
@@ -2797,7 +2797,7 @@ class EmundusModelApplication extends JModelList
 
                                     // Decrypt datas encoded
                                     if($form_params->note == 'encrypted'){
-	                                    $element->content = EmundusHelperFabrik::decryptDatas($element->content);
+	                                    $element->content = EmundusHelperFabrik::decryptDatas($element->content,null,'aes-128-cbc',$element->plugin);
                                     }
                                     //
 
