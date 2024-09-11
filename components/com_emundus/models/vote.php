@@ -17,9 +17,11 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Helper\ModuleHelper;
+use Joomla\CMS\Log\Log;
+use Joomla\CMS\MVC\Model\ListModel;
 
 
-class EmundusModelVote extends JModelList
+class EmundusModelVote extends ListModel
 {
 	private $_app;
 	private $_user;
@@ -39,11 +41,13 @@ class EmundusModelVote extends JModelList
 	}
 
 	/**
+	 * Method to get votes by user
+	 *
 	 * @param $user User
 	 *
 	 * @return array
 	 *
-	 * @since version
+	 * @since version 1.40.0
 	 */
 	public function getVotesByUser($user = null, $email = null, $ip = null)
 	{
@@ -87,7 +91,7 @@ class EmundusModelVote extends JModelList
 				$this->_app->getSession()->set('votes', $votes);
 			}
 			catch (Exception $e) {
-				JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+				Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
 			}
 		}
 
@@ -95,13 +99,15 @@ class EmundusModelVote extends JModelList
 	}
 
 	/**
+	 * Vote
+	 * 
 	 * @param $email
 	 * @param $ccid
 	 * @param $uid
 	 *
 	 * @return bool
 	 *
-	 * @since version
+	 * @since version 1.40.0
 	 */
 	public function vote($email,$ccid,$uid,$ip = null)
 	{
@@ -218,7 +224,7 @@ class EmundusModelVote extends JModelList
 			}
 		}
 		catch (Exception $e) {
-			JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
 		}
 
 		return $voted;

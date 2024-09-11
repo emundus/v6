@@ -15,6 +15,8 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\MVC\Controller\BaseController;
 
 /**
  * Campaign Controller
@@ -23,7 +25,7 @@ use Joomla\CMS\Factory;
  * @subpackage eMundus
  * @since      5.0.0
  */
-class EmundusControllerGallery extends JControllerLegacy
+class EmundusControllerGallery extends BaseController
 {
     private $_model;
 	private $_user;
@@ -40,9 +42,14 @@ class EmundusControllerGallery extends JControllerLegacy
 		$this->_user = $this->app->getIdentity();
     }
 
+	/**
+	 * Get all galleries
+	 *
+	 * @since version 1.40.0
+	 */
 	public function getall()
 	{
-		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
 
 		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$filter = $this->input->getString('filter', '');
@@ -63,22 +70,22 @@ class EmundusControllerGallery extends JControllerLegacy
 
 					$state_values = [
 						[
-							'key' => JText::_('COM_EMUNDUS_ONBOARD_STATE'),
-							'value' => $gallery->published ? JText::_('PUBLISHED') : JText::_('COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH'),
+							'key' => Text::_('COM_EMUNDUS_ONBOARD_STATE'),
+							'value' => $gallery->published ? Text::_('PUBLISHED') : Text::_('COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH'),
 							'classes' => $gallery->published ? 'em-p-5-12 em-font-weight-600 em-bg-main-100 em-text-neutral-900 em-font-size-14 em-border-radius' : 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius',
 						]
 					];
 
 					$gallery->additional_columns = [
 						[
-							'key' => JText::_('COM_EMUNDUS_ONBOARD_STATE'),
+							'key' => Text::_('COM_EMUNDUS_ONBOARD_STATE'),
 							'type' => 'tags',
 							'values' => $state_values,
 							'display' => 'table'
 						],
 						[
 							'type' => 'tags',
-							'key' => JText::_('COM_EMUNDUS_ONBOARD_STATE'),
+							'key' => Text::_('COM_EMUNDUS_ONBOARD_STATE'),
 							'values' => [
 								$state_values[0],
 							],
@@ -89,9 +96,9 @@ class EmundusControllerGallery extends JControllerLegacy
 					$galleries['datas'][$key] = $gallery;
 				}
 
-				$response = array('status' => true, 'msg' => JText::_('CAMPAIGNS_RETRIEVED'), 'data' => $galleries);
+				$response = array('status' => true, 'msg' => Text::_('CAMPAIGNS_RETRIEVED'), 'data' => $galleries);
 			} else {
-				$response = array('status' => false, 'msg' => JText::_('NO_CAMPAIGNS'), 'data' => $galleries);
+				$response = array('status' => false, 'msg' => Text::_('NO_CAMPAIGNS'), 'data' => $galleries);
 			}
 		}
 
@@ -99,9 +106,14 @@ class EmundusControllerGallery extends JControllerLegacy
 		exit;
 	}
 
+	/**
+	 * Get gallery by id
+	 *
+	 * @since version 1.40.0
+	 */
 	public function getgallery()
 	{
-		$response = array('status' => 0, 'msg' => JText::_('ACCESS_DENIED'), 'data' => []);
+		$response = array('status' => 0, 'msg' => Text::_('ACCESS_DENIED'), 'data' => []);
 
 		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$id = $this->input->getInt('id', 0);
@@ -114,10 +126,10 @@ class EmundusControllerGallery extends JControllerLegacy
 					$response['msg'] = '';
 					$response['status'] = 1;
 				} else {
-					$response['msg'] = JText::_('GALLERY_NOT_FOUND');
+					$response['msg'] = Text::_('GALLERY_NOT_FOUND');
 				}
 			} else {
-				$response['msg'] = JText::_('MISSING_PARAMS');
+				$response['msg'] = Text::_('MISSING_PARAMS');
 			}
 		}
 
@@ -125,13 +137,18 @@ class EmundusControllerGallery extends JControllerLegacy
 		exit;
 	}
 
+	/**
+	 * Create gallery
+	 *
+	 * @since version 1.40.0
+	 */
 	public function creategallery()
 	{
-		$response = array('status' => 1, 'msg' => JText::_('GALLERY_ADDED'), 'data' => []);
+		$response = array('status' => 1, 'msg' => Text::_('GALLERY_ADDED'), 'data' => []);
 
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$response['status'] = 0;
-			$response['msg'] = JText::_('ACCESS_DENIED');
+			$response['msg'] = Text::_('ACCESS_DENIED');
 		}
 		else {
 			$data = $this->input->getArray();
@@ -143,13 +160,18 @@ class EmundusControllerGallery extends JControllerLegacy
 		exit;
 	}
 
+	/**
+	 * Get Fabrik elements by campaign id and Fabrik list id to setup gallery
+	 *
+	 * @since version 1.40.0
+	 */
 	public function getelements()
 	{
 		$response = array('status' => 1, 'msg' => '', 'data' => []);
 
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$response['status'] = 0;
-			$response['msg'] = JText::_('ACCESS_DENIED');
+			$response['msg'] = Text::_('ACCESS_DENIED');
 		}
 		else {
 			$lid = $this->input->getInt('list_id', 0);
@@ -224,13 +246,18 @@ class EmundusControllerGallery extends JControllerLegacy
 		exit;
 	}
 
+	/**
+	 * Update an attribute of gallery model
+	 *
+	 * @since version 1.40.0
+	 */
 	public function updateattribute()
 	{
 		$response = array('status' => 1, 'msg' => '', 'data' => []);
 
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$response['status'] = 0;
-			$response['msg'] = JText::_('ACCESS_DENIED');
+			$response['msg'] = Text::_('ACCESS_DENIED');
 		}
 		else {
 			$gid = $this->input->getInt('gallery_id', 0);
@@ -244,13 +271,18 @@ class EmundusControllerGallery extends JControllerLegacy
 		exit;
 	}
 
+	/**
+	 * Update an attribute of gallery Fabrik list
+	 *
+	 * @since version 1.40.0
+	 */
 	public function updategallerylist()
 	{
 		$response = array('status' => 1, 'msg' => '', 'data' => []);
 
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$response['status'] = 0;
-			$response['msg'] = JText::_('ACCESS_DENIED');
+			$response['msg'] = Text::_('ACCESS_DENIED');
 		}
 		else {
 			$lid = $this->input->getInt('list_id', 0);
@@ -264,13 +296,18 @@ class EmundusControllerGallery extends JControllerLegacy
 		exit;
 	}
 
+	/**
+	 * Get attachments available for logo and banner of gallery
+	 *
+	 * @since version 1.40.0
+	 */
 	public function getattachments()
 	{
 		$response = array('status' => 1, 'msg' => '', 'data' => []);
 
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$response['status'] = 0;
-			$response['msg'] = JText::_('ACCESS_DENIED');
+			$response['msg'] = Text::_('ACCESS_DENIED');
 		}
 		else {
 			$cid = $this->input->getInt('campaign_id', 0);
@@ -284,13 +321,18 @@ class EmundusControllerGallery extends JControllerLegacy
 		exit;
 	}
 
+	/**
+	 * Manage prefilter of Fabrik list
+	 *
+	 * @since version 1.40.0
+	 */
 	public function editprefilter()
 	{
 		$response = array('status' => 1, 'msg' => '', 'data' => []);
 
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$response['status'] = 0;
-			$response['msg'] = JText::_('ACCESS_DENIED');
+			$response['msg'] = Text::_('ACCESS_DENIED');
 		}
 		else {
 			$lid = $this->input->getInt('list_id', 0);
@@ -303,13 +345,18 @@ class EmundusControllerGallery extends JControllerLegacy
 		exit;
 	}
 
+	/**
+	 * Add a tab to gallery details view
+	 *
+	 * @since version 1.40.0
+	 */
 	public function addtab()
 	{
 		$response = array('status' => 1, 'msg' => '', 'data' => 0);
 
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$response['status'] = 0;
-			$response['msg'] = JText::_('ACCESS_DENIED');
+			$response['msg'] = Text::_('ACCESS_DENIED');
 		}
 		else {
 			$gallery_id = $this->input->getInt('gallery_id', 0);
@@ -322,12 +369,17 @@ class EmundusControllerGallery extends JControllerLegacy
 		exit;
 	}
 
+	/**
+	 * Delete a tab from gallery details view
+	 *
+	 * @since version 1.40.0
+	 */
 	public function deletetab()
 	{
 		$response = array('status' => false, 'msg' => '');
 
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
-			$response['msg'] = JText::_('ACCESS_DENIED');
+			$response['msg'] = Text::_('ACCESS_DENIED');
 		}
 		else {
 			$tab_id = $this->input->getInt('tab_id', 0);
@@ -339,13 +391,18 @@ class EmundusControllerGallery extends JControllerLegacy
 		exit;
 	}
 
+	/**
+	 * Update tab title in gallery details view
+	 *
+	 * @since version 1.40.0
+	 */
 	public function updatetabtitle()
 	{
 		$response = array('status' => 1, 'msg' => '');
 
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$response['status'] = 0;
-			$response['msg'] = JText::_('ACCESS_DENIED');
+			$response['msg'] = Text::_('ACCESS_DENIED');
 		}
 		else {
 			$tab_id = $this->input->getInt('tab_id', 0);
@@ -358,13 +415,18 @@ class EmundusControllerGallery extends JControllerLegacy
 		exit;
 	}
 
+	/**
+	 * Add field to a tab
+	 *
+	 * @since version 1.40.0
+	 */
 	public function addfield()
 	{
 		$response = array('status' => 1, 'msg' => '');
 
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$response['status'] = 0;
-			$response['msg'] = JText::_('ACCESS_DENIED');
+			$response['msg'] = Text::_('ACCESS_DENIED');
 		}
 		else {
 			$tab_id = $this->input->getInt('tab_id', 0);
@@ -377,13 +439,18 @@ class EmundusControllerGallery extends JControllerLegacy
 		exit;
 	}
 
+	/**
+	 * Remove field from a tab
+	 *
+	 * @since version 1.40.0
+	 */
 	public function removefield()
 	{
 		$response = array('status' => 1, 'msg' => '');
 
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$response['status'] = 0;
-			$response['msg'] = JText::_('ACCESS_DENIED');
+			$response['msg'] = Text::_('ACCESS_DENIED');
 		}
 		else {
 			$tab_id = $this->input->getInt('tab_id', 0);
@@ -396,13 +463,18 @@ class EmundusControllerGallery extends JControllerLegacy
 		exit;
 	}
 
+	/**
+	 * Update fields order in a tab
+	 *
+	 * @since version 1.40.0
+	 */
 	public function updatefieldsorder()
 	{
 		$response = array('status' => 1, 'msg' => '');
 
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$response['status'] = 0;
-			$response['msg'] = JText::_('ACCESS_DENIED');
+			$response['msg'] = Text::_('ACCESS_DENIED');
 		}
 		else {
 			$tab_id = $this->input->getInt('tab_id', 0);

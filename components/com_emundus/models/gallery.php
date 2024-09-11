@@ -15,8 +15,10 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
+use Joomla\CMS\MVC\Model\ListModel;
 
-class EmundusModelGallery extends JModelList
+class EmundusModelGallery extends ListModel
 {
 	protected $_db;
 
@@ -29,6 +31,19 @@ class EmundusModelGallery extends JModelList
 		$this->_db = JFactory::getDbo();
 	}
 
+	/**
+	 * Get list of galleries
+	 *
+	 * @param $filter
+	 * @param $sort
+	 * @param $recherche
+	 * @param $lim
+	 * @param $page
+	 *
+	 * @return array
+	 *
+	 * @since version 1.40.0
+	 */
 	public function getGalleries($filter = '', $sort = 'DESC', $recherche = '', $lim = 25, $page = 0)
 	{
 		$all_galleries = [];
@@ -85,12 +100,21 @@ class EmundusModelGallery extends JModelList
 			$all_galleries = array('datas' => $galleries, 'count' => $galleries_count);
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/campaign | Error when try to get list of campaigns : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.error');
+			Log::add('component/com_emundus/models/campaign | Error when try to get list of campaigns : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 		}
 
 		return $all_galleries;
 	}
 
+	/**
+	 * Get gallery by Fabrik list id
+	 *
+	 * @param $listid
+	 *
+	 * @return null
+	 *
+	 * @since version 1.40.0
+	 */
 	public function getGalleryByList($listid)
 	{
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
@@ -123,12 +147,20 @@ class EmundusModelGallery extends JModelList
 			}
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/gallery | Error when try to get gallery by list : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.error');
+			Log::add('component/com_emundus/models/gallery | Error when try to get gallery by list : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 		}
 
 		return $gallery;
 	}
 
+	/**
+	 * Get gallery by id
+	 * @param $id
+	 *
+	 * @return null
+	 *
+	 * @since version 1.40.0
+	 */
 	public function getGalleryById($id)
 	{
 		$gallery = null;
@@ -164,13 +196,23 @@ class EmundusModelGallery extends JModelList
 					$gallery->tabs = $this->_db->loadObjectList();
 				}
 			} catch (Exception $e) {
-				JLog::add('component/com_emundus/models/gallery | Error when try to get gallery by list : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.error');
+				Log::add('component/com_emundus/models/gallery | Error when try to get gallery by list : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 			}
 		}
 
 		return $gallery;
 	}
 
+	/**
+	 * Create gallery
+	 *
+	 * @param $data
+	 * @param $user
+	 *
+	 * @return int
+	 *
+	 * @since version 1.40.0
+	 */
 	public function createGallery($data, $user = null)
 	{
 		$gallery_id = 0;
@@ -241,12 +283,22 @@ class EmundusModelGallery extends JModelList
 			}
 		}
 		catch (Exception $e) {
-			JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
 		}
 
 		return $gallery_id;
 	}
 
+	/**
+	 * Create Fabrik list for gallery
+	 *
+	 * @param $label
+	 * @param $user
+	 *
+	 * @return int|mixed
+	 *
+	 * @since version 1.40.0
+	 */
 	private function createFabrikList($label, $user)
 	{
 		$list_id = 0;
@@ -350,12 +402,22 @@ class EmundusModelGallery extends JModelList
 			}
 		}
 		catch (Exception $e) {
-			JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
 		}
 
 		return $list_id;
 	}
 
+	/**
+	 * Create SQL view
+	 *
+	 * @param $list_id
+	 * @param $campaign_id
+	 *
+	 * @return false
+	 *
+	 * @since version 1.40.0
+	 */
 	private function createSQLView($list_id, $campaign_id)
 	{
 		$result   = false;
@@ -381,12 +443,22 @@ class EmundusModelGallery extends JModelList
 			$result = $this->_db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
 		}
 
 		return $result;
 	}
 
+	/**
+	 * Get elements by campaign and list
+	 *
+	 * @param $cid
+	 * @param $lid
+	 *
+	 * @return array|null
+	 *
+	 * @since version 1.40.0
+	 */
 	public function getElements($cid, $lid)
 	{
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
@@ -447,13 +519,22 @@ class EmundusModelGallery extends JModelList
 				$cache->set($cacheId, $elements);
 			}
 			catch (Exception $e) {
-				JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+				Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
 			}
 		}
 
 		return $elements;
 	}
 
+	/**
+	 * Get attachments by campaign
+	 *
+	 * @param $cid
+	 *
+	 * @return null
+	 *
+	 * @since version 1.40.0
+	 */
 	public function getAttachments($cid)
 	{
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
@@ -486,13 +567,24 @@ class EmundusModelGallery extends JModelList
 				});
 			}
 			catch (Exception $e) {
-				JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+				Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
 			}
 		}
 
 		return $attachments;
 	}
 
+	/**
+	 * Update gallery attribute
+	 *
+	 * @param $gid
+	 * @param $attribute
+	 * @param $value
+	 *
+	 * @return bool
+	 *
+	 * @since version 1.40.0
+	 */
 	public function updateAttribute($gid, $attribute, $value)
 	{
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'fabrik.php');
@@ -588,12 +680,23 @@ class EmundusModelGallery extends JModelList
 			}
 		}
 		catch (Exception $e) {
-			JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
 		}
 
 		return $added;
 	}
 
+	/**
+	 * Update Fabrik list
+	 *
+	 * @param $lid
+	 * @param $attribute
+	 * @param $value
+	 *
+	 * @return false
+	 *
+	 * @since version 1.40.0
+	 */
 	public function updateList($lid, $attribute, $value)
 	{
 		$updated = false;
@@ -610,7 +713,7 @@ class EmundusModelGallery extends JModelList
 				$updated = $this->_db->execute();
 			}
 			catch (Exception $e) {
-				JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+				Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
 			}
 		}
 
@@ -657,12 +760,22 @@ class EmundusModelGallery extends JModelList
 			}
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/gallery | Error when try to get gallery by list : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.error');
+			Log::add('component/com_emundus/models/gallery | Error when try to get gallery by list : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 		}
 
 		return $updated;
 	}
 
+	/**
+	 * Add tab to gallery
+	 *
+	 * @param $gallery_id
+	 * @param $title
+	 *
+	 * @return int
+	 *
+	 * @since version 1.40.0
+	 */
 	public function addTab($gallery_id, $title)
 	{
 		$created = 0;
@@ -678,12 +791,21 @@ class EmundusModelGallery extends JModelList
 			}
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/gallery | Error when try to get gallery by list : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.error');
+			Log::add('component/com_emundus/models/gallery | Error when try to get gallery by list : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 		}
 
 		return $created;
 	}
 
+	/**
+	 * Delete tab of a gallery
+	 *
+	 * @param $tab_id
+	 *
+	 * @return false
+	 *
+	 * @since version 1.40.0
+	 */
 	public function deleteTab($tab_id)
 	{
 		$deleted = false;
@@ -696,12 +818,22 @@ class EmundusModelGallery extends JModelList
 			$deleted = $this->_db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/gallery | Error when try to get gallery by list : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.error');
+			Log::add('component/com_emundus/models/gallery | Error when try to get gallery by list : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 		}
 
 		return $deleted;
 	}
 
+	/**
+	 * Update tab title
+	 *
+	 * @param $tab_id
+	 * @param $title
+	 *
+	 * @return false
+	 *
+	 * @since version 1.40.0
+	 */
 	public function updateTabTitle($tab_id, $title)
 	{
 		$updated = false;
@@ -715,12 +847,22 @@ class EmundusModelGallery extends JModelList
 			$updated = $this->_db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/gallery | Error when try to get gallery by list : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.error');
+			Log::add('component/com_emundus/models/gallery | Error when try to get gallery by list : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 		}
 
 		return $updated;
 	}
 
+	/**
+	 * Add field to tab
+	 *
+	 * @param $tab_id
+	 * @param $field
+	 *
+	 * @return false
+	 *
+	 * @since version 1.40.0
+	 */
 	public function addField($tab_id, $field)
 	{
 		$added = false;
@@ -753,12 +895,22 @@ class EmundusModelGallery extends JModelList
 			}
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/gallery | Error when try to get gallery by list : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.error');
+			Log::add('component/com_emundus/models/gallery | Error when try to get gallery by list : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 		}
 
 		return $added;
 	}
 
+	/**
+	 * Remove field from tab
+	 *
+	 * @param $tab_id
+	 * @param $field
+	 *
+	 * @return bool
+	 *
+	 * @since version 1.40.0
+	 */
 	public function removeField($tab_id, $field)
 	{
 		$removed = false;
@@ -793,12 +945,22 @@ class EmundusModelGallery extends JModelList
 			}
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/gallery | Error when try to get gallery by list : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.error');
+			Log::add('component/com_emundus/models/gallery | Error when try to get gallery by list : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 		}
 
 		return $removed;
 	}
 
+	/**
+	 * Update fields order
+	 *
+	 * @param $tab_id
+	 * @param $fields
+	 *
+	 * @return false
+	 *
+	 * @since version 1.40.0
+	 */
 	public function updateFieldsOrder($tab_id, $fields)
 	{
 		$updated = false;
@@ -812,12 +974,21 @@ class EmundusModelGallery extends JModelList
 			$updated = $this->_db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/gallery | Error when try to get gallery by list : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.error');
+			Log::add('component/com_emundus/models/gallery | Error when try to get gallery by list : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 		}
 
 		return $updated;
 	}
 
+	/**
+	 * Delete gallery
+	 *
+	 * @param $gid
+	 *
+	 * @return false
+	 *
+	 * @since version 1.40.0
+	 */
 	public function deleteGallery($gid)
 	{
 		$deleted = false;
@@ -893,7 +1064,7 @@ class EmundusModelGallery extends JModelList
 			}
 			catch (Exception $e) {
 				$query_log = is_string($query) ?: $query->__toString();
-				JLog::add('component/com_emundus/models/gallery | Error when try to delete gallery : ' . $e->getMessage() . ' with query : ' . $query_log, JLog::ERROR, 'com_emundus.error');
+				Log::add('component/com_emundus/models/gallery | Error when try to delete gallery : ' . $e->getMessage() . ' with query : ' . $query_log, Log::ERROR, 'com_emundus.error');
 			}
 		}
 

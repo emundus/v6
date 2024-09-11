@@ -6,15 +6,18 @@
  * @license     GNU General Public License
  */
 
-defined( '_JEXEC' ) or die( JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS') );
+defined( '_JEXEC' ) or die( Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS') );
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\MVC\Controller\BaseController;
+use Joomla\CMS\Router\Route;
 
 /**
  * Custom report controller
  * @package     Emundus
  */
-class EmundusControllerVote extends JControllerLegacy
+class EmundusControllerVote extends BaseController
 {
 	protected $_app;
 	private $_user;
@@ -26,11 +29,16 @@ class EmundusControllerVote extends JControllerLegacy
 		$this->_user = $this->_app->getIdentity();
 	}
 
+	/**
+	 * Add vote
+	 *
+	 * @since version 1.40.0
+	 */
 	public function vote()
 	{
 		$result = array(
 			'status' => false,
-			'message' => JText::_('COM_EMUNDUS_ERROR_OCCURED'),
+			'message' => Text::_('COM_EMUNDUS_ERROR_OCCURED'),
 		);
 
 		require_once JPATH_SITE . '/components/com_emundus/helpers/emails.php';
@@ -73,6 +81,11 @@ class EmundusControllerVote extends JControllerLegacy
 		exit;
 	}
 
+	/**
+	 * Check access needed to vote
+	 *
+	 * @since version 1.40.0
+	 */
 	public function checkaccess()
 	{
 		$gallery_url = $this->input->server->getString('HTTP_REFERER','index.php');
@@ -80,8 +93,8 @@ class EmundusControllerVote extends JControllerLegacy
 		$result = array(
 			'status' => false,
 			'access' => false,
-			'message' => JText::_('COM_EMUNDUS_ERROR_OCCURED'),
-			'login_url' => JRoute::_('index.php?option=com_users&view=login&return=' . base64_encode($gallery_url))
+			'message' => Text::_('COM_EMUNDUS_ERROR_OCCURED'),
+			'login_url' => Route::_('index.php?option=com_users&view=login&return=' . base64_encode($gallery_url))
 		);
 
 		$m_gallery = $this->getModel('gallery');
