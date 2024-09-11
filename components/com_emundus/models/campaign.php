@@ -859,7 +859,7 @@ class EmundusModelCampaign extends JModelList {
                     $this->_db->quoteName('#__users', 'u') .
                     ' ON ' .
                     $this->_db->quoteName('u.id') .
-                    ' LIKE ' .
+                    ' = ' .
                     $this->_db->quoteName('cc.applicant_id')
                 );
 
