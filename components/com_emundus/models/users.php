@@ -18,6 +18,8 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\User\UserHelper;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
@@ -245,26 +247,32 @@ class EmundusModelUsers extends JModelList {
             $query.= ' u.id='.(int)$uid;
         } else {
             $and = true;
-            /*if(isset($this->filts_details['profile']) && !empty($this->filts_details['profile'])){
-                $query.= ' AND e.profile IN ('.implode(',', $this->filts_details['profile']).') ';
-                $and = true;
-            }*/
-            if (isset($profile) && !empty($profile) && is_numeric($profile)) {
-                $query.= ' AND e.profile = '.$profile;
-                $and = true;
+
+            if (!empty($profile)) {
+				if (is_numeric($profile)) {
+					$query.= ' AND e.profile = '.$profile;
+				} else if ($profile === 'applicant') {
+					$query.= ' AND espr.published = 1';
+				}
             }
-            if (isset($oprofiles) && !empty($oprofiles) ) {
-                $query.= ' AND eup.profile_id IN ("'.implode('","', $oprofiles).'")';
-                $and = true;
+            if (!empty($oprofiles)) {
+				if (in_array('applicant', $oprofiles)) {
+					$query.= 'AND (eup.profile_id IN ("'.implode('","', $oprofiles).'") OR espr.published = 1)';
+
+				} else {
+					$query.= ' AND eup.profile_id IN ("'.implode('","', $oprofiles).'")';
+				}
+
+				$and = true;
             }
-            if (isset($final_grade) && !empty($final_grade)) {
+            if (!empty($final_grade)) {
                 if ($and) $query .= ' AND ';
-                else { $and = true;  $query .='WHERE '; }
+                else { $query .='WHERE '; }
 
                 $query.= 'efg.Final_grade = "'.$final_grade.'"';
                 $and = true;
             }
-            if (isset($search) && !empty($search)) {
+            if (!empty($search)) {
 
                 if ($and) {
                     $query .= ' AND ';
@@ -306,12 +314,7 @@ class EmundusModelUsers extends JModelList {
                 $q = substr($q, 3);
                 $query .= '('.$q.')' ;
             }
-            /*if(isset($schoolyears) &&  !empty($schoolyears)) {
-                if($and) $query .= ' AND ';
-                else { $and = true; $query .='WHERE '; }
-                $query.= 'e.schoolyear="'.$schoolyears.'"';
-            }*/
-            if (isset($spam_suspect) &&  !empty($spam_suspect) && $spam_suspect == 1) {
+            if (!empty($spam_suspect) && $spam_suspect == 1) {
                 if ($and) {
                     $query .= ' AND ';
                 } else {
@@ -336,7 +339,7 @@ class EmundusModelUsers extends JModelList {
                     $query .= 'u.id IN ( '.$list_user.' )';
             }
 
-            if (isset($newsletter) &&  !empty($newsletter)) {
+            if (!empty($newsletter)) {
                 if ($and) {
                     $query .= ' AND ';
                 } else {
@@ -1656,23 +1659,38 @@ class EmundusModelUsers extends JModelList {
 
     }
 
-    // Get groups of user
-    public function getUserGroups($uid, $return = 'AssocList') {
-        try {
-            $query = "SELECT esg.id, esg.label
-                      from #__emundus_groups as g
-                      left join #__emundus_setup_groups as esg on g.group_id = esg.id
-                      where g.user_id = " .$uid;
-            $db = $this->getDbo();
-            $db->setQuery($query);
-            if ($return == 'Column') {
-                return $db->loadColumn();
-            } else {
-                return $db->loadAssocList('id', 'label');
+    /**
+     * Returns user's groups. If AssocList then associative array with id and label, if column, only an array of ids
+     * @param $uid int
+     * @param $return string (AssocList|Column)
+     * @return array
+     */
+    public function getUserGroups($uid, $return = 'AssocList')
+    {
+        $user_groups = [];
+
+        if (!empty($uid)) {
+            try {
+                $db = $this->getDbo();
+                $query = $db->getQuery(true);
+
+                $query->select('esg.id, esg.label')
+                    ->from($db->quoteName('#__emundus_groups', 'g'))
+                    ->leftJoin($db->quoteName('#__emundus_setup_groups', 'esg').' ON '.$db->quoteName('g.group_id').' = '.$db->quoteName('esg.id'))
+                    ->where($db->quoteName('g.user_id') . ' = ' . $uid);
+                $db->setQuery($query);
+
+                if ($return == 'Column') {
+                    $user_groups = $db->loadColumn();
+                } else {
+                    $user_groups = $db->loadAssocList('id', 'label');
+                }
+            } catch(Exception $e) {
+                JLog::add('Failed to get user groups ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
             }
-        } catch(Exception $e) {
-            return false;
         }
+
+        return $user_groups;
     }
 
     /**
@@ -2395,7 +2413,7 @@ class EmundusModelUsers extends JModelList {
         if (!empty($uid)) {
             $db = JFactory::getDBO();
             $query = $db->getQuery(true);
-            $query->select('eu.*,u.email, u.username, u.registerDate, u.lastvisitDate, case when u.password = ' . $db->quote('') . ' then ' . $db->quote('external') . ' else ' . $db->quote('internal') . ' end as login_type')
+            $query->select('eu.*,u.email, u.username, u.registerDate, u.lastvisitDate, case when u.password = ' . $db->quote('') . ' then ' . $db->quote('external') . ' else ' . $db->quote('internal') . ' end as login_type,u.block,u.activation,u.params')
                 ->from('#__emundus_users as eu')
                 ->leftJoin('#__users as u on u.id = eu.user_id')
                 ->where('eu.user_id = '.$uid);
@@ -3751,8 +3769,7 @@ class EmundusModelUsers extends JModelList {
 				->leftJoin($db->quoteName('#__fabrik_formgroup', 'ff') . ' ON ff.group_id = fe.group_id')
 				->where($db->quoteName('ff.form_id') . ' = ' . $profile_form)
 				->andWhere($db->quoteName('fe.hidden') . ' = ' . '0')
-				->andWhere($db->quoteName('fe.published') . ' = ' . '1')
-				->andWhere($db->quoteName('fe.name') . ' != ' . $db->quote('DEFAULT_LANGUAGE'));
+				->andWhere($db->quoteName('fe.published') . ' = ' . '1');
 
 			try
 			{
@@ -3823,6 +3840,12 @@ class EmundusModelUsers extends JModelList {
                 'plugin' => null,
                 'label' => 'COM_EMUNDUS_GROUPE',
             ),
+	        'block' => (object)array(
+		        'id' => null,
+		        'name' => 'block',
+		        'plugin' => null,
+		        'label' => 'COM_EMUNDUS_BLOCK',
+	        ),
         );
 
         return $user_columns;
@@ -3877,10 +3900,10 @@ class EmundusModelUsers extends JModelList {
 
                 // Set the right format date according to the location
                 if (!empty($register_date)) {
-                    $register_date = EmundusHelperDate::displayDate($register_date, 'DATE_FORMAT_LC2', $timezone === 'UTC' ? 1 : 0);
+                    $register_date = EmundusHelperDate::displayDate($register_date, 'DATE_FORMAT_LC5', $timezone === 'UTC' ? 1 : 0);
                 }
                 if (!empty($lastvisit_date)) {
-                    $lastvisit_date = EmundusHelperDate::displayDate($lastvisit_date, 'DATE_FORMAT_LC2', $timezone === 'UTC' ? 1 : 0);
+                    $lastvisit_date = EmundusHelperDate::displayDate($lastvisit_date, 'DATE_FORMAT_LC5', $timezone === 'UTC' ? 1 : 0);
                 }
 
 	            // Create an array with array of each data not in the profile form
@@ -3924,6 +3947,19 @@ class EmundusModelUsers extends JModelList {
 	                    case 'oprofiles':
 		                    $j_column->value = implode(', ', $oprofiles);
 		                    break;
+	                    case 'block':
+		                    $j_column->value = Text::_('COM_EMUNDUS_ONBOARD_ACTIVATED');
+
+							if($user->block == 1) {
+								$j_column->value = Text::_('COM_EMUNDUS_ONBOARD_BLOCKED');
+							}
+							elseif($user->activation != 1 && !empty($user->params)) {
+								$params = json_decode($user->params, true);
+								if(!empty($params['emailactivation_token'])) {
+									$j_column->value = Text::_('COM_EMUNDUS_USERS_ACTIVATE_WAITING');
+								}
+							}
+							break;
                         default :
                             $j_column->value = '';
                             break;
@@ -4062,4 +4098,84 @@ class EmundusModelUsers extends JModelList {
 
         return $repaired;
     }
+
+	public function convertCsvToXls($csv,$nb_cols,$nb_rows,$excel_file_name,$separator = '\t')
+	{
+		$xls_file = '';
+
+		/** PHPExcel */
+		require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
+
+		$objReader =\PhpOffice\PhpSpreadsheet\IOFactory::createReader("Csv");
+		$objReader->setDelimiter($separator);
+		$objPHPExcel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+
+		// Excel colonne
+		$colonne_by_id = array();
+		for ($i = ord("A"); $i <= ord("Z"); $i++) {
+			$colonne_by_id[]=chr($i);
+		}
+
+		for ($i = ord("A"); $i <= ord("Z"); $i++) {
+			for ($j = ord("A"); $j <= ord("Z"); $j++) {
+				$colonne_by_id[]=chr($i).chr($j);
+				if (count($colonne_by_id) == $nb_rows) break;
+			}
+		}
+
+		// Set properties
+		$objPHPExcel->getProperties()->setCreator("eMundus SAS : http://www.emundus.fr/");
+		$objPHPExcel->getProperties()->setLastModifiedBy("eMundus SAS");
+		$objPHPExcel->getProperties()->setTitle("eMmundus Report");
+		$objPHPExcel->getProperties()->setSubject("eMmundus Report");
+		$objPHPExcel->getProperties()->setDescription("Report from open source eMundus plateform : http://www.emundus.fr/");
+		$objPHPExcel->setActiveSheetIndex(0);
+		$objPHPExcel->getActiveSheet()->setTitle('Extraction');
+		$objPHPExcel->getDefaultStyle()->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+		$objPHPExcel->getDefaultStyle()->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+
+		$objPHPExcel->getActiveSheet()->freezePane('A2');
+
+		$objReader->loadIntoExisting(JPATH_SITE.DS."tmp".DS.$csv, $objPHPExcel);
+
+		$objConditional1 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+		$objConditional1->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS)
+			->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL)
+			->addCondition('0');
+		$objConditional1->getStyle()->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFF0000');
+
+		$objConditional2 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+		$objConditional2->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS)
+			->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL)
+			->addCondition('100');
+		$objConditional2->getStyle()->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FF00FF00');
+
+		$objConditional3 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+		$objConditional3->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS)
+			->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL)
+			->addCondition('50');
+		$objConditional3->getStyle()->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+
+		for ($i = 0; $i<$nb_cols; $i++) {
+			$value = $objPHPExcel->getActiveSheet()->getCell(Coordinate::stringFromColumnIndex($i) . '1')->getValue();
+
+			if ($value=="forms(%)" || $value=="attachment(%)") {
+				$conditionalStyles = $objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$i].'1')->getConditionalStyles();
+				array_push($conditionalStyles, $objConditional1);
+				array_push($conditionalStyles, $objConditional2);
+				array_push($conditionalStyles, $objConditional3);
+				$objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$i].'1')->setConditionalStyles($conditionalStyles);
+				$objPHPExcel->getActiveSheet()->duplicateConditionalStyle($conditionalStyles,$colonne_by_id[$i].'1:'.$colonne_by_id[$i].($nb_rows+ 1));
+			}
+			$objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
+		}
+
+		$randomString = UserHelper::genRandomPassword(20);
+		$objWriter = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($objPHPExcel, "Xlsx");
+		$objWriter->save(JPATH_SITE . DS . 'tmp' . DS . $excel_file_name . '_' . $nb_rows . 'rows_' . $randomString . '.xlsx');
+		$objPHPExcel->disconnectWorksheets();
+		unset($objPHPExcel);
+
+		return $excel_file_name.'_'.$nb_rows.'rows_'.$randomString.'.xlsx';
+	}
 }

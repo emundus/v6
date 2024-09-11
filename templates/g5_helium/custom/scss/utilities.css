@@ -397,6 +397,7 @@
         border: solid var(--em-alert-error-border-width) var(--em-alert-error-border-color);
         background-color: var(--em-alert-error-bgc);
         color: var(--em-alert-error-color);
+        margin-bottom: 28px;
 
         .material-icons {
             color: var(--em-alert-error-icon-color);

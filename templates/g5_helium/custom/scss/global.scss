@@ -497,6 +497,10 @@ div#frame.outline {
   }
 }
 
+.view-login #g-navigation {
+  background: transparent;
+}
+
 #g-navigation {
   width: 100%;
   position: sticky;
@@ -3103,6 +3107,10 @@ ul.unstyled.em-linkForgot li a {
 
 .g-back-office-emundus-tableau.indicateurs-page #g-container-main .g-container {
   left: 30px;
+
+  &.g-flushed {
+    padding: inherit !important;
+  }
 }
 
 .g-back-office-emundus-tableau.indicateurs-page #g-container-main {
@@ -3186,6 +3194,10 @@ ul.unstyled.em-linkForgot li a {
   *:not(.material-icons):not(.material-icons-outlined):not(.glyphicon):not(.fas):not(i.icon):not(i.mce-ico) {
     font-family: var(--em-coordinator-font);
   }
+}
+
+#g-main-mainbody #application-modal #modal-applicationform .em-flex-row.em-flex-center.em-gap-16.em-border-bottom-neutral-300.sticky-tab {
+  z-index: 10;
 }
 
 .files-board.com_emundus, .view-list.com_fabrik {
@@ -3719,6 +3731,21 @@ div#em-appli-block {
     color: var(--night-blue);
   }
 
+  .em-container-tag-body .list-group-item div div {
+    width: 100%;
+
+    .em-tags-action .sticker {
+      width: fit-content;
+      max-width: 100%;
+
+      span:nth-child(2) {
+        padding-right: 10px;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+    }
+  }
+
   .edit-comment-container button.delete-comment,
   .em-container-tag-body button.btn-danger[title="Supprimer"],
   .em-container-tag-body button.btn-danger[title="Delete"] {
@@ -3950,6 +3977,7 @@ div#em-appli-block {
       color: var(--em-primary-color);
       font-size: 40px;
       margin-bottom: 0;
+      line-height: 48px;
     }
 
     p {
@@ -4632,7 +4660,22 @@ screen and (max-height: 769px) {
     display: flex;
     flex-direction: row;
 
-    thead, tbody {
+    tbody {
+      width: auto;
+
+      tr {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+
+        input {
+          width: 100%;
+        }
+      }
+    }
+
+    thead {
       width: min-content;
 
       tr {
@@ -5472,6 +5515,7 @@ screen and (max-height: 769px) {
   .view-form .fabrikGroup .repeatGroupTable {
     display: flex;
     flex-direction: row;
+    justify-content: center;
 
     thead, tbody {
       width: 100%;
@@ -5498,7 +5542,6 @@ screen and (max-height: 769px) {
   }
 
   #g-navigation {
-    border-bottom: 1px solid #eeeeee;
     width: 100vw;
 
     .g-container {
@@ -5995,6 +6038,7 @@ fieldset[disabled] .multiselect {
   border-bottom-right-radius: 5px;
   z-index: 50;
   -webkit-overflow-scrolling: touch;
+  box-shadow: 0 0 4px var(--neutral-500);
 }
 
 .multiselect__content {

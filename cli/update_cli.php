@@ -66,8 +66,7 @@ class UpdateCli extends JApplicationCli
         $this->firstrun = false;
         # Array of components available for update
         $availableComponents = array('com_emundus', 'com_fabrik', 'com_hikashop', 'com_hikamarket', 'com_falang',
-            'com_eventbooking', 'com_dpcalendar', 'com_dropfiles', 'com_extplorer',
-            'com_miniorange_saml', 'com_loginguard', 'com_jce', 'com_admintools',
+            'com_eventbooking', 'com_dpcalendar', 'com_dropfiles', 'com_extplorer', 'com_loginguard', 'com_jce', 'com_admintools',
             'com_jumi', 'com_gantry5', 'com_externallogin', 'com_jchoptimize', 'com_securitycheckpro');
 
         # Array of components with extensions datas

@@ -11,32 +11,43 @@
         </button>
       </div>
 
-      <div v-for="(tag, index) in tags" class="em-mb-24" :id="'tag_' + tag.id" :key="'tag_' + tag.id" @mouseover="enableGrab(index)" @mouseleave="disableGrab()">
-        <div class="em-flex-row em-flex-row-start em-w-100">
-          <div class="status-field">
-            <div style="width: 100%">
-              <p class="em-p-8-12 em-editable-content" contenteditable="true" :id="'tag_label_' + tag.id" @focusout="updateTag(tag)" @keyup.enter="manageKeyup(tag)" @keydown="checkMaxlength">{{tag.label}}</p>
+
+      <draggable
+          handle=".handle"
+          v-model="tags"
+          :class="'draggables-list'"
+          @end="updateTagOrdering"
+      >
+        <div v-for="(tag, index) in tags" class="em-mb-24" :id="'tag_' + tag.id" :key="'tag_' + tag.id" @mouseover="enableGrab(index)" @mouseleave="disableGrab()">
+          <div class="em-flex-row em-flex-row-start em-w-100">
+          <span class="handle em-grab" :style="grab && indexGrab === index ? 'opacity: 1' : 'opacity: 0'">
+            <span class="material-icons-outlined">drag_indicator</span>
+          </span>
+            <div class="status-field">
+              <div style="width: 100%">
+                <p class="em-p-8-12 em-editable-content" contenteditable="true" :id="'tag_label_' + tag.id" @focusout="updateTag(tag)" @keyup.enter="manageKeyup(tag)" @keydown="checkMaxlength">{{tag.label}}</p>
+              </div>
+              <input type="hidden" :class="tag.class">
             </div>
-            <input type="hidden" :class="tag.class">
+            <div class="em-flex-row">
+              <v-swatches
+                  v-model="tag.class"
+                  @input="updateTag(tag)"
+                  :swatches="swatches"
+                  shapes="circles"
+                  row-length="8"
+                  show-border
+                  popover-x="left"
+                  popover-y="top"
+              ></v-swatches>
+              <a type="button" :title="translate('COM_EMUNDUS_ONBOARD_DELETE_TAGS')" @click="removeTag(tag,index)" class="em-flex-row em-ml-8 em-pointer">
+                <span class="material-icons-outlined em-red-500-color">delete_outline</span>
+              </a>
+            </div>
           </div>
-          <div class="em-flex-row">
-            <v-swatches
-                v-model="tag.class"
-                @input="updateTag(tag)"
-                :swatches="swatches"
-                shapes="circles"
-                row-length="8"
-                show-border
-                popover-x="left"
-                popover-y="top"
-            ></v-swatches>
-            <a type="button" :title="translate('COM_EMUNDUS_ONBOARD_DELETE_TAGS')" @click="removeTag(tag,index)" class="em-flex-row em-ml-8 em-pointer">
-              <span class="material-icons-outlined em-red-500-color">delete_outline</span>
-            </a>
-          </div>
+          <hr/>
         </div>
-        <hr/>
-      </div>
+      </draggable>
     </div>
   </div>
 </template>
@@ -51,6 +62,7 @@ import 'vue-swatches/dist/vue-swatches.css'
 /* SERVICES */
 import client from "com_emundus/src/services/axiosClient";
 import mixin from "com_emundus/src/mixins/mixin";
+import settingsService from "com_emundus/src/services/settings.js";
 
 
 const qs = require("qs");
@@ -143,14 +155,14 @@ export default {
 
     getTags() {
       axios.get("index.php?option=com_emundus&controller=settings&task=gettags")
-          .then(response => {
-            this.tags = response.data.data;
-            setTimeout(() => {
-              this.tags.forEach(element => {
-                this.getHexColors(element);
-              });
-            }, 100);
-          });
+        .then(response => {
+          this.tags = response.data.data;
+          setTimeout(() => {
+            this.tags.forEach(element => {
+              this.getHexColors(element);
+            });
+          }, 100);
+        });
     },
 
     async updateTag(tag) {
@@ -163,18 +175,30 @@ export default {
       formData.append('color', this.colors[index].name);
 
       await client().post('index.php?option=com_emundus&controller=settings&task=updatetags',
-          formData,
-          {
-            headers: {
-              'Content-Type': 'multipart/form-data'
-            }
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data'
           }
+        }
       ).then(() => {
         this.$emit('updateSaving',false);
         this.$emit('updateLastSaving',this.formattedDate('','LT'));
       });
     },
+    async updateTagOrdering() {
+      let orderedTags = [];
+      this.tags.forEach((tag) => {
+        orderedTags.push(tag.id);
+      })
 
+      this.$emit('updateSaving',true);
+
+      settingsService.updateTagOrdering(orderedTags).then(() => {
+        this.$emit('updateSaving',false);
+        this.$emit('updateLastSaving',this.formattedDate('','LT'));
+      })
+    },
     pushTag() {
       this.$emit('updateSaving',true);
 
