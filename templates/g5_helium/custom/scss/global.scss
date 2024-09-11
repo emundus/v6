@@ -4593,14 +4593,15 @@ screen and (max-height: 769px) {
 
   .em-searchbar {
     width: 100%;
+    margin-top: 12px;
 
-    label {
-      width: 100%;
+     &.em-flex-row-justify-end {
+       margin-top: 0;
+     }
 
       #applications_searchbar {
         width: 100%;
       }
-    }
   }
 
   #drawer {

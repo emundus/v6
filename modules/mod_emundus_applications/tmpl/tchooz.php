@@ -264,7 +264,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                 <div class="em-searchbar em-flex-row-justify-end">
                         <input name="searchword" type="text" id="applications_searchbar" class="form-control"
                                placeholder=" ">
-                    <label for="searchword" style="display: inline-block;margin-bottom: unset"><?php echo JText::_('MOD_EM_APPLICATIONS_SEARCH') ?></label>
+                    <label for="applications_searchbar" style="display: inline-block;margin-bottom: unset"><?php echo JText::_('MOD_EM_APPLICATIONS_SEARCH') ?></label>
                 </div>
             <?php endif; ?>
             <div class="em-flex-row" style="gap: 8px">
