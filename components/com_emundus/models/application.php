@@ -5461,11 +5461,11 @@ class EmundusModelApplication extends JModelList
                         $logsStd->details = $_FILES['file']['name'];
                         $logsParams       = array('created' => [$logsStd]);
                         EmundusModelLogs::log($this->_user->id, $applicant_id, $data['fnum'], 4, 'c', 'COM_EMUNDUS_ACCESS_ATTACHMENT_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
-
-	                    PluginHelper::importPlugin('emundus', 'custom_event_handler');
-	                    Factory::getApplication()->triggerEvent('onAfterUpdateAttachment', array($data,$data['fnum']));
-	                    Factory::getApplication()->triggerEvent('callEventHandler', ['onAfterUpdateAttachment', ['attachment' => $data,'fnum' => $data['fnum']]]);
                     }
+
+	                PluginHelper::importPlugin('emundus', 'custom_event_handler');
+	                Factory::getApplication()->triggerEvent('onAfterUpdateAttachment', array($data,$data['fnum']));
+	                Factory::getApplication()->triggerEvent('callEventHandler', ['onAfterUpdateAttachment', ['attachment' => $data,'fnum' => $data['fnum']]]);
                 }
             }
             catch (Exception $e) {
