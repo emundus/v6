@@ -1,8 +1,7 @@
 <?php
 namespace Clickatell;
 
-use Clickatell\Diagnostic;
-use \PHPUnit_Framework_TestCase;
+use PHPUnit_Framework_TestCase;
 
 class DiagnosticTest extends PHPUnit_Framework_TestCase
 {

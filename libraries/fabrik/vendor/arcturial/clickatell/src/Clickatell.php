@@ -13,9 +13,7 @@
 
 namespace Clickatell;
 
-use Clickatell\TransportInterface;
 use Clickatell\Response;
-use \Exception;
 
 /**
  * This is the main messenger class that encapsulates various objects to succesfully
