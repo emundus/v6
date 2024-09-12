@@ -82,7 +82,7 @@ module.exports = {
                     fontFamily: 'var(--em-applicant-font-title)',
                     fontSize: 'var(--em-applicant-h2)',
                     fontStyle: 'normal',
-                    lineHeight: '30.5px',
+                    lineHeight: '26.4px',
                     fontWeight: 'var(--em-font-weight-500)',
                 },
                 '.em-default-title-3': {
