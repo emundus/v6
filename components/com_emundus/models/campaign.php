@@ -1245,6 +1245,9 @@ class EmundusModelCampaign extends JModelList {
             $lang = JFactory::getLanguage();
             $actualLanguage = !empty($lang->getTag()) ? substr($lang->getTag(), 0 , 2) : 'fr';
 
+            $eMConfig = JComponentHelper::getParams('com_emundus');
+            $create_default_program_trigger = $eMConfig->get('create_default_program_trigger', 1);
+
             $i = 0;
             $labels = new stdClass;
             $limit_status = [];
@@ -1332,25 +1335,27 @@ class EmundusModelCampaign extends JModelList {
 
                         // Create a default trigger
                         if (!empty($data['training'])) {
-                            $query->clear()
-                                ->select('id')
-                                ->from($this->_db->quoteName('#__emundus_setup_programmes'))
-                                ->where($this->_db->quoteName('code') . ' LIKE ' . $this->_db->quote($data['training']));
-                            $this->_db->setQuery($query);
-                            $pid = $this->_db->loadResult();
+                            if (!empty($create_default_program_trigger)) {
+                                $query->clear()
+                                    ->select('id')
+                                    ->from($this->_db->quoteName('#__emundus_setup_programmes'))
+                                    ->where($this->_db->quoteName('code') . ' LIKE ' . $this->_db->quote($data['training']));
+                                $this->_db->setQuery($query);
+                                $pid = $this->_db->loadResult();
 
-                            if (!empty($pid)) {
-                                $emails = $m_emails->getTriggersByProgramId($pid);
+                                if (!empty($pid)) {
+                                    $emails = $m_emails->getTriggersByProgramId($pid);
 
-                                if (empty($emails)) {
-                                    $trigger = array(
-                                        'status' => 1,
-                                        'model' => 1,
-                                        'action_status' => 'to_current_user',
-                                        'target' => -1,
-                                        'program' => $pid,
-                                    );
-                                    $m_emails->createTrigger($trigger, array(), $user);
+                                    if (empty($emails)) {
+                                        $trigger = array(
+                                            'status' => 1,
+                                            'model' => 1,
+                                            'action_status' => 'to_current_user',
+                                            'target' => -1,
+                                            'program' => $pid,
+                                        );
+                                        $m_emails->createTrigger($trigger, array(), $user);
+                                    }
                                 }
                             }
                         }
