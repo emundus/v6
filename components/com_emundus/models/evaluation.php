@@ -1093,7 +1093,14 @@ class EmundusModelEvaluation extends JModelList {
 
         $pageNavigation = "<div class='em-container-pagination-selectPage'>";
         $pageNavigation .= "<ul class='pagination pagination-sm'>";
-	    $pageNavigation .= "<li><a href='#em-data' id='" . ($this->getPagination()->pagesCurrent - 1) . "'><span class='material-icons'>navigate_before</span></a></li>";
+
+	    if($this->getPagination()->pagesCurrent == $this->getPagination()->pagesStart) {
+		    $pageNavigation .= "<li><a class='disabled cursor-pointer'><span class='material-icons'>navigate_before</span></a></li>";
+	    } else
+	    {
+		    $pageNavigation .= "<li><a href='#em-data' id='" . ($this->getPagination()->pagesCurrent - 1) . "'><span class='material-icons'>navigate_before</span></a></li>";
+	    }
+
         if ($this->getPagination()->pagesTotal > 15) {
             for ($i = 1; $i <= 5; $i++ ) {
                 $pageNavigation .= "<li ";
@@ -1139,7 +1146,12 @@ class EmundusModelEvaluation extends JModelList {
                 $pageNavigation .= "><a id='" . $i . "' href='#em-data'>" . $i . "</a></li>";
             }
         }
-	    $pageNavigation .= "<li><a href='#em-data' id='" . ($this->getPagination()->pagesCurrent + 1) . "'><span class='material-icons'>navigate_next</span></a></li></ul></div>";
+
+	    if($this->getPagination()->pagesCurrent == $this->getPagination()->pagesStop) {
+		    $pageNavigation .= "<li><a class='disabled cursor-pointer'><span class='material-icons'>navigate_next</span></a></li></ul></div>";
+	    } else {
+		    $pageNavigation .= "<li><a href='#em-data' id='" . ($this->getPagination()->pagesCurrent + 1) . "'><span class='material-icons'>navigate_next</span></a></li></ul></div>";
+	    }
 
         return $pageNavigation;
     }
@@ -2051,62 +2063,116 @@ class EmundusModelEvaluation extends JModelList {
 	                        $font = $eMConfig->get('generate_letter_font', 'helvetica');
 	                        $font_size = $eMConfig->get('generate_letter_font_size', 10);
 
-                            require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'MYPDF.php');
-                            $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-                            $pdf->SetCreator(PDF_CREATOR);
-                            $pdf->SetAuthor($user->name);
-                            $pdf->SetTitle($letter->title);
+	                        if (version_compare(PHP_VERSION, '8.0.0', '<')) {
+		                        require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'MYPDF.php');
+		                        $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+		                        $pdf->SetCreator(PDF_CREATOR);
+		                        $pdf->SetAuthor($user->name);
+		                        $pdf->SetTitle($letter->title);
 
-							$pdf_margins = explode(',', $pdf_margins);
-                            $pdf->SetMargins($pdf_margins[0], $pdf_margins[1], $pdf_margins[2]);
+		                        $pdf_margins = explode(',', $pdf_margins);
+		                        $pdf->SetMargins($pdf_margins[0], $pdf_margins[1], $pdf_margins[2]);
 
-							if($display_header == 1)
-							{
-								preg_match('#src="(.*?)"#i', $letter->header, $tab);
-								$pdf->logo = JPATH_SITE . DS . @$tab[1];
-							}
+		                        if ($display_header == 1) {
+			                        preg_match('#src="(.*?)"#i', $letter->header, $tab);
+			                        $pdf->logo = JPATH_SITE . DS . @$tab[1];
+		                        }
 
-	                        $pdf->footer = $letter->footer;
-							if($display_footer == 1)
-							{
-								preg_match('#src="(.*?)"#i', $letter->footer, $tab);
-								$pdf->logo_footer = JPATH_SITE . DS . @$tab[1];
-								$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
-							} else {
-								$pdf->SetAutoPageBreak(false, 0);
-							}
+		                        $pdf->footer = $letter->footer;
+		                        if ($display_footer == 1) {
+			                        preg_match('#src="(.*?)"#i', $letter->footer, $tab);
+			                        $pdf->logo_footer = JPATH_SITE . DS . @$tab[1];
+			                        $pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
+		                        }
+		                        else {
+			                        $pdf->SetAutoPageBreak(false, 0);
+		                        }
 
-							if($use_default_font == 1)
-							{
-								$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
-								$pdf->setFontSubsetting(true);
-								$pdf->SetFont('freeserif', '', $font_size);
-							} else {
-								$pdf->SetFont($font, '', $font_size);
-							}
+		                        if ($use_default_font == 1) {
+			                        $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+			                        $pdf->setFontSubsetting(true);
+			                        $pdf->SetFont('freeserif', '', $font_size);
+		                        }
+		                        else {
+			                        $pdf->SetFont($font, '', $font_size);
+		                        }
 
-                            $htmldata = $_mEmail->setTagsFabrik($letter->body, array($fnum));
-                            $htmldata = preg_replace($tags['patterns'], $tags['replacements'], preg_replace("/<span[^>]+\>/i", "", preg_replace("/<\/span\>/i", "", preg_replace("/<br[^>]+\>/i", "<br>", $htmldata))));
-                            $htmldata = preg_replace_callback('#(<img\s(?>(?!src=)[^>])*?src=")data:image/(gif|png|jpeg);base64,([\w=+/]++)("[^>]*>)#', function ($match) {
-                                list(, $img, $type, $base64, $end) = $match;
+		                        $htmldata = $_mEmail->setTagsFabrik($letter->body, array($fnum));
+		                        $htmldata = preg_replace($tags['patterns'], $tags['replacements'], preg_replace("/<span[^>]+\>/i", "", preg_replace("/<\/span\>/i", "", preg_replace("/<br[^>]+\>/i", "<br>", $htmldata))));
+		                        $htmldata = preg_replace_callback('#(<img\s(?>(?!src=)[^>])*?src=")data:image/(gif|png|jpeg);base64,([\w=+/]++)("[^>]*>)#', function ($match) {
+			                        list(, $img, $type, $base64, $end) = $match;
 
-                                $bin = base64_decode($base64);
-                                $md5 = md5($bin);   // generate a new temporary filename
-                                $fn = "tmp/$md5.$type";
-                                file_exists($fn) or file_put_contents($fn, $bin);
+			                        $bin = base64_decode($base64);
+			                        $md5 = md5($bin);   // generate a new temporary filename
+			                        $fn  = "tmp/$md5.$type";
+			                        file_exists($fn) or file_put_contents($fn, $bin);
 
-                                return "$img$fn$end";  // new <img> tag
-                            }, $htmldata);
-                            $htmldata = preg_replace('/(<[^>]+) style=".*?"/i', '$1', $htmldata);
+			                        return "$img$fn$end";  // new <img> tag
+		                        }, $htmldata);
+		                        $htmldata = preg_replace('/(<[^>]+) style=".*?"/i', '$1', $htmldata);
 
-                            $pdf->AddPage();
-                            $pdf->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', $htmldata, $border = 0, $ln = 1, $fill = 0, $reseth = true, $align = '', $autopadding = true);
+		                        $pdf->AddPage();
+		                        $pdf->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', $htmldata, $border = 0, $ln = 1, $fill = 0, $reseth = true, $align = '', $autopadding = true);
 
-                            $upId = $_mFile->addAttachment($fnum, $filename, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);         ////
+		                        $upId = $_mFile->addAttachment($fnum, $filename, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);         ////
 
-                            $pdf->Output($dest_tmp, 'F');
-                            $pdf->Output($dest, 'F');
-                            $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $applicant_url, 'type' => $attachInfo['id']);
+		                        $pdf->Output($dest_tmp, 'F');
+		                        $pdf->Output($dest, 'F');
+	                        } else {
+		                        $htmldata = '';
+		                        if ($display_header == 1)
+		                        {
+			                        $htmldata = $letter->header;
+		                        }
+
+		                        $htmldata .= $_mEmail->setTagsFabrik($letter->body, array($fnum));
+		                        $htmldata = preg_replace($tags['patterns'], $tags['replacements'], preg_replace("/<span[^>]+\>/i", "", preg_replace("/<\/span\>/i", "", preg_replace("/<br[^>]+\>/i", "<br>", $htmldata))));
+		                        $htmldata = preg_replace_callback('#(<img\s(?>(?!src=)[^>])*?src=")data:image/(gif|png|jpeg);base64,([\w=+/]++)("[^>]*>)#', function ($match) {
+			                        list(, $img, $type, $base64, $end) = $match;
+
+			                        $bin = base64_decode($base64);
+			                        $md5 = md5($bin);   // generate a new temporary filename
+			                        $fn  = "tmp/$md5.$type";
+			                        file_exists($fn) or file_put_contents($fn, $bin);
+
+			                        return "$img$fn$end";  // new <img> tag
+		                        }, $htmldata);
+		                        $htmldata = preg_replace('/(<[^>]+) style=".*?"/i', '$1', $htmldata);
+
+		                        if ($display_footer == 1)
+		                        {
+			                        $htmldata .= $letter->footer;
+		                        }
+
+		                        // Save to an html tmp file
+		                        $html_tmp = $applicant_tmp_path . DS . 'index.html';
+		                        file_put_contents($html_tmp, $htmldata);
+		                        // Save file
+
+		                        require_once(JPATH_SITE . DS . 'components/com_emundus/models/export.php');
+		                        $m_Export = new EmundusModelExport();
+
+		                        $dest_tmp = str_replace('.pdf', '', $dest);
+
+		                        try
+		                        {
+			                        $gotenberg_results = $m_Export->toPdf($html_tmp, $dest_tmp, 'html', $fnum);
+			                        if ($gotenberg_results->status)
+			                        {
+				                        copy($gotenberg_results->file, $dest);
+			                        }
+		                        }
+		                        catch (Exception $e)
+		                        {
+			                        Log::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+
+			                        return false;
+		                        }
+
+		                        $upId = $_mFile->addAttachment($fnum, $filename, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);
+	                        }
+
+	                        $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $applicant_url, 'type' => $attachInfo['id']);
                         }
                         break;
 
@@ -2154,16 +2220,16 @@ class EmundusModelEvaluation extends JModelList {
 				                    $params      = json_decode($elt['params']);
 				                    $groupParams = json_decode($elt['group_params']);
 
-                                    if (!empty($groupParams) && $groupParams->repeat_group_button == 1) {
+                                    if (!empty($groupParams) && $groupParams->repeat_group_button == 1)
+									{
                                         $fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, $groupParams->repeat_group_button == 1);
-                                    } else if ($elt['plugin'] == 'date') {
+                                    }
+									else if ($elt['plugin'] == 'date')
+									{
                                         $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name'], $params->date_form_format);
                                     }
-                                    else {
-                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
-                                    }
-                                    if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown" || $elt['plugin'] == "radiobutton") {
-
+                                    else if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown" || $elt['plugin'] == "radiobutton")
+									{
                                         foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
                                             if ($elt['plugin'] == "checkbox" || (!empty($params->multiple) && $params->multiple == 1)) {
                                                 $val = json_decode($val['val']);
@@ -2174,7 +2240,7 @@ class EmundusModelEvaluation extends JModelList {
                                             if (count($val) > 0) {
                                                 foreach ($val as $k => $v) {
                                                     $index = array_search($v, $params->sub_options->sub_values);
-                                                    $val[$k] = JText::_($params->sub_options->sub_labels[$index]);
+                                                    $val[$k] = $index !== false ? JText::_($params->sub_options->sub_labels[$index]) : "";
                                                 }
                                                 $fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", $val);
                                             } else {
@@ -2182,8 +2248,9 @@ class EmundusModelEvaluation extends JModelList {
                                             }
                                         }
 
-                                    } elseif ($elt['plugin'] == "birthday") {
-
+                                    }
+									elseif ($elt['plugin'] == "birthday")
+									{
                                         foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
                                             $val = explode(',', $val['val']);
                                             foreach ($val as $k => $v) {
@@ -2194,33 +2261,47 @@ class EmundusModelEvaluation extends JModelList {
                                             $fabrikValues[$elt['id']][$fnum]['val'] = implode(",", $val);
                                         }
 
-                                    } elseif ($elt['plugin'] == 'textarea' && $whitespace_textarea == 1) {
-                                        $formatted_text = explode('<br />', nl2br($fabrikValues[$elt['id']][$fnum]['val']));
-                                        $inline = new \PhpOffice\PhpWord\Element\TextRun();
-                                        foreach ($formatted_text as $key => $text) {
-                                            if (!empty($text)) {
-                                                if ($key > 0) {
-                                                    $inline->addTextBreak();
-                                                }
-                                                $inline->addText(trim($text), array('name' => 'Arial'));
-                                            }
-                                        }
-                                        $fabrikValues[$elt['id']][$fnum]['val'] = $inline;
-                                        $fabrikValues[$elt['id']][$fnum]['complex_data'] = true;
-                                    } elseif ($elt['plugin'] == 'textarea') {
-                                        $textarea_elements[] = $elt['id'];
-                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
-                                    } elseif ($elt['plugin'] == 'emundus_phonenumber') {
-                                        $fabrikValues[$elt['id']][$fnum]['val'] = substr($fabrikValues[$elt['id']][$fnum]['val'], 2, strlen($fabrikValues[$elt['id']][$fnum]['val']));
-                                    } elseif ($elt['plugin'] == 'yesno') {
+				                    }
+				                    elseif ($elt['plugin'] == 'textarea' && $whitespace_textarea == 1)
+				                    {
+					                    $formatted_text = explode('<br />',nl2br($fabrikValues[$elt['id']][$fnum]['val']));
+					                    $inline = new \PhpOffice\PhpWord\Element\TextRun();
+					                    foreach ($formatted_text as $key => $text) {
+						                    if (!empty($text))
+						                    {
+							                    if($key > 0)
+							                    {
+								                    $inline->addTextBreak();
+							                    }
+							                    $inline->addText(trim($text), array('name' => 'Arial'));
+						                    }
+					                    }
+					                    $fabrikValues[$elt['id']][$fnum]['val'] = $inline;
+					                    $fabrikValues[$elt['id']][$fnum]['complex_data'] = true;
+				                    }
+									elseif ($elt['plugin'] == 'textarea') {
+	                                    $textarea_elements[] = $elt['id'];
+	                                    $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
+                                    }
+                                    elseif ($elt['plugin'] == 'emundus_phonenumber')
+				                    {
+					                    $fabrikValues[$elt['id']][$fnum]['val'] = substr($fabrikValues[$elt['id']][$fnum]['val'], 2, strlen($fabrikValues[$elt['id']][$fnum]['val']));
+				                    }
+                                    elseif ($elt['plugin'] == 'yesno')
+                                    {
                                         $fabrikValues[$elt['id']][$fnum]['val'] = $fabrikValues[$elt['id']][$fnum]['val'] == '1' ? JText::_('JYES') : JText::_('JNO');
-                                    } elseif ($elt['plugin'] == 'cascadingdropdown') {
+                                    }
+                                    elseif ($elt['plugin'] == 'cascadingdropdown') {
                                         foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
                                             $fabrikValues[$elt['id']][$fnum]['val'] = $_mEmail->getCddLabel($elt, $val['val']);
                                         }
-                                    } else if ($elt['plugin'] === 'databasejoin') {
+                                    }
+									else if ($elt['plugin'] === 'databasejoin')
+									{
                                         $fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, $groupParams->repeat_group_button == 1);
-                                    } else {
+                                    }
+									else
+									{
                                         $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
                                     }
 

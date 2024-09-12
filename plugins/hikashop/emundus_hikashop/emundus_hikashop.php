@@ -233,13 +233,16 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
         $config = hikashop_config();
         $confirmed_statuses = explode(',', trim($config->get('invoice_order_statuses','confirmed,shipped'), ','));
 
+		JPluginHelper::importPlugin('emundus','custom_event_handler');
+		\Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopAfterOrderUpdate', ['order' => $order, 'em_order' => $em_order]]);
+
         if ($status_after_payment[$key] > 0 && in_array($order->order_status, $confirmed_statuses)) {
             require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
             $m_files = new EmundusModelFiles();
 
 			if(!empty($fnum)) {
 				$m_files->updateState($fnum, $status_after_payment[$key]);
-				JLog::add('Application file status updated to -> ' . $status_after_payment[$key], JLog::INFO, 'com_emundus');
+				JLog::add('Application file status updated to -> ' . $status_after_payment[$key]. ' after order confirmed', JLog::INFO, 'com_emundus');
 			}
 
             $query = $db->getQuery(true);
@@ -261,7 +264,7 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
 
             if(empty($hika_order->order_payment_method)){
                 $user = JFactory::getSession()->get('emundusUser');
-                require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+                require_once (JPATH_SITE . '/components/com_emundus/models/application.php');
 
                 $app = JFactory::getApplication();
                 $app->enqueueMessage( JText::_('THANK_YOU_FOR_PURCHASE') );
@@ -275,9 +278,6 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
             JLog::add('Could not set application file status on order ID -> '. $order_id, JLog::ERROR, 'com_emundus');
             return false;
         }
-
-        JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopAfterOrderUpdate', ['order' => $order, 'em_order' => $em_order]]);
 
         $this->onAfterOrderCreate($order);
     }

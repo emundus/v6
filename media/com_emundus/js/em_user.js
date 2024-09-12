@@ -300,19 +300,21 @@ $(document).ready(function () {
 		if (e.handle !== true) {
 			e.handle = true;
 			var id = $(this).attr('id');
-			$.ajax({
-				type: 'POST',
-				url: 'index.php?option=com_emundus&controller=users&task=setlimitstart',
-				dataType: 'json',
-				data: ({
-					limitstart: id
-				}),
-				success: function (result) {
-					if (result.status) {
-						reloadData();
+			if(id) {
+				$.ajax({
+					type: 'POST',
+					url: 'index.php?option=com_emundus&controller=users&task=setlimitstart',
+					dataType: 'json',
+					data: ({
+						limitstart: id
+					}),
+					success: function (result) {
+						if (result.status) {
+							reloadData();
+						}
 					}
-				}
-			});
+				});
+			}
 		}
 	});
 	$(document).on('click', '#em-last-open .list-group-item', function (e) {

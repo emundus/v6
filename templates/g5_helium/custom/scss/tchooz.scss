@@ -1827,6 +1827,16 @@ button.em-swal-delete-button:hover{
   justify-content: right !important;
 }
 
+.swal2-container.swal2-center.swal2-shown{
+  .em-flex-column{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+}
+
 /** Vue Modal - Translation tool **/
 #translationTool,#contentTool,#filesTool, #formBuilder, .full-width-modal {
   .v--modal-overlay {

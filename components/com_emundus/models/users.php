@@ -193,7 +193,7 @@ class EmundusModelUsers extends JModelList {
             $query .= 'cat.title as university,';
         }
         if ($showJoomlagroups == 1) {
-            $query .= 'GROUP_CONCAT( DISTINCT usg.title SEPARATOR "") as joomla_groupe,';
+            $query .= 'GROUP_CONCAT( DISTINCT usg.title SEPARATOR "<br>") as joomla_groupe,';
         }
 
         $query .= 'u.activation as active,u.block as block
@@ -247,26 +247,32 @@ class EmundusModelUsers extends JModelList {
             $query.= ' u.id='.(int)$uid;
         } else {
             $and = true;
-            /*if(isset($this->filts_details['profile']) && !empty($this->filts_details['profile'])){
-                $query.= ' AND e.profile IN ('.implode(',', $this->filts_details['profile']).') ';
-                $and = true;
-            }*/
-            if (isset($profile) && !empty($profile) && is_numeric($profile)) {
-                $query.= ' AND e.profile = '.$profile;
-                $and = true;
+
+            if (!empty($profile)) {
+				if (is_numeric($profile)) {
+					$query.= ' AND e.profile = '.$profile;
+				} else if ($profile === 'applicant') {
+					$query.= ' AND espr.published = 1';
+				}
             }
-            if (isset($oprofiles) && !empty($oprofiles) ) {
-                $query.= ' AND eup.profile_id IN ("'.implode('","', $oprofiles).'")';
-                $and = true;
+            if (!empty($oprofiles)) {
+				if (in_array('applicant', $oprofiles)) {
+					$query.= 'AND (eup.profile_id IN ("'.implode('","', $oprofiles).'") OR espr.published = 1)';
+
+				} else {
+					$query.= ' AND eup.profile_id IN ("'.implode('","', $oprofiles).'")';
+				}
+
+				$and = true;
             }
-            if (isset($final_grade) && !empty($final_grade)) {
+            if (!empty($final_grade)) {
                 if ($and) $query .= ' AND ';
-                else { $and = true;  $query .='WHERE '; }
+                else { $query .='WHERE '; }
 
                 $query.= 'efg.Final_grade = "'.$final_grade.'"';
                 $and = true;
             }
-            if (isset($search) && !empty($search)) {
+            if (!empty($search)) {
 
                 if ($and) {
                     $query .= ' AND ';
@@ -308,12 +314,7 @@ class EmundusModelUsers extends JModelList {
                 $q = substr($q, 3);
                 $query .= '('.$q.')' ;
             }
-            /*if(isset($schoolyears) &&  !empty($schoolyears)) {
-                if($and) $query .= ' AND ';
-                else { $and = true; $query .='WHERE '; }
-                $query.= 'e.schoolyear="'.$schoolyears.'"';
-            }*/
-            if (isset($spam_suspect) &&  !empty($spam_suspect) && $spam_suspect == 1) {
+            if (!empty($spam_suspect) && $spam_suspect == 1) {
                 if ($and) {
                     $query .= ' AND ';
                 } else {
@@ -338,7 +339,7 @@ class EmundusModelUsers extends JModelList {
                     $query .= 'u.id IN ( '.$list_user.' )';
             }
 
-            if (isset($newsletter) &&  !empty($newsletter)) {
+            if (!empty($newsletter)) {
                 if ($and) {
                     $query .= ' AND ';
                 } else {
@@ -1658,23 +1659,38 @@ class EmundusModelUsers extends JModelList {
 
     }
 
-    // Get groups of user
-    public function getUserGroups($uid, $return = 'AssocList') {
-        try {
-            $query = "SELECT esg.id, esg.label
-                      from #__emundus_groups as g
-                      left join #__emundus_setup_groups as esg on g.group_id = esg.id
-                      where g.user_id = " .$uid;
-            $db = $this->getDbo();
-            $db->setQuery($query);
-            if ($return == 'Column') {
-                return $db->loadColumn();
-            } else {
-                return $db->loadAssocList('id', 'label');
+    /**
+     * Returns user's groups. If AssocList then associative array with id and label, if column, only an array of ids
+     * @param $uid int
+     * @param $return string (AssocList|Column)
+     * @return array
+     */
+    public function getUserGroups($uid, $return = 'AssocList')
+    {
+        $user_groups = [];
+
+        if (!empty($uid)) {
+            try {
+                $db = $this->getDbo();
+                $query = $db->getQuery(true);
+
+                $query->select('esg.id, esg.label')
+                    ->from($db->quoteName('#__emundus_groups', 'g'))
+                    ->leftJoin($db->quoteName('#__emundus_setup_groups', 'esg').' ON '.$db->quoteName('g.group_id').' = '.$db->quoteName('esg.id'))
+                    ->where($db->quoteName('g.user_id') . ' = ' . $uid);
+                $db->setQuery($query);
+
+                if ($return == 'Column') {
+                    $user_groups = $db->loadColumn();
+                } else {
+                    $user_groups = $db->loadAssocList('id', 'label');
+                }
+            } catch(Exception $e) {
+                JLog::add('Failed to get user groups ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
             }
-        } catch(Exception $e) {
-            return false;
         }
+
+        return $user_groups;
     }
 
     /**

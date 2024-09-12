@@ -779,7 +779,6 @@ function setFiltersSumo(event) {
 
         var id = event.currentTarget.id;
         var my_element = $('#' + id);
-        console.log(my_element);
         if (!id.includes('elements-')) {
             var multi = false;
             if (typeof my_element.attr('multiple') !== 'undefined') {
@@ -4616,19 +4615,21 @@ $(document).ready(function () {
             if (e.handle !== true) {
                 e.handle = true;
                 var id = $(this).attr('id');
-                $.ajax({
-                    type: 'POST',
-                    url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=setlimitstart',
-                    dataType: 'json',
-                    data: ({
-                        limitstart: id
-                    }),
-                    success: function (result) {
-                        if (result.status) {
-                            reloadData($('#view').val());
+                if(id) {
+                    $.ajax({
+                        type: 'POST',
+                        url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=setlimitstart',
+                        dataType: 'json',
+                        data: ({
+                            limitstart: id
+                        }),
+                        success: function (result) {
+                            if (result.status) {
+                                reloadData($('#view').val());
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
         });
 

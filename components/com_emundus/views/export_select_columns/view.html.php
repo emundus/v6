@@ -85,10 +85,13 @@ class EmundusViewExport_select_columns extends JViewLegacy
 	        $elements = EmundusHelperFiles::getElements($code, $camps, [], $profile);
         }
 
-		$label = $program->label;
         $this->assignRef('elements', $elements);
         $this->assignRef('form', $form);
-        $this->assignRef('program', $label);
+
+		if (!empty($program)) {
+			$label = $program->label;
+			$this->assignRef('program', $label);
+		}
 		parent::display($tpl);
     }
 }

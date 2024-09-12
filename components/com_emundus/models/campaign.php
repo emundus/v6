@@ -835,7 +835,7 @@ class EmundusModelCampaign extends JModelList {
 
             $query->select([
                 'sc.*',
-                'COUNT(CASE cc.published WHEN 1 THEN 1 ELSE NULL END) as nb_files',
+                'COUNT(cc.id) as nb_files',
                 'sp.label AS program_label',
                 'sp.id AS program_id',
                 'sp.published AS published_prog'
@@ -854,9 +854,16 @@ class EmundusModelCampaign extends JModelList {
                     $this->_db->quoteName('sp.code') .
                     ' LIKE ' .
                     $this->_db->quoteName('sc.training')
+                )
+                ->leftJoin(
+                    $this->_db->quoteName('#__users', 'u') .
+                    ' ON ' .
+                    $this->_db->quoteName('u.id') .
+                    ' = ' .
+                    $this->_db->quoteName('cc.applicant_id')
                 );
 
-			$query->where($this->_db->quoteName('sc.training') . ' IN (' . implode(',',$this->_db->quote($programs)) . ')');
+            $query->where($this->_db->quoteName('sc.training') . ' IN (' . implode(',',$this->_db->quote($programs)) . ')');
 
             if(!empty($filterDate)) {
                 $query->andWhere($filterDate);
@@ -867,7 +874,9 @@ class EmundusModelCampaign extends JModelList {
             if ($session !== 'all') {
                 $query->andWhere($this->_db->quoteName('year') . ' = ' . $this->_db->quote($session));
             }
-            $query->group($sortDb)
+            $query->andWhere($this->_db->quoteName('u.block') . ' = 0')
+                ->andWhere($this->_db->quoteName('cc.published') . ' = 1')
+                ->group($sortDb)
                 ->order($sortDb . $sort);
 
             try {
@@ -3009,5 +3018,52 @@ class EmundusModelCampaign extends JModelList {
         }
 
         return $form_url;
+    }
+
+    function getProfilesFromCampaignId($campaign_ids) {
+        $profile_ids = [];
+
+        if (!empty($campaign_ids)) {
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('DISTINCT profile_id')
+                ->from('#__emundus_setup_campaigns')
+                ->where('id IN (' . implode(',', $db->quote($campaign_ids)) . ')');
+
+            $db->setQuery($query);
+            $profiles = $db->loadColumn();
+            foreach ($profiles as $profile)
+            {
+                if (!in_array($profile, $profile_ids))
+                {
+                    $profile_ids[] = $profile;
+                }
+            }
+
+            // profiles from workflows
+            $workflows  = $this->getWorkflows();
+
+            if (!empty($workflows)) {
+                $programme_codes = [];
+                foreach ($campaign_ids as $cid) {
+                    $programme = $this->getProgrammeByCampaignID($cid);
+
+                    if (!in_array($programme['code'], $programme_codes)) {
+                        $programme_codes[] = $programme->code;
+                    }
+                }
+
+                foreach ($workflows as $workflow)
+                {
+                    if (!in_array($workflow->profile, $profile_ids) && (!empty(array_intersect($workflow->campaigns, $campaign_ids)) || !empty(array_intersect($workflow->programs, $programme_codes))))
+                    {
+                        $profile_ids[] = $workflow->profile;
+                    }
+                }
+            }
+        }
+
+        return $profile_ids;
     }
 }
