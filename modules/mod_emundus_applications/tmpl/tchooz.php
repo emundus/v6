@@ -1078,8 +1078,10 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 
             if (fnums_to_show.length === 0) {
                 document.getElementById('no_file_search_message_view').style.display = 'block';
+                document.title = "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_SEARCH'); ?>";
             } else {
                 document.getElementById('no_file_search_message_view').style.display = 'none';
+                document.title = "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_FILE_SEARCH_RESET'); ?>";
             }
 
         } else {
@@ -1092,7 +1094,6 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
             }
             document.getElementById('no_file_search_message_view').style.display = 'none';
         }
-
     }, 500));
 
 
