@@ -4615,19 +4615,21 @@ $(document).ready(function () {
             if (e.handle !== true) {
                 e.handle = true;
                 var id = $(this).attr('id');
-                $.ajax({
-                    type: 'POST',
-                    url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=setlimitstart',
-                    dataType: 'json',
-                    data: ({
-                        limitstart: id
-                    }),
-                    success: function (result) {
-                        if (result.status) {
-                            reloadData($('#view').val());
+                if(id) {
+                    $.ajax({
+                        type: 'POST',
+                        url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=setlimitstart',
+                        dataType: 'json',
+                        data: ({
+                            limitstart: id
+                        }),
+                        success: function (result) {
+                            if (result.status) {
+                                reloadData($('#view').val());
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
         });
 
