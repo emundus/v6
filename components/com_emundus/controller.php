@@ -1022,6 +1022,12 @@ class EmundusController extends JControllerLegacy {
 				            $pos = false;
 			            }
 		            }
+		            elseif($file['type'] == 'application/msword' || $file['type'] == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+			            // Check if the file is a doc/docx file, check if the file type is doc/docx in case of we save from OpenOffice or Word
+			            if($file['type'] !== $mtype && !in_array($file['type'],['application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document'])) {
+				            $pos = false;
+			            }
+		            }
 		            elseif($file['type'] !== $mtype) {
 			            $pos = false;
 		            }

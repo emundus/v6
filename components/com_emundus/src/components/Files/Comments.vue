@@ -147,7 +147,7 @@
       <label for="new-comment">{{ translate('COM_EMUNDUS_COMMENTS_ADD_GLOBAL_COMMENT') }}</label>
       <textarea id="new-comment" @keyup.enter="addComment" v-model="newCommentText" class="p-2"
                 :placeholder="translate('COM_EMUNDUS_COMMENTS_ADD_COMMENT_PLACEHOLDER')"></textarea>
-      <div v-if="!isApplicant" class="flex flex-row items-center">
+      <div v-if="!isApplicant && applicantsAllowedToComment" class="flex flex-row items-center">
         <div class="flex flex-row items-center mr-2">
           <input type="radio" name="visible_to_applicant" v-model="visible_to_applicant" :value="false"
                  id="visible-to-coords">
@@ -179,7 +179,7 @@
           <h2 class="mb-3">{{ translate('COM_EMUNDUS_COMMENTS_ADD_COMMENT_ON') }} {{ targetLabel }}</h2>
           <textarea v-model="newCommentText" class="p-2"
                     :placeholder="translate('COM_EMUNDUS_COMMENTS_ADD_COMMENT_PLACEHOLDER')"></textarea>
-          <div v-if="!isApplicant" class="flex flex-row items-center">
+          <div v-if="!isApplicant && applicantsAllowedToComment" class="flex flex-row items-center">
             <div class="flex flex-row items-center">
               <input type="radio" name="visible_to_applicant" v-model="visible_to_applicant" :value="false"
                      id="visible-to-coords">
@@ -248,7 +248,11 @@ export default {
     currentForm: {
       type: Number,
       default: 0
-    }
+    },
+    applicantsAllowedToComment: {
+      type: Boolean,
+      default: false
+    },
   },
   mixins: [mixins, alerts],
   data: () => ({
@@ -385,6 +389,10 @@ export default {
       if (this.access.c) {
         if (this.isApplicant) {
           this.visible_to_applicant = true;
+        }
+
+        if (!this.applicantsAllowedToComment) {
+          this.visibleToApplicant = false;
         }
 
         let commentContent = this.newCommentText;
