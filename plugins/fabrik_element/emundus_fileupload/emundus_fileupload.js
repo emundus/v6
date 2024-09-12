@@ -37,10 +37,20 @@ function watch(elementId, attachId) {
                 var result = JSON.parse(xhr.responseText);
 
                 if (result != null) {
+                    var descriptionInput = document.querySelector('input#'+elementId+'_description');
+                    if(typeof descriptionInput != 'undefined' && descriptionInput != null) {
+                        descriptionInput.value = '';
+                    }
+
                     if (result.limitObtained) {
                         div.querySelector('div .btn-upload').hide();
                         div.querySelector('input#'+elementId).hide();
                         divCtrlGroup.querySelector('.control-label').style.cursor = 'default';
+
+                        var descriptionElt = document.querySelector('div#'+elementId+'_description_block');
+                        if(typeof descriptionElt !== 'undefined' && descriptionElt != null) {
+                            descriptionElt.style.display = 'none';
+                        }
                     } else {
                         div.querySelector('div .btn-upload').show();
                         div.querySelector('input#'+elementId).show();
@@ -58,12 +68,16 @@ function watch(elementId, attachId) {
                         }
 
                         for (var i = 0; i < result.files.length; i++) {
+                            var divFile = document.createElement('div');
+                            divFile.setAttribute("id", elementId + '_attachment' + i);
+
                             var divLink = document.createElement('div');
                             divLink.setAttribute("id", elementId + '_attachment_link' + i);
                             divLink.setAttribute("class", 'em-fileAttachment-link');
 
-                            if (!document.getElementById(divLink.id)) {
-                                divAttachment.appendChild(divLink);
+                            if (!document.getElementById(divFile.id)) {
+                                divAttachment.appendChild(divFile);
+                                divFile.appendChild(divLink);
                             }
 
                             if (result.files[i].can_be_viewed == 1) {
@@ -93,6 +107,13 @@ function watch(elementId, attachId) {
 
                                 var button = document.querySelector('#' + elementId + '_attachment_link' + i + ' > a.em-deleteFile');
                                 button.addEventListener('click', () => FbFileUpload.delete(elementId, attachId));
+                            }
+
+                            if (result.files[i].description !== '') {
+                                var description = document.createElement('p');
+                                description.setAttribute("class", 'text-sm text-neutral-700');
+                                description.appendChild(document.createTextNode(result.files[i].description));
+                                divFile.appendChild(description);
                             }
                         }
                     }
@@ -248,6 +269,11 @@ var FbFileUpload = {
         myFormData.append('fnum', fnum);
         myFormData.append('size', size);
         myFormData.append('encrypt', encrypt);
+
+        var descriptionInput = document.querySelector('input#'+elementId+'_description');
+        if(typeof descriptionInput != 'undefined' && descriptionInput != null) {
+            myFormData.append('description', descriptionInput.value);
+        }
 
         var file = [];
         for (var i = 0; i < input.files.length; i++) {
@@ -421,7 +447,12 @@ var FbFileUpload = {
                         div_parent.querySelector('div.btn-upload').show();
                         div_parent.querySelector('input#'+elementId).show();
 
-                        file.parentElement.parentElement.remove();
+                        var descriptionElt = document.querySelector('div#'+elementId+'_description_block');
+                        if(typeof descriptionElt != 'undefined' && descriptionElt != null) {
+                            descriptionElt.style.display = 'block';
+                        }
+
+                        file.parentElement.parentElement.parentElement.remove();
 
                         var attachmentList = div_parent.querySelectorAll('.em-fileAttachment-link').length;
                         if (attachmentList === 0) {

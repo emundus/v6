@@ -886,22 +886,25 @@ class EmundusControllerForm extends JControllerLegacy {
         exit;
     }
 
-    public function getdatabasejoinoptions(){
-        $user = JFactory::getUser();
+	public function getdatabasejoinoptions()
+	{
+		$response = array('status' => 0, 'msg' => Text::_('ACCESS_DENIED'));
+		$user = JFactory::getUser();
 
-        $jinput = JFactory::getApplication()->input;
+		if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+			$table_name   = $this->input->getString('table_name');
+			$column_name  = $this->input->getString('column_name');
+			$value        = $this->input->getString('value');
+			$concat_value = $this->input->getString('concat_value');
+			$where_clause = $this->input->getString('where_clause');
 
-        $table_name = $jinput->getString('table_name');
-        $column_name = $jinput->getString('column_name');
-        $value = $jinput->getString('value');
-        $concat_value = $jinput->getString('concat_value');
-        $where_clause = $jinput->getString('where_clause');
+			$options = $this->m_form->getDatabaseJoinOptions($table_name, $column_name, $value, $concat_value, $where_clause);
+			$response = ['status' => 1, 'msg' => 'worked', 'options' => $options];
+		}
 
-        $options = $this->m_form->getDatabaseJoinOptions($table_name, $column_name, $value, $concat_value, $where_clause);
-
-        echo json_encode((object)array('status' => 1, 'msg' => 'worked', 'options' => $options));
-        exit;
-    }
+		echo json_encode((object) $response);
+		exit;
+	}
 
     public function checkcandocbedeleted() {
         $user = JFactory::getUser();

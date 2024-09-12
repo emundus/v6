@@ -1553,7 +1553,7 @@ class FabrikFEModelForm extends FabModelForm
 		$data = isset($this->formData) ? $this->formData : $this->data;
 		$value = null;
 
-		if ($raw)
+        if ($raw)
 		{
 			$fullName .= '_raw';
 		}

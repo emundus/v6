@@ -59,10 +59,10 @@ class EmundusModelUsersTest extends TestCase
 	public function testgetNonApplicantId() {
 		$this->assertSame([], $this->m_users->getNonApplicantId(0));
 
-		$applicant_id = $this->h_sample->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$applicant_id = $this->h_sample->createSampleUser(9, 'applicant-' . rand(0, 10000) . '@emundus.test.fr');
 		$this->assertSame([], $this->m_users->getNonApplicantId($applicant_id), 'User with only applicant profile should not appear in the list of non applicant users');
 
-		$user_id = $this->h_sample->createSampleUser(2, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$user_id = $this->h_sample->createSampleUser(2, 'coorduser-' . rand(0, 10000) . '@emundus.test.fr');
 		$nonApplicantIds = $this->m_users->getNonApplicantId($user_id);
 		$this->assertNotEmpty($nonApplicantIds, 'User with at least one non applicant profile should appear in the list of non applicant users');
 

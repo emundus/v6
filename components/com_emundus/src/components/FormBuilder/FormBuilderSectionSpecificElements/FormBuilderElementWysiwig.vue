@@ -4,17 +4,16 @@
     <div v-else>
       <div v-show="!editable" v-html="element.element" :id="element.id" @click="editable = true"></div>
       <transition :name="'slide-down'" type="transition">
-        <editor
+        <editor-quill
             v-if="editable"
             :height="'30em'"
             :text="element.default"
-            :lang="'fr'"
             :enable_variables="false"
             :id="'editor_' + element.id"
             :key="dynamicComponent"
             v-model="element.default"
             @focusout="updateDisplayText"
-        ></editor>
+        ></editor-quill>
       </transition>
     </div>
   </div>
@@ -22,7 +21,7 @@
 
 <script>
 import formBuilderService from '../../../services/formbuilder';
-import Editor from "../../editor";
+import EditorQuill from "@/components/editorQuill";
 
 export default {
   props: {
@@ -36,7 +35,7 @@ export default {
     }
   },
   components: {
-    Editor
+    EditorQuill
   },
   data() {
     return {
