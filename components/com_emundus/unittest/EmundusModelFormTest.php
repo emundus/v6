@@ -147,4 +147,13 @@ class EmundusModelFormTest extends TestCase
 		$this->assertNotSame($program['programme_code'], $programs[0]['code'], 'First programe are not the same');
 		$this->assertSame($second_program['programme_code'], $programs[0]['code'], 'Second program are the same');
 	}
+
+	public function testGetDatabaseJoinOptions()
+	{
+		// assert that the functions returns false if the table is not allowed
+		$this->assertFalse($this->m_form->getDatabaseJoinOptions('jos_users', 'id', 'password'), 'Not allowed to access users table');
+		$this->assertFalse($this->m_form->getDatabaseJoinOptions('jos_emundus_campaign_candidature', 'id', 'status'), 'Not allowed to access candidature table');
+
+		$this->assertNotEmpty($this->m_form->getDatabaseJoinOptions('data_nationality', 'id', 'label_fr'), 'Allowed to access data_nationality table');
+	}
 }
