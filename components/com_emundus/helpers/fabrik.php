@@ -297,6 +297,94 @@ die("<script>
                     'plugin_events' => array('both', 'both', 'both'),
                     'plugin_description' => array('Is evaluated by me', 'css', 'sweet'),
                 ];
+            }
+            else if ($type === 'decision')
+            {
+                $plugins = [
+                    'curl_code' => [
+                        0 => '$student_id=\'{jos_emundus_final_grade___student_id}\';
+                        $student=JUser::getInstance($student_id);
+                        echo \'<h2>\'.$student->name.\'</h2>\';
+                        require_once (JPATH_ROOT.\'/components/com_emundus/helpers/access.php\');
+                        $app = JFactory::getApplication();
+                        $db = JFactory::getDBO();
+                        $user =  JFactory::getUser();
+                        $fnum = \'{jos_emundus_final_grade___fnum}\';
+                        $r = $app->input->getInt(\'r\', 0);
+                        $rowid = $app->input->getInt(\'rowid\', 0);
+                        $formid = $app->input->getInt(\'formid\', 39);
+                                
+                        $r = JRequest::getVar(\'r\', 0, \'GET\', \'none\', 0);
+                        $rowid = JRequest::getVar(\'rowid\', 0, \'GET\', \'none\', 0);
+                                
+                        if (!EmundusHelperAccess::asAccessAction(29, \'u\', $user->id, $fnum)) { 
+                            $url = \'index.php?option=com_fabrik&c=form&view=details&formid=\'.$formid.\'&tmpl=component&iframe=1&rowid=\'.$rowid.\'&r=1\';
+                            if ($r != 1){
+                                $app->redirect($url);
+                            }
+                        } 
+                                
+                        $query = "SELECT id FROM jos_emundus_final_grade WHERE fnum like ".$db->Quote($fnum);
+                        $db->setQuery($query);
+                                
+                        $id = $db->loadResult();
+                        if ($id > 0 && $r != 1) {
+                            $url = \'index.php?option=com_fabrik&c=form&view=form&formid=\'.$formid.\'&tmpl=component&iframe=1&rowid=\'.$id.\'&r=1\';
+                            $app->redirect($url);
+                        }',
+                        1 => "",
+                        2 => "echo '<script src=\"https://cdn.jsdelivr.net/npm/sweetalert2@8\"></script>';
+                            echo '<script
+                                        src=\"https://code.jquery.com/jquery-3.3.1.slim.js\"
+                                        integrity=\"sha256-fNXJFIlca05BIO2Y5zh1xrShK3ME+/lYZ0j+ChxX2DA=\"
+                                        crossorigin=\"anonymous\">
+                                  </script>';
+                                  
+                            echo '<script>window.parent.ScrollToTop();</script>';
+                            
+                            echo '<style>
+                            .em-swal-title{
+                              margin: 8px 8px 32px 8px !important;
+                              font-family: \"Maven Pro\", sans-serif !important;
+                            }
+                            </style>';
+                            
+                            die(\"<script>
+                                  $(document).ready(function () {
+                                    Swal.fire({
+                                      position: 'top',
+                                      type: 'success',
+                                      title: '\".JText::_('COM_EMUNDUS_DECISION_SAVED').\"',
+                                      showConfirmButton: false,
+                                      timer: 1500,
+                                      customClass: {
+                                        title: 'em-swal-title',
+                                      },
+                                      onClose: () => {
+                                        history.go(-1);
+                                      }
+                                    })
+                                  });
+                                  </script>\");"
+                    ],
+                    'only_process_curl' => [
+                        'onBeforeLoad',
+                        'onBeforeCalculations',
+                        'onAfterProcess'
+                    ],
+                    'form_php_file' => ['-1',  'emundus-final_grade.php', '-1'],
+                    'form_php_require_once' => ['0', '0', '0'],
+                    'process-jplugins' => '2',
+                    'plugins' => array('php', 'php', 'php'),
+                    'plugin_state' => array('1', '1', '1'),
+                    'plugin_locations' => array('front', 'both', 'both'),
+                    'plugin_events' => array('both', 'both', 'both'),
+                    'plugin_description' => [
+                        'header + reload last record',
+                        'final grade',
+                        'Sweet'
+                    ],
+                ];
             } else {
                 $plugins = [
                     'process-jplugins' => '2',
@@ -807,7 +895,8 @@ die("<script>
             $db->setQuery($query);
             return $db->execute();
         } catch (Exception $e) {
-            JLog::add('component/com_emundus/helpers/fabrik | Cannot add option for element ' . $eid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/helpers/fabrik | Cannot add option for element ' . $eid . ' : ' . preg_replace("/[
+]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -852,7 +941,8 @@ die("<script>
             $db->setQuery($query);
             return $db->execute();
         } catch (Exception $e) {
-            JLog::add('component/com_emundus/helpers/fabrik | Cannot add notempty validation for element ' . $eid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/helpers/fabrik | Cannot add notempty validation for element ' . $eid . ' : ' . preg_replace("/[
+]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -890,7 +980,8 @@ die("<script>
 
             return true;
         } catch (Exception $e) {
-            JLog::add('component/com_emundus/helpers/fabrik | Cannot check fabrik joins for element ' . $eid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/helpers/fabrik | Cannot check fabrik joins for element ' . $eid . ' : ' . preg_replace("/[
+]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -951,7 +1042,8 @@ die("<script>
 					}
 				}
 			} catch (Exception $e) {
-				JLog::add('component/com_emundus/helpers/fabrik | Cannot create JS Action for element ' . $eid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+				JLog::add('component/com_emundus/helpers/fabrik | Cannot create JS Action for element ' . $eid . ' : ' . preg_replace("/[
+]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
 				$added = false;
 			}
 		}
@@ -977,7 +1069,8 @@ die("<script>
             $db->setQuery($query);
             return $db->loadResult();
         } catch (Exception $e) {
-            JLog::add('component/com_emundus/helpers/fabrik | Cannot get table from fabrik with type ' . $object . ' ' . $id . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/helpers/fabrik | Cannot get table from fabrik with type ' . $object . ' ' . $id . ' : ' . preg_replace("/[
+]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -1102,7 +1195,8 @@ die("<script>
 	        }
 	        catch (Exception $e)
 	        {
-		        Log::add('components/com_emundus/helpers/fabrik | Error when try to get fabrik elements table data : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
+		        Log::add('components/com_emundus/helpers/fabrik | Error when try to get fabrik elements table data : ' . preg_replace("/[
+]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 	        }
 
 	        if (!empty($element))
