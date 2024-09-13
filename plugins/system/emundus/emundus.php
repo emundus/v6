@@ -60,6 +60,8 @@ class plgSystemEmundus extends JPlugin
 	 */
 	public function __construct(&$subject, $config)
 	{
+		parent::__construct($subject, $config);
+		
 		// Could be component was uninstalled but not the plugin
 		if (!File::exists(JPATH_SITE . '/components/com_emundus/emundus.php'))
 		{
@@ -67,8 +69,8 @@ class plgSystemEmundus extends JPlugin
 		}
 	}
 
-	public function onBeforeCompileHead(){
-
+	public function onBeforeCompileHead()
+	{
 		if(version_compare(JVERSION,'3.7','<'))
 		{
 			return;
@@ -76,13 +78,12 @@ class plgSystemEmundus extends JPlugin
 
 		$app = Factory::getApplication();
 		if($app->isClient('administrator')) {
-			if(empty($_REQUEST['option']) || $_REQUEST['option'] != 'com_hikashop')
+			if(empty($_REQUEST['option']) || $_REQUEST['option'] != 'com_emundus')
 				return;
 		}
 
 		$doc = Factory::getDocument();
 		$head = $doc->getHeadData();
-		$wa   = $doc->getWebAssetManager();
 
 		if(empty($head['scripts']))
 			return;
@@ -102,9 +103,11 @@ class plgSystemEmundus extends JPlugin
 		}
 		$head['scripts'] = $newScripts;
 
-		$profile_details = null;
-		if (!$app->getIdentity()->guest)
+		if (!Factory::getUser()->guest)
 		{
+			$profile_details = null;
+			$e_session = $app->getSession()->get('emundusUser');
+
 			if (!empty($e_session->profile))
 			{
 				require_once JPATH_ROOT . '/components/com_emundus/models/users.php';
@@ -129,10 +132,9 @@ class plgSystemEmundus extends JPlugin
 					--em-profile-font-title: var(' . $profile_font_title . ');
 				}';
 
-				$wa->addInlineStyle($style);
+				$doc->addStyleDeclaration($style);
 			}
 		}
-
 
 		$doc->setHeadData($head);
 	}
@@ -168,16 +170,6 @@ class plgSystemEmundus extends JPlugin
 				if (!strpos($match, 'class='))
 				{
 					$replace = '<div id="g-page-surround" class="' . $class . '">';
-					$body    = str_replace($match, $replace, $body);
-				}
-			}
-
-			preg_match_all(\chr(1) . '(<section.*\s+id="g-navigation".*>)' . \chr(1) . 'i', $body, $matches);
-			foreach ($matches[0] as $match)
-			{
-				if (!strpos($match, 'class='))
-				{
-					$replace = '<header id="g-navigation" role="banner">';
 					$body    = str_replace($match, $replace, $body);
 				}
 			}
