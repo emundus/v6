@@ -168,19 +168,20 @@ class EmundusFiltersFiles extends EmundusFilters
 			}
 		}
 
-		// get fnums distinct programs
-		$query->clear()
-			->select('DISTINCT jesp.id')
-			->from($db->quoteName('#__emundus_setup_programmes', 'jesp'))
-			->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esc.training') . ' = ' . $db->quoteName('jesp.code'))
-			->where('esc.id IN (' . implode(',', $db->quote($this->user_campaigns)) . ')');
+		if (!empty($this->user_campaigns)) {
+			$query->clear()
+				->select('DISTINCT jesp.id')
+				->from($db->quoteName('#__emundus_setup_programmes', 'jesp'))
+				->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esc.training') . ' = ' . $db->quoteName('jesp.code'))
+				->where('esc.id IN (' . implode(',', $db->quote($this->user_campaigns)) . ')');
 
-		try {
-			$db->setQuery($query);
-			$programs = $db->loadColumn();
-			$this->user_programs = array_merge($this->user_programs, $programs);
-		} catch (Exception $e) {
-			JLog::add('Failed to get user programs assoc : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
+			try {
+				$db->setQuery($query);
+				$programs = $db->loadColumn();
+				$this->user_programs = array_merge($this->user_programs, $programs);
+			} catch (Exception $e) {
+				JLog::add('Failed to get user programs assoc : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
+			}
 		}
     }
 
