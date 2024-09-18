@@ -80,7 +80,8 @@ foreach ($users as $user) {
 	    case 0:
 	    	$query->clear()->select($db->quoteName('id'))
 			    ->from($db->quoteName('#__emundus_campaign_candidature'))
-			    ->where($db->quoteName('applicant_id').' = '.$user_id);
+			    ->where($db->quoteName('applicant_id').' = '.$user_id)
+                ->andWhere($db->quoteName('published') . ' = 1');
 		    try {
 			    if (!empty($db->loadResult())) {
 				    JLog::add('User: '.$user_id.' already has a file.', JLog::ERROR, 'com_emundus');
