@@ -138,22 +138,50 @@ class EmundusFiltersFiles extends EmundusFilters
             } catch (Exception $e) {
                 JLog::add('Failed to get user campaigns assoc : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
             }
-
-            // get fnums distinct programs
-            $query->clear()
-                ->select('DISTINCT jesp.id')
-                ->from($db->quoteName('#__emundus_setup_programmes', 'jesp'))
-                ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esc.training') . ' = ' . $db->quoteName('jesp.code'))
-                ->where('esc.id IN (' . implode(',', $db->quote($this->user_campaigns)) . ')');
-
-            try {
-                $db->setQuery($query);
-                $programs = $db->loadColumn();
-                $this->user_programs = array_merge($this->user_programs, $programs);
-            } catch (Exception $e) {
-                JLog::add('Failed to get user programs assoc : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
-            }
         }
+
+		// assoc can be done on groups too
+		// select all files that are linked to users groups
+		$query->clear()
+			->select('DISTINCT eg.group_id')
+			->from($db->quoteName('#__emundus_groups', 'eg'))
+			->leftJoin($db->quoteName('#__emundus_acl', 'acl') . ' ON ' . $db->quoteName('acl.group_id') . ' = ' . $db->quoteName('eg.group_id'))
+			->where('eg.user_id = ' . $db->quote($this->user->id))
+			->andWhere('acl.action_id = 1')
+			->andWhere('acl.r = 1');
+
+		$db->setQuery($query);
+		$user_groups = $db->loadColumn();
+
+		if (!empty($user_groups)) {
+			$query->clear()
+				->select('DISTINCT ecc.campaign_id')
+				->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+				->leftJoin($db->quoteName('#__emundus_group_assoc', 'ega') . ' ON ' . $db->quoteName('ega.fnum') . ' = ' . $db->quoteName('ecc.fnum') . ' AND action_id = 1 AND r = 1')
+				->where('ega.group_id IN (' . implode(',', $db->quote($user_groups)) . ')');
+
+			$db->setQuery($query);
+			$campaigns = $db->loadColumn();
+
+			if (!empty($campaigns)) {
+				$this->user_campaigns = array_merge($this->user_campaigns, $campaigns);
+			}
+		}
+
+		// get fnums distinct programs
+		$query->clear()
+			->select('DISTINCT jesp.id')
+			->from($db->quoteName('#__emundus_setup_programmes', 'jesp'))
+			->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esc.training') . ' = ' . $db->quoteName('jesp.code'))
+			->where('esc.id IN (' . implode(',', $db->quote($this->user_campaigns)) . ')');
+
+		try {
+			$db->setQuery($query);
+			$programs = $db->loadColumn();
+			$this->user_programs = array_merge($this->user_programs, $programs);
+		} catch (Exception $e) {
+			JLog::add('Failed to get user programs assoc : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
+		}
     }
 
 	private function setProfiles()
