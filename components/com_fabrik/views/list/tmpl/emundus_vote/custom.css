@@ -287,3 +287,35 @@ button.em-applicant-primary-button[disabled] {
 .h-14 {
 	height: auto !important;
 }
+
+/* FILTERS */
+.fabrikListFilterCheckbox {
+	display: flex;
+	column-gap: 8px;
+	row-gap: 12px;
+	align-items: center;
+	flex-wrap: wrap;
+}
+.fabrikListFilterCheckbox .row-fluid {
+	width: auto !important;
+}
+.fabrikListFilterCheckbox .fabrikgrid_checkbox label[for^="fabrik___filter_list_"],
+.fabrikListFilterCheckbox .clearFilters {
+	color: #6C6C6C;
+	padding: 6px 12px;
+	border-radius: 26px;
+	background-color: #F0F0F0;
+	transition: all 0.3s ease-out;
+}
+.fabrikListFilterCheckbox .fabrikgrid_checkbox label[for^="fabrik___filter_list_"]:hover,
+.fabrikListFilterCheckbox .fabrikgrid_checkbox label[for^="fabrik___filter_list_"]:has(> input[type="checkbox"]:checked),
+.fabrikListFilterCheckbox .clearFilters:hover{
+	background-color: #30404E;
+	color: white !important;
+}
+.fabrikListFilterCheckbox .fabrikgrid_checkbox input.fabrik_filter {
+	display: none;
+}
+.fabrikListFilterCheckbox .fabrikgrid_checkbox span {
+	white-space: nowrap;
+}
