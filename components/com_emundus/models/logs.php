@@ -566,41 +566,60 @@ class EmundusModelLogs extends JModelList {
 	 * @description             Exports logs before a given date.
 	 * @return string
 	 */
-	public function exportLogsBeforeADate($date)
-	{
-		$csv_filename = '';
+    public function exportLogsBeforeADate($date)
+    {
+        $csv_filename = '';
 
-		if (!empty($date))
-		{
-			$query = $this->db->getQuery(true);
+        if (!empty($date))
+        {
+            $limit = 10000;
+            $offset = 0;
+            $header_written = false;
 
-			$query->select('*')
-				->from($this->db->quoteName('#__emundus_logs'))
-				->where($this->db->quoteName('timestamp') . ' < ' . $this->db->quote($date->format('Y-m-d H:i:s')));
+            do {
+                $query = $this->db->getQuery(true);
 
-			try
-			{
-				$this->db->setQuery($query);
-				$logs = $this->db->loadAssocList();
-			}
-			catch (Exception $e)
-			{
-				Log::add('Could not fetch logs from jos_emundus_logs table in model logs at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
-			}
+                $query->clear()
+                    ->select('*')
+                    ->from($this->db->quoteName('#__emundus_logs'))
+                    ->where($this->db->quoteName('timestamp') . ' < ' . $this->db->quote($date->format('Y-m-d H:i:s')))
+                    ->setLimit($limit, $offset);
 
-			if (!empty($logs))
-			{
-				$csv_filename = JPATH_SITE . '/tmp/backup_logs_' . date('Y-m-d_H-i-s') . '.csv';
-				$csv_file     = fopen($csv_filename, 'w');
-				fputcsv($csv_file, array_keys($logs[0]));
-				foreach ($logs as $log)
-				{
-					fputcsv($csv_file, $log);
-				}
-				fclose($csv_file);
-			}
-		}
+                try
+                {
+                    $this->db->setQuery($query);
+                    $logs = $this->db->loadAssocList();
+                }
+                catch (Exception $e)
+                {
+                    Log::add('Could not fetch logs from jos_emundus_logs table in model logs at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+                    break;
+                }
 
-		return $csv_filename;
-	}
+                if (!empty($logs))
+                {
+                    if (!$header_written) {
+                        $csv_filename = JPATH_SITE . '/tmp/backup_logs_' . date('Y-m-d_H-i-s') . '.csv';
+                        $csv_file     = fopen($csv_filename, 'w');
+                        fputcsv($csv_file, array_keys($logs[0]));
+                        $header_written = true;
+                    }
+
+                    foreach ($logs as $log)
+                    {
+                        fputcsv($csv_file, $log);
+                    }
+                    $offset += $limit;
+                }
+
+            } while (count($logs) == $limit);
+
+            if ($header_written) {
+                fclose($csv_file);
+            }
+        }
+
+        return $csv_filename;
+    }
+
 }

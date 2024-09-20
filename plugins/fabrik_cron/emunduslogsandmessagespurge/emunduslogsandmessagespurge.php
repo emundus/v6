@@ -87,13 +87,11 @@ class PlgFabrik_Cronemunduslogsandmessagespurge extends PlgFabrik_Cron{
 					if (!empty($filename_logs) && file_exists($filename_logs))
 					{
 						$zip->addFile($filename_logs, basename($filename_logs));
-						unlink($filename_logs);
 					}
 
 					if (!empty($filename_messages) && file_exists($filename_messages))
 					{
 						$zip->addFile($filename_messages, basename($filename_messages));
-						unlink($filename_messages);
 					}
 
 					$zip->close();
