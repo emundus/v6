@@ -1693,7 +1693,8 @@ class EmundusController extends JControllerLegacy {
         if (is_file($file)) {
             $mime_type = $this->get_mime_type($file);
 
-            if (EmundusHelperAccess::isDataAnonymized($current_user->id) && $mime_type === 'application/pdf') {
+            //TODO If data ara anonimized remove metadata
+            /*if (EmundusHelperAccess::isDataAnonymized($current_user->id) && $mime_type === 'application/pdf') {
 
 	            require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'fpdi.php');
 	            $pdf = new ConcatPdf();
@@ -1702,7 +1703,7 @@ class EmundusController extends JControllerLegacy {
 	            $pdf->Output();
 	            exit;
 
-            } else {
+            } else {*/
 	            header('Content-type: '.$mime_type);
                 header('Content-Disposition: inline; filename='.basename($file));
                 header('Last-Modified: '.gmdate('D, d M Y H:i:s') . ' GMT');
@@ -1716,7 +1717,7 @@ class EmundusController extends JControllerLegacy {
                 ob_end_flush();
                 readfile($file);
                 exit;
-            }
+           // }
         } else {
             JError::raiseWarning(500, JText::_( 'COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND' ).' '.$url);
         }

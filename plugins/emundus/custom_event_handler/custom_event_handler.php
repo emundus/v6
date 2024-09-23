@@ -54,15 +54,18 @@ class plgEmundusCustom_event_handler extends JPlugin
 			$returned_values[$event] = $this->hEvents->{$event}($args);
 		}
 
-		foreach ($events as $index => $caller_index) {
-			try {
-				$returned_values[$caller_index] = $this->_runPHP($codes[$index], $args);
-			}
-			catch (ParseError $p) {
-				JLog::add('Error while running event ' . $caller_index . ' : "' . $p->getMessage() . '"', JLog::ERROR, 'com_emundus');
-				continue;
-			}
-		}
+        foreach ($events as $index => $caller_index) {
+            try {
+                if (!isset($returned_values[$caller_index])) {
+                    $returned_values[$caller_index] = [];
+                }
+
+                $returned_values[$caller_index][$index] = $this->_runPHP($codes[$index], $args);
+            } catch (ParseError $p) {
+                JLog::add('Error while running event ' . $caller_index . ' : "' . $p->getMessage() .'"', JLog::ERROR,'com_emundus');
+                continue;
+            }
+        }
 
 		return $returned_values;
 	}
