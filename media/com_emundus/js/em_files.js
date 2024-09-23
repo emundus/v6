@@ -2797,6 +2797,10 @@ $(document).ready(function () {
                             '<div class="flex flex-row">' +
                             '<input class="em-ex-check" type="checkbox"  value="concat_attachments_with_form" name="concat_attachments_with_form" id="concat_attachments_with_form" />&ensp;' +
                             '<label for="concat_attachments_with_form">' + Joomla.JText._('COM_EMUNDUS_EXPORTS_CONCAT_ATTACHMENTS_WITH_FORMS') + '</label>' +
+                            '</div>' +
+                            '<div class="flex flex-row">' +
+                            '<input class="em-ex-check" type="checkbox" value="convert_docx_to_pdf" name="convert_docx_to_pdf" id="convert_docx_to_pdf" />&ensp;' +
+                            '<label for="convert_docx_to_pdf">' + Joomla.Text._('COM_EMUNDUS_EXPORTS_CONVERT_DOCX_TO_PDF') + '</label>' +
                             '</div>');
 
                         checkInput = getUserCheck();

@@ -206,7 +206,7 @@ class EmundusHelperExport {
         return preg_match('/Encrypt ([0-9]+) /', $s);
     }
 
-	public static function getAttachmentPDF(&$exports, &$tmpArray, $files, $sid) {
+	public static function getAttachmentPDF(&$exports, &$tmpArray, $files, $sid, $convert_docx_to_pdf = false) {
         if (!empty($files)) {
 
         	$nb_application_forms = 0;
@@ -222,7 +222,7 @@ class EmundusHelperExport {
                     $filePath = EMUNDUS_PATH_ABS.$file->user_id.DS.$file->filename;
                     if (file_exists($filePath) && filesize($filePath) != 0) {
 
-						if ($exFileName[1] === 'docx') {
+						if ($convert_docx_to_pdf && $exFileName[1] === 'docx') {
 							$tmp_dest = JPATH_SITE . '/tmp/'. $sid . str_replace('.docx', '', $file->filename);
 							$tmp_dest_pdf = JPATH_SITE . '/tmp/'. $sid . str_replace('.docx', '.pdf', $file->filename);
 							$res = $m_export->toPdf($filePath, $tmp_dest, 'docx');
