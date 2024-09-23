@@ -68,9 +68,7 @@ class EmundusModelExport extends JModelList {
 			]);
 		}
 
-
-
-        $res = new stdClass();
+		$res = new stdClass();
 
         if ($gotenberg_activation != 1) {
             $res->status = false;
