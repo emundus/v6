@@ -3,7 +3,7 @@
         'name' => 'benj/emundus',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => '287e699851d1ddcf4953eba581d5b3dfc5195adf',
+        'reference' => '21e725ba1dd4a7087446650c9ed78f56a1692318',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'benj/emundus' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '287e699851d1ddcf4953eba581d5b3dfc5195adf',
+            'reference' => '21e725ba1dd4a7087446650c9ed78f56a1692318',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
