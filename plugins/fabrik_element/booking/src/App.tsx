@@ -1,8 +1,8 @@
 import React from 'react';
 import './App.css';
 import "@calcom/atoms/globals.min.css";
-import Availability  from "./Availability.tsx";
-import Booking from "./Booking.tsx";
+import Availability  from "./Availability.js";
+import Booking from "./Booking.js";
 
 
 class App extends React.Component<{ pageProps: any }> {

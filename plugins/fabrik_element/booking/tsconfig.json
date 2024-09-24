@@ -6,9 +6,15 @@
     "module": "ESNext",
     "skipLibCheck": true,
 
+
     /* Bundler mode */
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "paths": {
+      "@calcom/atoms": ["node_modules/@calcom/atoms"]
+    },
     "allowImportingTsExtensions": true,
+    "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,

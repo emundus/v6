@@ -32,7 +32,7 @@ class CalCom extends Api
      */
     public function setBaseUrlFirstVersionApi()
     {
-        $this->baseUrl = "http://192.168.1.72:3003";
+        $this->baseUrl = "http://192.168.1.82:3003";
     }
 
     /**
@@ -40,7 +40,7 @@ class CalCom extends Api
      */
     public function setBaseUrl(): void
     {
-        $this->baseUrl = "http://192.168.1.72:3004";
+        $this->baseUrl = "http://192.168.1.82:3004";
     }
 
     /**
