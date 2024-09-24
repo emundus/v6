@@ -269,8 +269,8 @@ import Autocomplete from "../components/autocomplete";
 import Translation from "../components/translation"
 
 /** SERVICES **/
-import campaignService from "../services/campaign";
-import EditorQuill from "../components/editorQuill";
+import campaignService from 'com_emundus/src/services/campaign';
+import EditorQuill from "@/components/editorQuill";
 
 const qs = require("qs");
 

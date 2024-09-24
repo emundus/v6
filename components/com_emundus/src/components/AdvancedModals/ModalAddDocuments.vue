@@ -60,7 +60,14 @@
 
         <div class="em-mb-16">
           <label for="description">{{ translations.Description }} :</label>
-          <editor :height="'20em'" :text="form.description[langue]" :lang="langue" :enable_variables="false" :id="'editor_fr'" :key="dynamicComponent" v-model="form.description[langue]"></editor>
+          <editor-quill
+              :height="'20em'"
+              :text="form.description[langue]"
+              :enable_variables="false"
+              :id="'editor_fr'"
+              :key="dynamicComponent"
+              v-model="form.description[langue]">
+          </editor-quill>
         </div>
         <div class="em-mb-16">
           <label for="nbmax">{{ translations.MaxPerUser }}* :</label>
@@ -141,7 +148,7 @@ import axios from "axios";
 const qs = require("qs");
 import Translation from "../translation";
 import Swal from "sweetalert2";
-import Editor from "../../components/editor";
+import EditorQuill from "@/components/editorQuill";
 
 export default {
   name: "modalAddDocuments",
@@ -154,7 +161,7 @@ export default {
   },
   components: {
     Translation,
-    Editor,
+    EditorQuill,
   },
   data() {
     return {

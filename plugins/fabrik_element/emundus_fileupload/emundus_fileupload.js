@@ -38,7 +38,7 @@ function watch(elementId, attachId) {
 
                 if (result != null) {
                     var descriptionInput = document.querySelector('input#'+elementId+'_description');
-                    if(typeof descriptionInput !== 'undefined') {
+                    if(typeof descriptionInput != 'undefined' && descriptionInput != null) {
                         descriptionInput.value = '';
                     }
 
@@ -48,7 +48,7 @@ function watch(elementId, attachId) {
                         divCtrlGroup.querySelector('.control-label').style.cursor = 'default';
 
                         var descriptionElt = document.querySelector('div#'+elementId+'_description_block');
-                        if(typeof descriptionElt !== 'undefined') {
+                        if(typeof descriptionElt !== 'undefined' && descriptionElt != null) {
                             descriptionElt.style.display = 'none';
                         }
                     } else {
@@ -68,12 +68,16 @@ function watch(elementId, attachId) {
                         }
 
                         for (var i = 0; i < result.files.length; i++) {
+                            var divFile = document.createElement('div');
+                            divFile.setAttribute("id", elementId + '_attachment' + i);
+
                             var divLink = document.createElement('div');
                             divLink.setAttribute("id", elementId + '_attachment_link' + i);
                             divLink.setAttribute("class", 'em-fileAttachment-link');
 
-                            if (!document.getElementById(divLink.id)) {
-                                divAttachment.appendChild(divLink);
+                            if (!document.getElementById(divFile.id)) {
+                                divAttachment.appendChild(divFile);
+                                divFile.appendChild(divLink);
                             }
 
                             if (result.files[i].can_be_viewed == 1) {
@@ -103,6 +107,13 @@ function watch(elementId, attachId) {
 
                                 var button = document.querySelector('#' + elementId + '_attachment_link' + i + ' > a.em-deleteFile');
                                 button.addEventListener('click', () => FbFileUpload.delete(elementId, attachId));
+                            }
+
+                            if (result.files[i].description !== '') {
+                                var description = document.createElement('p');
+                                description.setAttribute("class", 'text-sm text-neutral-700');
+                                description.appendChild(document.createTextNode(result.files[i].description));
+                                divFile.appendChild(description);
                             }
                         }
                     }
@@ -260,7 +271,7 @@ var FbFileUpload = {
         myFormData.append('encrypt', encrypt);
 
         var descriptionInput = document.querySelector('input#'+elementId+'_description');
-        if(typeof descriptionInput !== 'undefined') {
+        if(typeof descriptionInput != 'undefined' && descriptionInput != null) {
             myFormData.append('description', descriptionInput.value);
         }
 
@@ -437,11 +448,11 @@ var FbFileUpload = {
                         div_parent.querySelector('input#'+elementId).show();
 
                         var descriptionElt = document.querySelector('div#'+elementId+'_description_block');
-                        if(typeof descriptionElt !== 'undefined') {
+                        if(typeof descriptionElt != 'undefined' && descriptionElt != null) {
                             descriptionElt.style.display = 'block';
                         }
 
-                        file.parentElement.parentElement.remove();
+                        file.parentElement.parentElement.parentElement.remove();
 
                         var attachmentList = div_parent.querySelectorAll('.em-fileAttachment-link').length;
                         if (attachmentList === 0) {

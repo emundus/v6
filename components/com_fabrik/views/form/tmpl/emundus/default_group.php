@@ -13,15 +13,19 @@
 defined('_JEXEC') or die('Restricted access');
 
 $rowStarted      = false;
-$layout          = FabrikHelperHTML::getLayout('form.fabrik-control-group');
+$layout          = FabrikHelperHTML::getLayout('form.fabrik-control-group', [JPATH_SITE . '/components/com_fabrik/views/form/tmpl/emundus/layouts/']);
 $gridStartLayout = FabrikHelperHTML::getLayout('grid.fabrik-grid-start');
 $gridEndLayout   = FabrikHelperHTML::getLayout('grid.fabrik-grid-end');
+$model     = $this->getModel();
+$element_ids = $model->getElementIds();
 
 foreach ($this->elements as $element) :
+    $element->element_fabrik_id = $element_ids[$this->index_element_id];
+    $this->index_element_id++;
 	$this->element = $element;
 	$this->class = 'fabrikErrorMessage';
 
-	// Don't display hidden element's as otherwise they wreck multi-column layouts
+    // Don't display hidden element's as otherwise they wreck multi-column layouts
 	if (trim($element->error) !== '') :
 		$element->error = $element->error;
 		$element->containerClass .= ' error';
@@ -39,7 +43,9 @@ foreach ($this->elements as $element) :
 	$displayData = array(
 		'class' => $element->containerClass,
 		'style' => $style,
-		'span' => $span
+		'span' => $span,
+        'element' => $element,
+        'display_comments' => $this->display_comments,
 	);
 
 	$labelsAbove = $element->labels;
@@ -62,9 +68,9 @@ foreach ($this->elements as $element) :
 		$displayData['row'] = $this->loadTemplate('group_labels_above');
 	}
 
-	echo $layout->render((object) $displayData);
-
-	?><?php
+    echo $layout->render((object) $displayData);
+    ?>
+    <?php
 	if ($element->endRow) :
 		echo $gridEndLayout->render(new stdClass);
 		$rowStarted = false;

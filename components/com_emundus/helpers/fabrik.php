@@ -18,12 +18,14 @@ jimport('joomla.application.component.helper');
 
 require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 include_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
+require_once(JPATH_SITE . '/components/com_emundus/helpers/cache.php');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use libphonenumber\PhoneNumberUtil;
 use libphonenumber\PhoneNumberFormat;
+
 
 /**
  * Content Component Query Helper
@@ -294,6 +296,94 @@ die("<script>
                     'plugin_locations' => array('both', 'both', 'both'),
                     'plugin_events' => array('both', 'both', 'both'),
                     'plugin_description' => array('Is evaluated by me', 'css', 'sweet'),
+                ];
+            }
+            else if ($type === 'decision')
+            {
+                $plugins = [
+                    'curl_code' => [
+                        0 => '$student_id=\'{jos_emundus_final_grade___student_id}\';
+                        $student=JUser::getInstance($student_id);
+                        echo \'<h2>\'.$student->name.\'</h2>\';
+                        require_once (JPATH_ROOT.\'/components/com_emundus/helpers/access.php\');
+                        $app = JFactory::getApplication();
+                        $db = JFactory::getDBO();
+                        $user =  JFactory::getUser();
+                        $fnum = \'{jos_emundus_final_grade___fnum}\';
+                        $r = $app->input->getInt(\'r\', 0);
+                        $rowid = $app->input->getInt(\'rowid\', 0);
+                        $formid = $app->input->getInt(\'formid\', 39);
+                                
+                        $r = JRequest::getVar(\'r\', 0, \'GET\', \'none\', 0);
+                        $rowid = JRequest::getVar(\'rowid\', 0, \'GET\', \'none\', 0);
+                                
+                        if (!EmundusHelperAccess::asAccessAction(29, \'u\', $user->id, $fnum)) { 
+                            $url = \'index.php?option=com_fabrik&c=form&view=details&formid=\'.$formid.\'&tmpl=component&iframe=1&rowid=\'.$rowid.\'&r=1\';
+                            if ($r != 1){
+                                $app->redirect($url);
+                            }
+                        } 
+                                
+                        $query = "SELECT id FROM jos_emundus_final_grade WHERE fnum like ".$db->Quote($fnum);
+                        $db->setQuery($query);
+                                
+                        $id = $db->loadResult();
+                        if ($id > 0 && $r != 1) {
+                            $url = \'index.php?option=com_fabrik&c=form&view=form&formid=\'.$formid.\'&tmpl=component&iframe=1&rowid=\'.$id.\'&r=1\';
+                            $app->redirect($url);
+                        }',
+                        1 => "",
+                        2 => "echo '<script src=\"https://cdn.jsdelivr.net/npm/sweetalert2@8\"></script>';
+                            echo '<script
+                                        src=\"https://code.jquery.com/jquery-3.3.1.slim.js\"
+                                        integrity=\"sha256-fNXJFIlca05BIO2Y5zh1xrShK3ME+/lYZ0j+ChxX2DA=\"
+                                        crossorigin=\"anonymous\">
+                                  </script>';
+                                  
+                            echo '<script>window.parent.ScrollToTop();</script>';
+                            
+                            echo '<style>
+                            .em-swal-title{
+                              margin: 8px 8px 32px 8px !important;
+                              font-family: \"Maven Pro\", sans-serif !important;
+                            }
+                            </style>';
+                            
+                            die(\"<script>
+                                  $(document).ready(function () {
+                                    Swal.fire({
+                                      position: 'top',
+                                      type: 'success',
+                                      title: '\".JText::_('COM_EMUNDUS_DECISION_SAVED').\"',
+                                      showConfirmButton: false,
+                                      timer: 1500,
+                                      customClass: {
+                                        title: 'em-swal-title',
+                                      },
+                                      onClose: () => {
+                                        history.go(-1);
+                                      }
+                                    })
+                                  });
+                                  </script>\");"
+                    ],
+                    'only_process_curl' => [
+                        'onBeforeLoad',
+                        'onBeforeCalculations',
+                        'onAfterProcess'
+                    ],
+                    'form_php_file' => ['-1',  'emundus-final_grade.php', '-1'],
+                    'form_php_require_once' => ['0', '0', '0'],
+                    'process-jplugins' => '2',
+                    'plugins' => array('php', 'php', 'php'),
+                    'plugin_state' => array('1', '1', '1'),
+                    'plugin_locations' => array('front', 'both', 'both'),
+                    'plugin_events' => array('both', 'both', 'both'),
+                    'plugin_description' => [
+                        'header + reload last record',
+                        'final grade',
+                        'Sweet'
+                    ],
                 ];
             } else {
                 $plugins = [
@@ -805,7 +895,8 @@ die("<script>
             $db->setQuery($query);
             return $db->execute();
         } catch (Exception $e) {
-            JLog::add('component/com_emundus/helpers/fabrik | Cannot add option for element ' . $eid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/helpers/fabrik | Cannot add option for element ' . $eid . ' : ' . preg_replace("/[
+]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -850,7 +941,8 @@ die("<script>
             $db->setQuery($query);
             return $db->execute();
         } catch (Exception $e) {
-            JLog::add('component/com_emundus/helpers/fabrik | Cannot add notempty validation for element ' . $eid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/helpers/fabrik | Cannot add notempty validation for element ' . $eid . ' : ' . preg_replace("/[
+]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -888,7 +980,8 @@ die("<script>
 
             return true;
         } catch (Exception $e) {
-            JLog::add('component/com_emundus/helpers/fabrik | Cannot check fabrik joins for element ' . $eid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/helpers/fabrik | Cannot check fabrik joins for element ' . $eid . ' : ' . preg_replace("/[
+]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -949,7 +1042,8 @@ die("<script>
 					}
 				}
 			} catch (Exception $e) {
-				JLog::add('component/com_emundus/helpers/fabrik | Cannot create JS Action for element ' . $eid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+				JLog::add('component/com_emundus/helpers/fabrik | Cannot create JS Action for element ' . $eid . ' : ' . preg_replace("/[
+]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
 				$added = false;
 			}
 		}
@@ -975,7 +1069,8 @@ die("<script>
             $db->setQuery($query);
             return $db->loadResult();
         } catch (Exception $e) {
-            JLog::add('component/com_emundus/helpers/fabrik | Cannot get table from fabrik with type ' . $object . ' ' . $id . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/helpers/fabrik | Cannot get table from fabrik with type ' . $object . ' ' . $id . ' : ' . preg_replace("/[
+]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -1100,7 +1195,8 @@ die("<script>
 	        }
 	        catch (Exception $e)
 	        {
-		        Log::add('components/com_emundus/helpers/fabrik | Error when try to get fabrik elements table data : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
+		        Log::add('components/com_emundus/helpers/fabrik | Error when try to get fabrik elements table data : ' . preg_replace("/[
+]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 	        }
 
 	        if (!empty($element))
@@ -1307,8 +1403,13 @@ die("<script>
 			}
 
 			//Data to encrypt
-			if (is_array(json_decode($value))) {
+			$contents = $value;
+			if (is_string($value) && is_array(json_decode($value)))
+			{
 				$contents = json_decode($value);
+			}
+
+			if(is_array($contents)) {
 				foreach ($contents as $key => $content)
 				{
 					$encrypted_data = openssl_encrypt($content, $cipher, $encryption_key, 0 ,$iv);
@@ -1333,7 +1434,7 @@ die("<script>
 		return $result;
 	}
 
-	static function decryptDatas($value, $encryption_key = null, $cipher = 'aes-128-cbc') {
+	static function decryptDatas($value, $encryption_key = null, $cipher = 'aes-128-cbc', $plugin = null) {
 		$result = $value;
 
 		if (empty($encryption_key))
@@ -1343,31 +1444,45 @@ die("<script>
 
 		if (!empty($encryption_key))
 		{
-			if (is_array(json_decode($value)))
+			$contents = $value;
+			if (is_string($value) && is_array(json_decode($value)))
 			{
 				$contents = json_decode($value);
+			}
+
+			if (is_array($contents))
+			{
 				foreach ($contents as $key => $content)
 				{
 					$content = explode('|', $content);
-					$iv = base64_decode($content[1]);
+					$decrypted_data = false;
 
-					try {
-                        $decrypted_data = openssl_decrypt($content[0], $cipher, $encryption_key, 0, $iv);
-                    } catch (Exception $e) {
-                        $decrypted_data = false;
-                    }
+					if(is_array($content))
+					{
+						$iv = base64_decode($content[1]);
+
+						try
+						{
+							$decrypted_data = openssl_decrypt($content[0], $cipher, $encryption_key, 0, $iv);
+						}
+						catch (Exception $e)
+						{
+							$decrypted_data = false;
+						}
+					}
 
                     if ($decrypted_data !== false) {
 						$contents[$key] = $decrypted_data;
 					}
 					else {
-						$decrypted_data = self::oldDecryptDatas($content[0],$encryption_key);
+						$decrypted_data = self::oldDecryptDatas((is_array($content) ? $content[0] : $content),$encryption_key);
 						if ($decrypted_data !== false)
 						{
 							$contents[$key] = $decrypted_data;
 						}
 					}
 				}
+
 				$result = json_encode($contents);
 			}
 			else
@@ -1385,7 +1500,7 @@ die("<script>
 					$result = $decrypted_data;
 				}
 				else {
-					$decrypted_data = self::oldDecryptDatas($value[0],$encryption_key);
+					$decrypted_data = self::oldDecryptDatas((is_array($value) ? $value[0] : $value),$encryption_key,$plugin);
 					if ($decrypted_data !== false)
 					{
 						$result = $decrypted_data;
@@ -1397,7 +1512,7 @@ die("<script>
 		return $result;
 	}
 
-	public static function oldDecryptDatas($value,$encryption_key = null)
+	public static function oldDecryptDatas($value,$encryption_key = null,$plugin = null)
 	{
 		$cipher = 'aes-128-cbc';
 		$result = $value;
@@ -1409,9 +1524,18 @@ die("<script>
 
 		if(!empty($encryption_key))
 		{
-			if (is_array(json_decode($value)))
+			if($plugin == 'emundus_phonenumber') {
+				$value = explode('==',$value);
+			}
+
+			$contents = $value;
+			if (is_string($value) && is_array(json_decode($value)))
 			{
 				$contents = json_decode($value);
+			}
+
+			if (is_array($contents))
+			{
 				foreach ($contents as $key => $content)
 				{
 					$decrypted_data = openssl_decrypt($content, $cipher, $encryption_key, 0);
@@ -1420,7 +1544,11 @@ die("<script>
 						$contents[$key] = $decrypted_data;
 					}
 				}
+
 				$result = json_encode($contents);
+				if($plugin == 'emundus_phonenumber') {
+					$result = implode('',$contents);
+				}
 			}
 			else
 			{
@@ -1463,4 +1591,121 @@ die("<script>
 
 		return $datas;
 	}
+
+    static function getGroupsFromFabrikForms($form_ids)
+    {
+        $groups = [];
+        $form_ids = array_unique($form_ids);
+
+        if (!empty($form_ids)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->clear()
+                ->select('jfg.id, jfg.label, jffg.form_id')
+                ->from('jos_fabrik_groups as jfg')
+                ->join('inner', 'jos_fabrik_formgroup as jffg ON jfg.id = jffg.group_id')
+                ->join('inner', 'jos_fabrik_forms as jff ON jffg.form_id = jff.id')
+                ->where('jffg.form_id IN (' . implode(',', $form_ids) . ')')
+                ->andWhere('jfg.published = 1');
+
+            try {
+                $db->setQuery($query);
+                $groups = $db->loadAssocList();
+
+                foreach ($groups as $key => $group)
+                {
+                    $groups[$key]['label'] = JText::_($group['label']);
+                }
+            } catch (Exception $e) {
+                JLog::add('Failed to get groups associated to profiles that current user can access : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
+            }
+        }
+
+        return $groups;
+    }
+
+    /**
+     * @param $form_ids
+     * @return array
+     */
+    static function getElementsFromFabrikForms($form_ids)
+    {
+        $elements = [];
+        $form_ids = array_unique($form_ids);
+
+        if (!empty($form_ids))
+        {
+            $helper_cache = new EmundusHelperCache();
+
+            if ($helper_cache->isEnabled())
+            {
+                foreach ($form_ids as $key => $form_id)
+                {
+                    $cache_key      = 'elements_from_form_' . $form_id;
+                    $cache_elements = $helper_cache->get($cache_key);
+
+                    if (!empty($cache_elements))
+                    {
+                        $elements = array_merge($elements, $cache_elements);
+                        unset($form_ids[$key]);
+                    }
+                }
+            }
+
+            if (!empty($form_ids))
+            {
+                $db    = JFactory::getDbo();
+                $query = $db->getQuery(true);
+
+                $query->clear()
+                    ->select('jfe.id, jfe.plugin, jfe.label, jfe.params, jffg.form_id as element_form_id, jff.label as element_form_label, jfg.label as element_group_label, jfg.id as element_group_id')
+                    ->from('jos_fabrik_elements as jfe')
+                    ->join('inner', 'jos_fabrik_groups as jfg ON jfe.group_id = jfg.id')
+                    ->join('inner', 'jos_fabrik_formgroup as jffg ON jfg.id = jffg.group_id')
+                    ->join('inner', 'jos_fabrik_forms as jff ON jffg.form_id = jff.id')
+                    ->where('jffg.form_id IN (' . implode(',', $form_ids) . ')')
+                    ->andWhere('jfe.published = 1')
+                    ->andWhere('jfe.hidden = 0');
+
+                try
+                {
+                    $db->setQuery($query);
+                    $query_elements = $db->loadAssocList();
+                    $elements       = array_merge($elements, $query_elements);
+
+                    foreach ($elements as $key => $element)
+                    {
+                        $elements[$key]['label']              = JText::_($element['label']);
+                        $elements[$key]['element_form_label'] = JText::_($element['element_form_label']);
+                        $elements[$key]['element_group_label'] = JText::_($element['element_group_label']);
+                    }
+
+                    if ($helper_cache->isEnabled())
+                    {
+                        $elements_by_form = [];
+                        foreach ($elements as $element)
+                        {
+                            if (!isset($elements_by_form[$element['element_form_id']]))
+                            {
+                                $elements_by_form[$element['element_form_id']] = [];
+                            }
+                            $elements_by_form[$element['element_form_id']][] = $element;
+                        }
+
+                        foreach ($elements_by_form as $form_id => $element_by_form)
+                        {
+                            $helper_cache->set('elements_from_form_' . $form_id, $element_by_form);
+                        }
+                    }
+                }
+                catch (Exception $e)
+                {
+                    JLog::add('Failed to get elements associated to profiles that current user can access : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
+                }
+            }
+        }
+
+        return $elements;
+    }
 }

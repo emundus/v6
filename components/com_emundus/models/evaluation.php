@@ -1093,7 +1093,14 @@ class EmundusModelEvaluation extends JModelList {
 
         $pageNavigation = "<div class='em-container-pagination-selectPage'>";
         $pageNavigation .= "<ul class='pagination pagination-sm'>";
-	    $pageNavigation .= "<li><a href='#em-data' id='" . ($this->getPagination()->pagesCurrent - 1) . "'><span class='material-icons'>navigate_before</span></a></li>";
+
+	    if($this->getPagination()->pagesCurrent == $this->getPagination()->pagesStart) {
+		    $pageNavigation .= "<li><a class='disabled cursor-pointer'><span class='material-icons'>navigate_before</span></a></li>";
+	    } else
+	    {
+		    $pageNavigation .= "<li><a href='#em-data' id='" . ($this->getPagination()->pagesCurrent - 1) . "'><span class='material-icons'>navigate_before</span></a></li>";
+	    }
+
         if ($this->getPagination()->pagesTotal > 15) {
             for ($i = 1; $i <= 5; $i++ ) {
                 $pageNavigation .= "<li ";
@@ -1139,7 +1146,12 @@ class EmundusModelEvaluation extends JModelList {
                 $pageNavigation .= "><a id='" . $i . "' href='#em-data'>" . $i . "</a></li>";
             }
         }
-	    $pageNavigation .= "<li><a href='#em-data' id='" . ($this->getPagination()->pagesCurrent + 1) . "'><span class='material-icons'>navigate_next</span></a></li></ul></div>";
+
+	    if($this->getPagination()->pagesCurrent == $this->getPagination()->pagesStop) {
+		    $pageNavigation .= "<li><a class='disabled cursor-pointer'><span class='material-icons'>navigate_next</span></a></li></ul></div>";
+	    } else {
+		    $pageNavigation .= "<li><a href='#em-data' id='" . ($this->getPagination()->pagesCurrent + 1) . "'><span class='material-icons'>navigate_next</span></a></li></ul></div>";
+	    }
 
         return $pageNavigation;
     }
@@ -2266,11 +2278,12 @@ class EmundusModelEvaluation extends JModelList {
 					                    }
 					                    $fabrikValues[$elt['id']][$fnum]['val'] = $inline;
 					                    $fabrikValues[$elt['id']][$fnum]['complex_data'] = true;
-				                    } elseif ($elt['plugin'] == 'textarea') {
-										$textarea_elements[] = $elt['id'];
-										$fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
-									}
-				                    elseif ($elt['plugin'] == 'emundus_phonenumber')
+				                    }
+									elseif ($elt['plugin'] == 'textarea') {
+	                                    $textarea_elements[] = $elt['id'];
+	                                    $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
+                                    }
+                                    elseif ($elt['plugin'] == 'emundus_phonenumber')
 				                    {
 					                    $fabrikValues[$elt['id']][$fnum]['val'] = substr($fabrikValues[$elt['id']][$fnum]['val'], 2, strlen($fabrikValues[$elt['id']][$fnum]['val']));
 				                    }
@@ -2278,8 +2291,7 @@ class EmundusModelEvaluation extends JModelList {
                                     {
                                         $fabrikValues[$elt['id']][$fnum]['val'] = $fabrikValues[$elt['id']][$fnum]['val'] == '1' ? JText::_('JYES') : JText::_('JNO');
                                     }
-                                    elseif ($elt['plugin'] == 'cascadingdropdown')
-                                    {
+                                    elseif ($elt['plugin'] == 'cascadingdropdown') {
                                         foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
                                             $fabrikValues[$elt['id']][$fnum]['val'] = $_mEmail->getCddLabel($elt, $val['val']);
                                         }
@@ -2375,19 +2387,6 @@ class EmundusModelEvaluation extends JModelList {
 						                    else {
 							                    $preprocess->setValue($tag, $val);
 						                    }
-					                    }
-				                    }
-
-				                    foreach ($idFabrik as $id) {
-                                        if (isset($fabrikValues[$id][$fnum]) && !empty($fabrikValues[$id][$fnum]['val'])) {
-                                            if ($fabrikValues[$id][$fnum]['complex_data']){
-                                                $preprocess->setComplexValue($id, $fabrikValues[$id][$fnum]['val']);
-						                    } else {
-							                    $value = str_replace('\n', ', ', $fabrikValues[$id][$fnum]['val']);
-							                    $preprocess->setValue($id, $value);
-						                    }
-					                    } else {
-						                    $preprocess->setValue($id, '');
 					                    }
 				                    }
 

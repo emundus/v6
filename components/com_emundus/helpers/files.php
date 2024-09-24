@@ -388,13 +388,29 @@ class EmundusHelperFiles
         return $db->loadAssoc();
     }
 
-    public static function getApplicants() {
+	/*
+	 * @description Get all the emundus profiles
+	 * @return array
+	 */
+    public static function getEmundusProfiles() {
+		$profiles = [];
+
         $db = JFactory::getDBO();
-        $query = 'SELECT esp.id, esp.label, esp.published
-        FROM #__emundus_setup_profiles esp
-        WHERE esp.status=1 and esp.id <> 1';
-        $db->setQuery( $query );
-        return $db->loadObjectList('id');
+		$query = $db->getQuery(true);
+
+		$query->select('esp.id, esp.label, esp.published')
+			->from('#__emundus_setup_profiles esp')
+			->where('esp.status = 1')
+			->andWhere('esp.id <> 1');
+
+		try {
+			$db->setQuery($query);
+			$profiles = $db->loadObjectList('id');
+		} catch (Exception $e) {
+			JLog::add('Failed to get Emundus Profiles' . $e->getMessage(), JLog::ERROR, 'com_emundus.helper.files');
+		}
+
+		return $profiles;
     }
 
     public function getProfiles() {
@@ -1242,10 +1258,11 @@ class EmundusHelperFiles
             $profile .= ' <select class="search_test em-filt-select" id="select_profile" name="profile" '.($hidden ? 'style="visibility:hidden;height:0px;width:0px;" ' : '').'">
                          	<option value="0">'.JText::_('COM_EMUNDUS_ACTIONS_ALL').'</option>';
 
-            $profiles = $h_files->getApplicants();
+            $profiles = $h_files->getEmundusProfiles();
 			$profiles = array_filter($profiles, function($profile) {
 				return $profile->published == 0;
 			});
+			$profiles[] = (object)array('id' => 'applicant', 'label' => JText::_('APPLICANT'));
 
             foreach ($profiles as $prof) {
                 $profile .= '<option title="' . $prof->label . '" value="' . $prof->id . '"';
@@ -5194,5 +5211,48 @@ class EmundusHelperFiles
 
 		return $linked;
 	}
+
+    public static function getFnumFromId($id) {
+        $fnum = '';
+
+        if (!empty($id)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+            $query->select('fnum')
+                ->from('#__emundus_campaign_candidature')
+                ->where('id = ' . $id);
+
+            try {
+                $db->setQuery($query);
+                $fnum = $db->loadResult();
+            } catch (Exception $e) {
+                $fnum = '';
+            }
+        }
+
+        return $fnum;
+    }
+
+    public static function getIdFromFnum($fnum) {
+        $id = '';
+
+        if (!empty($fnum)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('id')
+                ->from('#__emundus_campaign_candidature')
+                ->where('fnum = ' . $db->quote($fnum));
+
+            try {
+                $db->setQuery($query);
+                $id = $db->loadResult();
+            } catch (Exception $e) {
+                $id = '';
+            }
+        }
+
+        return $id;
+    }
 }
 
