@@ -10,6 +10,7 @@
 	<version>2.0.0</version>
 	<description>MOD_EMUNDUS_BACK_XML_DESCRIPTION</description>
 	<files>
+		<filename module="mod_emundus_back">mod_emundus_back.php</filename>
 		<folder>language</folder>
 		<folder>tmpl</folder>
 	</files>
