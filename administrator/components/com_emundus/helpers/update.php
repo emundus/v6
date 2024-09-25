@@ -3828,6 +3828,7 @@ class EmundusHelperUpdate
 				$alias = preg_replace('/[^A-Za-z0-9]/', '-', $alias);
 				$alias = str_replace(' ', '-', $alias);
 				$alias = strtolower($alias);
+                $alias .= '-' . $campaign->id;
 			} else {
 				$alias = $campaign->alias;
 			}
