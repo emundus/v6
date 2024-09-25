@@ -35,32 +35,30 @@ class PlgFabrik_FormEmundusencryptdatas extends plgFabrik_Form
      * @since version
      */
     public function onLoad() {
-        $cipher = "aes-128-cbc";
-
-        $encryption_key = JFactory::getConfig()->get('secret');
+	    if(!class_exists('EmundusHelperFabrik')) {
+		    require_once JPATH_ROOT.'/components/com_emundus/helpers/fabrik.php';
+	    }
 
         $formModel = $this->getModel();
         $datas = $formModel->data;
 
-        //Decrypt data
-        foreach($datas as $key => $data){
-            if(is_array(json_decode($data))){
-                $data = json_decode($data);
-                foreach($data as $index => $subvalue){
-                    $decrypted_data = openssl_decrypt($subvalue, $cipher, $encryption_key, 0);
-                    if($decrypted_data !== false){
-                        $data[$index] = $decrypted_data;
-                    }
-                }
-                $formModel->data[$key] = json_encode($data);
-            } else {
-                $decrypted_data = openssl_decrypt($data, $cipher, $encryption_key, 0);
-                if($decrypted_data !== false){
-                    $formModel->data[$key] = $decrypted_data;
-                }
-            }
-        }
-    }
+	    $elements = array();
+	    $groups = $formModel->getGroupsHiarachy();
+	    foreach ($groups as $group)
+	    {
+		    $elements = array_merge($group->getPublishedElements(),$elements);
+	    }
+
+	    foreach ($elements as $element)
+	    {
+		    $elt_fullname = $element->getFullName();
+		    $decrypted_data = EmundusHelperFabrik::decryptDatas($datas[$elt_fullname],null,'aes-128-cbc',$element->getElement()->plugin);
+			if(!empty($decrypted_data))
+			{
+				$formModel->data[$elt_fullname] = $decrypted_data;
+			}
+	    }
+	}
 
     /**
      * Encrypt datas before store them in DB using aes encryption
@@ -70,28 +68,54 @@ class PlgFabrik_FormEmundusencryptdatas extends plgFabrik_Form
      * @since version
      */
 	public function onBeforeProcess() {
-        //Define cipher
-        $cipher = "aes-128-cbc";
-
-        //Generate a 256-bit encryption key
-        $encryption_key = JFactory::getConfig()->get('secret');
+		if(!class_exists('EmundusHelperFabrik')) {
+			require_once JPATH_ROOT.'/components/com_emundus/helpers/fabrik.php';
+		}
 
         $formModel = $this->getModel();
         $datas = $formModel->formData;
 
-        //Data to encrypt
-        foreach($datas as $key => $data){
-            if(strpos($key,'jos_emundus') !== false && strpos($key,'raw') === false && strpos($key,'fnum') === false && strpos($key,'id') === false && strpos($key,'user') === false && strpos($key,'time_date') === false){
-                if(is_array($data)){
-                    foreach($data as $index => $subvalue){
-                        $data[$index] = openssl_encrypt($subvalue, $cipher, $encryption_key, 0);
-                    }
-                    $formModel->updateFormData($key,$data);
-                } else {
-                    $encrypted_data = openssl_encrypt($data, $cipher, $encryption_key, 0);
-                    $formModel->updateFormData($key,$encrypted_data);
-                }
-            }
-        }
+		$elements = array();
+		$groups = $formModel->getGroupsHiarachy();
+		foreach ($groups as $group)
+		{
+			$elements = array_merge($group->getPublishedElements(),$elements);
+		}
+
+		foreach ($elements as $element) {
+			$elt_fullname = $element->getFullName();
+			if(strpos($elt_fullname,'jos_emundus') !== false && strpos($elt_fullname,'fnum') === false && strpos($elt_fullname,'id') === false && strpos($elt_fullname,'user') === false && strpos($elt_fullname,'time_date') === false){
+				$data = $datas[$elt_fullname.'_raw'];
+				if(empty($data)) {
+					$data = $datas[$elt_fullname];
+				}
+
+				$skip = false;
+				switch($element->getElement()->plugin) {
+					case 'emundus_phonenumber':
+						$data = $data['country'].$data['country_code'].$data['num_tel'];
+						break;
+					// Iban can be encrypted by default on any form so we don't need to encrypt it again
+					case 'iban':
+						if(!empty($element->getElement()->params)) {
+							$params = json_decode($element->getElement()->params);
+							if($params->encrypt_datas == 1) {
+								$skip = true;
+							}
+						}
+						break;
+					case 'birthday':
+						$data = $datas[$elt_fullname];
+						break;
+				}
+
+				if($data !== '' && !$skip)
+				{
+					$encrypted_data = EmundusHelperFabrik::encryptDatas($data, null, 'aes-128-cbc', null);
+					$formModel->updateFormData($elt_fullname, $encrypted_data);
+					$formModel->updateFormData($elt_fullname . '_raw', $encrypted_data);
+				}
+			}
+		}
 	}
 }

@@ -10,6 +10,9 @@
  */
 
 // No direct access
+use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
+
 defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
@@ -189,6 +192,8 @@ class EmundusModelForm extends JModelList {
 				        $label[$language->sef] = $m_form_builder->getTranslation($evaluation_form->label,$language->lang_code) ?: $evaluation_form->label;
 			        }
 			        $evaluation_form->label=$label;
+
+					$evaluation_form->programs_count = count($this->getProgramsByForm($evaluation_form->id));
 		        }
 	        }
 
@@ -2217,30 +2222,48 @@ class EmundusModelForm extends JModelList {
     }
 
     function getDatabaseJoinOptions($table, $column, $value,$concat_value = null, $where = null){
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+		$options = [];
 
-        $current_shortlang = explode('-',JFactory::getLanguage()->getTag())[0];
+		if (!empty($table) && !empty($column) && !empty($value)) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
 
-        try {
-            $value_select = $value . ' as value';
-            if(!empty($concat_value)){
-                $concat_value = str_replace('{thistable}', $table, $concat_value);
-                $concat_value = str_replace('{shortlang}', $current_shortlang, $concat_value);
+			$current_shortlang = explode('-',JFactory::getLanguage()->getTag())[0];
 
-                $value_select = 'CONCAT('.$concat_value.') as value';
-            }
-            $query->select(array($db->quoteName($column,'primary_key'),$value_select))
-                ->from($db->quoteName($table));
-            if(!empty($where)){
-                $query->where(str_replace('WHERE','',$where));
-            }
-            $db->setQuery($query);
-            return $db->loadObjectList();
-        } catch (Exception $e) {
-            JLog::add('component/com_emundus/models/form | Error at getDatabaseJoinOptions : ' . preg_replace("/[\r\n]/"," ",$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return false;
-        }
+			try {
+				$query->clear()
+					->select('database_name')
+					->from('jos_emundus_datas_library');
+
+				$db->setQuery($query);
+				$allowed_tables = $db->loadColumn();
+
+				if (!in_array($table, $allowed_tables)) {
+					throw new Exception(JText::_('ACCESS_DENIED'));
+				}
+
+				$value_select = $value . ' as value';
+				if(!empty($concat_value)){
+					$concat_value = str_replace('{thistable}', $table, $concat_value);
+					$concat_value = str_replace('{shortlang}', $current_shortlang, $concat_value);
+
+					$value_select = 'CONCAT('.$concat_value.') as value';
+				}
+				$query->clear()
+					->select(array($db->quoteName($column,'primary_key'),$value_select))
+					->from($db->quoteName($table));
+				if(!empty($where)){
+					$query->where(str_replace('WHERE','',$where));
+				}
+				$db->setQuery($query);
+				$options = $db->loadObjectList();
+			} catch (Exception $e) {
+				JLog::add('component/com_emundus/models/form | Error at getDatabaseJoinOptions : ' . preg_replace("/[\r\n]/"," ",$e->getMessage()), JLog::ERROR, 'com_emundus');
+				return false;
+			}
+		}
+
+		return $options;
     }
 
     public function checkIfDocCanBeRemovedFromCampaign($document_id, $profile_id): array
@@ -2277,4 +2300,120 @@ class EmundusModelForm extends JModelList {
 
         return $data;
     }
+	
+	public function getProgramsByForm($form_id,$mode = 'eval')
+	{
+		$programs = [];
+		
+		$db = Factory::getDbo();
+		$query = $db->getQuery(true);
+		
+		if(!empty($form_id)) {
+			try
+			{
+				$query->select('group_id')
+					->from($db->quoteName('#__fabrik_formgroup'))
+					->where($db->quoteName('form_id') . ' = ' . $db->quote($form_id));
+				$db->setQuery($query);
+				$fabrik_groups = $db->loadColumn();
+
+				switch ($mode) {
+					case 'decision':
+						$column = 'fabrik_decision_group_id';
+						break;
+					default:
+						$column = 'fabrik_group_id';
+						break;
+				}
+				
+				if(!empty($fabrik_groups)) {
+					$query->clear()
+						->select('label,code,'.$column)
+						->from($db->quoteName('#__emundus_setup_programmes'));
+					$db->setQuery($query);
+					$programs = $db->loadAssocList();
+
+					foreach ($programs as $key => $program) {
+						$program_fabrik_groups = explode(',', $program[$column]);
+
+						if(!empty($program_fabrik_groups)) {
+							$program_fabrik_groups = array_intersect($program_fabrik_groups, $fabrik_groups);
+
+							if(empty($program_fabrik_groups)) {
+								unset($programs[$key]);
+							}
+						}
+					}
+
+					$programs = array_values($programs);
+				}
+			}
+			catch (Exception $e)
+			{
+				Log::add('component/com_emundus/models/form | Error at getProgramsByForm : ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		return $programs;
+	}
+
+	public function associateFabrikGroupsToProgram($form_id,$programs,$mode = 'eval')
+	{
+		$associated = false;
+
+		$db = Factory::getDbo();
+		$query = $db->getQuery(true);
+
+		if(!empty($form_id) && !empty($programs) && is_array($programs))
+		{
+			try
+			{
+				$query->select('group_id')
+					->from($db->quoteName('#__fabrik_formgroup'))
+					->where($db->quoteName('form_id') . ' = ' . $db->quote($form_id));
+				$db->setQuery($query);
+				$fabrik_groups = $db->loadColumn();
+
+				if (!empty($fabrik_groups))
+				{
+					switch ($mode) {
+						case 'decision':
+							$column = 'fabrik_decision_group_id';
+							break;
+						default:
+							$column = 'fabrik_group_id';
+							break;
+					}
+
+					$existing_programs = $this->getProgramsByForm($form_id,$mode);
+
+					foreach ($programs as $program) {
+						$query->clear()
+							->update($db->quoteName('#__emundus_setup_programmes'))
+							->set($db->quoteName($column) . ' = ' . $db->quote(implode(',', $fabrik_groups)))
+							->set($db->quoteName('evaluation_form') . ' = ' . $db->quote($form_id))
+							->where($db->quoteName('code') . ' LIKE ' . $db->quote($program));
+						$db->setQuery($query);
+						$associated = $db->execute();
+					}
+
+					foreach ($existing_programs as $program) {
+						if(!in_array($program['code'],$programs)) {
+							$query->clear()
+								->update($db->quoteName('#__emundus_setup_programmes'))
+								->set($db->quoteName($column) . ' = ' . $db->quote(''))
+								->where($db->quoteName('code') . ' LIKE ' . $db->quote($program['code']));
+							$db->setQuery($query);
+							$removed = $db->execute();
+						}
+					}
+				}
+			} catch (Exception $e)
+			{
+				Log::add('component/com_emundus/models/form | Error at associateFabrikGroupsToProgram : ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		return $associated;
+	}
 }

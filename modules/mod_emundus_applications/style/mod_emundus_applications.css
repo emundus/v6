@@ -599,7 +599,6 @@ a.btn.btn-success:not(.btn-xs) {
     margin-bottom: 0;
 }
 .mod_emundus_application_swal_manage_tabs_actions{
-    border-top: solid 1px var(--neutral-300);
     margin-top:var(--m-8) !important;
     padding: var(--p-8) var(--p-12);
     display: flex !important;
@@ -771,7 +770,7 @@ circle.circle {
     z-index: 2;
     width: 70%;
     height: 255px;
-    top: -14px;
+    top: -37px;
     right: -25px;
     pointer-events: none;
     transition: transform .3s;
@@ -809,14 +808,16 @@ circle.circle {
     z-index: 2;
     width: 70%;
     height: 300%;
-    top: -29px;
-    right: -70px;
     pointer-events: none;
-    mask-image: url(/modules/mod_emundus_campaign/assets/fond-fonce.svg);
+    mask-image: url(/modules/mod_emundus_campaign/assets/fond-clair.svg);
+    -webkit-mask-image: url(/modules/mod_emundus_campaign/assets/fond-clair.svg);
     background: var(--em-profile-color);
     mask-repeat: no-repeat;
-    mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    mask-position: 102px -32px;
+    -webkit-mask-position: 102px -32px;
     mask-size: contain;
+    -webkit-mask-size: contain;
 }
 
 /* Titres */
@@ -859,7 +860,7 @@ circle.circle {
 
     /* Peps */
     .hover-and-tile-container #tile-hover-offset-request {
-        width: 444px;
+        width: 436px;
     }
 
     .mod_emundus_applications___content_app #background-shapes {
@@ -868,7 +869,8 @@ circle.circle {
 
     .view-featured .mod_emundus_applications__list_content--default {
         #background-shapes {
-            right: -119px;
+            mask-position: 23px -32px;
+            -webkit-mask-position: 23px -32px;
         }
     }
 }
@@ -881,18 +883,19 @@ circle.circle {
 
     /* Peps */
     .hover-and-tile-container #tile-hover-offset-request {
-        width: 348px;
+        width: 317px;
     }
 
     .mod_emundus_applications___content_app #background-shapes {
-        top: -38px;
+        top: -62px;
         right: -13px;
     }
 
     .view-featured .mod_emundus_applications__list_content--default {
         #background-shapes {
-            top: -61px;
-            right: -27px;
+            display: block;
+            mask-position: 18px -20px;
+            -webkit-mask-position: 18px -20px;
         }
     }
 }
@@ -965,8 +968,9 @@ circle.circle {
 
     .view-featured .mod_emundus_applications__list_content--default {
         #background-shapes {
-            top: -77px;
-            right: -25px;
+            display: block;
+            mask-position: 15px -20px;
+            -webkit-mask-position: 15px -20px;
         }
     }
 }

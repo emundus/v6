@@ -15,13 +15,18 @@
           position="bottom left"
           :classes="'vue-notification-custom'"
       />
+      <div v-if="$store.state.global.currentLanguage !== $store.state.global.defaultLang" class="justify-center bg-[#FEF6EE] flex items-center gap-3 p-2">
+        <span class="material-icons-outlined text-[#EF681F]">warning_amber</span>
+        <span>{{ translate('COM_EMUNDUS_ONBOARD_FORMBUILDER_EDIT_DEFAULT_LANG') }}{{ defaultLangLabel }}</span>
+      </div>
       <header class="em-flex-row em-flex-space-between">
-        <div class="right-actions">
+        <div class="right-actions em-p-12-16 em-flex-row em-pointer"
+             @click="clickGoBack">
           <span id="go-back"
-                class="material-icons-outlined em-p-12-16 em-pointer"
-                @click="clickGoBack">
+                class="material-icons-outlined">
             navigate_before
           </span>
+          <span class="em-ml-8 em-text-neutral-900" >{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
         </div>
           <span
             class="em-font-size-14  em-font-weight-600 editable-data"
@@ -461,6 +466,19 @@ export default {
       return this.leftPanel.tabs.filter((tab) => {
 	      return tab.displayed;
       });
+    },
+    defaultLangLabel() {
+      let label = 'Français';
+
+      switch (this.$store.state.global.defaultLang) {
+        case 'en-GB':
+          label = 'English';
+          break;
+        case 'pt-PT':
+          label = 'Português';
+      }
+
+      return label;
     }
   },
   watch: {

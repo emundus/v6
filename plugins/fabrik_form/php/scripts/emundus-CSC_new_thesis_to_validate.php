@@ -89,7 +89,8 @@ if (count($recipients) > 0) {
             'user_id_from' => $from_id,
             'user_id_to' => $referent->id,
             'subject' => $subject,
-            'message' => $body
+            'message' => $body,
+            'email_to' => $recipient
         );
         $emails->logEmail($message);
         $app->enqueueMessage(JText::_('EMAIL_SENT'). ' : '.$recipient, 'message');
@@ -164,7 +165,8 @@ if (count($recipients) > 0) {
                 'user_id_from' => $from_id,
                 'user_id_to' => $referent->id,
                 'subject' => $subject,
-                'message' => $body
+                'message' => $body,
+                'email_to' => $recipient
             );
             $emails->logEmail($message);
             $app->enqueueMessage(FText::_('EMAIL SENT'). ' : '.$recipient, 'message');

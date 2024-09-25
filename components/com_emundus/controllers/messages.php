@@ -775,27 +775,14 @@ class EmundusControllerMessages extends JControllerLegacy {
                 JLog::add('Error sending email to email ' . $fnum->email . ' : ' . $send->__toString(), JLog::ERROR, 'com_emundus.error');
             } else {
                 // Assoc tags if email has been sent
-                if($tags_str != null || !empty($template->tags)){
-                    $db = JFactory::getDBO();
-                    $query = $db->getQuery(true);
+	            if($tags_str != null || !empty($template->tags)) {
+					$tags = array_filter(array_merge(explode(',',$tags_str),explode(',',$template->tags)));
 
-                    $tags = array_filter(array_merge(explode(',',$tags_str),explode(',',$template->tags)));
-
-                    foreach($tags as $tag) {
-                        try{
-                            $query->clear()
-                                ->insert($db->quoteName('#__emundus_tag_assoc'));
-                            $query->set($db->quoteName('fnum') . ' = ' . $db->quote($fnum->fnum))
-                                ->set($db->quoteName('id_tag') . ' = ' . $db->quote($tag))
-                                ->set($db->quoteName('user_id') . ' = ' . $db->quote($fnum->applicant_id));
-
-                            $db->setQuery($query);
-                            $db->execute();
-                        }  catch (Exception $e) {
-                            JLog::add('NOT IMPORTANT IF DUPLICATE ENTRY : Error getting template in model/messages at query :'.$query->__toString(). " with " . $e->getMessage(), JLog::ERROR, 'com_emundus');
-                        }
-                    }
-                }
+					if(!empty($tags))
+					{
+						$m_files->tagFile([$fnum->fnum], $tags, $user->id);
+					}
+				}
 
                 // Log email
                 $sent[] = $fnum->email;
@@ -803,9 +790,10 @@ class EmundusControllerMessages extends JControllerLegacy {
                     'user_id_from' => $user->id,
                     'user_id_to' => $fnum->applicant_id,
                     'subject' => $subject,
-                    'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . JText::_('COM_EMUNDUS_TO') . ' ' . $fnum->email . '</i><br>' . $body . $files,
+                    'message' => $body . $files,
                     'type' => (empty($template->type))?'':$template->type,
-	                'email_id' => $template_id
+	                'email_id' => $template_id,
+                    'email_to' => $fnum->email
                 ];
                 if (!empty($cc_final)) {
                     $log['email_cc'] = implode(', ',$cc_final);
@@ -980,8 +968,9 @@ class EmundusControllerMessages extends JControllerLegacy {
 					'user_id_from' => $current_user->id,
 					'user_id_to' => $user->id,
 					'subject' => $subject,
-					'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . JText::_('COM_EMUNDUS_TO') . ' ' . $user->email . '</i><br>' . $body . $files,
-					'type' => !empty($template->type)?$template->type:''
+					'message' => $body . $files,
+					'type' => !empty($template->type)?$template->type:'',
+                    'email_to' => $user->email
 				];
 				$m_emails->logEmail($log);
 				// Log the email in the eMundus logging system.
@@ -1425,9 +1414,10 @@ class EmundusControllerMessages extends JControllerLegacy {
                 'user_id_from' => $user->id,
                 'user_id_to' => $fnum_info['applicant_id'],
                 'subject' => $subject,
-                'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . JText::_('COM_EMUNDUS_TO') . ' ' . $fnum_info['email'] . '</i><br>' . $body . $files,
+                'message' => $body . $files,
                 'type' => (empty($template->type))?'':$template->type,
 	            'email_id' => $template_email_id,
+                'email_to' => $fnum_info['email']
             ];
             $m_emails->logEmail($log, $fnum);
         }

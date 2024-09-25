@@ -95,7 +95,8 @@ foreach ($messages as $message) {
 				$message = array(
 					'user_id_to' => $uid,
 					'subject' => $subject,
-					'message' => $body
+					'message' => $body,
+                    'email_to' => $to
 				);
 				$emails->logEmail($message);
 
