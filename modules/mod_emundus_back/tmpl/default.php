@@ -23,7 +23,7 @@ defined('_JEXEC') or die;
             onclick="window.location.href='<?php echo $back_link; ?>'"
        <?php endif; ?>
     >
-        <span class="material-icons-outlined text-neutral-600 mr-1" style="font-size: 20px">navigate_before</span>
+        <span class="material-icons-outlined text-neutral-600 mr-1" aria-hidden="true" style="font-size: 20px">navigate_before</span>
         <?php echo Text::_($params->get('button_text', 'MOD_EMUNDUS_BACK_BUTTON_LABEL')); ?>
     </button>
 </php>
