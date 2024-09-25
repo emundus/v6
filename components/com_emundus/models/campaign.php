@@ -882,9 +882,7 @@ class EmundusModelCampaign extends JModelList {
             if ($session !== 'all') {
                 $query->andWhere($this->_db->quoteName('year') . ' = ' . $this->_db->quote($session));
             }
-            $query->andWhere($this->_db->quoteName('u.block') . ' = 0')
-                ->andWhere($this->_db->quoteName('cc.published') . ' = 1')
-                ->group($sortDb)
+            $query->group($sortDb)
                 ->order($sortDb . $sort);
 
             try {
