@@ -249,10 +249,13 @@ if ($user->guest || in_array($e_user->profile, $app_prof)) {
         $cid = $menu_params->get('com_emundus_programme_campaign_id', 0);
     }
 
-    if (!empty($cid))
-    {
-        $condition = ' AND ca.id = ' . $cid;
-    }
+	if (!empty($cid))
+	{
+		JFactory::getSession()->set('campaign_id', $cid);
+		$condition = ' AND ca.id = ' . $cid;
+	} else {
+		JFactory::getSession()->clear('campaign_id');
+	}
 
 	switch ($group_by) {
 		case 'month':

@@ -272,6 +272,8 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
         }
 
         if ($form_type == 'cc') {
+            $m_profile->initEmundusSession($fnum);
+            //$app->redirect('/');
             $app->redirect($this->getParam('emunduscampaign_redirect_url', null) ?: 'index.php?option=com_emundus&task=openfile&fnum='.$fnum, JText::_('FILE_OK'));
         }
         return true;

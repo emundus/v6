@@ -1319,13 +1319,21 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     function hideGroup(key) {
         let group = document.getElementById('current_' + key);
         let icon = document.getElementById('group_icon_' + key);
+        let button = document.getElementById('mod_emundus_campaign__button');
 
         if (group.style.display === 'none' || getComputedStyle(group).display === 'none') {
             group.style.display = 'grid';
             icon.innerHTML = 'expand_less';
+
+            if (button) {
+                button.setAttribute("aria-expanded", 'true');
+            }
         } else {
             group.style.display = 'none';
             icon.innerHTML = 'expand_more';
+            if (button) {
+                button.setAttribute("aria-expanded", 'false');
+            }
         }
     }
 
@@ -1399,13 +1407,14 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             if ($config->get('sef') == 0) {
                 $fondFonce = 'modules/mod_emundus_campaign/assets/fond-fonce.svg';
                 $fondClair = 'modules/mod_emundus_campaign/assets/fond-clair.svg';
-            } ?>
-            divHover.addEventListener('mouseenter', () => {
-                iframeElementHover.style.maskImage = "url('<?php echo $fondFonce; ?>')";
+            }
+            ?>
+            divHover.addEventListener('mouseenter', function () {
+                iframeElementHover.style.maskImage = 'url("<?= $fondFonce; ?>")';
             });
 
-            divHover.addEventListener('mouseleave', () => {
-                iframeElementHover.style.maskImage = "url('<?php echo $fondClair; ?>')";
+            divHover.addEventListener('mouseleave', function () {
+                iframeElementHover.style.maskImage = 'url("<?= $fondClair; ?>")';
             });
         }
     })

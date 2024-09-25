@@ -202,18 +202,17 @@ jQuery(document).ready(function(){
 			data : {
 				src: s.outerHTML
 			},
-			success : function(data) {
-				data = JSON.parse(data.data);
-				if (data.status != null) {
-					elem = document.createElement('a');
-					elem.href = "/tmp/Graph.pdf";
-					elem.download = "Graph.pdf";
-					evt = new MouseEvent("click", { bubbles: true,cancelable: true,view: window});
-					elem.dispatchEvent(evt);
-				} else {
-					console.log(data.msg);
-				}
-			}
+            success : function(data) {
+                data = JSON.parse(data.data);
+                if (data.status != null) {
+                    //elem = document.createElement('a');
+                    //elem.href = "/tmp/Graph.pdf";
+                    //elem.download = "Graph.pdf";
+                    window.open('/tmp/Graph.pdf');
+                } else {
+                    console.log(data.msg);
+                }
+            }
 		});
 	}
 
