@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="module" client="site" method="upgrade">
+	<name>mod_emundus_back</name>
+	<author>eMundus</author>
+	<creationDate>2024-06</creationDate>
+	<copyright>Copyright (C) 2022 eMundus. All rights reserved.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>dev@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>2.0.0</version>
+	<description>MOD_EMUNDUS_BACK_XML_DESCRIPTION</description>
+	<files>
+		<folder>language</folder>
+		<folder>tmpl</folder>
+	</files>
+	<languages>
+		<language tag="en-GB">language/en-GB.mod_emundus_back.ini</language>
+		<language tag="en-GB">language/en-GB.mod_emundus_back.sys.ini</language>`
+		<language tag="fr-FR">language/fr-FR.mod_emundus_back.ini</language>
+		<language tag="fr-FR">language/fr-FR.mod_emundus_back.sys.ini</language>
+	</languages>
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field
+						name="back_type"
+						type="list"
+						default="homepage"
+						label="MOD_EMUNDUS_BACK_TYPE"
+						description="">
+					<option value="homepage">MOD_EMUNDUS_BACK_TYPE_HOMEPAGE</option>
+					<option value="previous">MOD_EMUNDUS_BACK_TYPE_PREVIOUS_PAGE</option>
+					<option value="link">MOD_EMUNDUS_BACK_TYPE_LINK</option>
+				</field>
+				<field
+						showon="back_type:link"
+						name="link"
+						type="sql"
+						default=""
+						label="MOD_EMUNDUS_BACK_LINK"
+						query="SELECT id, title FROM #__menu"
+						key_field="id"
+						value_field="title"
+				/>
+				<field
+						name="button_text"
+						type="text"
+						default="MOD_EMUNDUS_BACK_BUTTON_LABEL"
+						label="MOD_EMUNDUS_BACK_BUTTON_TEXT"
+						description="Mettre de préférence une balise de traduction Joomla"
+				/>
+			</fieldset>
+		</fields>
+	</config>
+</extension>
