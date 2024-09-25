@@ -850,7 +850,9 @@ class EmundusModelCampaign extends JModelList {
                     ' ON ' .
                     $this->_db->quoteName('cc.campaign_id') .
                     ' = ' .
-                    $this->_db->quoteName('sc.id')
+                    $this->_db->quoteName('sc.id') .
+                    ' AND ' .
+                    $this->_db->quoteName('cc.published') . ' = 1'
                 )
                 ->leftJoin(
                     $this->_db->quoteName('#__emundus_setup_programmes', 'sp') .
@@ -864,7 +866,9 @@ class EmundusModelCampaign extends JModelList {
                     ' ON ' .
                     $this->_db->quoteName('u.id') .
                     ' = ' .
-                    $this->_db->quoteName('cc.applicant_id')
+                    $this->_db->quoteName('cc.applicant_id') .
+                    ' AND ' .
+                    $this->_db->quoteName('u.block') . ' = 0'
                 );
 
             $query->where($this->_db->quoteName('sc.training') . ' IN (' . implode(',',$this->_db->quote($programs)) . ')');
