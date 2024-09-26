@@ -210,7 +210,8 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
         box-shadow: none;
     }
 
-    .view-reset #g-navigation .g-container {
+    .view-reset #g-navigation .g-container,
+    .view-reset #g-header .g-container{
         height: auto !important;
     }
 

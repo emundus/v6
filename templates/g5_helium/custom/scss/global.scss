@@ -453,23 +453,21 @@ div#frame.outline {
   text-align: end;
 }
 
-#g-navigation #header-a .logo {
+#g-navigation #header-a .logo,
+#g-header #header-a .logo{
   width: auto;
   max-height: 40px;
   max-width: 180px;
 }
 
-#g-navigation #header-a .logo[src*="svg"] {
+#g-navigation #header-a .logo[src*="svg"],
+#g-header #header-a .logo[src*="svg"]{
   width: revert-layer !important;
-}
-
-#g-navigation .g-main-nav {
-  /*margin-top: 10px;*/
 }
 
 /* HEADER */
 
-#g-navigation {
+#g-navigation, #g-header {
   .g-grid {
     display: flex;
     justify-content: space-between;
@@ -497,11 +495,11 @@ div#frame.outline {
   }
 }
 
-.view-login #g-navigation {
+.view-login #g-navigation,.view-login #g-header {
   background: transparent;
 }
 
-#g-navigation {
+#g-navigation, #g-header {
   width: 100%;
   position: sticky;
   max-height: 100px;
@@ -537,7 +535,8 @@ div#frame.outline {
 }
 
 
-.g-back-office-emundus-tableau #g-navigation.g-flushed .g-container {
+.g-back-office-emundus-tableau #g-navigation.g-flushed .g-container,
+.g-back-office-emundus-tableau #g-header.g-flushed .g-container {
   padding: 16px 12px !important;
 }
 
@@ -653,7 +652,7 @@ footer#g-footer > .g-container {
 }
 
 .view-registration, .view-login, .view-reset, .view-form.em-formRegistrationCenter {
-  #g-navigation .g-container {
+  #g-navigation .g-container, #g-header .g-container {
     padding: 24px !important;
   }
 
@@ -665,7 +664,7 @@ footer#g-footer > .g-container {
     background: var(--em-defaut-bg);
   }
 
-  #g-navigation #header-c {
+  #g-navigation #header-c, #g-header #header-c {
     .g-content {
       display: none;
     }
@@ -2045,7 +2044,8 @@ tr.fabrikFilterContainer {
     margin: auto;
   }
 
-  #g-navigation #background-shapes {
+  #g-navigation #background-shapes,
+  #g-header #background-shapes{
     position: absolute;
     height: 100%;
     top: -4px;
@@ -2055,7 +2055,8 @@ tr.fabrikFilterContainer {
     border: none;
   }
 
-  #g-navigation #header-c .header-right a.btn.btn-danger:not(.btn-creer-compte) {
+  #g-navigation #header-c .header-right a.btn.btn-danger:not(.btn-creer-compte),
+  #g-header #header-c .header-right a.btn.btn-danger:not(.btn-creer-compte){
     border-radius: var(--em-applicant-br) !important;
     margin-bottom: 0 !important;
     line-height: normal;
@@ -2687,7 +2688,8 @@ button#back,
     background: var(--em-applicant-bg);
   }
 
-  #g-navigation .header-c .open > .dropdown-menu .chzn-single {
+  #g-navigation .header-c .open > .dropdown-menu .chzn-single,
+  #g-header .header-c .open > .dropdown-menu .chzn-single{
     height: inherit;
 
     & > div {
@@ -4477,11 +4479,8 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
 /* LAPTOP  MENU TCHO0Z */
 @media screen and (max-width: 1366px),
 screen and (max-height: 769px) {
-  .gantry #g-navigation .g-main-nav#em_user_menu .g-toplevel.tchooz-vertical-toplevel > li.g-menu-item.g-standard.tchooz-vertical-item:nth-child(3) {
-    //margin-top: -40px !important;
-  }
-
-  .gantry #g-navigation .g-main-nav .tchooz-vertical-toplevel > li.g-menu-item {
+  .gantry #g-navigation .g-main-nav .tchooz-vertical-toplevel > li.g-menu-item,
+  .gantry #g-header .g-main-nav .tchooz-vertical-toplevel > li.g-menu-item {
     margin: 3px 10px;
   }
 
@@ -4526,7 +4525,9 @@ screen and (max-height: 769px) {
 @media screen and (max-width: 433px) {
 
   .gantry #g-navigation,
-  .gantry #g-navigation .g-container {
+  .gantry #g-navigation .g-container,
+  .gantry #g-header,
+  .gantry #g-header .g-container {
     height: auto !important;
     max-height: 100%;
   }

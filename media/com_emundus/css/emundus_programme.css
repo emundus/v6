@@ -2,7 +2,7 @@ h1.title.em-program-title {
     margin-top: 50px;
     margin-bottom: 10px;
 }
-#g-navigation {
+#g-navigation,#g-header {
     height: auto;
 }
 .em_period .btn.save-btn {
@@ -16,7 +16,7 @@ h1.title.em-program-title {
     padding: 6px 12px !important;
 }
 
-#g-navigation .g-container {
+#g-navigation .g-container,#g-header .g-container {
     height: auto;
 }
 

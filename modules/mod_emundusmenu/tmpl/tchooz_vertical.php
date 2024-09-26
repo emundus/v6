@@ -106,7 +106,8 @@ defined('_JEXEC') or die;
     /*** END ***/
 
     /*** List style ***/
-    #g-navigation .g-main-nav .tchooz-vertical-toplevel > li{
+    #g-navigation .g-main-nav .tchooz-vertical-toplevel > li,
+    #g-header .g-main-nav .tchooz-vertical-toplevel > li {
         margin-inline: 10px;
         font-family: var(--em-default-font);
     }
@@ -127,7 +128,8 @@ defined('_JEXEC') or die;
         height: 30px;
     }
 
-    #g-navigation .g-main-nav .g-sublevel > li:not(:last-child) > .g-menu-item-container{
+    #g-navigation .g-main-nav .g-sublevel > li:not(:last-child) > .g-menu-item-container,
+    #g-header .g-main-nav .g-sublevel > li:not(:last-child) > .g-menu-item-container {
         border-bottom: unset !important;
     }
 

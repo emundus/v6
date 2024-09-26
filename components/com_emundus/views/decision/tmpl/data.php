@@ -230,7 +230,7 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
         $('#rt-main').children().children().addClass('mainemundus');
 
         menuAction = document.querySelector('.em-menuaction');
-        headerNav = document.querySelector('#g-navigation .g-container');
+        headerNav = document.querySelector('#g-navigation .g-container,#g-header .g-container');
         containerResult = document.querySelector('.container-result');
         setTimeout(() => {
             $('.container-result').css('top', (headerNav.offsetHeight + menuAction.offsetHeight) + 'px');

@@ -1,7 +1,7 @@
 .com_emundus.view-user div#g-page-surround{
     background: var(--neutral-0) !important;
 }
-#g-navigation{
+#g-navigation, #g-header{
     display: none;
 }
 .em-activation{

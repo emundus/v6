@@ -37852,7 +37852,8 @@ body {
     background-size : 25%, 25%;
     overflow: hidden;
 }
-.login #g-navigation .g-container {
+.login #g-navigation .g-container,
+.login #g-header .g-container{
     background : transparent;
 }
 #g-container-main div.login {

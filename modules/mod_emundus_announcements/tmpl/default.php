@@ -21,7 +21,7 @@ defined('_JEXEC') or die;
     document.addEventListener('click', (event) => {
         if (event.target.id === 'close-preprod-alerte-container') {
             document.querySelector('.alerte-message-container').classList.add('hidden');
-            let navigation = document.querySelector('#g-navigation');
+            let navigation = document.querySelector('#g-navigation, #g-header');
             if(navigation) {
                 navigation.style.top = '0';
             }

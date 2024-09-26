@@ -174,26 +174,6 @@ class plgSystemEmundus extends JPlugin
 				}
 			}
 
-			preg_match_all(\chr(1) . '(<main.*\s+id="g-main-mainbody".*>)' . \chr(1) . 'i', $body, $matches);
-			foreach ($matches[0] as $match)
-			{
-				if (!strpos($match, 'class='))
-				{
-					$replace = '<main id="g-main-mainbody" role="main">';
-					$body    = str_replace($match, $replace, $body);
-				}
-			}
-
-			preg_match_all(\chr(1) . '(<footer.*\s+id="g-footer".*>)' . \chr(1) . 'i', $body, $matches);
-			foreach ($matches[0] as $match)
-			{
-				if (!strpos($match, 'class='))
-				{
-					$replace = '<footer id="g-footer" role="contentinfo">';
-					$body    = str_replace($match, $replace, $body);
-				}
-			}
-
 			$app->setBody($body);
 		}
 	}

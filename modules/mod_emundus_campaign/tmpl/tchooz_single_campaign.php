@@ -293,7 +293,7 @@ if(!empty($mod_em_campaign_go_back_campaigns_link)) {
     var current_tab = 'campaign';
 
     window.onload = function() {
-        const headerNav = document.getElementById('g-navigation');
+        const headerNav = document.querySelector('#g-navigation, #g-header');
         const sidebar = document.querySelector('aside#campaign-sidebar');
         if (headerNav && sidebar) {
             sidebar.style.top = headerNav.offsetHeight + 8 + 'px';
