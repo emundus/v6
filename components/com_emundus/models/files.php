@@ -391,7 +391,7 @@ class EmundusModelFiles extends JModelLegacy
         $menu = @JFactory::getApplication()->getMenu();
         $current_menu = $menu->getActive();
         $menu_params = $menu->getParams(@$current_menu->id);
-        $em_other_columns = explode(',', $menu_params->get('em_other_columns'));
+        $em_other_columns = explode(',', $menu_params->get('em_other_columns',''));
 
         $session = JFactory::getSession();
         $filter_order = $session->get('filter_order');
@@ -1032,7 +1032,14 @@ class EmundusModelFiles extends JModelLegacy
 
         $pageNavigation = "<div class='em-container-pagination-selectPage'>";
         $pageNavigation .= "<ul class='pagination pagination-sm'>";
-        $pageNavigation .= "<li><a href='#em-data' id='" . ($this->getPagination()->pagesCurrent - 1) . "'><span class='material-icons'>navigate_before</span></a></li>";
+
+	    if($this->getPagination()->pagesCurrent == $this->getPagination()->pagesStart) {
+		    $pageNavigation .= "<li><a class='disabled cursor-pointer'><span class='material-icons'>navigate_before</span></a></li>";
+	    } else
+	    {
+		    $pageNavigation .= "<li><a href='#em-data' id='" . ($this->getPagination()->pagesCurrent - 1) . "'><span class='material-icons'>navigate_before</span></a></li>";
+	    }
+
         if ($this->getPagination()->pagesTotal > 15) {
             for ($i = 1; $i <= 5; $i++ ) {
                 $pageNavigation .= "<li ";
@@ -1078,7 +1085,12 @@ class EmundusModelFiles extends JModelLegacy
                 $pageNavigation .= "><a id='" . $i . "' href='#em-data'>" . $i . "</a></li>";
             }
         }
-        $pageNavigation .= "<li><a href='#em-data' id='" . ($this->getPagination()->pagesCurrent + 1) . "'><span class='material-icons'>navigate_next</span></a></li></ul></div>";
+
+	    if($this->getPagination()->pagesCurrent == $this->getPagination()->pagesStop) {
+		    $pageNavigation .= "<li><a class='disabled cursor-pointer'><span class='material-icons'>navigate_next</span></a></li></ul></div>";
+	    } else {
+		    $pageNavigation .= "<li><a href='#em-data' id='" . ($this->getPagination()->pagesCurrent + 1) . "'><span class='material-icons'>navigate_next</span></a></li></ul></div>";
+	    }
 
         return $pageNavigation;
     }

@@ -181,7 +181,7 @@ if ($user != null)
             border: solid 3px var(--transparent);
         }
 
-        .em-profile-container p:nth-child(2) {
+        .em-profile-container p:last-child {
             overflow: hidden;
             max-width: 140px;
             max-height: 30px;
@@ -191,7 +191,7 @@ if ($user != null)
             font-weight: 400;
             line-height: 15px;
             letter-spacing: 0.004em;
-            overflow: hidden;
+            text-align: left;
             white-space: nowrap;
             text-overflow: ellipsis;
         }
@@ -254,7 +254,7 @@ if ($user != null)
 		<?php endif; ?>
 		<?php if (!empty($profile_picture)): ?>
             <div id="userDropdownLabel">
-                <div class="em-flex-row em-flex-end em-profile-container" onclick="manageHeight()">
+                <div class="em-flex-row em-flex-end em-profile-container" tabindex="0" aria-expanded="false" aria-haspopup="true" onclick="manageHeight()">
                     <div class="mr-4">
 						<?php if (!empty($user)) : ?>
                             <p class="em-text-neutral-900 em-font-weight-500"><?= $user->firstname . ' ' . $user->lastname[0] . '.'; ?></p>
@@ -315,7 +315,7 @@ if ($user != null)
                 </div>
 			<?php endif; ?>
 
-            <hr style="width: 100%">
+            <hr style="width: 100%" aria-hidden="true">
 
 			<?php
 			$ids_array = array();
@@ -381,7 +381,7 @@ if ($user != null)
 			} ?>
 
 			<?php if ($show_logout == '1') : ?>
-				<?= '   <hr style="width: 100%"><li><a class="logout-button-user em-flex-important em-flex-row em-flex-center" href="' . JURI::base() . 'index.php?option=com_users&task=user.logout&' . JSession::getFormToken() . '=1"><span class="material-icons-outlined mr-2">logout</span>' . JText::_('COM_EMUNDUS_USER_MENU_LOGOUT_ACTION') . '</a></li>'; ?>
+				<?= '   <hr style="width: 100%" aria-hidden="true"><li><a class="logout-button-user em-flex-important em-flex-row em-flex-center" href="' . JURI::base() . 'index.php?option=com_users&task=user.logout&' . JSession::getFormToken() . '=1"><span class="material-icons-outlined mr-2">logout</span>' . JText::_('COM_EMUNDUS_USER_MENU_LOGOUT_ACTION') . '</a></li>'; ?>
 			<?php endif; ?>
 
         </ul>
@@ -482,6 +482,7 @@ if ($user != null)
                 jQuery("#userDropdownMenu").css("transform", "translate(300px)")
                 setTimeout(() => {
                     dropdown.classList.remove('open');
+                    document.getElementById("userDropdownLabel").setAttribute("aria-expanded", false);
                     jQuery("#userDropdownMenu").css("transform", "unset")
                     if (icon !== null) {
                         icon.classList.remove('active');
@@ -495,6 +496,7 @@ if ($user != null)
                     messageIcon.classList.remove('open');
                 }
                 dropdown.classList.add('open');
+                document.getElementById("userDropdownLabel").setAttribute("aria-expanded", true);
                 if (icon !== null) {
                     icon.classList.add('open');
                 }

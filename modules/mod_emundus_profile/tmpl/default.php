@@ -15,18 +15,17 @@ $document->addStyleSheet("modules/mod_emundus_profile/style/mod_emundus_profile.
     <div class="em-container-profile-view-pict em-flex-row em-flex-space-between em-small-flex-column em-small-align-items-start em-mb-16">
         <div class="em-flex-row em-small-flex-column em-small-align-items-start em-w-100">
 			<?php if ($show_profile_picture == 1) : ?>
-
-                    <div id="pp_profile_background"
+                    <button id="pp_profile_background" title="<?php echo JText::_('MOD_EMUNDUS_PROFILE_EDIT_TITLE') ?>"
 					     <?php if ($update_profile_picture == 1) : ?>onclick="openBrowser()"
                          onmouseover="displayEdit('flex')" onmouseleave="displayEdit('none')"<?php endif; ?>
                          class="em-profile-picture-big em-pointer <?php if (empty($profile_picture)) : ?>em-display-none<?php else: ?>flex<?php endif; ?>"
                          style="background-image:url('<?php echo $profile_picture ?>')"
                     >
-                    <span class="em-flex-row" style="display: none" id="pp_edit_icon">
-                        <span class="material-icons-outlined em-mr-8">edit</span>
-                        <?php echo JText::_('MOD_EMUNDUS_PROFILE_EDIT') ?>
-                    </span>
-                    </div>
+                        <span class="em-flex-row" style="display: none" id="pp_edit_icon" tabindex="0">
+                            <span aria-hidden="true" class="material-icons-outlined em-mr-8">edit</span>
+                            <?php echo JText::_('MOD_EMUNDUS_PROFILE_EDIT') ?>
+                        </span>
+                    </button>
                     <div id="pp_profile_background_no_picture"
 					     <?php if ($update_profile_picture == 1) : ?>onclick="openBrowser()"
                          onmouseover="displayEdit('flex', false)" onmouseleave="displayEdit('none', false)"<?php endif; ?>
@@ -34,7 +33,7 @@ $document->addStyleSheet("modules/mod_emundus_profile/style/mod_emundus_profile.
                          data-initials="<?php echo substr($e_user->firstname, 0, 1) . substr($e_user->lastname, 0, 1); ?>"
                     >
                     <span class="em-flex-row" style="display: none" id="pp_edit_icon_no_picture">
-                        <span class="material-icons-outlined em-mr-8">edit</span>
+                        <span aria-hidden="true"  class="material-icons-outlined em-mr-8">edit</span>
                         <?php echo JText::_('MOD_EMUNDUS_PROFILE_EDIT') ?>
                     </span>
                     </div>

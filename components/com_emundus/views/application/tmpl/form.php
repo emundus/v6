@@ -5,6 +5,9 @@
  * Date: 19/06/14
  * Time: 11:23
  */
+
+use Joomla\CMS\Component\ComponentHelper;
+
 JFactory::getSession()->set('application_layout', 'form');
 
 $defaultpid = $this->defaultpid;
@@ -121,6 +124,7 @@ $user = $this->userid;
                 <?php
                     $coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id);
                     $sysadmin_access = EmundusHelperAccess::isAdministrator($this->_user->id);
+	                $emundus_config = ComponentHelper::getParams('com_emundus');
                     $xmlDoc = new DOMDocument();
                     if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
                         $release_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
@@ -162,6 +166,7 @@ $user = $this->userid;
                              access='<?= json_encode($user_comment_access) ?>'
                              is_applicant="<?= 0 ?>"
                              current_form="<?= 0 ?>"
+                             applicants_allowed_to_comment="<?= $emundus_config->get('allow_applicant_to_comment', false) ? 1 : 0 ?>"
                              currentLanguage="<?= $current_lang->getTag() ?>"
                              shortLang="<?= $short_lang ?>"
                              coordinatorAccess="<?= $coordinator_access ?>"

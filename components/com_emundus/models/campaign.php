@@ -835,7 +835,7 @@ class EmundusModelCampaign extends JModelList {
 
             $query->select([
                 'sc.*',
-                'COUNT(CASE cc.published WHEN 1 THEN 1 ELSE NULL END) as nb_files',
+                'COUNT(cc.id) as nb_files',
                 'sp.label AS program_label',
                 'sp.id AS program_id',
                 'sp.published AS published_prog'
@@ -846,7 +846,9 @@ class EmundusModelCampaign extends JModelList {
                     ' ON ' .
                     $this->_db->quoteName('cc.campaign_id') .
                     ' = ' .
-                    $this->_db->quoteName('sc.id')
+                    $this->_db->quoteName('sc.id') .
+                    ' AND ' .
+                    $this->_db->quoteName('cc.published') . ' = 1'
                 )
                 ->leftJoin(
                     $this->_db->quoteName('#__emundus_setup_programmes', 'sp') .
@@ -854,9 +856,18 @@ class EmundusModelCampaign extends JModelList {
                     $this->_db->quoteName('sp.code') .
                     ' LIKE ' .
                     $this->_db->quoteName('sc.training')
+                )
+                ->leftJoin(
+                    $this->_db->quoteName('#__users', 'u') .
+                    ' ON ' .
+                    $this->_db->quoteName('u.id') .
+                    ' = ' .
+                    $this->_db->quoteName('cc.applicant_id') .
+                    ' AND ' .
+                    $this->_db->quoteName('u.block') . ' = 0'
                 );
 
-			$query->where($this->_db->quoteName('sc.training') . ' IN (' . implode(',',$this->_db->quote($programs)) . ')');
+            $query->where($this->_db->quoteName('sc.training') . ' IN (' . implode(',',$this->_db->quote($programs)) . ')');
 
             if(!empty($filterDate)) {
                 $query->andWhere($filterDate);

@@ -769,7 +769,13 @@ if ($user->authorise('core.viewjob', 'com_emundus') && ($name == 'jobs' || $name
 {
     $controller->execute($task);
 }
-elseif ($user->guest && ((($name === 'webhook' || $app->input->get('controller', '', 'WORD') === 'webhook') && $format === 'raw') && ($secret === $token || $webhook_token == JApplicationHelper::getHash($token)) || $task == 'getfilereferent'))
+elseif ($user->guest
+    && (
+        (($name === 'webhook' || $app->input->get('controller', '', 'WORD') === 'webhook') && $format === 'raw')
+        && ($secret === $token || $webhook_token == JApplicationHelper::getHash($token))
+        || $task == 'getfilereferent'
+        || $app->input->get('controller', '', 'WORD') === 'vote'
+    ))
 {
     $controller->execute($task);
 }

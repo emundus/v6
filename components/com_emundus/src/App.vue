@@ -36,6 +36,7 @@
           'u': false,
           'd': false
         }"
+        :applicantsAllowedToComment="datas.applicants_allowed_to_comment && datas.applicants_allowed_to_comment.value == 1"
     >
 
     </Comments>

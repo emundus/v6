@@ -142,6 +142,9 @@ class EmundusModelApplicationTest extends TestCase
 		$updated = $this->m_application->updateTabs([$tab], 0);
 		$this->assertFalse($updated, 'Tab does not exist');
 
+		$updated = $this->m_application->updateTabs([$tab], 95);
+		$this->assertFalse($updated);
+
 		$tab->id = $this->m_application->createTab('Test', 95);
 		$this->assertNotEmpty($tab->id);
 

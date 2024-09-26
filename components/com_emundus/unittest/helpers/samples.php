@@ -132,6 +132,23 @@ class EmundusUnittestHelperSamples
         return $user_id;
     }
 
+	public function deleteSampleUser($uid)
+	{
+		$deleted = false;
+		if (!empty($uid)) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->delete('#__users')
+				->where('id = ' . $uid);
+
+			$db->setQuery($query);
+			$deleted = $db->execute();
+		}
+
+		return $deleted;
+	}
+
     public function createSampleFile($cid, $uid, $force_new = true) {
 		$fnum = '';
 
@@ -282,6 +299,32 @@ class EmundusUnittestHelperSamples
 		return $program;
 	}
 
+	public function deleteSampleProgram($program_id) {
+		$deleted = false;
+		if (!empty($program_id)) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('esc.id')
+				->from('#__emundus_setup_campaigns as esc')
+				->leftJoin('#__emundus_setup_programmes as esp ON esp.code = esc.training')
+				->where('esp.id = ' . $db->quote($program_id));
+
+			$db->setQuery($query);
+			$campaign_ids = $db->loadColumn();
+			$this->deleteSampleCampaign($campaign_ids);
+
+			$query->clear()
+				->delete('#__emundus_setup_programmes')
+				->where('id = ' . $program_id);
+
+			$db->setQuery($query);
+			$deleted = $db->execute();
+		}
+
+		return $deleted;
+	}
+
 	public function createSampleCampaign($program, $force_new = false)
 	{
 		$campaign_id = 0;
@@ -293,7 +336,8 @@ class EmundusUnittestHelperSamples
 				$query->select('id')
 					->from('#__emundus_setup_campaigns')
 					->where('training = ' . $db->quote($program['programme_code']))
-					->andWhere('label = ' . $db->quote('Campagne test unitaire'));
+					->andWhere('label = ' . $db->quote('Campagne test unitaire'))
+					->andWhere('published = 1');
 				$db->setQuery($query);
 				$campaign_id = $db->loadResult();
 			}
@@ -321,6 +365,32 @@ class EmundusUnittestHelperSamples
 		}
 
 		return $campaign_id;
+	}
+
+	public function deleteSampleCampaign($campaign_ids) {
+		$deleted = false;
+
+		if (!empty($campaign_ids)) {
+			$campaign_ids = !is_array($campaign_ids) ? [$campaign_ids] : $campaign_ids;
+
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->delete('#__emundus_campaign_candidature')
+				->where('campaign_id IN ' . '(' . implode(',', $campaign_ids) . ')');
+
+			$db->setQuery($query);
+			$deleted = $db->execute();
+
+			$query->clear()
+				->delete('#__emundus_setup_campaigns')
+				->where('id IN ' . '(' . implode(',', $campaign_ids) . ')');
+
+			$db->setQuery($query);
+			$deleted = $db->execute();
+		}
+
+		return $deleted;
 	}
 
 	public function createSampleAttachment() {

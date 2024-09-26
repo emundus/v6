@@ -13,6 +13,7 @@ $current_lang = JFactory::getLanguage();
 $short_lang = substr($current_lang->getTag(), 0 , 2);
 $coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id);
 $sysadmin_access = EmundusHelperAccess::isAdministrator($this->_user->id);
+$em_config = JComponentHelper::getParams('com_emundus');
 $xmlDoc = new DOMDocument();
 if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
     $release_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
@@ -69,6 +70,7 @@ $user_comment_access = [
      fnum="<?= $this->fnum ?>"
      access='<?= json_encode($user_comment_access); ?>'
      is_applicant="<?= $is_applicant; ?>"
+     applicants_allowed_to_comment="<?= ($em_config->get('allow_applicant_to_comment', false) ? 1 : 0); ?>"
      current_form="<?= 0 ?>"
      currentLanguage="<?= $current_lang->getTag() ?>"
      shortLang="<?= $short_lang ?>"

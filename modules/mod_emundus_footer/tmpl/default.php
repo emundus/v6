@@ -30,13 +30,14 @@ if($applicant = !EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
 
         <?php else : ?>
 
+
             <div class="em-col-1-footer">
-                <p><?= $mod_emundus_footer_texte_col_1; ?></p>
+                  <?= $mod_emundus_footer_texte_col_1; ?>
             </div>
 
             <div class="em-col-2-footer">
                 <div class="em-col-2-footer-texte">
-                    <p><?= $mod_emundus_footer_texte_col_2; ?></p>
+                      <?= $mod_emundus_footer_texte_col_2; ?>
                 </div>
             </div>
 
@@ -71,27 +72,27 @@ if($applicant = !EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             <hr class="footer-separation"/>
         <?php endif; ?>
 
-        <div class="footer-rgpd-links">
+        <ul class="footer-rgpd-links">
         <?php if ($mod_emundus_footer_legal_info == '1') :?>
-            <p><a href="<?php echo $actualLanguage ?>/<?php echo $mod_emundus_footer_legal_info_alias ?>"><?= JText::_('MOD_EM_FOOTER_LEGAL_INFO_LINK'); ?></a></p>
+            <li><a href="<?php echo $actualLanguage ?>/<?php echo $mod_emundus_footer_legal_info_alias ?>"><?= JText::_('MOD_EM_FOOTER_LEGAL_INFO_LINK'); ?></a></li>
         <?php endif; ?>
 
          <?php if ($mod_emundus_footer_data_privacy == '1') :?>
-            <p><a href="<?php echo $actualLanguage ?>/<?php echo $mod_emundus_footer_data_privacy_alias ?>"><?= JText::_('MOD_EM_FOOTER_DATA_PRIVACY_LINK'); ?></a></p>
+            <li><a href="<?php echo $actualLanguage ?>/<?php echo $mod_emundus_footer_data_privacy_alias ?>"><?= JText::_('MOD_EM_FOOTER_DATA_PRIVACY_LINK'); ?></a></li>
         <?php endif; ?>
 
         <?php if ($mod_emundus_footer_rights == '1') :?>
-            <p><a href="<?php echo $actualLanguage ?>/<?php echo $mod_emundus_footer_rights_alias ?>"><?= JText::_('MOD_EM_FOOTER_RIGHTS_LINK'); ?></a></p>
+            <li><a href="<?php echo $actualLanguage ?>/<?php echo $mod_emundus_footer_rights_alias ?>"><?= JText::_('MOD_EM_FOOTER_RIGHTS_LINK'); ?></a></li>
         <?php endif; ?>
 
         <?php if ($mod_emundus_footer_cookies == '1') :?>
-            <p><a href="<?php echo $actualLanguage ?>/<?php echo $mod_emundus_footer_cookies_alias ?>"><?= JText::_('MOD_EM_FOOTER_COOKIES_LINK'); ?></a></p>
+            <li><a href="<?php echo $actualLanguage ?>/<?php echo $mod_emundus_footer_cookies_alias ?>"><?= JText::_('MOD_EM_FOOTER_COOKIES_LINK'); ?></a></li>
         <?php endif; ?>
 
             <?php if ($mod_emundus_footer_accessibility== '1') :?>
-                <p><a href="<?php echo $actualLanguage ?>/<?php echo $mod_emundus_footer_accessibility_alias ?>"><?= JText::_('MOD_EM_FOOTER_RGAA_LINK'); ?></a></p>
+                <li><a href="<?php echo $actualLanguage ?>/<?php echo $mod_emundus_footer_accessibility_alias ?>"><?= JText::_('MOD_EM_FOOTER_RGAA_LINK'); ?></a></li>
             <?php endif; ?>
-        </div>
+        </ul>
         </div>
           <?php if(empty($mod_emundus_footer_texte_col_1) && empty($mod_emundus_footer_texte_col_2) && $mod_emundus_footer_display_powered_by == 1) : ?>
           <div class="footer-emundus centered-links">

@@ -19,7 +19,9 @@ JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus/models'); // 
 
 include_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
 
+use Joomla\CMS\Factory;
 use Joomla\CMS\Filesystem\File;
+use Joomla\CMS\Plugin\PluginHelper;
 
 
 class EmundusModelApplication extends JModelList
@@ -1746,7 +1748,7 @@ class EmundusModelApplication extends JModelList
                                                 if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
 
                                                     if ($elements[$j]->plugin == 'date') {
-                                                        if (!empty($r_elt) && $r_elt != '0000-00-00 00:00:00') {
+                                                        if (!empty($r_elt) && ($r_elt != '0000-00-00 00:00:00' || $r_elt != '0000-00-00')) {
                                                             $elt = date($params->date_form_format, strtotime($r_elt));
                                                         } else {
                                                             $elt = '';
@@ -2067,13 +2069,13 @@ class EmundusModelApplication extends JModelList
 
                                             // Decrypt datas encoded
                                             if($form_params->note == 'encrypted'){
-	                                            $element->content = EmundusHelperFabrik::decryptDatas($element->content);
+	                                            $element->content = EmundusHelperFabrik::decryptDatas($element->content,null,'aes-128-cbc',$element->plugin);
                                             }
                                             //
 
                                             if ($element->plugin == 'date' && !empty($element->content))
 											{
-                                                if ($element->content != '0000-00-00 00:00:00') {
+                                                if ($element->content != '0000-00-00 00:00:00' || $element->content != '0000-00-00') {
                                                     $date_params = json_decode($element->params);
                                                     $elt = date($date_params->date_form_format, strtotime($element->content));
                                                 } else {
@@ -3021,7 +3023,7 @@ class EmundusModelApplication extends JModelList
 
                                     // Decrypt datas encoded
                                     if($form_params->note == 'encrypted'){
-	                                    $element->content = EmundusHelperFabrik::decryptDatas($element->content);
+	                                    $element->content = EmundusHelperFabrik::decryptDatas($element->content,null,'aes-128-cbc',$element->plugin);
                                     }
                                     //
 
@@ -5460,6 +5462,10 @@ class EmundusModelApplication extends JModelList
                         $logsParams       = array('created' => [$logsStd]);
                         EmundusModelLogs::log($this->_user->id, $applicant_id, $data['fnum'], 4, 'c', 'COM_EMUNDUS_ACCESS_ATTACHMENT_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
                     }
+
+	                PluginHelper::importPlugin('emundus', 'custom_event_handler');
+	                Factory::getApplication()->triggerEvent('onAfterUpdateAttachment', array($data,$data['fnum']));
+	                Factory::getApplication()->triggerEvent('callEventHandler', ['onAfterUpdateAttachment', ['attachment' => $data,'fnum' => $data['fnum']]]);
                 }
             }
             catch (Exception $e) {

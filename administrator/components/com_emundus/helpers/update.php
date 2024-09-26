@@ -1643,18 +1643,18 @@ class EmundusHelperUpdate
                     'menutype' => $params['menutype'],
                     'title' => $params['title'],
                     'alias' => $alias,
-                    'path' => $params['path'] ?: $alias,
-                    'type' => $params['type'] ?: 'url',
-                    'link' => $params['link'] ?: '#',
-					'note' => $params['note'] ?: '',
-                    'access' => $params['access'] ?: 1,
-                    'component_id' => $params['component_id'] ?: 0,
-                    'template_style_id' => $params['template_style_id'] ?: 22,
+                    'path' => !empty($params['path']) ? $params['path'] : $alias,
+                    'type' => !empty($params['type']) ? $params['type'] : 'url',
+                    'link' => !empty($params['link']) ? $params['link'] : '#',
+                    'note' =>!empty($params['note']) ? $params['note'] : '',
+                    'access' => !empty($params['access']) ? $params['access'] : 1,
+                    'component_id' => !empty($params['component_id']) ? $params['component_id'] : 0,
+                    'template_style_id' => !empty($params['template_style_id']) ? $params['template_style_id'] : 22,
                     'language' => '*',
                     'published' => $published,
                     'params' => json_encode($params['params']),
-                    'client_id' => $params['client_id'] ?: 0,
-                    'img' => $params['img'] ?: ''
+                    'client_id' => !empty($params['client_id']) ? $params['client_id'] : 0,
+                    'img' => !empty($params['img']) ? $params['img'] : ''
                 );
 
                 if ($parent_id <= 0 || empty($parent_id)) {
@@ -1778,7 +1778,7 @@ class EmundusHelperUpdate
         return $result;
     }
 
-    public static function addFabrikForm($datas,$params = [], $published = 1) {
+    public static function addFabrikForm($datas,$params = [], $published = 1, $user = null) {
         $result = ['status' => false, 'message' => '', 'id' => 0];
 
         if(empty($datas['label'])){
@@ -1807,12 +1807,12 @@ class EmundusHelperUpdate
 
                 $inserting_datas = [
                     'label' => $datas['label'],
-                    'record_in_database' => $datas['record_in_database'] ?: 1,
-                    'error' => $datas['error'] ?: 'FORM_ERROR',
-                    'intro' => $datas['intro'] ?: '',
+                    'record_in_database' => !empty($datas['record_in_database']) ? $datas['record_in_database'] : 1,
+                    'error' => !empty($datas['error']) ? $datas['error'] : 'FORM_ERROR',
+                    'intro' => !empty($datas['intro']) ? $datas['intro'] : '',
                     'created' => date('Y-m-d H:i:s'),
-                    'created_by' => 62,
-                    'created_by_alias' => 'admin',
+                    'created_by' => !empty($user) ? $user->id : 62,
+                    'created_by_alias' => !empty($user) ? $user->username : 'admin',
                     'modified' => date('Y-m-d H:i:s'),
                     'modified_by' => 0,
                     'checked_out' => 0,
@@ -1820,10 +1820,10 @@ class EmundusHelperUpdate
                     'published' => $published,
                     'publish_up' => $publish_up->format('Y-m-d H:i:s'),
                     'publish_down' => '2099-01-01 00:00:00',
-                    'reset_button_label' => $datas['reset_button_label'] ?: 'RESET',
-                    'submit_button_label' => $datas['submit_button_label'] ?: 'SAVE_CONTINUE',
-                    'form_template' => $datas['form_template'] ?: 'bootstrap',
-                    'view_only_template' => $datas['view_only_template'] ?: 'bootstrap',
+                    'reset_button_label' => !empty($datas['reset_button_label']) ? $datas['reset_button_label'] : 'RESET',
+                    'submit_button_label' => !empty($datas['submit_button_label']) ? $datas['submit_button_label'] : 'SAVE_CONTINUE',
+                    'form_template' => !empty($datas['form_template']) ? $datas['form_template'] : 'emundus',
+                    'view_only_template' => !empty($datas['view_only_template']) ? $datas['view_only_template'] : 'emundus',
                     'params' => json_encode($params),
                 ];
 
@@ -1847,7 +1847,7 @@ class EmundusHelperUpdate
         return $result;
     }
 
-    public static function addFabrikList($datas,$params = [], $published = 1) {
+    public static function addFabrikList($datas,$params = [], $published = 1, $user = null) {
         $result = ['status' => false, 'message' => '', 'id' => 0];
 
         if(empty($datas['label'])){
@@ -1885,15 +1885,15 @@ class EmundusHelperUpdate
 
                 $inserting_datas = [
                     'label' => $datas['label'],
-                    'introduction' => $datas['introduction'] ?: '',
+                    'introduction' => !empty($datas['introduction']) ? $datas['introduction'] : '',
                     'form_id' => $datas['form_id'],
                     'db_table_name' => $datas['db_table_name'],
-                    'db_primary_key' => $datas['db_primary_key'] ?: $datas['db_table_name'] . '.id',
-                    'auto_inc' => $datas['auto_inc'] ?: 1,
-                    'connection_id' => $datas['connection_id'] ?: 1,
+                    'db_primary_key' => !empty($datas['db_primary_key']) ? $datas['db_primary_key'] : $datas['db_table_name'] . '.id',
+                    'auto_inc' => !empty($datas['auto_inc']) ?: 1,
+                    'connection_id' => !empty($datas['connection_id']) ? $datas['connection_id'] : 1,
                     'created' => date('Y-m-d H:i:s'),
-                    'created_by' => 62,
-                    'created_by_alias' => 'admin',
+                    'created_by' => !empty($user) ? $user->id : 62,
+                    'created_by_alias' => !empty($user) ? $user->username : 'admin',
                     'modified' => date('Y-m-d H:i:s'),
                     'modified_by' => 0,
                     'checked_out' => 0,
@@ -1901,14 +1901,14 @@ class EmundusHelperUpdate
                     'published' => $published,
                     'publish_up' => $publish_up->format('Y-m-d H:i:s'),
                     'publish_down' => '2099-01-01 00:00:00',
-                    'access' => $datas['access'] ?: 1,
+                    'access' => !empty($datas['access']) ? $datas['access'] : 1,
                     'hits' => 0,
-                    'rows_per_page' => $datas['rows_per_page'] ?: 10,
-                    'template' => $datas['template'] ?: 'bootstrap',
-                    'order_by' => $datas['order_by'] ?: '[]',
-                    'order_dir' => $datas['order_dir'] ?: '[]',
-                    'filter_action' => $datas['filter_action'] ?: 'onchange',
-                    'group_by' => $datas['group_by'] ?: '',
+                    'rows_per_page' => !empty($datas['rows_per_page']) ? $datas['rows_per_page'] : 10,
+                    'template' => !empty($datas['template']) ? $datas['template'] : 'bootstrap',
+                    'order_by' => !empty($datas['order_by']) ? $datas['order_by'] : '[]',
+                    'order_dir' => !empty($datas['order_dir']) ? $datas['order_dir'] : '[]',
+                    'filter_action' => !empty($datas['filter_action']) ? $datas['filter_action'] : 'onchange',
+                    'group_by' => !empty($datas['group_by']) ? $datas['group_by'] : '',
                     'params' => json_encode($params)
                 ];
 
@@ -1932,7 +1932,7 @@ class EmundusHelperUpdate
         return $result;
     }
 
-    public static function addFabrikGroup($datas,$params = [], $published = 1, $no_label = false) {
+    public static function addFabrikGroup($datas,$params = [], $published = 1, $no_label = false, $user = null) {
         $result = ['status' => false, 'message' => '', 'id' => 0];
 
         if(empty($datas['name'])){
@@ -1966,17 +1966,17 @@ class EmundusHelperUpdate
             try {
                 $inserting_datas = [
                     'name' => $datas['name'],
-                    'css' => $datas['css'] ?: '',
+                    'css' => !empty($datas['css']) ? $datas['css'] : '',
                     'label' => $datas['label'],
                     'created' => date('Y-m-d H:i:s'),
-                    'created_by' => 62,
-                    'created_by_alias' => 'admin',
+                    'created_by' => !empty($user) ? $user->id : 62,
+                    'created_by_alias' => !empty($user) ? $user->username : 'admin',
                     'modified' => date('Y-m-d H:i:s'),
                     'modified_by' => 0,
                     'checked_out' => 0,
                     'checked_out_time' => date('Y-m-d H:i:s'),
                     'published' => $published,
-                    'is_join' => $datas['is_join'] ?: 0,
+                    'is_join' => !empty($datas['is_join']) ? $datas['is_join'] : 0,
                     'params' => json_encode($params)
                 ];
 
@@ -2216,7 +2216,7 @@ class EmundusHelperUpdate
         return $result;
     }
 
-    public static function addFabrikElement($datas,$params = [],$required = true) {
+    public static function addFabrikElement($datas, $params = [], $required = true, $user = null) {
         $result = ['status' => false, 'message' => ''];
 
         if(empty($datas['name'])){
@@ -2266,30 +2266,30 @@ class EmundusHelperUpdate
                     'name' => $datas['name'],
                     'group_id' => $datas['group_id'],
                     'plugin' => $datas['plugin'],
-                    'label' => $datas['label'] ?: '',
+                    'label' => !empty($datas['label']) ? $datas['label'] : '',
                     'checked_out' => 0,
                     'checked_out_time' => date('Y-m-d H:i:s'),
                     'created' => date('Y-m-d H:i:s'),
-                    'created_by' => 62,
-                    'created_by_alias' => 'sysadmin',
+                    'created_by' => !empty($user) ? $user->id : 62,
+                    'created_by_alias' => !empty($user) ? $user->username : 'admin',
                     'modified' => date('Y-m-d H:i:s'),
-                    'modified_by' => 62,
-                    'width' => $datas['width'] ?: 30,
-                    'height' => $datas['height'] ?: 6,
-                    'default' => $datas['default'] ?: '',
-                    'hidden' => $datas['hidden'] ?: 0,
-                    'eval' => $datas['eval'] ?: 0,
+                    'modified_by' => 0,
+                    'width' => !empty($datas['width']) ? $datas['width'] : 30,
+                    'height' => !empty($datas['height']) ? $datas['height'] : 6,
+                    'default' => !empty($datas['default']) ? $datas['default'] : '',
+                    'hidden' => !empty($datas['hidden']) ? $datas['hidden'] : 0,
+                    'eval' => !empty($datas['eval']) ? $datas['eval'] : 0,
                     'ordering' => $ordering,
-                    'show_in_list_summary' => $datas['show_in_list_summary'] ?: 0,
-                    'filter_type' => $datas['filter_type'] ?: '',
-                    'filter_exact_match' => $datas['filter_exact_match'] ?: 0,
-                    'published' => $datas['published'] ?: 1,
-                    'link_to_detail' => $datas['link_to_detail'] ?: 0,
-                    'primary_key' => $datas['primary_key'] ?: 0,
-                    'auto_increment' => $datas['auto_increment'] ?: 0,
-                    'access' => $datas['access'] ?: 1,
-                    'use_in_page_title' => $datas['use_in_page_title'] ?: 0,
-                    'parent_id' => $datas['parent_id'] ?: 0,
+                    'show_in_list_summary' => !empty($datas['show_in_list_summary']) ? $datas['show_in_list_summary'] : 0,
+                    'filter_type' => !empty($datas['filter_type']) ? $datas['filter_type'] : '',
+                    'filter_exact_match' => !empty($datas['filter_exact_match']) ? $datas['filter_exact_match'] : 0,
+                    'published' => !empty($datas['published']) ? $datas['published'] : 1,
+                    'link_to_detail' => !empty($datas['link_to_detail']) ? $datas['link_to_detail'] : 0,
+                    'primary_key' => !empty($datas['primary_key']) ? $datas['primary_key'] : 0,
+                    'auto_increment' => !empty($datas['auto_increment']) ? $datas['auto_increment'] : 0,
+                    'access' => !empty($datas['access']) ? $datas['access'] : 1,
+                    'use_in_page_title' => !empty($datas['use_in_page_title']) ? $datas['use_in_page_title'] : 0,
+                    'parent_id' => !empty($datas['parent_id']) ? $datas['parent_id'] : 0,
                     'params' => json_encode($params)
                 ];
 
