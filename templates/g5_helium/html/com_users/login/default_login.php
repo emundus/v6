@@ -59,7 +59,6 @@ else{
     </div>
 <?php endif; ?>
     <form id="login_form" action="<?php echo (!empty($this->redirect)) ? 'index.php?option=com_users&task=user.login&redirect='.$this->redirect : 'index.php?option=com_users&task=user.login'; ?>" method="post" class="form-validate form-horizontal well">
-        <fieldset>
             <?php foreach ($this->form->getFieldset('credentials') as $field) : ?>
                 <?php if (!$field->hidden) : ?>
                     <div class="control-group mb-8">
@@ -69,7 +68,7 @@ else{
                         <div class="controls" style="<?= $field->type === "Password" ? 'position:relative; ' : '' ?>">
                             <?php echo $field->input; ?>
                             <?php if ($eMConfig["reveal_password"] && $field->type === "Password"): ?>
-                                <button type="button" title="<?php echo JText::_('COM_USERS_LOGIN_SHOW_PASSWORD'); ?>" id="toggle-password-visibility" class="material-icons-outlined em-pointer" aria-pressed="false" style="position: absolute;margin-top: 4px;right: 10px;opacity: 0.3;user-select: none;">visibility_off</button>
+                                <button type="button" title="<?php echo JText::_('COM_USERS_LOGIN_SHOW_PASSWORD'); ?>" id="toggle-password-visibility" class="material-icons-outlined em-pointer" aria-pressed="false" aria-hidden="true" style="position: absolute;margin-top: 4px;right: 10px;opacity: 0.3;user-select: none;">visibility_off</button>
                                 <div aria-live="polite" aria-atomic="true" style="display: none" id="show_password_text"><p><?php echo JText::_('COM_USERS_LOGIN_SHOW_PASSWORD'); ?></p></div>
                             <?php endif; ?>
                         </div>
@@ -119,7 +118,6 @@ else{
             <?php $return = $this->form->getValue('return', '', $this->params->get('login_redirect_url', $this->params->get('login_redirect_menuitem'))); ?>
             <input type="hidden" name="return" value="<?php echo base64_encode($return); ?>" />
             <?php echo JHtml::_('form.token'); ?>
-        </fieldset>
     </form>
 
     <?php $usersConfig = JComponentHelper::getParams('com_users'); ?>

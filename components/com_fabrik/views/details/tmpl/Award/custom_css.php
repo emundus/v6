@@ -115,7 +115,7 @@ width:100%!important;
     padding: 0rem !important;
 }
 
-#g-navigation {
+#g-navigation,#g-header {
    
     border-bottom : none !important;
     background-color: #F5F5F5 !important;

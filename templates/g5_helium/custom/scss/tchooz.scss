@@ -2049,6 +2049,67 @@ button.em-swal-delete-button:hover{
   font-family: $font-family-text;
 }
 
+.em-searchbar {
+  position: relative;
+}
+
+.em-searchbar label {
+  color: var(--neutral-800);
+  font-size: 13px;
+  font-weight: normal;
+  position: absolute;
+  pointer-events: none;
+  left: 15px;
+  top: 12px;
+  padding: 0 5px;
+  background: var(--em-applicant-bg);
+  transition: 0.2s ease all;
+  -moz-transition: 0.2s ease all;
+  -webkit-transition: 0.2s ease all;
+  font-family: var(--em-applicant-font);
+}
+
+.em-searchbar input[type="text"].form-control {
+  font-size: 12px;
+  display: block;
+  height: 40px;
+  padding: 0 20px;
+  background: var(--em-applicant-bg);
+  color: var(--neutral-800);
+  border: 1px solid #e0e0e5;
+  border-radius: var(--em-default-br);
+  box-sizing: border-box;
+  background-image: url('/images/emundus/searchbar/search.svg') !important;
+  background-repeat: no-repeat !important;
+  background-position: 96% 50% !important;
+  width: 300px;
+  box-shadow: none;
+  margin-bottom: 0;
+  font-family: var(--em-applicant-font);
+}
+
+.em-searchbar input[type="text"].form-control:focus{
+  box-shadow: none;
+  border: 1px solid var(--neutral-700);
+}
+
+.em-searchbar input[type="text"].form-control:hover{
+  box-shadow: none !important;
+  border: 1px solid var(--neutral-700);
+}
+
+.em-searchbar input[type="text"].form-control:focus ~ label {
+  top: -8px;
+  font-size: 13px;
+  background: var(--em-applicant-bg);
+  color: var(--neutral-700);
+}
+
+.em-searchbar input[type="text"].form-control:not(:placeholder-shown) ~ label {
+  top: -8px;
+  font-size: 13px;
+}
+
 /**
   MEDIA QUERIES
 **/

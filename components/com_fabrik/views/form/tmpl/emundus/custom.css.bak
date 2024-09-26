@@ -262,7 +262,7 @@ label {
     flex-direction:row;
 }
 
-#g-navigation .g-main-nav .g-dropdown > .g-dropdown-column {
+#g-navigation .g-main-nav .g-dropdown > .g-dropdown-column, #g-header .g-main-nav .g-dropdown > .g-dropdown-column {
     border: none;
 }
 

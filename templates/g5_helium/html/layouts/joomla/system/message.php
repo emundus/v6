@@ -50,7 +50,7 @@ $msgList = $displayData['msgList'];
             <div class="alert alert-<?php echo $type; ?>">
 
                 <?php if (!empty($msgs)) : ?>
-                    <span class="material-icons"><?php echo $icon ?></span>
+                    <span class="material-icons" aria-hidden="true" ><?php echo $icon ?></span>
                     <div>
                         <?php foreach ($msgs as $msg) : ?>
                             <p id="alert-message-text"><?php echo $msg; ?></p>

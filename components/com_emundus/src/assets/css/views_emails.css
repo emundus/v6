@@ -142,7 +142,7 @@ span.fabrikTip {
   align-items: center;
 }
 
-#g-navigation .g-main-nav .g-dropdown > .g-dropdown-column {
+#g-navigation .g-main-nav .g-dropdown > .g-dropdown-column, #g-header .g-main-nav .g-dropdown > .g-dropdown-column {
   border: none;
 }
 

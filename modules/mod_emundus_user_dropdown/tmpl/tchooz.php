@@ -156,7 +156,8 @@ if ($user != null)
             border-radius: 50%;
         }
 
-        #g-navigation .g-container #header-c .userDropdownIcon-tip {
+        #g-navigation .g-container #header-c .userDropdownIcon-tip,
+        #g-header .g-container #header-c .userDropdownIcon-tip{
             margin: 23px 30px !important;
         }
 
@@ -600,7 +601,7 @@ if ($user != null)
         });
 
         function manageHeight() {
-            let elmnt = document.getElementById("g-navigation");
+            let elmnt = document.querySelector("#g-navigation, #g-header");
             let elmnt2 = document.getElementById("g-top");
             if (elmnt2 !== null) {
                 let hauteurTotaleElem = elmnt.offsetHeight + elmnt2.offsetHeight;
@@ -636,7 +637,7 @@ if ($user != null)
     <script>
 		<?php if ($guest): ?>
         document.addEventListener('DOMContentLoaded', function () {
-            document.querySelector('#g-navigation .g-container').style.padding = '16px 12px';
+            document.querySelector('#g-navigation .g-container, #g-header .g-container').style.padding = '16px 12px';
         });
 		<?php endif; ?>
     </script>
@@ -654,7 +655,7 @@ if ($user != null)
         let elmnt2 = document.getElementById("g-top");
         if (elmnt2 !== null) {
             let hauteurTotaleElem = elmnt2.offsetHeight;
-            document.getElementById("g-navigation").style.top = hauteurTotaleElem + 'px';
+            document.querySelector("#g-navigation, #g-header").style.top = hauteurTotaleElem + 'px';
         }
     });
 </script>

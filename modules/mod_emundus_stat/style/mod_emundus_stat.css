@@ -25,7 +25,8 @@
 	padding: 12px;
 }
 
-.g-back-office-emundus-tableau.indicateurs-page #g-page-surround #g-navigation #header-c .platform-content  {
+.g-back-office-emundus-tableau.indicateurs-page #g-page-surround #g-navigation #header-c .platform-content,
+.g-back-office-emundus-tableau.indicateurs-page #g-page-surround #g-header #header-c .platform-content {
 	width: auto !important;
 }
 

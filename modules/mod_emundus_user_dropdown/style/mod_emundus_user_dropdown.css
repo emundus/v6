@@ -9,7 +9,8 @@
     to {opacity: 1;}
 }
 
-#g-navigation .header-c .open > .dropdown-menu {
+#g-navigation .header-c .open > .dropdown-menu,
+#g-header .header-c .open > .dropdown-menu {
     display: flex;
     flex-direction: column;
     align-items: start;
@@ -27,14 +28,17 @@
     transition: all 0.3s ease-in-out;
     padding: var(--p-32) var(--p-32) var(--p-32) var(--p-32);
 }
-#g-navigation:not(.g-flushed) .header-c .open > .dropdown-menu {
+#g-navigation:not(.g-flushed) .header-c .open > .dropdown-menu,
+#g-header:not(.g-flushed) .header-c .open > .dropdown-menu {
     right: 0;
 }
-#g-navigation.g-flushed .header-c .open > .dropdown-menu {
+#g-navigation.g-flushed .header-c .open > .dropdown-menu,
+#g-header.g-flushed .header-c .open > .dropdown-menu {
     right: 0;
 }
 
-#g-navigation .header-c .open > #userDropdownMenu *{
+#g-navigation .header-c .open > #userDropdownMenu *,
+#g-header .header-c .open > #userDropdownMenu * {
     opacity: 0;
     animation: increase-opacity 0.3s;
     animation-fill-mode: forwards;
@@ -47,7 +51,8 @@
     font-family: var(--em-default-font-title);
 }
 
-#g-navigation .header-c .open > #userDropdownMenu a{
+#g-navigation .header-c .open > #userDropdownMenu a,
+#g-header .header-c .open > #userDropdownMenu a {
  text-decoration: none;
 }
 
@@ -72,7 +77,8 @@
     color: var(--blue-700);
 }
 
-#g-navigation .header-c .open > #userDropdownMenu div.dropdown-header {
+#g-navigation .header-c .open > #userDropdownMenu div.dropdown-header,
+#g-header .header-c .open > #userDropdownMenu div.dropdown-header {
     font-family: var(--em-default-font);
 }
 
@@ -100,12 +106,14 @@ li>a:hover {
     text-decoration: underline;
 }
 
-.view-reset #g-navigation .header-c .header-right a.btn {
+.view-reset #g-navigation .header-c .header-right a.btn,
+.view-reset #g-header .header-c .header-right a.btn {
     letter-spacing: 0.1rem;
     line-height: 1.15;
 }
 
-.view-reset #g-navigation .header-c .header-right a.btn.btn-danger:not(.btn-creer-compte) {
+.view-reset #g-navigation .header-c .header-right a.btn.btn-danger:not(.btn-creer-compte),
+.view-reset #g-header .header-c .header-right a.btn.btn-danger:not(.btn-creer-compte){
     margin-right: 0;
 }
 
@@ -120,12 +128,14 @@ li>a:hover {
     min-width: 30px;
 }
 
-#g-navigation #header-c .header-right {
+#g-navigation #header-c .header-right,
+#g-header #header-c .header-right{
     display: flex;
     gap: var(--p-8);
 }
 
-#g-navigation #header-c .header-right a.btn.btn-danger {
+#g-navigation #header-c .header-right a.btn.btn-danger,
+#g-header #header-c .header-right a.btn.btn-danger {
     font-size: var(--em-applicant-font-size) !important;
     margin-bottom: 0 !important;
     text-shadow: none;
@@ -136,7 +146,9 @@ li>a:hover {
 }
 
 #g-navigation #header-c .header-right a.btn.btn-danger.btn-creer-compte,
-#g-navigation #header-c .header-right a.btn.btn-danger.btn-creer-compte.inscription {
+#g-navigation #header-c .header-right a.btn.btn-danger.btn-creer-compte.inscription,
+#g-header #header-c .header-right a.btn.btn-danger.btn-creer-compte,
+#g-header #header-c .header-right a.btn.btn-danger.btn-creer-compte.inscription {
     border-radius: var(--em-applicant-br);
     margin-bottom: var(--m-4);
     line-height: normal;
@@ -151,13 +163,20 @@ li>a:hover {
 #g-navigation #header-c .header-right a.btn.btn-danger.btn-creer-compte:active,
 #g-navigation #header-c .header-right a.btn.btn-danger.btn-creer-compte.inscription:hover,
 #g-navigation #header-c .header-right a.btn.btn-danger.btn-creer-compte.inscription:focus,
-#g-navigation #header-c .header-right a.btn.btn-danger.btn-creer-compte.inscription:active{
+#g-navigation #header-c .header-right a.btn.btn-danger.btn-creer-compte.inscription:active,
+#g-header #header-c .header-right a.btn.btn-danger.btn-creer-compte:hover,
+#g-header #header-c .header-right a.btn.btn-danger.btn-creer-compte:focus,
+#g-header #header-c .header-right a.btn.btn-danger.btn-creer-compte:active,
+#g-header #header-c .header-right a.btn.btn-danger.btn-creer-compte.inscription:hover,
+#g-header #header-c .header-right a.btn.btn-danger.btn-creer-compte.inscription:focus,
+#g-header #header-c .header-right a.btn.btn-danger.btn-creer-compte.inscription:active {
     color: var(--em-primary-color);
     background: var(--neutral-0);
     border: 1px solid var(--em-primary-color);
 }
 
-#g-navigation #header-c .header-right a.btn.btn-danger:not(.btn-creer-compte) {
+#g-navigation #header-c .header-right a.btn.btn-danger:not(.btn-creer-compte),
+#g-header #header-c .header-right a.btn.btn-danger:not(.btn-creer-compte) {
     border-radius: var(--em-applicant-br) !important;
     margin-bottom: 0 !important;
     line-height: normal;
@@ -169,13 +188,17 @@ li>a:hover {
 
 #g-navigation #header-c .header-right a.btn.btn-danger:not(.btn-creer-compte):hover,
 #g-navigation #header-c .header-right a.btn.btn-danger:not(.btn-creer-compte):focus,
-#g-navigation #header-c .header-right a.btn.btn-danger:not(.btn-creer-compte):active {
+#g-navigation #header-c .header-right a.btn.btn-danger:not(.btn-creer-compte):active,
+#g-header #header-c .header-right a.btn.btn-danger:not(.btn-creer-compte):hover,
+#g-header #header-c .header-right a.btn.btn-danger:not(.btn-creer-compte):focus,
+#g-header #header-c .header-right a.btn.btn-danger:not(.btn-creer-compte):active {
     color: var(--neutral-0);
     background: var(--em-secondary-color);
     border: 1px solid var(--em-secondary-color) !important;
 }
 
-#g-navigation #header-c .header-right a:not(.btn):hover {
+#g-navigation #header-c .header-right a:not(.btn):hover,
+#g-header #header-c .header-right a:not(.btn):hover{
     text-decoration: underline;
 }
 
@@ -371,11 +394,13 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
     width: fit-content;
 }
 
-#g-navigation .g-content .platform-content:nth-child(1){
+#g-navigation .g-content .platform-content:nth-child(1),
+#g-header .g-content .platform-content:nth-child(1){
     z-index: 2;
 }
 
-#g-navigation .g-content .platform-content:nth-child(2) {
+#g-navigation .g-content .platform-content:nth-child(2),
+#g-header .g-content .platform-content:nth-child(2){
     z-index: 1;
 }
 
