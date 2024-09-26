@@ -111,7 +111,7 @@ class plgSystemEmundus extends JPlugin
 			if (!empty($e_session->profile))
 			{
 				require_once JPATH_ROOT . '/components/com_emundus/models/users.php';
-				$m_users = $app->bootComponent('com_emundus')->getMVCFactory()->createModel('Users', 'EmundusModel');
+				$m_users = new EmundusModelUsers();
 
 				$profile_details = $m_users->getProfileDetails($e_session->profile);
 
