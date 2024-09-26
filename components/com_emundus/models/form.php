@@ -147,6 +147,60 @@ class EmundusModelForm extends JModelList {
 		return $data;
     }
 
+
+
+    function getAllFormsLinkedToTable($table) {
+        $data = ['datas' => [], 'count' => 0];
+
+        if (!empty($table)) {
+            $db = $this->getDbo();
+            $query = $db->getQuery(true);
+
+            try {
+                // We need to get the list of fabrik forms that are linked to the jos_emundus_evaluations table
+                $query->clear();
+                $query
+                    ->select([$db->quoteName('ff.id'), $db->quoteName('ff.label'), '"grilleEval" AS type'])
+                    ->from($db->quoteName('#__fabrik_forms', 'ff'))
+                    ->leftJoin($db->quoteName('#__fabrik_lists','fl').' ON '.$db->quoteName('fl.form_id').' = '.$db->quoteName('ff.id'))
+                    ->where($db->quoteName('fl.db_table_name').' = '.$db->quote($table));
+                $db->setQuery($query);
+
+                $forms = $db->loadObjectList();
+
+                if (!empty($forms)) {
+                    require_once (JPATH_ROOT.'/components/com_emundus/models/formbuilder.php');
+                    $m_form_builder = new EmundusModelFormbuilder();
+
+                    $path_to_file = basename(__FILE__) . '/../language/overrides/';
+                    $path_to_files = array();
+                    $Content_Folder = array();
+                    $languages = JLanguageHelper::getLanguages();
+                    foreach ($languages as $language) {
+                        $path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
+                        $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
+                    }
+
+                    foreach ($forms as $form ) {
+                        $label= [];
+                        foreach ($languages as $language) {
+                            $label[$language->sef] = $m_form_builder->getTranslation($form->label,$language->lang_code) ?: $form->label;
+                        }
+                        $form->label=$label;
+                        $form->programs_count = count($this->getProgramsByForm($form->id));
+                    }
+                }
+
+                $data['datas'] = $forms;
+                $data['count'] = sizeof($forms);
+            } catch (Exception $e) {
+                JLog::add('component/com_emundus/models/form | Cannot getting the list of forms : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            }
+        }
+
+        return $data;
+    }
+
     /**
      * TODO: Add filters / recherche etc./.. At the moment, it's not working
      * @param $filter
@@ -1111,6 +1165,50 @@ class EmundusModelForm extends JModelList {
 
 		return $form_id;
 	}
+
+    public function createFormDecision() {
+        require_once (JPATH_ROOT . '/components/com_emundus/models/formbuilder.php');
+        $m_formbuilder = new EmundusModelFormbuilder();
+        $form_id = $m_formbuilder->createFabrikForm('DECISION', ['fr' => 'Nouveau formulaire de décision', 'en' => 'New decision form'], ['fr' => 'Introduction', 'en' => 'Evaluation'], 'decision');
+
+        if (!empty($form_id)) {
+            $group = $m_formbuilder->createGroup(array('fr' => 'Hidden group', 'en' => 'Hidden group'), $form_id, -1);
+            if (!empty($group)) {
+                // Create hidden group
+                $m_formbuilder->createElement('id', $group['group_id'],'internalid','id','',1,0);
+                $m_formbuilder->createElement('time_date',$group['group_id'],'date','time date','',1, 0);
+                $m_formbuilder->createElement('fnum',$group['group_id'],'field','fnum','{jos_emundus_final_grade___fnum}',1,0,1,1,0,44);
+                $m_formbuilder->createElement('user',$group['group_id'],'user','user','',1,0);
+                $m_formbuilder->createElement('student_id', $group['group_id'],'field','student_id','{jos_emundus_final_grade___student_id}',1,0);
+                $m_formbuilder->createElement('final_grade', $group['group_id'],'databasejoin','DECISION','',1,0);
+            }
+
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->clear()
+                ->select('*')
+                ->from($db->quoteName('#__fabrik_lists'))
+                ->where($db->quoteName('db_table_name') . ' LIKE ' . $db->quote('jos_emundus_final_grade'));
+
+            $db->setQuery($query);
+            $list = $db->loadAssoc();
+
+            if (!empty($list)) {
+                $list_id = $m_formbuilder->copyList($list, $form_id);
+
+                if (empty($list_id)) {
+                    JLog::add('component/com_emundus/models/form | Error when create a list for decision form, could not copy list based on jos_emundus_final_grade', JLog::WARNING, 'com_emundus.error');
+                }
+            } else {
+                JLog::add('component/com_emundus/models/form | Error when create a list for decision form, could not find list with jos_emundus_final_grade', JLog::WARNING, 'com_emundus.error');
+            }
+        } else {
+            JLog::add('component/com_emundus/models/form | Error when create a form for decision form', JLog::WARNING, 'com_emundus.error');
+        }
+
+        return $form_id;
+    }
 
     public function createMenuType($menutype, $title) {
         $menutype_table = JTableNested::getInstance('MenuType');
@@ -2300,7 +2398,7 @@ class EmundusModelForm extends JModelList {
         return $data;
     }
 	
-	public function getProgramsByForm($form_id,$mode = 'eval')
+	public function getProgramsByForm($form_id, $mode = 'eval')
 	{
 		$programs = [];
 		
@@ -2356,7 +2454,7 @@ class EmundusModelForm extends JModelList {
 		return $programs;
 	}
 
-	public function associateFabrikGroupsToProgram($form_id,$programs,$mode = 'eval')
+	public function associateFabrikGroupsToProgram($form_id, $programs, $mode = 'eval')
 	{
 		$associated = false;
 
@@ -2375,12 +2473,15 @@ class EmundusModelForm extends JModelList {
 
 				if (!empty($fabrik_groups))
 				{
+
 					switch ($mode) {
 						case 'decision':
 							$column = 'fabrik_decision_group_id';
+                            $form_column = 'decision_form';
 							break;
 						default:
 							$column = 'fabrik_group_id';
+                            $form_column = 'evaluation_form';
 							break;
 					}
 
@@ -2390,7 +2491,7 @@ class EmundusModelForm extends JModelList {
 						$query->clear()
 							->update($db->quoteName('#__emundus_setup_programmes'))
 							->set($db->quoteName($column) . ' = ' . $db->quote(implode(',', $fabrik_groups)))
-							->set($db->quoteName('evaluation_form') . ' = ' . $db->quote($form_id))
+							->set($db->quoteName($form_column) . ' = ' . $db->quote($form_id))
 							->where($db->quoteName('code') . ' LIKE ' . $db->quote($program));
 						$db->setQuery($query);
 						$associated = $db->execute();
