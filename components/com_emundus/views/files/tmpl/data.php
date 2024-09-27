@@ -69,8 +69,8 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
                 <table class="table table-striped table-hover" id="em-data">
                     <thead>
                     <tr>
-                        <?php foreach ($this->datas[0] as $kl => $v): ?>
-                            <th title="<?= strip_tags(JText::_($v)); ?>" id="<?= $kl; ?>" >
+                        <?php foreach ($this->keys_order as $kl => $order): ?>
+                            <th title="<?= strip_tags(JText::_($this->datas[0][$kl])); ?>" id="<?= $kl; ?>" >
                                 <div class="em-cell">
                                     <?php if($kl == 'check'): ?>
 
@@ -104,10 +104,12 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
                                             <span class="glyphicon glyphicon-sort-by-attributes"></span>
                                         <?php endif;?>
                                         <strong>
-                                            <?= strip_tags(JText::_($v)); ?>
+                                            <?= strip_tags(JText::_($this->datas[0][$kl])); ?>
                                         </strong>
+									<?php elseif ($kl == 'fnum'): ?>
+									    <?= strip_tags(JText::_('COM_EMUNDUS_FILES_APPLICATION_FILES')); ?>
                                     <?php else: ?>
-                                        <?= strip_tags(JText::_($v)); ?>
+                                        <?= strip_tags(JText::_($this->datas[0][$kl])); ?>
                                     <?php endif;?>
 
                                 </div>
@@ -118,18 +120,13 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
 
                     <tbody>
                     <?php foreach ($this->datas as $key => $line):?>
-                        <?php if ($key != 0): ?>
+                        <?php if ($key != 0):?>
 
-                            <?php foreach ($line as $k => $value) :?>
-                                <?php
-                                if($k == 'status') { ?>
-                                    <tr>
-                                <?php }
+                            <tr>
+
+                            <?php foreach ($this->keys_order as $k => $order) :
+                                $value = $line[$k];
                                 ?>
-
-                            <?php endforeach; ?>
-
-                            <?php foreach ($line as $k => $value) :?>
 
                                 <td <?php if ($k == 'check' && $value->class != null) { echo 'class="'.$value->class.'"'; } if ($k == 'access' || $k == 'id_tag' || $k == 'jecc___campaign_id') { echo 'class="em-cell-scroll"'; } ?>>
                                     <div class="em-cell" >

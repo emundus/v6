@@ -473,6 +473,23 @@ class EmundusViewFiles extends JViewLegacy
 							}
 						}
 					}
+
+					$this->keys_order = ['check' => -1, 'fnum' => 0];
+
+					if (!empty($menu_params->get('em_columns_ordered'))) {
+						$columns_ordered = explode(',', $menu_params->get('em_columns_ordered'));
+						$i = 1;
+						foreach ($columns_ordered as $key) {
+							$this->keys_order[$key] = $i;
+							$i++;
+						}
+					}
+
+					foreach($data[0] as $k => $v) {
+						if (!array_key_exists($k, $this->keys_order) && $k != 'name') {
+							$this->keys_order[$k] = 999;
+						}
+					}
 				} else {
 				    $data = JText::_('COM_EMUNDUS_NO_RESULT');
 				}
