@@ -32,7 +32,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
 					var email_selector = this.options.email;
 
 					// parent group of email_selector
-					var parent_group = document.querySelector('#' + email_selector).closest('fieldset').getAttribute('id');
+					var parent_group = document.querySelector('#' + email_selector).closest('fabrikGroup').getAttribute('id');
 
 					// get the firstname, lastname of referent for each group
 					var firstname = document.querySelector('#' + parent_group + ' [id^=jos_emundus_references___First_Name_]').value;
