@@ -440,46 +440,51 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                         <!-- TAGS ENABLED -->
 						<?php if ($mod_em_campaign_order == 'start_date' && $order == 'end_date') : ?>
                             <div class="mod_emundus_campaign__header_filter em-mr-8 em-border-neutral-400 em-neutral-800-color em-white-bg">
-                                <span><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_END_DATE_NEAR') ?></span>
-                                <button type="button" class="em-flex-column em-ml-8 em-text-neutral-900 em-pointer"
+
+                                <button type="button" class="em-flex-row em-text-neutral-900 em-pointer"
                                    onclick="deleteSort(['order_date','order_time'])">
-                                    <span class="material-icons-outlined" aria-hidden="true">close</span>
+                                    <span><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_END_DATE_NEAR') ?></span>
+                                    <span class="material-icons-outlined em-ml-8" aria-hidden="true">close</span>
                                 </button>
                             </div>
 						<?php endif; ?>
 						<?php if ($mod_em_campaign_order == 'end_date' && $order == 'start_date') : ?>
                             <div class="mod_emundus_campaign__header_filter em-mr-8 em-border-neutral-400 em-neutral-800-color em-white-bg">
-                                <span ><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_START_DATE_NEAR') ?></span>
-                                <button type="button" class="em-flex-column em-ml-8 em-text-neutral-900 em-pointer"
+
+                                <button type="button" class="em-flex-row em-text-neutral-900 em-pointer"
                                    onclick="deleteSort(['order_date','order_time'])">
-                                    <span class="material-icons-outlined" aria-hidden="true">close</span>
+                                    <span ><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_START_DATE_NEAR') ?></span>
+                                    <span class="material-icons-outlined em-ml-8" aria-hidden="true">close</span>
                                 </button>
                             </div>
 						<?php endif; ?>
 						<?php if ($mod_em_campaign_show_sort == 1 && $group_by == 'program') : ?>
                             <div class="mod_emundus_campaign__header_filter em-mr-8 em-border-neutral-400 em-neutral-800-color em-white-bg">
-                                <span><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_PROGRAM') ?></span>
-                                <button type="button" class="em-flex-column em-ml-8 em-text-neutral-900 em-pointer"
+
+                                <button type="button" class="em-flex-row em-text-neutral-900 em-pointer"
                                    onclick="deleteSort(['group_by'])">
-                                    <span class="material-icons-outlined" aria-hidden="true">close</span>
+                                    <span><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_PROGRAM') ?></span>
+                                    <span class="material-icons-outlined em-ml-8" aria-hidden="true">close</span>
                                 </button>
                             </div>
 						<?php endif; ?>
 						<?php if ($mod_em_campaign_show_sort == 1 && $group_by == 'category') : ?>
                             <div class="mod_emundus_campaign__header_filter em-mr-8 em-border-neutral-400 em-neutral-800-color em-white-bg">
-                                <span><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_CATEGORY') ?></span>
-                                <button type="button" class="em-flex-column em-ml-8 em-text-neutral-900 em-pointer"
+
+                                <button type="button" class="em-flex-row em-text-neutral-900 em-pointer"
                                    onclick="deleteSort(['group_by'])">
-                                    <span class="material-icons-outlined" aria-hidden="true">close</span>
+                                    <span><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_CATEGORY') ?></span>
+                                    <span class="material-icons-outlined em-ml-8" aria-hidden="true">close</span>
                                 </button>
                             </div>
 						<?php endif; ?>
 						<?php if ($mod_em_campaign_show_sort == 1 && $group_by == 'month') : ?>
                             <div class="mod_emundus_campaign__header_filter em-mr-8 em-border-neutral-400 em-neutral-800-color em-white-bg">
-                                <span><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_MONTH') ?></span>
-                                <button type="button" class="em-flex-column em-ml-8 em-text-neutral-900 em-pointer"
+
+                                <button type="button" class="em-flex-row em-text-neutral-900 em-pointer"
                                    onclick="deleteSort(['month'])">
-                                    <span class="material-icons-outlined" aria-hidden="true">close</span>
+                                    <span><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_MONTH') ?></span>
+                                    <span class="material-icons-outlined em-ml-8" aria-hidden="true">close</span>
                                 </button>
                             </div>
 						<?php endif; ?>
