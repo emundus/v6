@@ -85,7 +85,7 @@
     flex-wrap: wrap;
 }
 
-.mod_emundus_campaign__header .em-flex-row {
+.mod_emundus_campaign__header div.em-flex-row {
     flex-wrap: wrap;
     gap: var(--p-8);
     margin-bottom: var(--m-8);
