@@ -309,8 +309,9 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
         $current_user = JFactory::getSession()->get('emundusUser');
 
         $jinput = $this->app->input;
-        $fileName = $jinput->post->get('filename');
-        $attachId = $jinput->post->get('attachId');
+		$fileName = $jinput->post->getString('filename');
+		$fileName = !empty($fileName) ? urldecode($fileName) : $fileName;
+		$attachId = $jinput->post->get('attachId');
         $fnum = $jinput->post->get('fnum');
 
         $result = array('status' => false);
