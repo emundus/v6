@@ -602,7 +602,7 @@ class EmundusModelApplication extends JModelList
      *
      * @since version
      */
-    public function getFormsProgress($fnum = "0")
+    public function getFormsProgress($fnum = "0",$use_session = 0)
     {
         require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
         $m_profile = new EmundusModelProfile;
@@ -615,7 +615,7 @@ class EmundusModelApplication extends JModelList
         $current_user = $session->get('emundusUser');
 
         if (!is_array($fnum)) {
-            $profile_by_status = $m_profile->getProfileByStatus($fnum);
+            $profile_by_status = $m_profile->getProfileByStatus($fnum,$use_session);
 
             if (empty($profile_by_status['profile'])) {
                 $query = 'SELECT esc.profile_id AS profile_id, ecc.campaign_id AS campaign_id
@@ -772,7 +772,7 @@ class EmundusModelApplication extends JModelList
      *
      * @since version
      */
-	public function getAttachmentsProgress($fnums = null)
+	public function getAttachmentsProgress($fnums = null,$use_session = 0)
 	{
 		$progress = 0.0;
 		$return_array = true;
@@ -796,7 +796,7 @@ class EmundusModelApplication extends JModelList
 			foreach ($fnums as $f) {
 				$result[$f] = 0.0;
 
-				$profile_by_status = $m_profile->getProfileByStatus($f);
+				$profile_by_status = $m_profile->getProfileByStatus($f,$use_session);
 
 				if (empty($profile_by_status["profile"])) {
 					$query = 'SELECT esc.profile_id AS profile_id, ecc.campaign_id AS campaign_id
