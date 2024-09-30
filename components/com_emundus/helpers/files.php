@@ -605,7 +605,7 @@ class EmundusHelperFiles
                         AND element.label!=" "
                         AND element.label!=""
                         AND menu.menutype = ' . '"' . $profile .'"' . '
-                        AND element.plugin!="display"';
+                        AND element.plugin NOT IN ("display","panel")';
                 $order = 'ORDER BY menu.lft, formgroup.ordering, element.ordering';
             }
 
@@ -687,7 +687,7 @@ class EmundusHelperFiles
                         AND element.label!=" "
                         AND element.label!=""
                         AND menu.menutype IN ( "' . implode('","', $menutype) . '" ) 
-                        AND element.plugin!="display"';
+                        AND element.plugin NOT IN ("display","panel")';
                 $order = 'ORDER BY menu.lft, formgroup.ordering, element.ordering';
             }
 
