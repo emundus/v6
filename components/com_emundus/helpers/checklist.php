@@ -35,30 +35,63 @@ class EmundusHelperChecklist {
      * @return string
      */
     function setAttachmentName(string $file, string $lbl, array $fnumInfos): string {
-
+		$filename = '';
         $file_array = explode(".", $file);
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $applicant_file_name = $eMConfig->get('applicant_file_name', null);
+		$keep_original_file_name = $eMConfig->get('keep_original_file_name', null);
+		if ($keep_original_file_name) {
+			$filename = preg_replace('/[\/\\\:\*\?\"\<\>\|\'\;]/', '', $file);
 
-        if (!empty($applicant_file_name)) {
-            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
-            $m_emails = new EmundusModelEmails;
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
 
-            $tags = $m_emails->setTags($fnumInfos['applicant_id'], null, $fnumInfos['fnum'], '', $applicant_file_name);
-            $application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $applicant_file_name);
-            $application_form_name = $m_emails->setTagsFabrik($application_form_name, array($fnumInfos['fnum']));
+			$query->clear()
+				->select('id')
+				->from('#__emundus_uploads')
+				->where('filename = ' . $db->quote($filename))
+				->andWhere('fnum LIKE ' . $db->quote($fnumInfos['fnum']));
 
-            // Format filename
-            $application_form_name = $m_emails->stripAccents($application_form_name);
-            $application_form_name = preg_replace('/[^A-Za-z0-9 _.-]/','', $application_form_name);
-            $application_form_name = preg_replace('/\s/', '_', $application_form_name);
-            $application_form_name = strtolower($application_form_name);
-            $filename = $application_form_name.'_'.trim($lbl, ' _').'-'.rand().'.'.end($file_array);
+			$db->setQuery($query);
+			$upload_id = $db->loadResult();
 
-        } else {
-            $filename = $fnumInfos['applicant_id'].'-'.$fnumInfos['id'].'-'.trim($lbl, ' _').'-'.rand().'.'.end($file_array);
-        }
+			$increment = 1;
+			$filename_imploded = explode('.', $filename);
+			$filename_without_extension = implode('.', array_slice($filename_imploded, 0, -1));
+			$file_ext = end($file_array);
+			while (!empty($upload_id)) {
+				$filename = $filename_without_extension . '-' . $increment . '.' . $file_ext;
+				$query->clear()
+					->select('id')
+					->from('#__emundus_uploads')
+					->where('filename = ' . $db->quote($filename))
+					->andWhere('fnum LIKE ' . $db->quote($fnumInfos['fnum']));
+
+				$db->setQuery($query);
+				$upload_id = $db->loadResult();
+				$increment++;
+			}
+		} else {
+			if (!empty($applicant_file_name)) {
+				require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
+				$m_emails = new EmundusModelEmails;
+
+				$tags = $m_emails->setTags($fnumInfos['applicant_id'], null, $fnumInfos['fnum'], '', $applicant_file_name);
+				$application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $applicant_file_name);
+				$application_form_name = $m_emails->setTagsFabrik($application_form_name, array($fnumInfos['fnum']));
+
+				// Format filename
+				$application_form_name = $m_emails->stripAccents($application_form_name);
+				$application_form_name = preg_replace('/[^A-Za-z0-9 _.-]/', '', $application_form_name);
+				$application_form_name = preg_replace('/\s/', '_', $application_form_name);
+				$application_form_name = strtolower($application_form_name);
+				$filename = $application_form_name . '_' . trim($lbl, ' _') . '-' . rand() . '.' . end($file_array);
+
+			} else {
+				$filename = $fnumInfos['applicant_id'] . '-' . $fnumInfos['id'] . '-' . trim($lbl, ' _') . '-' . rand() . '.' . end($file_array);
+			}
+		}
 
         return $filename;
     }

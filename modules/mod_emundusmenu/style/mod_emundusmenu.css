@@ -36,6 +36,10 @@
     margin: 0 0.8rem;
 }
 
+.gantry #g-navigation .g-main-nav .tchooz-vertical-toplevel > li.g-menu-item {
+    margin: 3px 10px;
+}
+
 #g-navigation .g-main-nav .g-toplevel > li:first-child {
     margin-bottom: 10px;
 }
