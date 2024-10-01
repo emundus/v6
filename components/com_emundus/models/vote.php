@@ -49,7 +49,7 @@ class EmundusModelVote extends ListModel
 	 *
 	 * @since version 1.40.0
 	 */
-	public function getVotesByUser($user = null, $email = null, $ip = null)
+	public function getVotesByUser($user = null, $email = null, $ip = null, $campaign_id = null)
 	{
 		if (empty($user)) {
 			$user = $this->_user;
@@ -83,6 +83,11 @@ class EmundusModelVote extends ListModel
 				}
 				else {
 					$query->where($this->_db->quoteName('v.user') . ' = ' . $this->_db->quote($user->id));
+				}
+
+				if(!empty($campaign_id)) {
+					$query->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature','cc').' ON '.$this->_db->quoteName('cc.id').' = '.$this->_db->quoteName('v.ccid'))
+						->where($this->_db->quoteName('cc.campaign_id') . ' = ' . $this->_db->quote($campaign_id));
 				}
 
 				$this->_db->setQuery($query);
