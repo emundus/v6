@@ -634,13 +634,14 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                 </div>
 
 				<?php if ($mod_em_campaign_show_search): ?>
-                    <div class="em-searchbar" role="search">
+                    <div class="em-searchbar em-flex-row" role="search">
                             <input name="searchword" type="text" class="form-control" id="searchword"
                                    placeholder=" "
 								<?php if (isset($searchword) && !empty($searchword)) : ?>
                                     value="<?= htmlspecialchars($searchword); ?>"
 								<?php endif; ?> >
                              <label for="searchword" style="display: inline-block"><?php echo JText::_('MOD_EM_CAMPAIGN_SEARCH') ?></label>
+                        <button type="submit"><span class="sr-only"><?php echo JText::_('MOD_EM_CAMPAIGN_SEARCH') ?></span><span class="material-icons-outlined em-font-size-24">search</span></button>
                     </div>
 				<?php endif; ?>
             </div>
