@@ -262,7 +262,7 @@ class com_emundusInstallerScript
 				// Add back button to login, register and reset view
 				$back_module = EmundusHelperUpdate::getModule(0, 'eMundus - Back button');
 				if (!empty($back_module) && !empty($back_module['id'])) {
-					$moduleid = $back_module['id'];
+					$moduleid = $back_module;
 				}
 				else {
 					$datas    = [
@@ -1681,7 +1681,7 @@ try {
 
 				if (!empty($program_form_params)) {
 					$program_form_params = json_decode($program_form_params);
-					if (!in_array('onAfterProgramCreate', $program_form_params->plugin_description)) {
+					if (empty($program_form_params->plugin_description) || !in_array('onAfterProgramCreate', $program_form_params->plugin_description)) {
 						$program_form_params->plugin_state[]       = "1";
 						$program_form_params->only_process_curl[]  = "onAfterProcess";
 						$program_form_params->form_php_file[]      = "-1";
