@@ -29,6 +29,7 @@ if ($jinput->get('view') == 'form') {
 	$params	= JComponentHelper::getParams('com_emundus');
     $scholarship_document_id 	= $params->get('scholarship_document_id', NULL);
 	$application_fee = $params->get('application_fee', 0);
+	$use_session = $params->get('use_session', 0);
 
     $m_profile = new EmundusModelProfile;
     $application_fee = (!empty($application_fee) && !empty($m_profile->getHikashopMenu($user->profile)));
@@ -36,8 +37,8 @@ if ($jinput->get('view') == 'form') {
 	$m_application = new EmundusModelApplication;
     $m_emails = new EmundusModelEmails;
 	//$validations = $m_application->checkFabrikValidations($user->fnum, true, $itemid);
-	$attachments = $m_application->getAttachmentsProgress($user->fnum);
-	$forms = $m_application->getFormsProgress($user->fnum);
+	$attachments = $m_application->getAttachmentsProgress($user->fnum,$use_session);
+	$forms = $m_application->getFormsProgress($user->fnum,$use_session);
 
 	if ($attachments < 100 || $forms < 100) {
 		$mainframe->redirect( "index.php?option=com_emundus&view=checklist&Itemid=".$itemid, JText::_('INCOMPLETE_APPLICATION'));

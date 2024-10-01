@@ -477,10 +477,18 @@ class EmundusModelProfile extends JModelList {
      * @param   $fnum string
      * @return  array
      **/
-    function getProfileByStatus($fnum)
+    function getProfileByStatus($fnum,$use_session = 0)
     {
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+        $m_files = new EmundusModelFiles;
+        $fnumInfos = $m_files->getFnumInfos($fnum);
         $res = [];
 
+        if($use_session == '1'){
+            $res['profile'] = JFactory::getSession()->get('emundusUser')->profile;
+            $res['campaign_id'] = $fnumInfos['campaign_id'];
+            return $res;
+        }
         if (!empty($fnum)) {
             $db = JFactory::getDbo();
             $query = $db->getQuery(true);

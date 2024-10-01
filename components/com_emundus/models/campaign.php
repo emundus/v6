@@ -833,51 +833,53 @@ class EmundusModelCampaign extends JModelList {
                     $this->_db->quote('%' . $recherche . '%') . ')';
             }
 
-            $query->select([
-                'sc.*',
-                'COUNT(cc.id) as nb_files',
-                'sp.label AS program_label',
-                'sp.id AS program_id',
-                'sp.published AS published_prog'
-            ])
-                ->from($this->_db->quoteName('#__emundus_setup_campaigns', 'sc'))
-                ->leftJoin(
-                    $this->_db->quoteName('#__emundus_campaign_candidature', 'cc') .
-                    ' ON ' .
-                    $this->_db->quoteName('cc.campaign_id') .
-                    ' = ' .
-                    $this->_db->quoteName('sc.id')
-                )
-                ->leftJoin(
-                    $this->_db->quoteName('#__emundus_setup_programmes', 'sp') .
-                    ' ON ' .
-                    $this->_db->quoteName('sp.code') .
-                    ' LIKE ' .
-                    $this->_db->quoteName('sc.training')
-                )
-                ->leftJoin(
-                    $this->_db->quoteName('#__users', 'u') .
-                    ' ON ' .
-                    $this->_db->quoteName('u.id') .
-                    ' = ' .
-                    $this->_db->quoteName('cc.applicant_id')
-                );
+	        $query->select([
+		        'sc.*',
+		        'COUNT(cc.id) as nb_files',
+		        'sp.label AS program_label',
+		        'sp.id AS program_id',
+		        'sp.published AS published_prog'
+	        ])
+		        ->from($this->_db->quoteName('#__emundus_setup_campaigns', 'sc'))
+		        ->leftJoin(
+			        $this->_db->quoteName('#__emundus_campaign_candidature', 'cc') .
+			        ' ON ' .
+			        $this->_db->quoteName('cc.campaign_id') .
+			        ' = ' .
+			        $this->_db->quoteName('sc.id') .
+			        ' AND ' .
+			        $this->_db->quoteName('cc.published') . ' = 1'
+		        )
+		        ->leftJoin(
+			        $this->_db->quoteName('#__emundus_setup_programmes', 'sp') .
+			        ' ON ' .
+			        $this->_db->quoteName('sp.code') .
+			        ' LIKE ' .
+			        $this->_db->quoteName('sc.training')
+		        )
+		        ->leftJoin(
+			        $this->_db->quoteName('#__users', 'u') .
+			        ' ON ' .
+			        $this->_db->quoteName('u.id') .
+			        ' = ' .
+			        $this->_db->quoteName('cc.applicant_id') .
+			        ' AND ' .
+			        $this->_db->quoteName('u.block') . ' = 0'
+		        );
 
-            $query->where($this->_db->quoteName('sc.training') . ' IN (' . implode(',',$this->_db->quote($programs)) . ')');
+	        $query->where($this->_db->quoteName('sc.training') . ' IN (' . implode(',', $this->_db->quote($programs)) . ')');
 
-            if(!empty($filterDate)) {
-                $query->andWhere($filterDate);
-            }
-            if(!empty($fullRecherche)) {
-                $query->andWhere($fullRecherche);
-            }
-            if ($session !== 'all') {
-                $query->andWhere($this->_db->quoteName('year') . ' = ' . $this->_db->quote($session));
-            }
-            $query->andWhere($this->_db->quoteName('u.block') . ' = 0')
-                ->andWhere($this->_db->quoteName('cc.published') . ' = 1')
-                ->group($sortDb)
-                ->order($sortDb . $sort);
+	        if (!empty($filterDate)) {
+		        $query->andWhere($filterDate);
+	        }
+	        if (!empty($fullRecherche)) {
+		        $query->andWhere($fullRecherche);
+	        }
+	        if ($session !== 'all') {
+		        $query->andWhere($this->_db->quoteName('year') . ' = ' . $this->_db->quote($session));
+	        }
+	        $query->group($sortDb)
+		        ->order($sortDb . $sort);
 
             try {
                 $this->_db->setQuery($query);
@@ -1245,6 +1247,9 @@ class EmundusModelCampaign extends JModelList {
             $lang = JFactory::getLanguage();
             $actualLanguage = !empty($lang->getTag()) ? substr($lang->getTag(), 0 , 2) : 'fr';
 
+            $eMConfig = JComponentHelper::getParams('com_emundus');
+            $create_default_program_trigger = $eMConfig->get('create_default_program_trigger', 1);
+
             $i = 0;
             $labels = new stdClass;
             $limit_status = [];
@@ -1332,25 +1337,27 @@ class EmundusModelCampaign extends JModelList {
 
                         // Create a default trigger
                         if (!empty($data['training'])) {
-                            $query->clear()
-                                ->select('id')
-                                ->from($this->_db->quoteName('#__emundus_setup_programmes'))
-                                ->where($this->_db->quoteName('code') . ' LIKE ' . $this->_db->quote($data['training']));
-                            $this->_db->setQuery($query);
-                            $pid = $this->_db->loadResult();
+                            if (!empty($create_default_program_trigger)) {
+                                $query->clear()
+                                    ->select('id')
+                                    ->from($this->_db->quoteName('#__emundus_setup_programmes'))
+                                    ->where($this->_db->quoteName('code') . ' LIKE ' . $this->_db->quote($data['training']));
+                                $this->_db->setQuery($query);
+                                $pid = $this->_db->loadResult();
 
-                            if (!empty($pid)) {
-                                $emails = $m_emails->getTriggersByProgramId($pid);
+                                if (!empty($pid)) {
+                                    $emails = $m_emails->getTriggersByProgramId($pid);
 
-                                if (empty($emails)) {
-                                    $trigger = array(
-                                        'status' => 1,
-                                        'model' => 1,
-                                        'action_status' => 'to_current_user',
-                                        'target' => -1,
-                                        'program' => $pid,
-                                    );
-                                    $m_emails->createTrigger($trigger, array(), $user);
+                                    if (empty($emails)) {
+                                        $trigger = array(
+                                            'status' => 1,
+                                            'model' => 1,
+                                            'action_status' => 'to_current_user',
+                                            'target' => -1,
+                                            'program' => $pid,
+                                        );
+                                        $m_emails->createTrigger($trigger, array(), $user);
+                                    }
                                 }
                             }
                         }

@@ -74,17 +74,6 @@ class EmundusControllerApplication extends JControllerLegacy
 
                 if ($result != 1) {
                     echo JText::_('ATTACHMENT_DELETE_ERROR').' : '.$attachment['value'].' : '.$upload['filename'];
-                } else {
-                    $file = EMUNDUS_PATH_ABS.$user_id.DS.$upload['filename'];
-                    @unlink($file);
-
-                    $row['applicant_id'] = $upload['user_id'];
-                    $row['user_id'] = $user->id;
-                    $row['reason'] = JText::_('COM_EMUNDUS_ATTACHMENTS_DELETED');
-                    $row['comment_body'] = $attachment['value'].' : '.$upload['filename'];
-                    $m_application->addComment($row);
-
-                    echo $result;
                 }
             }
             else {
