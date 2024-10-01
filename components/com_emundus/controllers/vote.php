@@ -56,7 +56,7 @@ class EmundusControllerVote extends BaseController
 
 			if(!empty($listid)) {
 				$gallery = $m_gallery->getGalleryByList($listid);
-				$votes = $m_vote->getVotesByUser(null, $email);
+				$votes = $m_vote->getVotesByUser(null, $email, null, $gallery->campaign_id);
 
 				if(count($votes) >= $gallery->max) {
 					$can_vote = false;
