@@ -91,6 +91,10 @@
     margin-bottom: var(--m-8);
 }
 
+.mod_emundus_campaign__header .em-searchbar.em-flex-row {
+    gap: var(--p-4);
+}
+
 .mod_emundus_campaign__header_filter{
     display: flex;
     justify-content: center;
@@ -317,6 +321,14 @@ button#mod_emundus_campaign__header_filter {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.mod_emundus_campaign__content .mod_emundus_campaign__header .em-searchbar input[type="text"].form-control {
+    background-image: none !important;
+}
+
+.em-searchbar .material-icons-outlined.em-font-size-24 {
+    font-size: 22px;
 }
 
 a.em-blue-400-color:hover {
