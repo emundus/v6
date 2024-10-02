@@ -641,7 +641,7 @@ class FileMaker
         try {
             $meta_datas = $this->getMetaDatazWebFroms($zweb_form_name);
         } catch (\Exception $e) {
-            Log::add('[FILE_MAKER ] Failed to get Metada ' . $zweb_form_name . '  ' . $e->getMessage(), Log::ERROR, 'com_emundus.filemaker_fabrik_cron');
+            Log::add('[FILE_MAKER] Failed to get Metadatas ' . $zweb_form_name . '  ' . $e->getMessage(), Log::ERROR, 'com_emundus.filemaker_fabrik_cron');
         }
         $zweb_forms_elements = $this->getAssocElementsWithFileMakerFormLabel($mapped_columns, $zweb_form_name);
         $m_application = new \EmundusModelApplication();
@@ -791,7 +791,7 @@ class FileMaker
                     $this->db->setQuery($query);
                     $this->db->execute();
                 } catch (\Exception $e) {
-                    Log::add('[FILE_MAKER ] Failed to update recordId on table  ' . $db_table . ' wehre id = ' . $emundus_id . ' ' . $e->getMessage(), Log::ERROR, 'com_emundus.filemaker_fabrik_cron');
+                    Log::add('[FILE_MAKER] Failed to update recordId on table  ' . $db_table . ' where id = ' . $emundus_id . ': ' . $query->__toString() . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus.filemaker_fabrik_cron');
                 }
             }
         }
@@ -869,15 +869,27 @@ class FileMaker
 
         $query = $this->db->getQuery(true);
 
-        $query->select('join_from_table,table_join,table_join_key,table_key')
-            ->from($this->db->quoteName('jos_fabrik_joins'))
-            ->where('group_id =  ' . $group_id);
-        try {
-            $this->db->setQuery($query);
-           $result = $this->db->loadObject();
+        $query->select('is_join')
+            ->from($this->db->quoteName('jos_fabrik_groups'))
+            ->where('id = ' . $group_id);
+        $this->db->setQuery($query);
+        $is_repeat = $this->db->loadResult();
 
-        } catch (Exception $e) {
-            Log::add("[FILEMAKER] Failed to get table joins params for repeat group  $group_id " . $e->getMessage(), Log::ERROR, 'com_emundus.filemaker');
+        if ($is_repeat) {
+            $query->clear()
+                ->select('join_from_table,table_join,table_join_key,table_key')
+                ->from($this->db->quoteName('jos_fabrik_joins'))
+                ->where('group_id =  ' . $group_id)
+                ->andWhere('element_id = 0');
+            try {
+                $this->db->setQuery($query);
+                $result = $this->db->loadObject();
+
+            } catch (Exception $e) {
+                Log::add("[FILEMAKER] Failed to get table joins params for repeat group  $group_id " . $e->getMessage(), Log::ERROR, 'com_emundus.filemaker');
+            }
+        } else {
+            $result = true;
         }
 
         return $result;
