@@ -197,53 +197,45 @@ if($currentCampaign->apply_online == 0){
     <aside id="campaign-sidebar" class="sticky">
         <!-- INFO BLOCK -->
         <?php if ($can_apply != 0 || $mod_em_campaign_show_registration == 1 && !empty($mod_em_campaign_show_registration_steps)) : ?>
-        <div class="mod_emundus_campaign__details_content em-border-neutral-300 em-mb-24">
-
-            <?php if ($mod_em_campaign_display_svg == 1) : ?>
-                <div id="background-shapes" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></div>
-            <?php endif; ?>
-
-            <h4 class="em-mb-24"><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_APPLY') ?></h4>
-            <?php  if ($currentCampaign->is_limited == 1 && $currentCampaign->limit > 0) : ?>
-                <div class="flex em-flex-center em-mb-24"><p class="mr-2 h-max em-p-5-12 em-font-weight-600 em-text-neutral-300 em-font-size-14 em-border-radius" style="background:var(--bg-3);"><?= $files_sent.' '.JText::_($files_sent_tag).' '.$currentCampaign->limit ?></p></div>
-            <?php endif; ?>
-            <?php if ($mod_em_campaign_show_registration == 1 && !empty($mod_em_campaign_show_registration_steps)) : ?>
-            <div class="em-mt-24">
-                <?php $index = 1; ?>
-                <?php foreach ($mod_em_campaign_show_registration_steps as $key => $step): ?>
-                    <span class="em-applicant-text-color em-flex-row em-font-size-14 em-mb-16"><span class="mod_emundus_campaign__details_step_count"><?php echo $index ?></span><?php echo $step->mod_em_campaign_show_registration_steps_text ?></span>
-                    <?php $index++; ?>
-                <?php endforeach;?>
-            </div>
-            <?php endif; ?>
-            <?php if($can_apply == 1) : ?>
-                <?php
-                // The register URL does not work  with SEF, this workaround helps counter this.
-                if ($sef == 0) {
-                    if(!isset($redirect_url) || empty($redirect_url)) {
-                        $redirect_url = "index.php?option=com_users&view=registration";
-                    }
-                }
-
-	            if (strpos($redirect_url, '?') !== false) {
-		            $register_url = $redirect_url."&course=".$currentCampaign->code."&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid;
-	            } else {
-		            $register_url = $redirect_url."?course=".$currentCampaign->code."&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid;
-	            }
-
-                if(!$user->guest) {
-                    $register_url .= "&redirect=" . $formUrl;
-                }
-                if ($is_limit_obtained) : ?>
-                    <button class="em-disabled-button em-w-100" role="button" data-toggle="sc-modal"><?= JText::_('MOD_EM_CAMPAIGN_DETAILS_LIMIT_OBTAINED'); ?></button>
-                <?php else : ?>
-                    <a class="btn btn-primary em-w-100 em-applicant-default-font" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
+            <div class="mod_emundus_campaign__details_content em-border-neutral-300 em-mb-24">
+                <h4 class="em-mb-24"><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_APPLY') ?></h4>
+                <?php if ($mod_em_campaign_show_registration == 1 && !empty($mod_em_campaign_show_registration_steps)) : ?>
+                    <div class="em-mt-24">
+                        <?php $index = 1; ?>
+                        <?php foreach ($mod_em_campaign_show_registration_steps as $key => $step): ?>
+                            <span class="em-applicant-text-color em-flex-row em-font-size-14 em-mb-16"><span class="mod_emundus_campaign__details_step_count"><?php echo $index ?></span><?php echo $step->mod_em_campaign_show_registration_steps_text ?></span>
+                            <?php $index++; ?>
+                        <?php endforeach;?>
+                    </div>
                 <?php endif; ?>
-            <?php elseif ($can_apply == -1) : ?>
-                <button class="em-disabled-button em-w-100" role="button" data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_IS_FINISH'); ?></button>
-            <?php endif; ?>
-        </div>
+                <?php if ($limitDetails->is_limited) : ?>
+                    <span class="em-applicant-text-color em-flex-row em-font-size-14 em-mb-16"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_HAS_LIMIT') . ' ' . $limitDetails->limit . ' ' . JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_FILES') ?></span>
+                <?php endif; ?>
+                <?php if($can_apply == 1) : ?>
+                    <?php if ($isLimitObtained) : ?>
+                        <button class="em-disabled-button em-w-100" role="button" data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_LIMIT_OBTAINED'); ?></button>
+                    <?php else :
+                        // The register URL does not work  with SEF, this workaround helps counter this.
+                        if ($sef == 0) {
+                            if(!isset($redirect_url) || empty($redirect_url)) {
+                                $redirect_url = "index.php?option=com_users&view=registration";
+                            }
+                            $register_url = $redirect_url."&course=".$currentCampaign->code."&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid;
+                        } else {
+                            $register_url = $redirect_url."?course=".$currentCampaign->code."&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid;
+                        }
+                        if(!$user->guest) {
+                            $register_url .= "&redirect=" . $formUrl;
+                        }
+                        ?>
+                        <a class="btn btn-primary em-w-100 em-applicant-default-font" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
+                    <?php endif; ?>
+                <?php elseif ($can_apply == -1) : ?>
+                    <button class="em-disabled-button em-w-100" role="button" data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_IS_FINISH'); ?></button>
+                <?php endif; ?>
+            </div>
         <?php endif; ?>
+
 
         <!-- ATTACHMENTS BLOCK -->
         <?php if (!empty($files) && $mod_em_campaign_show_documents == 1) : ?>

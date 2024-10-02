@@ -509,9 +509,9 @@ class EmundusFiltersFiles extends EmundusFilters
                 'label' => JText::_('MOD_EMUNDUS_FILTERS_TO_EVALUATE'),
                 'type' => 'select',
                 'values' => $evaluated,
-                'value' => ['to_evaluate'],
+                'value' => ['to_evaluate','evaluated'],
                 'default' => true,
-                'defaultValue' => ['to_evaluate'],
+                'defaultValue' => ['to_evaluate','evaluated'],
                 'available' => true,
                 'operator' => 'IN',
                 'order' => $config['filter_to_evaluate_order']

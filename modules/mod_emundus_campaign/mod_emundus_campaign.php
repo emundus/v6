@@ -219,6 +219,8 @@ if($user->guest || in_array($e_user->profile,$app_prof))
     }
 
     $condition = '';
+    $limitDetails = $m_campaign->getLimit($cid);
+    $isLimitObtained = $m_campaign->isLimitObtained($cid);
     if (!empty($searchword)) {
         $condition .= ' AND (ca.label LIKE "%"' . $db->quote($searchword) . '"%" OR ca.short_description LIKE "%"' . $db->quote($searchword) . '"%"';
         if($mod_em_campaign_list_show_programme == 1) {
