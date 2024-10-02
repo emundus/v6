@@ -82,7 +82,7 @@ $user = $this->userid;
 
                         <div class="em-flex-row em-border-bottom-neutral-300" style="overflow:hidden; overflow-x: auto;">
 
-                            <div id="tab_link_<?php echo $defaultpid->pid; ?>" onclick="updateProfileForm(<?php echo $defaultpid->pid ?>)" class="em-mr-16 em-flex-row em-light-tabs profile_tab em-pointer em-light-selected-tab mb-2">
+                            <div id="tab_link_<?php echo $defaultpid->pid; ?>" onclick="updateProfileForm(<?php echo $defaultpid->pid ?>)" class="em-mr-16 em-flex-row em-light-tabs profile_tab <?= (sizeof($this->pids) > 1 ? 'em-pointer' : ''); ?> em-light-selected-tab mb-2">
                                 <p class="em-font-size-14 em-neutral-900-color" title="<?= $defaultpid->label; ?>" style="white-space: nowrap"> <?= $defaultpid->label; ?></p>
                             </div>
 

@@ -1416,10 +1416,20 @@ input:focus + .em-slider {
     color: var(--neutral-500);
   }
 }
+.em-light-tabs:hover{
+  span, p{
+    color: var(--neutral-700);
+  }
+}
 .em-light-selected-tab{
   border-bottom: 1px solid var(--main-400);
   span{
     color: var(--neutral-900);
+  }
+}
+.em-light-selected-tab:hover{
+  span, p{
+    color: var(--neutral-900) !important;
   }
 }
 .em-tabs{
