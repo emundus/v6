@@ -56,6 +56,9 @@ $votes   = $m_vote->getVotesByUser();
 $app = Factory::getApplication();
 $is_iframe = $app->input->getInt('iframe', null);
 
+$ccid = Factory::getSession()->get('project_to_vote',0);
+Factory::getSession()->clear('project_to_vote');
+
 $user = Factory::getApplication()->getIdentity();
 
 

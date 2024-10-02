@@ -466,12 +466,12 @@ function vote(guest,listid,id,email) {
     }
 
     //TODO: Check voting access to redirect to login page if needed
-    fetch('index.php?option=com_emundus&controller=vote&task=checkaccess&listid=' + listid).then(response => response.json()).then(data => {
+    fetch('index.php?option=com_emundus&controller=vote&task=checkaccess&listid=' + listid + '&ccid=' + id).then(response => response.json()).then(data => {
         if(!data.access) {
             window.location.href = data.login_url;
         } else {
             Swal.fire({
-                html: html,
+                html: html.replace('{project_name}',data.project_name),
                 focusConfirm: false,
                 preConfirm: () => {
                     if (!document.getElementById('vote_email').value) {

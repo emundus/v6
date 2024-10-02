@@ -100,9 +100,11 @@ class EmundusControllerVote extends BaseController
 		$m_gallery = $this->getModel('gallery');
 
 		$listid = $this->input->getInt('listid', 0);
+		$ccid = $this->input->getInt('ccid', 0);
 
 		if(!empty($listid)) {
 			$gallery = $m_gallery->getGalleryByList($listid);
+			$result['project_name'] = $m_gallery->getProjectName($ccid, $gallery->title);
 
 			if(!empty($gallery)) {
 				$result['message'] = '';
@@ -111,6 +113,7 @@ class EmundusControllerVote extends BaseController
 				if(($gallery->voting_access != 1 && $this->_user->guest != 1) || $gallery->voting_access == 1) {
 					$result['access'] = true;
 				} else {
+					Factory::getSession()->set('project_to_vote', $ccid);
 					Factory::getSession()->set('vote_redirect', $gallery_url);
 				}
 			}

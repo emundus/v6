@@ -11,10 +11,18 @@
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+use Joomla\CMS\Factory;
 
 $pageClass = $this->params->get('pageclass_sfx', '');
 
 $listid = $this->table->id;
+$app = Factory::getApplication();
+$is_iframe = $app->input->getInt('iframe', null);
+
+$ccid = Factory::getSession()->get('project_to_vote',0);
+Factory::getSession()->clear('project_to_vote');
+
+$user = Factory::getApplication()->getIdentity();
 
 JText::script('COM_FABRIK_VOTE_MODAL_TEXT');
 JText::script('COM_FABRIK_ERROR_PLEASE_COMPLETE_EMAIL');

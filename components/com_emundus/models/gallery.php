@@ -1070,4 +1070,29 @@ class EmundusModelGallery extends ListModel
 
 		return $deleted;
 	}
+
+	public function getProjectName($ccid, $title_elt)
+	{
+		$project_name = '';
+		$query = $this->_db->getQuery(true);
+
+		try
+		{
+			$title_elt = explode('___', $title_elt);
+
+			$query->clear()
+				->select('d.'.$title_elt[1])
+				->from($this->_db->quoteName($title_elt[0], 'd'))
+				->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature', 'cc') . ' ON ' . $this->_db->quoteName('cc.fnum') . ' = ' . $this->_db->quoteName('d.fnum'))
+				->where($this->_db->quoteName('cc.id') . ' = ' . $ccid);
+			$this->_db->setQuery($query);
+			$project_name = $this->_db->loadResult();
+		}
+		catch (Exception $e)
+		{
+			Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
+		}
+
+		return $project_name;
+	}
 }
