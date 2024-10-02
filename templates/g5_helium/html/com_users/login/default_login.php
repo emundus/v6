@@ -69,7 +69,7 @@ else{
                             <?php echo $field->input; ?>
                             <?php if ($eMConfig["reveal_password"] && $field->type === "Password"): ?>
                                 <button type="button" title="<?php echo JText::_('COM_USERS_LOGIN_SHOW_PASSWORD'); ?>" id="toggle-password-visibility" aria-pressed="false" style="position: absolute;margin-top: 10px;right: 10px;opacity: 0.3;user-select: none;"><span class="material-icons-outlined em-pointer" aria-hidden="true" >visibility_off</span></button>
-                                <div aria-live="polite" aria-atomic="true" class="sr-only" id="show_password_text"><p><?php echo JText::_('COM_USERS_LOGIN_SHOW_PASSWORD'); ?></p></div>
+                                <div aria-live="polite" aria-atomic="true" class="sr-only" id="show_password_text"></div>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -167,6 +167,25 @@ else{
                             spanVisibility.innerText = "visibility";
                             inputPassword.type = "text";
                             showPasswordText.innerHTML = "<p>Le mot de passe est affiché</p>";
+                        }
+                    }
+                });
+                inputPassword.addEventListener('keypress', event => {
+                    if (event.code === 'Space') {
+                        event.preventDefault();
+                        if (spanVisibility && inputPassword) {
+                            if (spanVisibility.innerText == "visibility") {
+                                buttonVisibility.setAttribute('aria-pressed', 'false');
+                                spanVisibility.innerText = "visibility_off";
+                                inputPassword.type = "password";
+                                showPasswordText.innerHTML = "<p>Le mot de passe est masqué</p>";
+                            }
+                            else {
+                                buttonVisibility.setAttribute('aria-pressed', 'true');
+                                spanVisibility.innerText = "visibility";
+                                inputPassword.type = "text";
+                                showPasswordText.innerHTML = "<p>Le mot de passe est affiché</p>";
+                            }
                         }
                     }
                 });
