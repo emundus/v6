@@ -365,65 +365,60 @@ class EmundusFiltersFiles extends EmundusFilters
 	}
 
 	private function setDefaultFilters($config)
-	{
-		$found_from_cache = false;
+    {
+        $found_from_cache = false;
 
-		/*if ($this->h_cache->isEnabled())
-		{
-			$menu = JFactory::getApplication()->getMenu();
+        /*if ($this->h_cache->isEnabled())
+        {
+            $menu = JFactory::getApplication()->getMenu();
 
-			if (!empty($menu))
-			{
-				$active_menu = $menu->getActive();
-				if (!empty($active_menu))
-				{
-					$cache_default_filters = $this->h_cache->get('em_default_filters_' . $active_menu->id);
+            if (!empty($menu))
+            {
+                $active_menu = $menu->getActive();
+                if (!empty($active_menu))
+                {
+                    $cache_default_filters = $this->h_cache->get('em_default_filters_' . $active_menu->id);
 
-					if (!empty($cache_default_filters))
-					{
-						$this->applied_filters = array_merge($this->applied_filters, $cache_default_filters);
-						$found_from_cache      = true;
-					}
-				}
-			}
-		}*/
+                    if (!empty($cache_default_filters))
+                    {
+                        $this->applied_filters = array_merge($this->applied_filters, $cache_default_filters);
+                        $found_from_cache      = true;
+                    }
+                }
+            }
+        }*/
 
-		if (!$found_from_cache)
-		{
-			$db    = JFactory::getDbo();
-			$query = $db->getQuery(true);
+        if (!$found_from_cache) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
 
-			$filter_menu_values           = $this->menu_params->get('em_filters_values', '');
-			$filter_menu_values           = explode(',', $filter_menu_values);
-			$filter_menu_values_are_empty = empty($filter_menu_values);
-			$filter_names                 = [];
+            $filter_menu_values = $this->menu_params->get('em_filters_values', '');
+            $filter_menu_values = explode(',', $filter_menu_values);
+            $filter_menu_values_are_empty = empty($filter_menu_values);
+            $filter_names = [];
 
-			if (!$filter_menu_values_are_empty)
-			{
-				$filter_names = $this->menu_params->get('em_filters_names', '');
-				$filter_names = explode(',', $filter_names);
-			}
+            if (!$filter_menu_values_are_empty) {
+                $filter_names = $this->menu_params->get('em_filters_names', '');
+                $filter_names = explode(',', $filter_names);
+            }
 
-			if ($config['filter_status'])
-			{
-				$query->select('id, step, value, 0 as count')
-					->from('#__emundus_setup_status');
+            if ($config['filter_status']) {
+                $query->select('id, step, value, 0 as count')
+                    ->from('#__emundus_setup_status');
 
-				if (!$filter_menu_values_are_empty)
-				{
-					$position = array_search('status', $filter_names);
+                if (!$filter_menu_values_are_empty) {
+                    $position = array_search('status', $filter_names);
 
-					if ($position !== false && isset($filter_menu_values[$position]) && $filter_menu_values[$position] !== '')
-					{
-						$statuses = explode('|', $filter_menu_values[$position]);
+                    if ($position !== false && isset($filter_menu_values[$position]) && $filter_menu_values[$position] !== '') {
+                        $statuses = explode('|', $filter_menu_values[$position]);
 
                         if (!empty($statuses)) {
                             $query->where('step IN (' . implode(',', $statuses) . ')');
                         }
-					}
-				}
+                    }
+                }
 
-				$query->order('ordering ASC');
+                $query->order('ordering ASC');
 
                 try {
                     $db->setQuery($query);
@@ -434,53 +429,47 @@ class EmundusFiltersFiles extends EmundusFilters
                 }
 
                 $values = [];
-				foreach ($statuses as $status)
-				{
-					$values[] = ['value' => $status->step, 'label' => $status->value];
-				}
+                foreach ($statuses as $status) {
+                    $values[] = ['value' => $status->step, 'label' => $status->value];
+                }
 
-				$this->applied_filters[] = [
-					'uid'       => 'status',
-					'id'        => 'status',
-					'label'     => JText::_('MOD_EMUNDUS_FILTERS_STATUS'),
-					'type'      => 'select',
-					'values'    => $values,
-					'value'     => ['all'],
-					'default'   => true,
-					'available' => true,
-                    'operator'  => 'IN',
-					'order'     => $config['filter_status_order']
-				];
-			}
+                $this->applied_filters[] = [
+                    'uid' => 'status',
+                    'id' => 'status',
+                    'label' => JText::_('MOD_EMUNDUS_FILTERS_STATUS'),
+                    'type' => 'select',
+                    'values' => $values,
+                    'value' => ['all'],
+                    'default' => true,
+                    'available' => true,
+                    'operator' => 'IN',
+                    'order' => $config['filter_status_order']
+                ];
+            }
 
-			if ($config['filter_programs'])
-			{
-				$programs       = [];
-				$programs_codes = [];
+            if ($config['filter_programs']) {
+                $programs = [];
+                $programs_codes = [];
 
-				if (!empty($this->user_programs))
-				{
-					$query->clear()
-						->select('id as value, label, 0 as count')
-						->from('#__emundus_setup_programmes')
-						->where('published = 1')
-						->andWhere('id IN (' . implode(',', $this->user_programs) . ')');
+                if (!empty($this->user_programs)) {
+                    $query->clear()
+                        ->select('id as value, label, 0 as count')
+                        ->from('#__emundus_setup_programmes')
+                        ->where('published = 1')
+                        ->andWhere('id IN (' . implode(',', $this->user_programs) . ')');
 
-					if (!$filter_menu_values_are_empty)
-					{
-						$position = array_search('programme', $filter_names);
+                    if (!$filter_menu_values_are_empty) {
+                        $position = array_search('programme', $filter_names);
 
-						if ($position !== false && !empty($filter_menu_values[$position]))
-						{
-							$programs_codes = explode('|', $filter_menu_values[$position]);
-							if (!empty($programs_codes))
-							{
-								$query->where('code IN (' . implode(',', $db->quote($programs_codes)) . ')');
-							}
-						}
-					}
+                        if ($position !== false && !empty($filter_menu_values[$position])) {
+                            $programs_codes = explode('|', $filter_menu_values[$position]);
+                            if (!empty($programs_codes)) {
+                                $query->where('code IN (' . implode(',', $db->quote($programs_codes)) . ')');
+                            }
+                        }
+                    }
 
-					$query->order('ordering ASC');
+                    $query->order('ordering ASC');
 
                     try {
                         $db->setQuery($query);
@@ -491,53 +480,47 @@ class EmundusFiltersFiles extends EmundusFilters
                     }
                 }
 
-				$this->applied_filters[] = [
-					'uid'           => 'programs',
-					'id'            => 'programs',
-					'label'         => JText::_('MOD_EMUNDUS_FILTERS_PROGRAMS'),
-					'type'          => 'select',
-					'values'        => $programs,
-					'value'         => ['all'],
-					'default'       => true,
-					'available'     => true,
-                    'operator'      => 'IN',
+                $this->applied_filters[] = [
+                    'uid' => 'programs',
+                    'id' => 'programs',
+                    'label' => JText::_('MOD_EMUNDUS_FILTERS_PROGRAMS'),
+                    'type' => 'select',
+                    'values' => $programs,
+                    'value' => ['all'],
+                    'default' => true,
+                    'available' => true,
+                    'operator' => 'IN',
                     'andorOperator' => 'OR',
-					'order'         => $config['filter_programs_order']
-				];
-			}
+                    'order' => $config['filter_programs_order']
+                ];
+            }
 
-			if ($config['filter_campaign'])
-			{
-				$campaigns = [];
+            if ($config['filter_campaign']) {
+                $campaigns = [];
 
-				if (!empty($this->user_campaigns))
-				{
-					$query->clear()
-						->select('id as value, label, 0 as count')
-						->from('#__emundus_setup_campaigns')
-						->where('published = 1')
-						->andWhere('id IN (' . implode(',', $this->user_campaigns) . ')');
+                if (!empty($this->user_campaigns)) {
+                    $query->clear()
+                        ->select('id as value, label, 0 as count')
+                        ->from('#__emundus_setup_campaigns')
+                        ->where('published = 1')
+                        ->andWhere('id IN (' . implode(',', $this->user_campaigns) . ')');
 
-					if (!$filter_menu_values_are_empty)
-					{
-						$position = array_search('campaign', $filter_names);
+                    if (!$filter_menu_values_are_empty) {
+                        $position = array_search('campaign', $filter_names);
 
-						if ($position !== false && !empty($filter_menu_values[$position]))
-						{
-							$campaigns = explode('|', $filter_menu_values[$position]);
-							if (!empty($campaigns))
-							{
-								$query->andWhere('id IN (' . implode(',', $campaigns) . ')');
-							}
-						}
-					}
+                        if ($position !== false && !empty($filter_menu_values[$position])) {
+                            $campaigns = explode('|', $filter_menu_values[$position]);
+                            if (!empty($campaigns)) {
+                                $query->andWhere('id IN (' . implode(',', $campaigns) . ')');
+                            }
+                        }
+                    }
 
-					if (!empty($programs_codes))
-					{
-						$query->andWhere('training IN (' . implode(',', $db->quote($programs_codes)) . ')');
-					}
+                    if (!empty($programs_codes)) {
+                        $query->andWhere('training IN (' . implode(',', $db->quote($programs_codes)) . ')');
+                    }
 
-					$query->order('id DESC');
+                    $query->order('id DESC');
 
                     try {
                         $db->setQuery($query);
@@ -548,115 +531,112 @@ class EmundusFiltersFiles extends EmundusFilters
                     }
                 }
 
-				$this->applied_filters[] = [
-					'uid'       => 'campaigns',
-					'id'        => 'campaigns',
-					'label'     => JText::_('MOD_EMUNDUS_FILTERS_CAMPAIGNS'),
-					'type'      => 'select',
-					'values'    => $campaigns,
-					'value'     => ['all'],
-					'default'   => true,
-					'available' => true,
-                    'operator'  => 'IN',
-					'order'     => $config['filter_campaigns_order']
-				];
-			}
+                $this->applied_filters[] = [
+                    'uid' => 'campaigns',
+                    'id' => 'campaigns',
+                    'label' => JText::_('MOD_EMUNDUS_FILTERS_CAMPAIGNS'),
+                    'type' => 'select',
+                    'values' => $campaigns,
+                    'value' => ['all'],
+                    'default' => true,
+                    'available' => true,
+                    'operator' => 'IN',
+                    'order' => $config['filter_campaigns_order']
+                ];
+            }
 
 
-        if ($config['filter_to_evaluate']) {
-            $evaluated = [
-                ['value' => 'to_evaluate', 'label' => JText::_('MOD_EMUNDUS_FILTERS_VALUE_TO_EVALUATE_TODO'), 'count' => 0],
-                ['value' => 'evaluated', 'label' => JText::_('MOD_EMUNDUS_FILTERS_VALUE_TO_EVALUATE_DONE'), 'count' => 0]
-            ];
+            if ($config['filter_to_evaluate']) {
+                $evaluated = [
+                    ['value' => 'to_evaluate', 'label' => JText::_('MOD_EMUNDUS_FILTERS_VALUE_TO_EVALUATE_TODO'), 'count' => 0],
+                    ['value' => 'evaluated', 'label' => JText::_('MOD_EMUNDUS_FILTERS_VALUE_TO_EVALUATE_DONE'), 'count' => 0]
+                ];
 
-            $this->applied_filters[] = [
-                'uid' => 'to_evaluate',
-                'id' => 'to_evaluate',
-                'label' => JText::_('MOD_EMUNDUS_FILTERS_TO_EVALUATE'),
-                'type' => 'select',
-                'values' => $evaluated,
-                'value' => ['to_evaluate','evaluated'],
-                'default' => true,
-                'defaultValue' => ['to_evaluate','evaluated'],
-                'available' => true,
-                'operator' => 'IN',
-                'order' => $config['filter_to_evaluate_order']
-            ];
-        }
+                $this->applied_filters[] = [
+                    'uid' => 'to_evaluate',
+                    'id' => 'to_evaluate',
+                    'label' => JText::_('MOD_EMUNDUS_FILTERS_TO_EVALUATE'),
+                    'type' => 'select',
+                    'values' => $evaluated,
+                    'value' => ['to_evaluate', 'evaluated'],
+                    'default' => true,
+                    'defaultValue' => ['to_evaluate', 'evaluated'],
+                    'available' => true,
+                    'operator' => 'IN',
+                    'order' => $config['filter_to_evaluate_order']
+                ];
+            }
 
-        if ($config['filter_years']) {
-            $years = [];
+            if ($config['filter_years']) {
+                $years = [];
 
-				if (!empty($this->user_campaigns))
-				{
-					$query->clear()
-						->select('DISTINCT year as value, year as label, 0 as count')
-						->from('#__emundus_setup_campaigns')
-						->where('published = 1')
-						->andWhere('id IN (' . implode(',', $this->user_campaigns) . ')');
+                if (!empty($this->user_campaigns)) {
+                    $query->clear()
+                        ->select('DISTINCT year as value, year as label, 0 as count')
+                        ->from('#__emundus_setup_campaigns')
+                        ->where('published = 1')
+                        ->andWhere('id IN (' . implode(',', $this->user_campaigns) . ')');
 
-					$db->setQuery($query);
-					$years = $db->loadAssocList();
-				}
+                    $db->setQuery($query);
+                    $years = $db->loadAssocList();
+                }
 
-				$this->applied_filters[] = [
-					'uid'       => 'years',
-					'id'        => 'years',
-					'label'     => JText::_('MOD_EMUNDUS_FILTERS_YEARS'),
-					'type'      => 'select',
-					'values'    => $years,
-					'value'     => ['all'],
-					'default'   => true,
-					'available' => true,
-                    'operator'  => 'IN',
-					'order'     => $config['filter_years_order']
-				];
-			}
+                $this->applied_filters[] = [
+                    'uid' => 'years',
+                    'id' => 'years',
+                    'label' => JText::_('MOD_EMUNDUS_FILTERS_YEARS'),
+                    'type' => 'select',
+                    'values' => $years,
+                    'value' => ['all'],
+                    'default' => true,
+                    'available' => true,
+                    'operator' => 'IN',
+                    'order' => $config['filter_years_order']
+                ];
+            }
 
-			if ($config['filter_tags'])
-			{
-				$query->clear()
-					->select('id as value, label, 0 as count')
-					->from('#__emundus_setup_action_tag');
+            if ($config['filter_tags']) {
+                $query->clear()
+                    ->select('id as value, label, 0 as count')
+                    ->from('#__emundus_setup_action_tag');
 
-				$db->setQuery($query);
-				$tags = $db->loadAssocList();
+                $db->setQuery($query);
+                $tags = $db->loadAssocList();
 
-				$this->applied_filters[] = [
-					'uid'       => 'tags',
-					'id'        => 'tags',
-					'label'     => JText::_('MOD_EMUNDUS_FILTERS_TAGS'),
-					'type'      => 'select',
-					'values'    => $tags,
-					'value'     => ['all'],
-					'default'   => true,
-					'available' => true,
-					'order'     => $config['filter_tags_order'],
-                    'andorOperator'  => 'OR',
+                $this->applied_filters[] = [
+                    'uid' => 'tags',
+                    'id' => 'tags',
+                    'label' => JText::_('MOD_EMUNDUS_FILTERS_TAGS'),
+                    'type' => 'select',
+                    'values' => $tags,
+                    'value' => ['all'],
+                    'default' => true,
+                    'available' => true,
+                    'order' => $config['filter_tags_order'],
+                    'andorOperator' => 'OR',
                     'andorOperators' => ['OR', 'AND']
-				];
-			}
+                ];
+            }
 
-			if ($config['filter_published'])
-			{
-				$this->applied_filters[] = [
-					'uid'       => 'published',
-					'id'        => 'published',
-					'label'     => JText::_('MOD_EMUNDUS_FILTERS_PUBLISHED_STATE'),
-					'type'      => 'select',
-					'values'    => [
-						['value' => 1, 'label' => JText::_('MOD_EMUNDUS_FILTERS_VALUE_PUBLISHED'), 'count' => 0],
-						['value' => 0, 'label' => JText::_('MOD_EMUNDUS_FILTERS_VALUE_ARCHIVED'), 'count' => 0],
-						['value' => -1, 'label' => JText::_('MOD_EMUNDUS_FILTERS_VALUE_DELETED'), 'count' => 0]
-					],
-					'value'     => [1],
-					'default'   => true,
+            if ($config['filter_published']) {
+                $this->applied_filters[] = [
+                    'uid' => 'published',
+                    'id' => 'published',
+                    'label' => JText::_('MOD_EMUNDUS_FILTERS_PUBLISHED_STATE'),
+                    'type' => 'select',
+                    'values' => [
+                        ['value' => 1, 'label' => JText::_('MOD_EMUNDUS_FILTERS_VALUE_PUBLISHED'), 'count' => 0],
+                        ['value' => 0, 'label' => JText::_('MOD_EMUNDUS_FILTERS_VALUE_ARCHIVED'), 'count' => 0],
+                        ['value' => -1, 'label' => JText::_('MOD_EMUNDUS_FILTERS_VALUE_DELETED'), 'count' => 0]
+                    ],
+                    'value' => [1],
+                    'default' => true,
                     'defaultValue' => [1],
-					'available' => true,
-					'order'     => $config['filter_published_order'],
-                    'operator'  => '='
-				];
-			}
+                    'available' => true,
+                    'order' => $config['filter_published_order'],
+                    'operator' => '='
+                ];
+            }
 
             if ($config['filter_groups']) {
                 $query->clear()
@@ -677,7 +657,7 @@ class EmundusFiltersFiles extends EmundusFilters
                     'default' => true,
                     'available' => true,
                     'order' => $config['filter_groups_order'],
-                    'andorOperator'  => 'OR',
+                    'andorOperator' => 'OR',
                     'andorOperators' => ['OR', 'AND']
                 ];
             }
@@ -712,7 +692,7 @@ class EmundusFiltersFiles extends EmundusFilters
                     'default' => true,
                     'available' => true,
                     'order' => $config['filter_users_order'],
-                    'andorOperator'  => 'OR',
+                    'andorOperator' => 'OR',
                     'andorOperators' => ['OR', 'AND']
                 ];
             }
@@ -723,25 +703,20 @@ class EmundusFiltersFiles extends EmundusFilters
                 $config['more_filter_elements'] = json_decode($config['more_filter_elements'], true);
 
                 foreach ($config['more_filter_elements']['fabrik_element_id'] as $more_filter_index => $fabrik_element_id) {
-                    if (!empty($fabrik_element_id))
-                    {
+                    if (!empty($fabrik_element_id)) {
                         $found = false;
                         $new_default_filter = [];
-                        foreach ($this->filters as $filter)
-                        {
-                            if ($filter['id'] == $fabrik_element_id)
-                            {
+                        foreach ($this->filters as $filter) {
+                            if ($filter['id'] == $fabrik_element_id) {
                                 $new_default_filter = $filter;
                                 $new_default_filter['default'] = true;
-                                if (empty($new_default_filter['value']))
-                                {
+                                if (empty($new_default_filter['value'])) {
                                     $new_default_filter['value'] = $new_default_filter['type'] === 'select' ? ['all'] : '';
                                 }
                                 $new_default_filter['andorOperator'] = 'OR';
                                 $new_default_filter['operator'] = '=';
 
-                                if ($new_default_filter['type'] === 'select')
-                                {
+                                if ($new_default_filter['type'] === 'select') {
                                     $new_default_filter['operator'] = 'IN';
                                     $new_default_filter['values'] = $this->getFabrikElementValuesFromElementId($filter['id']);
                                 }
@@ -750,8 +725,7 @@ class EmundusFiltersFiles extends EmundusFilters
                             }
                         }
 
-                        if (!$found)
-                        {
+                        if (!$found) {
                             $query->clear()
                                 ->select('jfe.id, jfe.plugin, jfe.label, jfe.params, jffg.form_id as element_form_id, jff.label as element_form_label')
                                 ->from('jos_fabrik_elements as jfe')
@@ -763,29 +737,24 @@ class EmundusFiltersFiles extends EmundusFilters
                             $db->setQuery($query);
                             $element = $db->loadAssoc();
 
-                            if (!empty($element))
-                            {
+                            if (!empty($element)) {
                                 $element['label'] = JText::_($element['label']);
                                 $element['element_form_label'] = JText::_($element['element_form_label']);
                                 $formatted_elements = $this->createFiltersFromFabrikElements([$element]);
 
-                                if (!empty($formatted_elements))
-                                {
+                                if (!empty($formatted_elements)) {
                                     $new_default_filter = $formatted_elements[0];
                                     $new_default_filter['default'] = true;
-                                    if (empty($new_default_filter['value']))
-                                    {
+                                    if (empty($new_default_filter['value'])) {
                                         $new_default_filter['value'] = $new_default_filter['type'] === 'select' ? ['all'] : '';
                                     }
                                     $new_default_filter['andorOperator'] = 'OR';
                                     $new_default_filter['operator'] = '=';
 
-                                    if ($new_default_filter['type'] === 'select')
-                                    {
+                                    if ($new_default_filter['type'] === 'select') {
                                         $new_default_filter['operator'] = 'IN';
                                         $new_default_filter['values'] = $this->getFabrikElementValuesFromElementId($element['id']);
-                                    } else if ($new_default_filter['type'] === 'text')
-                                    {
+                                    } else if ($new_default_filter['type'] === 'text') {
                                         $new_default_filter['operator'] = 'LIKE';
                                     }
                                 }
@@ -793,8 +762,7 @@ class EmundusFiltersFiles extends EmundusFilters
                             }
                         }
 
-                        if (!empty($new_default_filter))
-                        {
+                        if (!empty($new_default_filter)) {
                             $this->filters[] = $new_default_filter;
                             $new_default_filter['uid'] = 'default-filter-' . $new_default_filter['id'];
                             $new_default_filter['order'] = $config['more_filter_elements']['order'][$more_filter_index];
@@ -802,11 +770,9 @@ class EmundusFiltersFiles extends EmundusFilters
 
                             // add filter to adv cols
                             $files_displayed_columns = $session->get('adv_cols');
-                            if (!empty($files_displayed_columns))
-                            {
+                            if (!empty($files_displayed_columns)) {
                                 $files_displayed_columns[] = $new_default_filter['id'];
-                            } else
-                            {
+                            } else {
                                 $files_displayed_columns = [$new_default_filter['id']];
                             }
                             $session->set('adv_cols', $files_displayed_columns);
