@@ -529,7 +529,34 @@ class EmundusControllerFiles extends JControllerLegacy
         exit;
     }
 
-    /**
+	public function getFileIdFromFnum()
+	{
+		$response = ['status' => false, 'code' => 403, 'msg' => Text::_('ACCESS_DENIED')];
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$fnum = $this->input->getString('fnum', null);
+			$ccid = EmundusHelperFiles::getIdFromFnum($fnum);
+
+			if (!empty($ccid)) {
+				$response['status'] = true;
+				$response['code'] = 200;
+				$response['msg'] = Text::_('SUCCESS');
+				$response['data'] = $ccid;
+			}
+		}
+
+		if ($response['code'] === 403) {
+			header('HTTP/1.1 403 Forbidden');
+			echo $response['msg'];
+			exit;
+		}
+
+		echo json_encode($response);
+		exit;
+	}
+
+
+	/**
      * Add a comment on a file.
      * @since 6.0
      */

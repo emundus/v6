@@ -143,7 +143,7 @@
     </div>
     <p v-else id="empty-comments" class="text-center m-4">{{ translate('COM_EMUNDUS_COMMENTS_NO_COMMENTS') }}</p>
 
-    <div id="add-comment-container">
+    <div id="add-comment-container" v-if="canComment">
       <label for="new-comment">{{ translate('COM_EMUNDUS_COMMENTS_ADD_GLOBAL_COMMENT') }}</label>
       <textarea id="new-comment" @keyup.enter="addComment" v-model="newCommentText" class="p-2"
                 :placeholder="translate('COM_EMUNDUS_COMMENTS_ADD_COMMENT_PLACEHOLDER')"></textarea>
@@ -214,6 +214,7 @@
 
 <script>
 import commentsService from 'com_emundus/src/services/comments';
+import fileService from 'com_emundus/src/services/file';
 import mixins from '../../mixins/mixin';
 import alerts from '../../mixins/alerts';
 
@@ -230,7 +231,7 @@ export default {
     },
     ccid: {
       type: Number,
-      required: true,
+      default: 0,
     },
     access: {
       type: Object,
@@ -279,16 +280,25 @@ export default {
     filterVisibleToApplicant: 'all'
   }),
   created() {
-    this.getTargetableELements().then(() => {
-      this.getComments();
-    });
-    this.addListeners();
-  },
-  beforeDestroy() {
-    document.removeEventListener('openModalAddComment');
-    document.removeEventListener('focusOnCommentElement');
+    if (this.ccid == 0) {
+      fileService.getFileIdFromFnum(this.fnum).then((response) =>  {
+        if (response.status) {
+          this.ccid = response.data;
+          this.init();
+        }
+      });
+    } else {
+      this.init();
+    }
+
   },
   methods: {
+    init() {
+      this.getTargetableELements().then(() => {
+        this.getComments();
+      });
+      this.addListeners();
+    },
     addListeners() {
       document.addEventListener('openModalAddComment', (event) => {
         this.target.id = event.detail.targetId;
@@ -386,7 +396,10 @@ export default {
     addComment(parent_id = 0) {
       this.loading = true;
 
-      if (this.access.c) {
+      console.log(this.ccid);
+
+
+      if (this.canComment) {
         if (this.isApplicant) {
           this.visible_to_applicant = true;
         }
@@ -405,6 +418,8 @@ export default {
             this.comments.push(response.data);
             this.resetAddComment();
             this.getComments();
+          } else {
+            console.log(response);
           }
         }).catch((error) => {
           this.handleError(error);
@@ -611,6 +626,9 @@ export default {
     },
     targetLabel() {
       return this.target.id > 0 ? this.getCommentTargetLabel(this.target.id, this.target.type) : '';
+    },
+    canComment() {
+      return  this.access.c || (this.isApplicant && this.applicantsAllowedToComment);
     }
   }
 }
