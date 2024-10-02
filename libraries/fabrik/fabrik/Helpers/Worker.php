@@ -1329,6 +1329,23 @@ class Worker
 			$match = htmlspecialchars($match, ENT_QUOTES, 'UTF-8');
 		}
 
+		// Check if value return by user is a function, if so return original string
+		preg_match('/[a-zA-Z_][a-zA-Z0-9_]*\s*(?=\()/', $match, $suspected_functions);
+		foreach ($suspected_functions as $suspected_function)
+		{
+			if (is_callable(preg_replace('/\s+/', '', $suspected_function))) return $orig;
+		}
+
+		// Check php variables that could indicate unsafe user input handling
+		$pattern = '/\$_(POST|GET|REQUEST|COOKIE|SERVER|FILES)\[[^\]]*\]|\bphp:\/\/[a-zA-Z]+/';
+		if (preg_match($pattern, $match, $matches)) {
+			return $orig;
+		}
+
+		// Avoid some unsecure words
+		$match = preg_replace('/\b(?:system|shell_exec|exec|passthru|proc_open|popen|eval|assert|create_function|include|require|include_once|require_once|file_get_contents|fopen|fread|fwrite|unseralize|dl|preg_replace|pcntl_exec|expect_popen|chmod|chown|chgrp|curl_\w+)\s*\([^;]*\);?/i', '', $match);
+		//
+
 		return $found ? $match : $orig;
 	}
 

@@ -127,9 +127,13 @@ export default {
             if (this.newExistingLabel !== value.label) {
               value.label = this.newExistingLabel;
               this.originalOptions = JSON.parse(JSON.stringify(this.existingValues));
+
+              this.$emit('update-existing-values', this.existingValues);
+              this.$emit('update-value', value);
+            } else {
+              this.$emit('update-existing-values', this.existingValues);
+              this.$emit('update-value', value);
             }
-            this.$emit('update-existing-values', this.existingValues);
-            this.$emit('update-value', value);
           }
         });
       }

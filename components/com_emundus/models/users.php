@@ -193,7 +193,7 @@ class EmundusModelUsers extends JModelList {
             $query .= 'cat.title as university,';
         }
         if ($showJoomlagroups == 1) {
-            $query .= 'GROUP_CONCAT( DISTINCT usg.title SEPARATOR "") as joomla_groupe,';
+            $query .= 'GROUP_CONCAT( DISTINCT usg.title SEPARATOR "<br>") as joomla_groupe,';
         }
 
         $query .= 'u.activation as active,u.block as block

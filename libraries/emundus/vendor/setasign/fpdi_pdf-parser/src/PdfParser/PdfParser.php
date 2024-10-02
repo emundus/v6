@@ -275,10 +275,15 @@ class PdfParser extends \setasign\Fpdi\PdfParser\PdfParser
     {
         $value = parent::parsePdfHexString();
 
-        if ($this->secHandler instanceof SecHandler) {
+        if ($value instanceof PdfHexString && $this->secHandler instanceof SecHandler) {
+            $v = $value->value;
+            if ((strlen($v) % 2) === 1) {
+                $v .= '0';
+            }
+
             $value->value = \bin2hex(
                 $this->secHandler->decryptString(
-                    \hex2bin($value->value),
+                    \hex2bin($v),
                     $this->currentIndirectObjectNumber,
                     $this->currentIndirectObjectGenerationNumber
                 )
