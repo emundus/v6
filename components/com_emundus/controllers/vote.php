@@ -38,7 +38,7 @@ class EmundusControllerVote extends BaseController
 	{
 		$result = array(
 			'status' => false,
-			'message' => Text::_('COM_EMUNDUS_ERROR_OCCURED'),
+			'message' => Text::_('COM_FABRIK_VOTE_MODAL_ERROR_TEXT'),
 		);
 
 		require_once JPATH_SITE . '/components/com_emundus/helpers/emails.php';
@@ -60,6 +60,7 @@ class EmundusControllerVote extends BaseController
 
 				if(count($votes) >= $gallery->max) {
 					$can_vote = false;
+					$result['message'] = Text::_('COM_EMUNDUS_ERROR_ALREADY_VOTE');
 				}
 
 				if($gallery->voting_access != 1 && $this->_user->guest == 1) {

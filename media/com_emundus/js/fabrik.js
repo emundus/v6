@@ -524,7 +524,7 @@ function vote(guest,listid,id,email) {
                                 Swal.fire({
                                     icon: 'error',
                                     title: Joomla.JText._('COM_FABRIK_VOTE_MODAL_ERROR_TITLE'),
-                                    text: Joomla.JText._('COM_FABRIK_VOTE_MODAL_ERROR_TEXT'),
+                                    text: data.message,
                                     showConfirmButton: false,
                                     timer: 2000
                                 });
