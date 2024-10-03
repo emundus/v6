@@ -4099,6 +4099,50 @@ class EmundusHelperFiles
                                         }
                                     }
                                     break;
+	                            case 'attachments':
+		                            if ($filter['andorOperator'] === 'AND' && is_array($filter['value']) && sizeof($filter['value']) > 1) {
+
+			                            $first = true;
+			                            $subquery = '';
+			                            foreach ($filter['value'] as $value) {
+				                            if ($first) {
+					                            $first = false;
+				                            } else {
+					                            $subquery .= ' INTERSECT ';
+				                            }
+
+				                            $subquery .= ' SELECT DISTINCT jos_emundus_uploads.fnum
+                                                FROM jos_emundus_uploads
+                                                WHERE ' . $this->writeQueryWithOperator('jos_emundus_uploads.attachment_id', $value, 'IN');
+			                            }
+
+			                            try {
+				                            $db->setQuery($subquery);
+				                            $fnums_with_all_attachments = $db->loadColumn();
+			                            } catch (Exception $e) {
+				                            JLog::add('Failed to get fnums for attachments filter ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			                            }
+
+			                            if (!empty($fnums_with_all_attachments)) {
+				                            $where['q'] .= $filter['operator'] === 'NOT IN' ? ' AND jecc.fnum NOT IN (' : ' AND jecc.fnum IN (';
+				                            $where['q'] .= implode(',', $fnums_with_all_attachments) . ')';
+			                            } else {
+				                            $where['q'] .= ' AND 1=2';
+			                            }
+		                            } else {
+			                            if ($filter['operator'] === 'NOT IN') {
+				                            $where['q'] .= ' AND jecc.fnum NOT IN (
+                                            SELECT DISTINCT jos_emundus_uploads.fnum
+                                            FROM jos_emundus_uploads
+                                            WHERE ' . $this->writeQueryWithOperator('jos_emundus_uploads.attachment_id', $filter['value'], 'IN') . '
+                                        )';
+			                            }
+			                            else {
+				                            $where['join'] .= ' LEFT JOIN ' . $db->quoteName('jos_emundus_uploads') . ' ON ' . $db->quoteName('jos_emundus_uploads.fnum') . ' = ' . $db->quoteName('jecc.fnum');
+				                            $where['q'] .= ' AND ( ' . $this->writeQueryWithOperator('jos_emundus_uploads.attachment_id', $filter['value'], $filter['operator']) . ' )';
+			                            }
+		                            }
+		                            break;
                                 default:
                                     break;
                             }
