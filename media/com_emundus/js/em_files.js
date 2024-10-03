@@ -6105,11 +6105,9 @@ $(document).ready(function () {
 ;
 
 function updateProfileForm(profile) {
-
     let selectedProfile = 0;
 
-    const alreadySelectedTab = document.querySelector('.em-light-selected-tab');
-
+    const alreadySelectedTab = document.querySelector('#em-switch-profiles .em-light-selected-tab');
     if (alreadySelectedTab) {
         const match = alreadySelectedTab.id.match(/tab_link_(\d+)/);
         if (match) {

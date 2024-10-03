@@ -1080,6 +1080,11 @@ form.fabrikForm .check
       opacity: 0;
       position: absolute;
     }
+form.fabrikForm .\!check
+    {
+      opacity: 0 !important;
+      position: absolute !important;
+    }
 form.fabrikForm .fabrikEmundusPhoneNumber .chzn-container{
       width: auto !important;
     }
@@ -3567,9 +3572,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .mt-px {
   margin-top: 1px;
 }
-.\!block {
-  display: block !important;
-}
 .block {
   display: block;
 }
@@ -3594,6 +3596,12 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .table {
   display: table;
 }
+.inline-table {
+  display: inline-table;
+}
+.table-caption {
+  display: table-caption;
+}
 .table-cell {
   display: table-cell;
 }
@@ -3612,8 +3620,14 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .grid {
   display: grid;
 }
+.inline-grid {
+  display: inline-grid;
+}
 .contents {
   display: contents;
+}
+.list-item {
+  display: list-item;
 }
 .\!hidden {
   display: none !important;
@@ -6919,6 +6933,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .whitespace-pre-line {
   white-space: pre-line;
+}
+.break-all {
+  word-break: break-all;
 }
 .rounded {
   border-radius: 0.25rem;
@@ -37800,6 +37817,9 @@ button.swal2-cancel.goback-btn:hover,
     }
 .\[-a-zA-Z\:0-9_\.\] {
   -a-z-a--z: 0-9 .;
+}
+.\[key\:string\] {
+  key: string;
 }
 @font-face {
     font-family: 'Material Icons';
