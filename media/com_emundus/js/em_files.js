@@ -6119,9 +6119,9 @@ function updateProfileForm(profile) {
         return;
     }
 
-    document.querySelector('.em-light-selected-tab p').classList.remove('em-neutral-900-color');
-    document.querySelector('.em-light-selected-tab p').classList.add('em-neutral-600-color');
-    document.querySelector('.em-light-selected-tab').classList.remove('em-light-selected-tab');
+    document.querySelector('#em-switch-profiles .em-light-selected-tab p').classList.remove('em-neutral-900-color');
+    document.querySelector('#em-switch-profiles .em-light-selected-tab p').classList.add('em-neutral-600-color');
+    document.querySelector('#em-switch-profiles .em-light-selected-tab').classList.remove('em-light-selected-tab');
 
     document.querySelector('#tab_link_' + profile).classList.add('em-light-selected-tab');
     document.querySelector('#tab_link_' + profile + ' p').classList.remove('em-neutral-600-color');
