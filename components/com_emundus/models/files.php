@@ -4960,6 +4960,7 @@ class EmundusModelFiles extends JModelLegacy
         }
 
         $concat_attachments_with_form = $params['concat_attachments_with_form'] ?? false;
+		$convert_docx_to_pdf = $params['convert_docx_to_pdf'] ?? false;
 
         foreach ($fnums as $fnum) {
 
@@ -5040,7 +5041,7 @@ class EmundusModelFiles extends JModelLegacy
                         }
 
                         $tmpArray = [];
-                        EmundusHelperExport::getAttachmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id']);
+                        EmundusHelperExport::getAttachmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id'], $convert_docx_to_pdf);
                     }
                 }
 
