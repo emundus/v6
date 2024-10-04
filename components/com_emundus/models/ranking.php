@@ -16,7 +16,7 @@ require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
 class EmundusModelRanking extends JModelList
 {
 
-    private $can_user_rank_himself = false;
+    private $can_user_rank_himself = true;
 
     private $all_rights_profile = null;
 
@@ -65,11 +65,11 @@ class EmundusModelRanking extends JModelList
      * @return int
      * @throws Exception
      */
-    public function createHierarchy($label, $status, $profile_ids, $parent_hierarchy = 0, $published = 1, $visible_hierarchies = [], $visible_status = [])
+    public function createHierarchy($label, $editable_status, $profile_ids, $parent_hierarchy = 0, $published = 1, $visible_hierarchies = [], $visible_status = [])
     {
         $hierarchy_id = 0;
 
-        if (!empty($label) && is_numeric($status) && !empty($profile_ids)) {
+        if (!empty($label) && !empty($profile_ids)) {
             $query = $this->db->getQuery(true);
 
             $query->clear()
@@ -94,7 +94,6 @@ class EmundusModelRanking extends JModelList
                 ->from($this->db->quoteName('#__emundus_ranking_hierarchy', 'erh'))
                 ->leftJoin($this->db->quoteName('#__emundus_ranking_hierarchy_profiles', 'erhp') . ' ON erhp.hierarchy_id = erh.id')
                 ->where($this->db->quoteName('erhp.profile_id') . ' IN (' . implode(',', $profile_ids) . ')')
-                ->andWhere($this->db->quoteName('erh.status') . ' = ' . $this->db->quote($status))
                 ->group($this->db->quoteName('erh.id'));
 
             try {
@@ -111,8 +110,8 @@ class EmundusModelRanking extends JModelList
 
             $query->clear()
                 ->insert($this->db->quoteName('#__emundus_ranking_hierarchy'))
-                ->columns($this->db->quoteName('label') . ', ' . $this->db->quoteName('status') . ', ' . $this->db->quoteName('parent_id') . ', ' . $this->db->quoteName('published'))
-                ->values($this->db->quote($label) . ', ' . $this->db->quote($status) . ', ' . $this->db->quote($parent_hierarchy) . ', ' . $this->db->quote($published));
+                ->columns($this->db->quoteName('label') . ', ' . $this->db->quoteName('parent_id') . ', ' . $this->db->quoteName('published'))
+                ->values($this->db->quote($label) . ', ' . $this->db->quote($parent_hierarchy) . ', ' . $this->db->quote($published));
 
             try {
                 $this->db->setQuery($query);
@@ -172,8 +171,24 @@ class EmundusModelRanking extends JModelList
                             continue;
                         }
                     }
-
                 }
+
+				if (!empty($editable_status)) {
+					foreach ($editable_status as $status) {
+						$query->clear()
+							->insert($this->db->quoteName('#__emundus_ranking_hierarchy_editable_status'))
+							->columns($this->db->quoteName('hierarchy_id') . ', ' . $this->db->quoteName('status'))
+							->values($this->db->quote($hierarchy_id) . ', ' . $this->db->quote($status));
+
+						try {
+							$this->db->setQuery($query);
+							$this->db->execute();
+						} catch (Exception $e) {
+							JLog::add('createHierarchy ' . $e->getMessage(), JLog::ERROR, 'com_emundus.ranking.php');
+							continue;
+						}
+					}
+				}
             }
         }
 
@@ -187,7 +202,7 @@ class EmundusModelRanking extends JModelList
         if (!empty($id) && !empty($params)) {
             $query = $this->db->getQuery(true);
 
-            $columns_allowed = ['label', 'status', 'parent_id', 'published'];
+            $columns_allowed = ['label', 'parent_id', 'published'];
             $columns = array_keys($params);
 
             if (!empty(array_intersect($columns, $columns_allowed))) {
@@ -299,8 +314,37 @@ class EmundusModelRanking extends JModelList
                             JLog::add('updateHierarchy ' . $e->getMessage(), JLog::ERROR, 'com_emundus.ranking.php');
                         }
                     }
-
                 }
+
+				if (isset($params['editable_status'])) {
+
+					// delete all editable status
+					$query->clear()
+						->delete($this->db->quoteName('#__emundus_ranking_hierarchy_editable_status'))
+						->where($this->db->quoteName('hierarchy_id') . ' = ' . $this->db->quote($id));
+
+					try {
+						$this->db->setQuery($query);
+						$this->db->execute();
+					} catch (Exception $e) {
+						JLog::add('updateHierarchy ' . $e->getMessage(), JLog::ERROR, 'com_emundus.ranking.php');
+					}
+
+					// add the new editable status
+					foreach ($params['editable_status'] as $status) {
+						$query->clear()
+							->insert($this->db->quoteName('#__emundus_ranking_hierarchy_editable_status'))
+							->columns($this->db->quoteName('hierarchy_id') . ', ' . $this->db->quoteName('status'))
+							->values($this->db->quote($id) . ', ' . $this->db->quote($status));
+
+						try {
+							$this->db->setQuery($query);
+							$updates[] = $this->db->execute();
+						} catch (Exception $e) {
+							JLog::add('updateHierarchy ' . $e->getMessage(), JLog::ERROR, 'com_emundus.ranking.php');
+						}
+					}
+				}
 
                 $updated = !in_array(false, $updates);
             }
@@ -502,8 +546,7 @@ class EmundusModelRanking extends JModelList
 
         $hierarchy = $this->getUserHierarchy($user_id);
         $status = $this->getStatusUserCanRank($user_id, $hierarchy);
-
-        if ($status !== null) {
+        if (!empty($status)) {
             $ids = $this->getAllFilesRankerCanAccessTo($user_id, $hierarchy, $package_id);
             if (!empty($ids)) {
                 $MAX_RANK_VALUE = 999999;
@@ -622,7 +665,7 @@ class EmundusModelRanking extends JModelList
                         $files['data'][$key]['locked'] = 0;
                     }
 
-                    if ($file['status'] != $status && $file['locked'] != 1) {
+                    if (!in_array($file['status'], $status) && $file['locked'] != 1) {
                         $files['data'][$key]['locked'] = 1;
                     }
 
@@ -684,7 +727,7 @@ class EmundusModelRanking extends JModelList
 
     private function getStatusUserCanRank($user_id, $hierarchy = null)
     {
-        $status = null;
+        $status = [];
 
         if (!empty($user_id)) {
             if (empty($hierarchy)) {
@@ -695,11 +738,11 @@ class EmundusModelRanking extends JModelList
 
             $query->clear()
                 ->select('status')
-                ->from($this->db->quoteName('#__emundus_ranking_hierarchy', 'ech'))
-                ->where($this->db->quoteName('ech.id') . ' = ' . $this->db->quote($hierarchy));
+                ->from($this->db->quoteName('#__emundus_ranking_hierarchy_editable_status'))
+                ->where($this->db->quoteName('hierarchy_id') . ' = ' . $this->db->quote($hierarchy));
 
             $this->db->setQuery($query);
-            $status = $this->db->loadResult();
+            $status = $this->db->loadColumn();
         }
 
         return $status;
@@ -799,7 +842,7 @@ class EmundusModelRanking extends JModelList
         return $status;
     }
 
-    public function getAllFilesRankerCanAccessTo($user_id, $hierarchy = null, $package = null)
+    public function getAllFilesRankerCanAccessTo($user_id, $hierarchy = null, $package = null, $skip_status = false)
     {
         $file_ids = [];
 
@@ -813,7 +856,7 @@ class EmundusModelRanking extends JModelList
                 $visible_status = $this->getStatusHierarchyCanSee($hierarchy);
             }
 
-            $query = $this->db->getQuery(true);
+			$query = $this->db->getQuery(true);
             $query->select('DISTINCT cc.id')
                 ->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
                 ->leftJoin($this->db->quoteName('#__emundus_users_assoc', 'eua') . ' ON ' . $this->db->quoteName('cc.fnum') . ' = ' . $this->db->quoteName('eua.fnum'))
@@ -826,7 +869,6 @@ class EmundusModelRanking extends JModelList
                 $query->andWhere($this->db->quoteName('cc.applicant_id') . ' != ' . $this->db->quote($user_id));
             }
 
-
             if (!empty($package)) {
                 $data = $this->getHierarchyData($hierarchy);
 
@@ -835,7 +877,7 @@ class EmundusModelRanking extends JModelList
                 }
             }
 
-            if (!empty($visible_status)) {
+            if (!empty($visible_status) && !$skip_status) {
                 $query->andWhere($this->db->quoteName('cc.status') . ' IN (' . implode(',', $visible_status) . ')');
             }
 
@@ -876,11 +918,11 @@ class EmundusModelRanking extends JModelList
                     }
                 }
 
-                if (!empty($visible_status)) {
+                if (!empty($visible_status) && !$skip_status) {
                     $query->andWhere($this->db->quoteName('cc.status') . ' IN (' . implode(',', $visible_status) . ')');
                 }
 
-                $this->db->setQuery($query);
+				$this->db->setQuery($query);
                 $group_assoc_ccids = $this->db->loadColumn();
 
                 if (!empty($group_assoc_ccids)) {
@@ -909,11 +951,11 @@ class EmundusModelRanking extends JModelList
                     }
                 }
 
-                if (!empty($visible_status)) {
+                if (!empty($visible_status) && !$skip_status) {
                     $query->andWhere($this->db->quoteName('cc.status') . ' IN (' . implode(',', $visible_status) . ')');
                 }
 
-                $this->db->setQuery($query);
+				$this->db->setQuery($query);
                 $program_assoc_ccids = $this->db->loadColumn();
 
                 if (!empty($program_assoc_ccids)) {
@@ -1013,11 +1055,12 @@ class EmundusModelRanking extends JModelList
 
         $query = $this->db->getQuery(true);
         $query->clear()
-            ->select('erh.*, GROUP_CONCAT(DISTINCT erhp.profile_id) as profiles, GROUP_CONCAT(DISTINCT erhv.visible_hierarchy_id) as visible_hierarchy_ids, GROUP_CONCAT(DISTINCT erhvs.status) as visible_status')
+            ->select('erh.*, GROUP_CONCAT(DISTINCT erhp.profile_id) as profiles, GROUP_CONCAT(DISTINCT erhv.visible_hierarchy_id) as visible_hierarchy_ids, GROUP_CONCAT(DISTINCT erhvs.status) as visible_status, GROUP_CONCAT(DISTINCT erhes.status) as editable_status')
             ->from($this->db->quoteName('#__emundus_ranking_hierarchy', 'erh'))
             ->leftJoin($this->db->quoteName('#__emundus_ranking_hierarchy_profiles', 'erhp') . ' ON ' . $this->db->quoteName('erh.id') . ' = ' . $this->db->quoteName('erhp.hierarchy_id'))
             ->leftJoin($this->db->quoteName('#__emundus_ranking_hierarchy_view', 'erhv') . ' ON ' . $this->db->quoteName('erh.id') . ' = ' . $this->db->quoteName('erhv.hierarchy_id'))
-            ->leftJoin($this->db->quoteName('#__emundus_ranking_hierarchy_visible_status', 'erhvs') . ' ON ' . $this->db->quoteName('erh.id') . ' = ' . $this->db->quoteName('erhvs.hierarchy_id'));
+			->leftJoin($this->db->quoteName('#__emundus_ranking_hierarchy_visible_status', 'erhvs') . ' ON ' . $this->db->quoteName('erh.id') . ' = ' . $this->db->quoteName('erhvs.hierarchy_id'))
+			->leftJoin($this->db->quoteName('#__emundus_ranking_hierarchy_editable_status', 'erhes') . ' ON ' . $this->db->quoteName('erh.id') . ' = ' . $this->db->quoteName('erhes.hierarchy_id'));
 
         if (!empty($ids)) {
             $query->where($this->db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
@@ -1034,7 +1077,8 @@ class EmundusModelRanking extends JModelList
         foreach($hierarchies as $key => $hierarchy) {
             $hierarchies[$key]['profiles'] = !empty($hierarchy['profiles']) ? explode(',', $hierarchy['profiles']) : [];
             $hierarchies[$key]['visible_hierarchy_ids'] =  !empty($hierarchy['visible_hierarchy_ids']) ? explode(',', $hierarchy['visible_hierarchy_ids']) : [];
-            $hierarchies[$key]['visible_status'] = !empty($hierarchy['visible_status']) ?  explode(',', $hierarchy['visible_status']) : [];
+            $hierarchies[$key]['visible_status'] = $hierarchy['visible_status'] != '' ?  explode(',', $hierarchy['visible_status']) : [];
+			$hierarchies[$key]['editable_status'] = $hierarchy['editable_status'] != '' ?  explode(',', $hierarchy['editable_status']) : [];
         }
 
         return $hierarchies;
@@ -1075,7 +1119,7 @@ class EmundusModelRanking extends JModelList
             $query = $this->db->getQuery(true);
 
             $query->clear()
-                ->select('DISTINCT ' . $this->db->quoteName('erh.id') . ', ' . $this->db->quoteName('erh.label') . ', ' . $this->db->quoteName('erh.status'))
+                ->select('DISTINCT ' . $this->db->quoteName('erh.id') . ', ' . $this->db->quoteName('erh.label'))
                 ->from($this->db->quoteName('#__emundus_ranking_hierarchy_view', 'erhv'))
                 ->leftJoin($this->db->quoteName('#__emundus_ranking_hierarchy', 'erh') . ' ON ' . $this->db->quoteName('erhv.visible_hierarchy_id') . ' = ' . $this->db->quoteName('erh.id'))
                 ->where($this->db->quoteName('erhv.hierarchy_id') . ' = ' . $this->db->quote($user_hierarchy))
@@ -1214,7 +1258,7 @@ class EmundusModelRanking extends JModelList
             $file_status = $this->db->setQuery($query)->loadResult();
             $status_user_can_rank = $this->getStatusUserCanRank($user_id, $hierarchy_id);
 
-            if ($file_status == $status_user_can_rank || $all_mighty_user) {
+            if (in_array($file_status, $status_user_can_rank) || $all_mighty_user) {
                 $query->clear()
                     ->select($this->db->quoteName('id') . ', ' . $this->db->quoteName('rank') . ', ' . $this->db->quoteName('locked'))
                     ->from($this->db->quoteName('#__emundus_ranking'))
@@ -1258,7 +1302,7 @@ class EmundusModelRanking extends JModelList
                         $this->db->setQuery($query);
                         $same_rank_data = $this->db->loadAssoc();
 
-                        if (!empty($same_rank_data) && ($same_rank_data['locked'] == 1 || $same_rank_data['status'] != $status_user_can_rank) && !$all_mighty_user) {
+                        if (!empty($same_rank_data) && ($same_rank_data['locked'] == 1 || !in_array($same_rank_data['status'], $status_user_can_rank)) && !$all_mighty_user) {
                             throw new Exception(Text::_('COM_EMUNDUS_RANKING_UPDATE_RANKING_ERROR_RANK_UNREACHABLE'));
                         }
 
@@ -1295,11 +1339,11 @@ class EmundusModelRanking extends JModelList
                         $rank_to_apply = (int)$old_rank;
 
                         $locked_rank_positions = $all_mighty_user ? [] : array_filter(array_map(function ($rank) use ($status_user_can_rank) {
-                            return $rank['locked'] == 1 || $rank['status'] != $status_user_can_rank ? $rank['rank'] : null;
+                            return $rank['locked'] == 1 || !in_array($rank['status'], $status_user_can_rank) ? $rank['rank'] : null;
                         }, $ranks));
 
                         foreach ($ranks as $rank) {
-                            if (($rank['locked'] != 1 && $rank['status'] == $status_user_can_rank) || $all_mighty_user) {
+                            if (($rank['locked'] != 1 && !in_array($rank['status'], $status_user_can_rank)) || $all_mighty_user) {
                                 $re_arranged_ranking[$rank['id']] = $rank_to_apply;
                                 $rank_to_apply++;
 
@@ -1328,7 +1372,7 @@ class EmundusModelRanking extends JModelList
                         $rank_to_apply = $new_rank + 1;
 
                         $locked_rank_positions = $all_mighty_user ? [] : array_filter(array_map(function ($rank) use ($status_user_can_rank) {
-                            return $rank['locked'] == 1 || $rank['status'] != $status_user_can_rank ? $rank['rank'] : null;
+                            return $rank['locked'] == 1 || !in_array($rank['status'], $status_user_can_rank) ? $rank['rank'] : null;
                         }, $ranks));
 
                         while (in_array($rank_to_apply, $locked_rank_positions)) {
@@ -1336,7 +1380,7 @@ class EmundusModelRanking extends JModelList
                         }
 
                         foreach ($ranks as $rank) {
-                            if (($rank['locked'] != 1 && $rank['status'] == $status_user_can_rank) || $all_mighty_user) {
+                            if (($rank['locked'] != 1 && in_array($rank['status'], $status_user_can_rank)) || $all_mighty_user) {
                                 $re_arranged_ranking[$rank['id']] = $rank_to_apply;
                                 $rank_to_apply++;
 
@@ -1366,11 +1410,11 @@ class EmundusModelRanking extends JModelList
                         $rank_to_apply = (int)$old_rank;
 
                         $locked_rank_positions = $all_mighty_user ? [] :  array_filter(array_map(function ($rank) use ($status_user_can_rank) {
-                            return $rank['locked'] == 1 || $rank['status'] != $status_user_can_rank ? $rank['rank'] : null;
+                            return $rank['locked'] == 1 || !in_array($rank['status'], $status_user_can_rank) ? $rank['rank'] : null;
                         }, $ranks));
 
                         foreach ($ranks as $rank) {
-                            if (($rank['locked'] != 1 && $rank['status'] == $status_user_can_rank) || $all_mighty_user) {
+                            if (($rank['locked'] != 1 && in_array($rank['status'], $status_user_can_rank)) || $all_mighty_user) {
                                 $re_arranged_ranking[$rank['id']] = $rank_to_apply;
                                 $rank_to_apply--;
 
@@ -1400,11 +1444,11 @@ class EmundusModelRanking extends JModelList
                         $rank_to_apply = (int)$old_rank;
 
                         $locked_rank_positions = $all_mighty_user ? [] : array_filter(array_map(function ($rank) use ($status_user_can_rank) {
-                            return $rank['locked'] == 1 || $rank['status'] != $status_user_can_rank ? $rank['rank'] : null;
+                            return $rank['locked'] == 1 || !in_array($rank['status'], $status_user_can_rank) ? $rank['rank'] : null;
                         }, $ranks));
 
                         foreach ($ranks as $rank) {
-                            if (($rank['locked'] != 1 && $rank['status'] == $status_user_can_rank) || $all_mighty_user) {
+                            if (($rank['locked'] != 1 && in_array($rank['status'], $status_user_can_rank)) || $all_mighty_user) {
                                 $re_arranged_ranking[$rank['id']] = $rank_to_apply;
                                 $rank_to_apply++;
 

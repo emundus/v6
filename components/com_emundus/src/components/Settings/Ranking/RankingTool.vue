@@ -69,15 +69,19 @@
                                  :searchable="false"
                                  :allow-empty="true"></multiselect>
                   </div>
-                  <div class="status mt-4">
+                  <div id="editable_status" class="mt-4">
                     <label>{{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_RANKING_HIERARCHY_EDIT_STATUS') }}</label>
-                    <select v-model="hierarchy.status">
-                      <option v-for="state in states" :value="state.step">
-                        {{ state.value }}
-                      </option>
-                    </select>
+                    <multiselect v-model="hierarchy.editable_status" label="value" track-by="step" :options="states"
+                                 :multiple="true"
+                                 :taggable="false"
+                                 :placeholder="translate('COM_EMUNDUS_ONBOARD_SETTINGS_RANKING_SELECT_VALUE')"
+                                 :close-on-select="true"
+                                 :clear-on-select="false"
+                                 :searchable="false"
+                                 :allow-empty="true"
+                    ></multiselect>
                   </div>
-                  <div class="visible_status mt-4">
+                  <div id="visible_status" class="mt-4">
                     <label>{{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_RANKING_HIERARCHY_VISIBLE_STATUS') }}</label>
                     <multiselect v-model="hierarchy.visible_status" label="value" track-by="step" :options="states"
                                  :multiple="true"
@@ -89,7 +93,7 @@
                                  :allow-empty="true"
                     ></multiselect>
                   </div>
-                  <div class="visible_hierarchies mt-4">
+                  <div id="visible_hierarchies" class="mt-4">
                     <label>{{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_RANKING_HIERARCHY_VISIBLE_HIERARCHIES') }}</label>
                     <multiselect v-model="hierarchy.visible_hierarchy_ids" label="label" track-by="id"
                                  :options="hierarchiesOpts"
@@ -175,11 +179,11 @@ export default {
         parent_id: "0",
         label: "Nouvelle hiérarchie",
         published: "1",
-        status: "0",
         package_by: "jos_emundus_setup_campaigns.id",
         package_start_date_field: "",
         package_end_date_field: "",
         visible_status: [],
+        editable_status: [],
         visible_hierarchy_ids: [],
         profiles: []
       }
@@ -203,6 +207,12 @@ export default {
         hierarchies.forEach((hierarchy) => {
           // visible status is currently an array of integers, we need to convert it to an array of objects
           hierarchy.visible_status = hierarchy.visible_status.length > 0 ? hierarchy.visible_status.map((status) => {
+            return this.states.find((state) => {
+              return state.step === status;
+            });
+          }) : [];
+
+          hierarchy.editable_status = hierarchy.editable_status.length > 0 ? hierarchy.editable_status.map((status) => {
             return this.states.find((state) => {
               return state.step === status;
             });
