@@ -62,11 +62,6 @@ class EmundusAdministrationModelRanking extends JModelList
                 'default' => 1,
             ],
             [
-                'name' => 'status',
-                'type' => 'INT',
-                'null' => 1,
-            ],
-            [
                 'name' => 'package_by',
                 'type' => 'varchar',
                 'length' => 255,
@@ -86,16 +81,6 @@ class EmundusAdministrationModelRanking extends JModelList
                 'length' => 255,
                 'null' => 0,
                 'default' => $db->quote(''),
-            ]
-        ];
-        $foreign_keys = [
-            [
-                'name'           => 'jos_emundus_classement_hierarchy_status_fk',
-                'from_column'    => 'status',
-                'ref_table'      => 'jos_emundus_setup_status',
-                'ref_column'     => 'step',
-                'update_cascade' => true,
-                'delete_cascade' => true,
             ]
         ];
 
@@ -318,6 +303,32 @@ class EmundusAdministrationModelRanking extends JModelList
                 $app->enqueueMessage('Table jos_emundus_ranking_hierarchy_visible_status not created', 'error');
             }
         }
+
+		$columns = [
+			['name' => 'hierarchy_id', 'type' => 'INT', 'null' => 0],
+			['name' => 'status', 'type' => 'INT', 'null' => 0],
+		];
+		$foreign_keys = [
+			[
+				'name'           => 'jos_emundus_ranking_hierarchy_editable_status_hierarchy_id_fk',
+				'from_column'    => 'hierarchy_id',
+				'ref_table'      => 'jos_emundus_ranking_hierarchy',
+				'ref_column'     => 'id',
+				'update_cascade' => true,
+				'delete_cascade' => true,
+			]
+		];
+
+		$response = EmundusHelperUpdate::createTable('jos_emundus_ranking_hierarchy_editable_status', $columns, $foreign_keys, 'Table des status pour lesquels le rang est éditable pour un niveau de hiérarchie');
+		$tasks[] = $response['status'];
+
+		if ($debug) {
+			if ($response['status']) {
+				$app->enqueueMessage('Table jos_emundus_ranking_hierarchy_editable exists or has been created');
+			} else {
+				$app->enqueueMessage('Table jos_emundus_ranking_hierarchy_editable not created', 'error');
+			}
+		}
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
