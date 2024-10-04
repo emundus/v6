@@ -669,13 +669,17 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             <?php elseif($group_by == 'category' || $group_by == 'program'|| $group_by == 'month') : ?>
 	            <?php if($mod_em_campaign_display_tmpl == 1) : ?>
 
-                        <button id="mod_emundus_campaign__tchoozy_tabs_<?php echo $key ?>" type="button" class="em-mb-32 em-mt-32 flex items-center justify-between <?php if (sizeof($campaigns) > 1) : ?>cursor-pointer<?php endif; ?>  <?= $mod_em_campaign_groupby_closed ? '' : 'open' ?> " <?php if (sizeof($campaigns) > 1) : ?> tabindex="0" aria-expanded="false" onclick="hideTchoozyGroup('<?php echo $key ?>')" <?php endif; ?>>
+                        <button id="mod_emundus_campaign__tchoozy_tabs_<?php echo $key ?>" type="button" class="em-mb-32 em-mt-32 flex items-center justify-between <?php if (sizeof($campaigns) == 1) : ?>disabled-focus<?php endif; ?> <?php if (sizeof($campaigns) > 1) : ?>cursor-pointer<?php endif; ?>  <?= $mod_em_campaign_groupby_closed ? '' : 'open' ?> " tabindex="0" <?php if (sizeof($campaigns) > 1) : ?> tabindex="0" aria-expanded="false" onclick="hideTchoozyGroup('<?php echo $key ?>')" <?php endif; ?>>
 				            <?php if ($mod_em_campaign_display_svg == 1) : ?>
                                 <div id="background-shapes-tabs" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></div>
 				            <?php endif; ?>
                             <div>
                                 <h2 class="mod_emundus_campaign__programme_cat_title"><?php echo $campaign['label'] ?: JText::_('MOD_EM_CAMPAIGN_LIST_CAMPAIGNS') ?> (<?= count($campaigns_labels[$key]);  ?>)</h2>
-                                <p id="mod_emundus_campaign__tchoozy_tab_desc_<?php echo $key ?>"><?= JText::_('MOD_EM_CAMPAIGN_TCHOOZY_TAB_DESC_CLOSE') ?></p>
+                            <?php if (sizeof($campaigns) > 1) : ?>
+                                <p id="mod_emundus_campaign__tchoozy_tab_desc_<?php echo $key ?>"><?= JText::_('MOD_EM_CAMPAIGN_TCHOOZY_TAB_DESC_OPEN') ?></p>
+                            <?php else : ?>
+                                 <p id="mod_emundus_campaign__tchoozy_tab_desc_<?php echo $key ?>"><?= JText::_('MOD_EM_CAMPAIGN_TCHOOZY_TAB_DESC_ONLY_ONE') ?></p>
+                            <?php endif; ?>
                             </div>
 
                             <!-- If the number of programme categories is greater than 1-->
@@ -1318,6 +1322,20 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             icon.innerHTML = 'expand_more';
         }
     }
+
+
+    window.addEventListener('DOMContentLoaded', () => {
+        let tabs_container = document.querySelectorAll('[id^="mod_emundus_campaign__tchoozy_tabs_"]');
+        let tabs_description = document.querySelectorAll('[id^="mod_emundus_campaign__tchoozy_tab_desc_"]');
+
+        tabs_container.forEach((tab_container, index) => {
+            if (tab_container.classList.contains('open')) {
+                tabs_description[index].innerHTML = "<?= JText::_('MOD_EM_CAMPAIGN_TCHOOZY_TAB_DESC_OPEN') ?>";
+            } else {
+                tabs_description[index].innerHTML = "<?= JText::_('MOD_EM_CAMPAIGN_TCHOOZY_TAB_DESC_CLOSE') ?>";
+            }
+        });
+    });
 
     function hideTchoozyGroup(key) {
         let group = document.getElementById('current_' + key);

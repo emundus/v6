@@ -1580,6 +1580,13 @@ input:focus + .em-slider {
   color: var(--neutral-900);
 }
 
+.disabled-focus {
+  cursor: initial;
+  &:focus {
+    outline-width: 0;
+    cursor: initial;
+  }
+}
 
 /**
   Focus for lables
