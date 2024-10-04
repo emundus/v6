@@ -15,7 +15,9 @@ jimport( 'joomla.application.component.model' );
 
 use Gotenberg\Gotenberg;
 use Gotenberg\Stream;
- 
+use GuzzleHttp\Client;
+use GuzzleHttp\RequestOptions;
+
 class EmundusModelExport extends JModelList {
 
 	var $_db = null;
@@ -68,9 +70,7 @@ class EmundusModelExport extends JModelList {
 			]);
 		}
 
-
-
-        $res = new stdClass();
+		$res = new stdClass();
 
         if ($gotenberg_activation != 1) {
             $res->status = false;

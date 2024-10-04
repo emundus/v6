@@ -206,17 +206,34 @@ class EmundusHelperExport {
         return preg_match('/Encrypt ([0-9]+) /', $s);
     }
 
-	public static function getAttachmentPDF(&$exports, &$tmpArray, $files, $sid) {
+	public static function getAttachmentPDF(&$exports, &$tmpArray, $files, $sid, $convert_docx_to_pdf = false) {
         if (!empty($files)) {
 
         	$nb_application_forms = 0;
+
+			if (!class_exists('EmundusModelExport')) {
+				require_once (JPATH_SITE . '/components/com_emundus/models/export.php');
+			}
+			$m_export = new EmundusModelExport();
+
             foreach ($files as $file) {
                 if (strrpos($file->filename, 'application_form') === false) {
                     $exFileName = explode('.', $file->filename);
                     $filePath = EMUNDUS_PATH_ABS.$file->user_id.DS.$file->filename;
                     if (file_exists($filePath) && filesize($filePath) != 0) {
-                        if (strtolower($exFileName[1]) != 'pdf') {
-                            $fn = EmundusHelperExport::makePDF($file->filename, $exFileName[1], $sid);
+
+						if ($convert_docx_to_pdf && $exFileName[1] === 'docx') {
+							$tmp_dest = JPATH_SITE . '/tmp/'. $sid . str_replace('.docx', '', $file->filename);
+							$tmp_dest_pdf = JPATH_SITE . '/tmp/'. $sid . str_replace('.docx', '.pdf', $file->filename);
+							$res = $m_export->toPdf($filePath, $tmp_dest, 'docx');
+
+							if ($res->status) {
+								copy($res->file, $tmp_dest_pdf);
+								$exports[] = $tmp_dest_pdf;
+								$tmpArray[] = $tmp_dest_pdf;
+							}
+						} else if (strtolower($exFileName[1]) != 'pdf') {
+							$fn = EmundusHelperExport::makePDF($file->filename, $exFileName[1], $sid);
                             $exports[] = $fn;
                             $tmpArray[] = $fn;
                         } else {

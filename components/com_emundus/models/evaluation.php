@@ -2256,83 +2256,95 @@ class EmundusModelEvaluation extends JModelList {
 											$fabrikValues[$elt['id']][$fnum]['val'] = implode(",", $val);
 										}
 
-									}
-									elseif ($elt['plugin'] == 'textarea' && $whitespace_textarea == 1) {
-										$fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
-										$formatted_text = explode('<br />',nl2br($fabrikValues[$elt['id']][$fnum]['val']));
-										$inline = new \PhpOffice\PhpWord\Element\TextRun();
-										foreach ($formatted_text as $key => $text) {
-											if (!empty($text))
-											{
-												$text = strip_tags($text);
-
-												if($key > 0)
-												{
-													$inline->addTextBreak();
-												}
-												$inline->addText(trim($text), array('name' => 'Arial'));
-											}
-										}
-										$fabrikValues[$elt['id']][$fnum]['val'] = $inline;
-										$fabrikValues[$elt['id']][$fnum]['complex_data'] = true;
-									}
+				                    }
+				                    elseif ($elt['plugin'] == 'textarea' && $whitespace_textarea == 1)
+				                    {
+					                    $formatted_text = explode('<br />',nl2br($fabrikValues[$elt['id']][$fnum]['val']));
+					                    $inline = new \PhpOffice\PhpWord\Element\TextRun();
+					                    foreach ($formatted_text as $key => $text) {
+						                    if (!empty($text))
+						                    {
+							                    if($key > 0)
+							                    {
+								                    $inline->addTextBreak();
+							                    }
+							                    $inline->addText(trim($text), array('name' => 'Arial'));
+						                    }
+					                    }
+					                    $fabrikValues[$elt['id']][$fnum]['val'] = $inline;
+					                    $fabrikValues[$elt['id']][$fnum]['complex_data'] = true;
+				                    }
 									elseif ($elt['plugin'] == 'textarea') {
-										$textarea_elements[] = $elt['id'];
-										$fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
-									}
-									elseif ($elt['plugin'] == 'emundus_phonenumber') {
-										$fabrikValues[$elt['id']][$fnum]['val'] = substr($fabrikValues[$elt['id']][$fnum]['val'], 2, strlen($fabrikValues[$elt['id']][$fnum]['val']));
-									}
-									elseif ($elt['plugin'] == 'yesno') {
-										$fabrikValues[$elt['id']][$fnum]['val'] = $fabrikValues[$elt['id']][$fnum]['val'] == '1' ? JText::_('JYES') : JText::_('JNO');
-									}
-									elseif ($elt['plugin'] == 'cascadingdropdown') {
-										foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
-											$fabrikValues[$elt['id']][$fnum]['val'] = $_mEmail->getCddLabel($elt, $val['val']);
-										}
-									} else if ($elt['plugin'] === 'databasejoin') {
-										$fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, $groupParams->repeat_group_button == 1);
-									} else {
-										$fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
-									}
+	                                    $textarea_elements[] = $elt['id'];
+	                                    $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
+                                    }
+                                    elseif ($elt['plugin'] == 'emundus_phonenumber')
+				                    {
+					                    $fabrikValues[$elt['id']][$fnum]['val'] = substr($fabrikValues[$elt['id']][$fnum]['val'], 2, strlen($fabrikValues[$elt['id']][$fnum]['val']));
+				                    }
+                                    elseif ($elt['plugin'] == 'yesno')
+                                    {
+                                        $fabrikValues[$elt['id']][$fnum]['val'] = $fabrikValues[$elt['id']][$fnum]['val'] == '1' ? JText::_('JYES') : JText::_('JNO');
+                                    }
+                                    elseif ($elt['plugin'] == 'cascadingdropdown') {
+                                        foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
+                                            $fabrikValues[$elt['id']][$fnum]['val'] = $_mEmail->getCddLabel($elt, $val['val']);
+                                        }
+                                    }
+									else if ($elt['plugin'] === 'databasejoin')
+									{
+                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, $groupParams->repeat_group_button == 1);
+                                    }
+									else
+									{
+                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
+                                    }
 
 									if(!isset($fabrikValues[$elt['id']][$fnum]['complex_data'])){
 										$fabrikValues[$elt['id']][$fnum]['complex_data'] = false;
 									}
 								}
 
-								$preprocess = new \PhpOffice\PhpWord\TemplateProcessor($letter_file);
-								if (isset($fnumInfo[$fnum])) {
-									foreach ($idFabrik as $id) {
-										if (isset($fabrikValues[$id][$fnum])) {
-											if (in_array($id, $textarea_elements)) {
-												$html = $fabrikValues[$id][$fnum]['val'];
-												$section = $phpWord->addSection();
-												\PhpOffice\PhpWord\Shared\Html::addHtml($section, $html);
-												$containers = $section->getElements();
-												$clone = $preprocess->cloneBlock('textarea_' . $id, count($containers), true, true);
+			                    $preprocess = new \PhpOffice\PhpWord\TemplateProcessor($letter_file);
+			                    if (isset($fnumInfo[$fnum])) {
 
-												for($i = 0; $i < count($containers); $i++) {
-													$complex_block = $preprocess->setComplexBlock($id . '#' . ($i+1), $containers[$i]);
-												}
+                                    foreach ($idFabrik as $id) {
+                                        if (isset($fabrikValues[$id][$fnum])) {
+                                            if (in_array($id, $textarea_elements)) {
+                                                /**
+                                                 * In order to make it work use this format in the word file :
+                                                 * ${textarea_<fabrik_id>}
+                                                 * ${<fabrik_id>}
+                                                 * ${/textarea_<fabrik_id>}
+                                                 * Documentation : https://phpword.readthedocs.io/en/latest/templates-processing.html#cloneblock
+                                                 */
 
-											} else if($fabrikValues[$id][$fnum]['complex_data']){
-												$preprocess->setComplexValue($id, $fabrikValues[$id][$fnum]['val']);
-											} else {
-												$value = str_replace('\n', ', ', $fabrikValues[$id][$fnum]['val']);
-												$preprocess->setValue($id, $value);
-											}
-										}
-										else {
-											$preprocess->setValue($id, '');
-										}
-									}
+                                                $html = $fabrikValues[$id][$fnum]['val'];
+                                                $section = $phpWord->addSection();
+                                                \PhpOffice\PhpWord\Shared\Html::addHtml($section, $html);
+                                                $containers = $section->getElements();
+                                                $clone = $preprocess->cloneBlock('textarea_' . $id, count($containers), true, true);
 
-									$tags = $_mEmail->setTagsWord(@$fnumInfo[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
+                                                for($i = 0; $i < count($containers); $i++) {
+                                                    $complex_block = $preprocess->setComplexBlock($id . '#' . ($i+1), $containers[$i]);
+                                                }
 
-									foreach ($setupTags as $tag) {
-										$val      = '';
-										$lowerTag = strtolower($tag);
+                                            } else if($fabrikValues[$id][$fnum]['complex_data']){
+                                                $preprocess->setComplexValue($id, $fabrikValues[$id][$fnum]['val']);
+                                            } else {
+                                                $value = str_replace('\n', ', ', $fabrikValues[$id][$fnum]['val']);
+                                                $preprocess->setValue($id, $value);
+                                            }
+                                        }
+                                        else {
+                                            $preprocess->setValue($id, '');
+                                        }
+                                    }
+
+                                    $tags = $_mEmail->setTagsWord(@$fnumInfo[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
+				                    foreach ($setupTags as $tag) {
+					                    $val      = '';
+					                    $lowerTag = strtolower($tag);
 
 										if (array_key_exists($lowerTag, $const)) {
 											$preprocess->setValue($tag, $const[$lowerTag]);
@@ -2364,19 +2376,20 @@ class EmundusModelEvaluation extends JModelList {
 												$i++;
 											}
 
-											if (strpos($tag, 'IMG_') !== false) {
-												$preprocess->setImageValue($tag, $val);
-											}
-											else {
-												$preprocess->setValue($tag, $val);
-											}
-										}
-									}
-									$preprocess->saveAs($dest);
-									if ($gotenberg_activation == 1 && $letter->pdf == 1) {
-										$dest_pdf = str_replace('.docx', '', $dest);
-										$dest_tmp_pdf = str_replace('.docx', '.pdf', $dest_tmp);
-										$filename = str_replace('.docx', '.pdf', $filename);
+						                    if (strpos($tag, 'IMG_') !== false) {
+							                    $preprocess->setImageValue($tag, $val);
+						                    }
+						                    else {
+							                    $preprocess->setValue($tag, $val);
+						                    }
+					                    }
+				                    }
+
+				                    $preprocess->saveAs($dest);
+				                    if ($gotenberg_activation == 1 && $letter->pdf == 1) {
+					                    $dest_pdf = str_replace('.docx', '', $dest);
+					                    $dest_tmp_pdf = str_replace('.docx', '.pdf', $dest_tmp);
+					                    $filename = str_replace('.docx', '.pdf', $filename);
 
 										try {
 											$gotenberg_results = $m_Export->toPdf($dest, $dest_pdf, 'docx', $fnum);

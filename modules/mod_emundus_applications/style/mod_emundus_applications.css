@@ -846,6 +846,19 @@ circle.circle {
     margin-bottom: 12px;
 }
 
+/* Nombre de commentaires */
+
+.comments-icon-wrapper .nb-comments {
+    top: -8px;
+    right: -15px;
+    width: 24px;
+    height: 24px;
+    text-align: center;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 90%;
+}
+
 /* Collaboration */
 
 .collaborators-icon-wrapper {

@@ -2159,8 +2159,8 @@ class EmundusHelperUpdate
             }
         } else {
 			$result['status'] = true;
-			$result['message'] = 'Column already exists';
-        }
+			$result['message'] = 'ADDING COLUMN : Column already exists.';
+		}
 
         return $result;
     }

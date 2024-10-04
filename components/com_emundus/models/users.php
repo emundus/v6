@@ -1660,23 +1660,38 @@ class EmundusModelUsers extends JModelList {
 
     }
 
-    // Get groups of user
-    public function getUserGroups($uid, $return = 'AssocList') {
-        try {
-            $query = "SELECT esg.id, esg.label
-                      from #__emundus_groups as g
-                      left join #__emundus_setup_groups as esg on g.group_id = esg.id
-                      where g.user_id = " .$uid;
-            $db = $this->getDbo();
-            $db->setQuery($query);
-            if ($return == 'Column') {
-                return $db->loadColumn();
-            } else {
-                return $db->loadAssocList('id', 'label');
+    /**
+     * Returns user's groups. If AssocList then associative array with id and label, if column, only an array of ids
+     * @param $uid int
+     * @param $return string (AssocList|Column)
+     * @return array
+     */
+    public function getUserGroups($uid, $return = 'AssocList')
+    {
+        $user_groups = [];
+
+        if (!empty($uid)) {
+            try {
+                $db = $this->getDbo();
+                $query = $db->getQuery(true);
+
+                $query->select('esg.id, esg.label')
+                    ->from($db->quoteName('#__emundus_groups', 'g'))
+                    ->leftJoin($db->quoteName('#__emundus_setup_groups', 'esg').' ON '.$db->quoteName('g.group_id').' = '.$db->quoteName('esg.id'))
+                    ->where($db->quoteName('g.user_id') . ' = ' . $uid);
+                $db->setQuery($query);
+
+                if ($return == 'Column') {
+                    $user_groups = $db->loadColumn();
+                } else {
+                    $user_groups = $db->loadAssocList('id', 'label');
+                }
+            } catch(Exception $e) {
+                JLog::add('Failed to get user groups ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
             }
-        } catch(Exception $e) {
-            return false;
         }
+
+        return $user_groups;
     }
 
     /**

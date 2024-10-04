@@ -33,15 +33,14 @@
 
         <div class="em-mb-16" :class="{'mb-0': can_translate.intro}">
           <label>{{translations.Intro}}</label>
-          <editor
+          <editor-quill
               v-if="intro.hasOwnProperty(selectedLanguage)"
               :height="'30em'"
               :text="intro[selectedLanguage]"
-              :lang="actualLanguage"
               :enable_variables="false"
               :id="'editor_' + selectedLanguage"
               :key="dynamicComponent"
-              v-model="intro[selectedLanguage]"></editor>
+              v-model="intro[selectedLanguage]"></editor-quill>
         </div>
 
         <div class="em-mb-16 em-flex-row" id="template_checkbox">
@@ -77,7 +76,7 @@
 import axios from "axios";
 import Swal from "sweetalert2";
 import Translation from "@/components/translation"
-import Editor from "../editor";
+import EditorQuill from "@/components/editorQuill";
 
 const qs = require("qs");
 
@@ -85,7 +84,7 @@ export default {
   name: "modalSide",
   components: {
     List,
-    Editor,
+    EditorQuill,
     Translation
   },
   props: { ID: String, element: Object, index: Number, menus: Array, files: Number, link: String, manyLanguages: String, actualLanguage: String,  languages: Array },
