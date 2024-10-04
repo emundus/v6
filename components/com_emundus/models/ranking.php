@@ -1288,7 +1288,7 @@ class EmundusModelRanking extends JModelList
                     if ($new_rank != -1) {
                         // does the rank i want to reach already taken by another file and locked ?
                         $query->clear()
-                            ->select($this->db->quoteName('er.ccid') . ', ' . $this->db->quoteName('er.locked') . ', ' . $this->db->quoteName('cc.status'))
+                            ->select($this->db->quoteName('er.ccid') . ', ' . $this->db->quoteName('er.locked') . ', ' . $this->db->quoteName('cc.status') . ', ' . $this->db->quoteName('cc.fnum'))
                             ->from($this->db->quoteName('#__emundus_ranking', 'er'))
                             ->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'cc') . ' ON ' . $this->db->quoteName('cc.id') . ' = ' . $this->db->quoteName('er.ccid'))
                             ->where($this->db->quoteName('er.rank') . ' = ' . $this->db->quote($new_rank))
@@ -1303,7 +1303,7 @@ class EmundusModelRanking extends JModelList
                         $same_rank_data = $this->db->loadAssoc();
 
                         if (!empty($same_rank_data) && ($same_rank_data['locked'] == 1 || !in_array($same_rank_data['status'], $status_user_can_rank)) && !$all_mighty_user) {
-                            throw new Exception(Text::_('COM_EMUNDUS_RANKING_UPDATE_RANKING_ERROR_RANK_UNREACHABLE'));
+                            throw new Exception(sprintf(Text::_('COM_EMUNDUS_RANKING_UPDATE_RANKING_ERROR_RANK_UNREACHABLE'), $new_rank, $same_rank_data['fnum']));
                         }
 
                         if (!empty($ranking) && !empty($ranking['id'])) {
