@@ -557,6 +557,9 @@ class EmundusModelEmails extends JModelList {
         );
 
         if(!empty($fnum)){
+            $patterns[] = '/\[FNUM\]/';
+            $replacements[] = $fnum;
+
             require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
             $m_files = new EmundusModelFiles();
             $status = $m_files->getStatusByFnums([$fnum]);

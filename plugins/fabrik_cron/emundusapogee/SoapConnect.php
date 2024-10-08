@@ -89,9 +89,20 @@ class SoapConnect {
             $doc = new DOMDocument();
             $doc->loadXML($response);
             $faultString = $doc->getElementsByTagName('faultstring');
+            $detail = $doc->getElementsByTagName('detail');
+
+            $fault = $detail->length > 0 ? $detail->item(0)->getElementsByTagName('fault') : '';
 
             if ($response === false || !in_array($info, array(200,201,202,203,204,205,206,207,208,226))) {
                 $response_message = $faultString->length > 0 ? $doc->getElementsByTagName('faultstring')->item(0)->nodeValue : "";
+
+                $faultLastChild = $fault->length > 0 ? $fault->item(0)->lastChild : '';
+
+                if (!empty($faultLastChild) && $faultLastChild->nodeName == 'lastErrorMsg') {
+                    $lastErrorMsg = $faultLastChild->nodeValue;
+                } else {
+                    $lastErrorMsg = '';
+                }
 
                 /// insert the status FAILED to table "jos_emundus_apogee_status"
                 $data = array(
@@ -99,7 +110,8 @@ class SoapConnect {
                     'applicant_id' => $fnum_infos['applicant_id'],
                     'fnum'      => $fnum,
                     'status'    => 0,
-                    'params'    => $response_message
+                    'params'    => $response_message,
+                    'error_msg' => $lastErrorMsg
                 );
 
                 //JLog::add('[emundusApogee] Error when passing data, applicant file number : ' . $fnum . ' at ' . date('Y-m-d H:i:s') . ', error message : ' . $response_message, JLog::ERROR, 'com_emundus');
@@ -112,12 +124,21 @@ class SoapConnect {
                         'status' => 1
                     );
                 } else {
+                    $faultLastChild = $fault->length > 0 ? $fault->item(0)->lastChild : '';
+
+                    if (!empty($faultLastChild) && $faultLastChild->nodeName == 'lastErrorMsg') {
+                        $lastErrorMsg = $faultLastChild->nodeValue;
+                    } else {
+                        $lastErrorMsg = '';
+                    }
+
                     $data = array(
                         'date_time' => $now,
                         'applicant_id' => $fnum_infos['applicant_id'],
                         'fnum'      => $fnum,
                         'status'    => 0,
-                        'params'    => $doc->getElementsByTagName('faultstring')->item(0)->nodeValue
+                        'params'    => $doc->getElementsByTagName('faultstring')->item(0)->nodeValue,
+                        'error_msg' => $lastErrorMsg
                     );
                     //JLog::add('[emundusApogee] Error when passing data, applicant file number : ' . $fnum . ' at ' . date('Y-m-d H:i:s') . ', error message : ' . $doc->getElementsByTagName('faultstring')->item(0)->nodeValue, JLog::ERROR, 'com_emundus');
                 }
@@ -131,7 +152,8 @@ class SoapConnect {
                 'applicant_id' => $fnum_infos['applicant_id'],
                 'fnum'      => $fnum,
                 'status'    => 0,
-                'params'    => $e->getMessage()
+                'params'    => $e->getMessage(),
+                'error_msg' => $e->getFaultInfo().getLastErrorMsg()
             );
 
             //JLog::add('[emundusApogee] Error when fetching data, applicant file number : ' . $fnum . ' at ' . date('Y-m-d H:i:s') . ', error message : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
