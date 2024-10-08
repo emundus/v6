@@ -3,6 +3,16 @@
 	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
 		<fieldset name="plg-form-emundusisevaluationconfirmed" label="PLG_FABRIK_FORM_EMUNDUSISEVALUATIONCONFIRMED_FIELDS">
 			<field name="profile" type="field" description="PLG_FABRIK_FORM_EMUNDUSISEVALUATIONCONFIRMED_PROFILE_DESC" label="PLG_FABRIK_FORM_EMUNDUSISEVALUATIONCONFIRMED_PROFILE_LABEL" />
+
+			<field name="display_message"
+				   type="list"
+				   description="PLG_FABRIK_FORM_EMUNDUSISEVALUATIONCONFIRMED_DISPLAY_MESSAGE_DESC"
+				   label="PLG_FABRIK_FORM_EMUNDUSISEVALUATIONCONFIRMED_DISPLAY_MESSAGE_LABEL"
+				   default="1"
+			>
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
 		</fieldset>
 	</fields>
 </form>
