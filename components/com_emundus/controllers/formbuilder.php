@@ -392,7 +392,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
             $label = json_decode($label, true);
             $intro = json_decode($intro, true);
             if ($modelid != -1) {
-				$keep_structure = $jinput->getBool('keep_structure', false);
+                $keep_structure = $jinput->getString('keep_structure') == 'true';
                 $response = $this->m_formbuilder->createMenuFromTemplate($label, $intro, $modelid, $prid, $keep_structure);
             } else {
                 $response = $this->m_formbuilder->createApplicantMenu($label, $intro, $prid, $template);
@@ -1025,7 +1025,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
             $document = json_decode($document, true);
             $types = $jinput->getString('types');
             $types = json_decode($types, true);
-	        $params = ['has_sample' => $jinput->getBool('has_sample', false)];
+	        $params = ['has_sample' => $jinput->getString('has_sample') == 'true'];
 
 			if ($params['has_sample'] && !empty($_FILES['file'])) {
 				$params['file'] = $_FILES['file'];
@@ -1355,8 +1355,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
 			$table = $jinput->getString('table', '');
 			$key  = $jinput->getString('key', '');
 			$value  = $jinput->getString('value', '');
-			$translate  = $jinput->getString('translate', false);
-			$translate = filter_var($translate, FILTER_VALIDATE_BOOLEAN);
+            $translate = $jinput->getString('translate') == 'true';
 
 
 			if(!empty($table) && !empty($key) && !empty($value)) {

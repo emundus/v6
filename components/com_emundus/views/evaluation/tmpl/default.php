@@ -52,8 +52,7 @@ if ($this->open_file_in_modal) {
 ?>
 
 <input type="hidden" id="view" name="view" value="evaluation">
-<div class="container-fluid">
-    <div class="row">
+    <div class="h-full">
         <div class="col-md-3 side-panel" style="height: calc(100vh - 72px);overflow-y: auto;">
             <div class="panel panel-info em-containerFilter" id="em-files-filters">
                 <div class="panel-heading em-containerFilter-heading">
@@ -155,7 +154,6 @@ if ($this->open_file_in_modal) {
         </div>
         <div class="panel panel-default"></div>
     </div>
-</div>
 
 <script type="text/javascript">
     var $ = jQuery.noConflict();

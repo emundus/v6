@@ -221,7 +221,6 @@
 .etiquette .filter form{
 	display: grid;
 	grid-template-columns: repeat(3,1fr);
-	width: max-content;
 	gap: 16px;
 	margin-top: 24px;
 }
@@ -268,12 +267,40 @@
 	font-family: var(--em-coordinator-font-title);
 }
 
+.indicateurs-page h1 {
+	margin-bottom: 8px;
+}
+
 .etiquette label {
 	color: var(--neutral-900);
 }
 
 .etiquette p {
 	color: var(--neutral-900);
+}
+
+.etiquette .filter .inputFilter select {
+	-webkit-appearance: none !important;
+	-moz-appearance: none !important;
+	width: 100%;
+	background-image: url('/images/emundus/arrow.svg');
+	background-position: 95%;
+	background-repeat: no-repeat;
+	padding: 0.5rem;
+}
+
+.etiquette .filter form {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(290px, 1fr));
+	gap: 16px;
+	margin-top: 24px;
+}
+
+@media screen and (max-width: 959px) {
+
+	.etiquette .filter form {
+		grid-template-columns: 1fr;
+	}
 }
 
 #validation {

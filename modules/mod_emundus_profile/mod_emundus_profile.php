@@ -26,7 +26,7 @@ $show_name = $params->get('show_name', 1);
 $show_account_edit_button = $params->get('show_account_edit_button', 1);
 $intro = $params->get('intro', '');
 
-$user_fullname = $e_user->lastname.' '.$e_user->firstname;
+$user_fullname = $e_user->firstname.' '.$e_user->lastname;
 $u_params = json_decode($user->params);
 $external = $user->password === '' || $u_params->OAuth2 === 'openid';
 

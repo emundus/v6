@@ -656,6 +656,7 @@ class EmundusHelperEvents {
             $params	= JComponentHelper::getParams('com_emundus');
             $scholarship_document_id 	= $params->get('scholarship_document_id', NULL);
             $application_fee = $params->get('application_fee', 0);
+            $use_session = $params->get('use_session', 0);
 
             $mApplication = new EmundusModelApplication;
             $mEmails = new EmundusModelEmails;
@@ -670,7 +671,7 @@ class EmundusHelperEvents {
 	        $db    = JFactory::getDbo();
 	        $query = $db->getQuery(true);
 
-	        $profile_by_status = $mProfile->getProfileByStatus($user->fnum);
+	        $profile_by_status = $mProfile->getProfileByStatus($user->fnum,$use_session);
 
 	        if (empty($profile_by_status['profile'])) {
 		        $query->select('esc.profile_id AS profile_id, ecc.campaign_id AS campaign_id')
@@ -798,7 +799,7 @@ class EmundusHelperEvents {
                             $checkout_url = $mEmails->setTagsFabrik($checkout_url, [$user->fnum], true);
                         }
                         // If $accept_other_payments is 2 : that means we do not redirect to the payment page.
-                        if ($accept_other_payments != 2 && empty($mApplication->getHikashopOrder($fnumInfos)) && $attachments >= 100 && $forms >= 100) {
+                        if ($accept_other_payments != 2 && empty($mApplication->getHikashopOrder($fnumInfos)) && $attachments_progress >= 100 && $forms_progress >= 100) {
                             if($params->get('hikashop_session', 0)) {
                                 // check if there is not another cart open
                                 $hikashop_user = JFactory::getSession()->get('emundusPayment');
@@ -1425,7 +1426,7 @@ class EmundusHelperEvents {
             $query->select('fe.id, fe.name, fe.plugin, fe.label, fe.params, fe.group_id, fe.default, fl.db_table_name, fg.params as group_params')
                 ->from($db->quoteName('#__fabrik_elements', 'fe'))
 	            ->innerJoin($db->quoteName('#__fabrik_groups','fg').' ON '.$db->quoteName('fg.id').' = '.$db->quoteName('fe.group_id'))
-	            ->innerJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffj.group_id').' = '.$db->quoteName('fe.group_id'))
+	            ->innerJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffg.group_id').' = '.$db->quoteName('fe.group_id'))
 	            ->innerJoin($db->quoteName('#__fabrik_lists','fl').' ON '.$db->quoteName('fl.form_id').' = '.$db->quoteName('ffg.form_id'))
                 ->where($db->quoteName('ffg.form_id') . ' = ' . $form_id)
                 ->where($db->quoteName('fe.published') . ' = 1')

@@ -300,19 +300,21 @@ $(document).ready(function () {
 		if (e.handle !== true) {
 			e.handle = true;
 			var id = $(this).attr('id');
-			$.ajax({
-				type: 'POST',
-				url: 'index.php?option=com_emundus&controller=users&task=setlimitstart',
-				dataType: 'json',
-				data: ({
-					limitstart: id
-				}),
-				success: function (result) {
-					if (result.status) {
-						reloadData();
+			if(id) {
+				$.ajax({
+					type: 'POST',
+					url: 'index.php?option=com_emundus&controller=users&task=setlimitstart',
+					dataType: 'json',
+					data: ({
+						limitstart: id
+					}),
+					success: function (result) {
+						if (result.status) {
+							reloadData();
+						}
 					}
-				}
-			});
+				});
+			}
 		}
 	});
 	$(document).on('click', '#em-last-open .list-group-item', function (e) {
@@ -689,7 +691,7 @@ $(document).ready(function () {
 			Itemid: itemId
 		});
 
-		const checkInput = getUserCheck();
+		var checkInput = getUserCheck();
 
 		/**
 		 * 6: export user CSV format
@@ -747,7 +749,7 @@ $(document).ready(function () {
 			case 24:
 				swalForm = true;
 				title = 'COM_EMUNDUS_ACTIONS_EDIT_USER';
-				swal_confirm_button = '	COM_EMUNDUS_USERS_EDIT_USER_CONFIRM';
+				swal_confirm_button = 'COM_EMUNDUS_USERS_EDIT_USER_CONFIRM';
 				preconfirm = "let checklanme =formCheck('lname');let checkfname =formCheck('fname');let checkmail =formCheck('mail');let checklogin =formCheck('login'); if (!checklanme || !checkfname || !checkmail || !checklogin) {Swal.showValidationMessage(Joomla.JText._('COM_EMUNDUS_USERS_ERROR_PLEASE_COMPLETE'))}";				html = '<div id="data"></div>';
 
 				addLoader();
@@ -992,7 +994,7 @@ $(document).ready(function () {
 					if (result.value) {
 						addLoader();
 
-						const formData = new FormData();
+						var formData = new FormData();
 						formData.append('users', checkInput);
 
 						fetch('index.php?option=com_emundus&controller=users&task=passrequest&Itemid=' + itemId, {
@@ -1162,7 +1164,7 @@ $(document).ready(function () {
 					}
 				});
 
-				const formData = new FormData();
+				var formData = new FormData();
 				formData.append('users', getUserCheck());
 				formData.append('checkboxes', JSON.stringify(checkedBoxes));
 
@@ -1470,7 +1472,7 @@ $(document).ready(function () {
 					university_id: $('#univ').val()
 				}
 
-				const action = document.getElementById('em-add-user').getAttribute('action');
+				var action = document.getElementById('em-add-user').getAttribute('action');
 				if(action.indexOf('edituser') !== -1) {
 					addUserData.id =  $('.em-check:checked').attr('id').split('_')[0];
 				}
@@ -1579,16 +1581,16 @@ $(document).ready(function () {
 							if (result.failed.length > 0) {
 
 								// add sibling to #em-mails-sent
-								const emailNotSentMessage = document.createElement('p');
+								var emailNotSentMessage = document.createElement('p');
 								emailNotSentMessage.classList.add('em-mt-16');
 								emailNotSentMessage.innerText = "Certains utilisateurs n'ont pas reçu l'email";
 
-								const emailNotSent = document.createElement('div');
+								var emailNotSent = document.createElement('div');
 								emailNotSent.classList.add('alert', 'alert-danger', 'em-mt-16');
 								emailNotSent.innerHTML = '<span class="badge">'+result.failed.length+'</span>';
 								emailNotSent.appendChild(document.createElement('ul'));
 								result.failed.forEach(element => {
-									const emailNotSentItem = document.createElement('li');
+									var emailNotSentItem = document.createElement('li');
 									emailNotSentItem.innerHTML = element;
 									emailNotSent.querySelector('ul').appendChild(emailNotSentItem);
 								});
@@ -1661,7 +1663,7 @@ $(document).ready(function () {
 })
 
 function DoubleScroll(element) {
-	const id = Math.random();
+	var id = Math.random();
 	if (element.scrollWidth > element.offsetWidth) {
 		createScrollbarForElement(element, id);
 	}

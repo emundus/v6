@@ -76,6 +76,11 @@ class modemundusApplicationsHelper {
                     $query->andWhere('ecc.campaign_id IN (' . implode(', ', $selected_campaigns) . ')');
                 }
             }
+
+            $show_status = $params->get('show_status', '') !== '' ? explode(',', $params->get('show_status', '')) : null;
+            if(!empty($show_status)) {
+                $query->andWhere('ecc.status IN (' . implode(', ', $show_status) . ')');
+            }
         }
 
 		$order_by_session = JFactory::getSession()->get('applications_order_by');

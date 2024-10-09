@@ -65,6 +65,8 @@ if (isset($user->fnum) && !empty($user->fnum)) {
     $application_fee = $eMConfig->get('application_fee', 0);
     $application_fee = (!empty($application_fee) && !empty($m_profile->getHikashopMenu($user->profile)));
 
+    $use_session = $eMConfig->get('use_session', 0);
+
     $checkout_url = null;
     if ($application_fee) {
         $fnumInfos = $m_files->getFnumInfos($user->fnum);
@@ -217,8 +219,8 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 
     $current_phase = $m_campaign->getCurrentCampaignWorkflow($user->fnum);
     $current_phase = !empty($current_phase->id) ? $current_phase : null;
-    $attachments_progress = $m_application->getAttachmentsProgress($user->fnum);
-    $forms_progress 	= $m_application->getFormsProgress($user->fnum);
+    $attachments_progress = $m_application->getAttachmentsProgress($user->fnum,$use_session);
+    $forms_progress 	= $m_application->getFormsProgress($user->fnum,$use_session);
 
     $app = JFactory::getApplication();
     $offset = $app->get('offset', 'UTC');
@@ -238,22 +240,25 @@ if (isset($user->fnum) && !empty($user->fnum)) {
     if (!empty($current_phase)) {
         $is_app_sent = !in_array($user->status, $current_phase->entry_status);
         $status_for_send = array_merge($status_for_send, $current_phase->entry_status);
-        if (!$show_preliminary_documents) {
-            $show_preliminary_documents = $show_preliminary_documents && $current_phase->display_preliminary_documents;
-        }
+        $show_preliminary_documents = $show_preliminary_documents && $current_phase->display_preliminary_documents;
     } elseif (!empty($user->status)) {
         $is_app_sent = $user->status != 0;
     }
 
 	if ($show_preliminary_documents) {
-		include_once(JPATH_BASE . '/modules/mod_emundus_campaign_dropfiles/helper.php');
-		$dropfiles_helper = new modEmundusCampaignDropfilesHelper();
+        // if we are in view details, we do not want to show the preliminary documents
+        if ($view == 'details') {
+            $show_preliminary_documents = false;
+        } else {
+            include_once(JPATH_BASE . '/modules/mod_emundus_campaign_dropfiles/helper.php');
+            $dropfiles_helper = new modEmundusCampaignDropfilesHelper();
 
-		if (!empty($current_phase) && $current_phase->specific_documents) {
-			$preliminary_documents = $dropfiles_helper->getFiles(null, $user->campaign_id, $user->fnum);
-		} else {
-			$preliminary_documents = $dropfiles_helper->getFiles(null, $user->campaign_id);
-		}
+            if (!empty($current_phase) && $current_phase->specific_documents) {
+                $preliminary_documents = $dropfiles_helper->getFiles(null, $user->campaign_id, $user->fnum);
+            } else {
+                $preliminary_documents = $dropfiles_helper->getFiles(null, $user->campaign_id);
+            }
+        }
 	}
 
     require(JModuleHelper::getLayoutPath('mod_emundus_checklist'));

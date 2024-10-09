@@ -111,14 +111,12 @@ class EmundusViewForm extends FabrikViewFormBase
                 $returnObject->show_title = $show_title;
             endif;
 
-            if ($form->getIntro()) :
-                $returnObject->intro_value = $form->getIntro();
-                $returnObject->intro = new stdClass;
-                foreach ($languages as $language) {
-                    $returnObject->intro->{$language->sef} = $formbuilder->getTranslation($form->form->intro,$language->lang_code);
-                }
-                $returnObject->intro_raw = strip_tags($form->form->intro);
-            endif;
+			$returnObject->intro_value = $form->getIntro();
+			$returnObject->intro = new stdClass;
+			foreach ($languages as $language) {
+				$returnObject->intro->{$language->sef} = $formbuilder->getTranslation($form->form->intro,$language->lang_code);
+			}
+			$returnObject->intro_raw = strip_tags($form->form->intro);
 
             if ($form->attribs) :
                 $returnObject->attribs = $form->attribs;

@@ -97,13 +97,13 @@ export default {
       filesService.getComments(this.$props.fnum).then((response) => {
         if(response.status == 1){
           this.comments = response.data;
-	        this.loading = false;
+          this.loading = false;
         } else {
           this.displayError(
-              'COM_EMUNDUS_FILES_CANNOT_GET_COMMENTS',
-              'COM_EMUNDUS_FILES_CANNOT_GET_COMMENTS_DESC'
+            'COM_EMUNDUS_FILES_CANNOT_GET_COMMENTS', 
+            'COM_EMUNDUS_FILES_CANNOT_GET_COMMENTS_DESC'
           );
-	        this.loading = false;
+          this.loading = false;
         }
       });
     },
@@ -113,40 +113,38 @@ export default {
       filesService.saveComment(this.$props.fnum, this.comment).then((response) => {
         if(response.status == 1){
           this.comments.push(response.data);
-	        this.comment = {reason: '', comment_body: ''};
+          this.comment = {reason: '', comment_body: ''};
           this.adding_comment = false;
           this.loading = false;
         } else {
-          this.displayError(
-              'COM_EMUNDUS_FILES_CANNOT_GET_COMMENTS',
-              'COM_EMUNDUS_FILES_CANNOT_GET_COMMENTS_DESC'
-          );
-	        this.loading = false;
+          this.displayError('COM_EMUNDUS_FILES_CANNOT_SAVE_COMMENT', response.msg);
+          this.loading = false;
         }
       });
     },
 
     deleteComment(cid){
-			let deleted = false;
+      let deleted = false;
 
-			if ((this.access.d || (this.access.c && comment.user_id == this.user)) && cid !== null && cid > 0) {
-				this.loading = true;
-				filesService.deleteComment(cid).then((response) => {
-					if(response.status == 1){
-						deleted = true;
-						this.comments.splice(this.comments.findIndex(v => v.id === cid), 1);
-						this.loading = false;
-					} else {
-						this.displayError(
-								'COM_EMUNDUS_FILES_CANNOT_GET_COMMENTS',
-								'COM_EMUNDUS_FILES_CANNOT_GET_COMMENTS_DESC'
-						);
-						this.loading = false;
-					}
-				});
-			}
+      let comment = this.comments.find(v => v.id === cid);
+      if ((this.access.d || (this.access.c && comment.user_id == this.user)) && cid !== null && cid > 0) {
+        this.loading = true;
+        filesService.deleteComment(cid).then((response) => {
+          if (response.status == 1) {
+            deleted = true;
+            this.comments.splice(this.comments.findIndex(v => v.id === cid), 1);
+            this.loading = false;
+          } else {
+            this.displayError(
+              'COM_EMUNDUS_FILES_CANNOT_GET_COMMENTS',
+              'COM_EMUNDUS_FILES_CANNOT_GET_COMMENTS_DESC'
+            );
+            this.loading = false;
+          }
+        });
+      }
 
-			return deleted;
+      return deleted;
     },
 
     hideOptions(){

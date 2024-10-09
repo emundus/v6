@@ -425,11 +425,11 @@ function cleanNumberInput(element, maxDecimals = 0,noGreaterThan = null,authoriz
     if (maxDecimals === 0 && value.indexOf(".") !== -1) {
         value = value.replace(".", "");
     }
-
-    if(value > noGreaterThan){
-        value = '';
+    if(noGreaterThan !== null){
+        if(value > noGreaterThan){
+            value = '';
+        }
     }
-
 
     return value;
 }

@@ -60,11 +60,14 @@ class plgEmundusEparapheur extends CMSPlugin {
 			$name   = $args['name'] ?? 'Signature pour le dossier ';
 
 			if (!empty($nature)) {
-				$uid = $api->getUtilisateurs($args['signer_email'])[0]->identifiant;
+				$uid = $args['signer_id'];
+				if(empty($uid)) {
+					$uid = $api->getUtilisateurs($args['signer_email'])[0]->identifiant;
+				}
 
 				if (!empty($uid)) {
 					$datas = [
-						'nom'    => $name . $args['fnum'],
+						'nom'    => $name,
 						'nature' => $nature,
 						'etapes' => [
 							[

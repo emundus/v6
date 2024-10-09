@@ -56,15 +56,18 @@ class EmundusControllerForm extends JControllerLegacy {
 
                 if (!empty($campaigns)) {
                     if (count($campaigns) < 2) {
-                        $short_tags = '<a href="/index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=' . $campaigns[0]->id . '" class="mr-2 mb-2 h-max em-p-5-12 em-font-weight-600 em-bg-main-100 em-text-neutral-900 em-font-size-14 em-border-radius"> ' . $campaigns[0]->label . '</a>';
+                        $short_tags = '<a href="/index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=' . $campaigns[0]->id . '" class="mr-2 mb-2 h-max px-3 py-1 font-semibold em-bg-main-100 em-text-neutral-900 text-sm em-border-radius em-campaign-tag"> ' . $campaigns[0]->label . '</a>';
                     } else {
-                        $tags = '<div class="flex flex-row flex-wrap">';
+                        $tags = '<div>';
                         $short_tags = $tags;
-                        foreach ($campaigns as $index => $campaign) {
-                            $tags .= '<a href="/index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=' . $campaign->id . '" class="mr-2 mb-2 h-max em-p-5-12 em-font-weight-600 em-bg-main-100 em-text-neutral-900 em-font-size-14 em-border-radius"> ' . $campaign->label . '</a>';
+						$tags .= '<h2 class="mb-2">'.Text::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_TITLE').'</h2>';
+						$tags .= '<div class="flex flex-wrap">';
+                        foreach ($campaigns as $campaign) {
+                            $tags .= '<a href="/index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=' . $campaign->id . '" class="mr-2 mb-2 h-max px-3 py-1 font-semibold em-bg-main-100 em-text-neutral-900 text-sm em-border-radius em-campaign-tag""> ' . $campaign->label . '</a>';
                         }
+						$tags .= '</div>';
 
-                        $short_tags .= '<span class="em-pointer mr-2 mb-2 h-max em-p-5-12 em-font-weight-600 em-bg-main-100 em-text-neutral-900 em-font-size-14 em-border-radius">' . count($campaigns) . JText::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED') . '</span>';
+                        $short_tags .= '<span class="cursor-pointer font-semibold em-profile-color flex items-center em-text-underline">' . count($campaigns) . JText::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED') . '</span>';
                         $short_tags .= '</div>';
                         $tags .= '</div>';
                     }
@@ -852,22 +855,25 @@ class EmundusControllerForm extends JControllerLegacy {
         exit;
     }
 
-    public function getdatabasejoinoptions(){
-        $user = JFactory::getUser();
+	public function getdatabasejoinoptions()
+	{
+		$response = array('status' => 0, 'msg' => Text::_('ACCESS_DENIED'));
+		$user = JFactory::getUser();
 
-        $jinput = JFactory::getApplication()->input;
+		if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+			$table_name   = $this->input->getString('table_name');
+			$column_name  = $this->input->getString('column_name');
+			$value        = $this->input->getString('value');
+			$concat_value = $this->input->getString('concat_value');
+			$where_clause = $this->input->getString('where_clause');
 
-        $table_name = $jinput->getString('table_name');
-        $column_name = $jinput->getString('column_name');
-        $value = $jinput->getString('value');
-        $concat_value = $jinput->getString('concat_value');
-        $where_clause = $jinput->getString('where_clause');
+			$options = $this->m_form->getDatabaseJoinOptions($table_name, $column_name, $value, $concat_value, $where_clause);
+			$response = ['status' => 1, 'msg' => 'worked', 'options' => $options];
+		}
 
-        $options = $this->m_form->getDatabaseJoinOptions($table_name, $column_name, $value, $concat_value, $where_clause);
-
-        echo json_encode((object)array('status' => 1, 'msg' => 'worked', 'options' => $options));
-        exit;
-    }
+		echo json_encode((object) $response);
+		exit;
+	}
 
     public function checkcandocbedeleted() {
         $user = JFactory::getUser();
