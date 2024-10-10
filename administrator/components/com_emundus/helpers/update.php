@@ -2700,7 +2700,7 @@ class EmundusHelperUpdate
 				$query .= 'id INT AUTO_INCREMENT PRIMARY KEY';
 				if(!empty($columns)) {
 					foreach ($columns as $column) {
-						$query_column = ',' . $column['name'];
+						$query_column = ',' . $db->quoteName($column['name']);
 						if (!empty($column['type'])) {
 							$query_column .= ' ' . $column['type'];
 						}
@@ -2711,7 +2711,7 @@ class EmundusHelperUpdate
 							$query_column .= '(' . $column['length'] . ')';
 						}
 						if (!empty($column['default'])) {
-							$query_column .= ' DEFAULT ' . $column['default'];
+							$query_column .= ' DEFAULT ' . $db->quote($column['default']);
 						}
 						if ($column['null'] == 1) {
 							$query_column .= ' NULL';

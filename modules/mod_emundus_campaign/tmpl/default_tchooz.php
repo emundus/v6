@@ -106,10 +106,6 @@ if (sizeof($tmp_campaigns) > 0)
         {
             $campaign->link = $campaign->alias;
         }
-		if ($campaign->pinned == 1)
-		{
-			$campaigns_pinned[] = $campaign;
-		}
 	}
 }
 

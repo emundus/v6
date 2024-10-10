@@ -262,7 +262,7 @@ class com_emundusInstallerScript
 				// Add back button to login, register and reset view
 				$back_module = EmundusHelperUpdate::getModule(0, 'eMundus - Back button');
 				if (!empty($back_module) && !empty($back_module['id'])) {
-					$moduleid = $back_module;
+					$moduleid = $back_module['id'];
 				}
 				else {
 					$datas    = [
@@ -4969,6 +4969,140 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 			$db->execute();
 		}
 
+		if (version_compare($cache_version, '1.40.0', '<=') || $firstrun) {
+			EmundusHelperUpdate::addColumn('jos_emundus_setup_campaigns', 'alias', 'VARCHAR', 255);
+
+			$columns      = [
+				[
+					'name'   => 'date_time',
+					'type'   => 'DATETIME',
+					'null'   => 0,
+				],
+				[
+					'name' => 'created_by',
+					'type' => 'INT',
+					'null' => 0,
+				],
+				[
+					'name'    => 'updated',
+					'type'    => 'DATETIME',
+					'null'    => 1,
+				],
+				[
+					'name'    => 'updated_by',
+					'type'    => 'INT',
+					'null'    => 1,
+				],
+				[
+					'name'    => 'label',
+					'type'    => 'VARCHAR',
+					'length' => 255,
+					'null'    => 1,
+				],
+				[
+					'name'    => 'type',
+					'type'    => 'VARCHAR',
+					'length'    => 20,
+					'null'    => 0,
+				],
+				[
+					'name'    => 'group',
+					'type'    => 'VARCHAR',
+					'length'    => 20,
+					'null'    => 0,
+				],
+				[
+					'name'    => 'form_id',
+					'type'    => 'INT',
+					'null'    => 1,
+				],
+				[
+					'name'    => 'published',
+					'type'    => 'TINYINT',
+					'length'    => 3,
+					'default' => 1,
+					'null'    => 0,
+				]
+			];
+			EmundusHelperUpdate::createTable('jos_emundus_setup_form_rules', $columns, [], 'Rules for formbuilder');
+
+			$columns      = [
+				[
+					'name'   => 'parent_id',
+					'type'   => 'INT',
+					'null'   => 1,
+				],
+				[
+					'name' => 'action',
+					'type' => 'VARCHAR',
+					'length' => 100,
+					'null' => 0,
+				]
+			];
+			EmundusHelperUpdate::createTable('jos_emundus_setup_form_rules_js_actions', $columns, [], 'Action rules for formbuilder');
+
+			$columns      = [
+				[
+					'name'   => 'parent_id',
+					'type'   => 'INT',
+					'null'   => 1,
+				],
+				[
+					'name' => 'fields',
+					'type' => 'TEXT',
+					'null' => 1,
+				],
+				[
+					'name' => 'params',
+					'type' => 'TEXT',
+					'null' => 1,
+				]
+			];
+			EmundusHelperUpdate::createTable('jos_emundus_setup_form_rules_js_actions_fields', $columns, [], 'Action rules for formbuilder');
+
+			$columns      = [
+				[
+					'name'   => 'parent_id',
+					'type'   => 'INT',
+					'null'   => 1,
+				],
+				[
+					'name' => 'field',
+					'type' => 'VARCHAR',
+					'length' => 255,
+					'null' => 1,
+				],
+				[
+					'name' => 'state',
+					'type' => 'VARCHAR',
+					'length' => 50,
+					'null' => 1,
+				],
+				[
+					'name' => 'values',
+					'type' => 'TEXT',
+					'null' => 1,
+				],
+				[
+					'name' => 'group',
+					'type' => 'INT',
+					'null' => 1,
+				]
+			];
+			EmundusHelperUpdate::createTable('jos_emundus_setup_form_rules_js_conditions', $columns, [], 'Action rules for formbuilder');
+
+			$columns      = [
+				[
+					'name'   => 'group_type',
+					'type'   => 'VARCHAR',
+					'length' => 10,
+					'default' => 'AND',
+					'null'   => 0,
+				]
+			];
+			EmundusHelperUpdate::createTable('jos_emundus_setup_form_rules_js_conditions_group', $columns, [], 'Action rules for formbuilder');
+		}
+
 		return $succeed;
 	}
 
@@ -5103,6 +5237,9 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 		if (!$payment_activated) {
 			EmundusHelperUpdate::insertIntoFile(JPATH_ROOT . '/.htaccess', "php_value session.cookie_samesite Lax" . PHP_EOL);
 		}
+
+		// Check if each campaign has a unique alias
+		EmundusHelperUpdate::generateCampaignsAlias();
 
 		// We check at each update that no password fields are stored in the database
 		$query->clear()

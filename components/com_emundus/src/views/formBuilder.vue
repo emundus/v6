@@ -20,16 +20,15 @@
         <span>{{ translate('COM_EMUNDUS_ONBOARD_FORMBUILDER_EDIT_DEFAULT_LANG') }}{{ defaultLangLabel }}</span>
       </div>
       <header class="em-flex-row em-flex-space-between">
-        <div class="right-actions em-p-12-16 em-flex-row em-pointer"
-             @click="clickGoBack">
+        <div class="right-actions flex items-center justify-start gap-2">
           <span id="go-back"
-                class="material-icons-outlined">
+                class="material-icons-outlined em-p-12-16 em-pointer"
+                @click="clickGoBack">
             navigate_before
           </span>
           <p v-if="lastSave" id="saved-at" class="em-font-size-14 em-main-500-color">
             {{ translate("COM_EMUNDUS_FORM_BUILDER_SAVED_AT") }} {{ lastSave }}
           </p>
-          <span class="em-ml-8 em-text-neutral-900" >{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
         </div>
           <span
               class="em-font-size-14  em-font-weight-600 editable-data"

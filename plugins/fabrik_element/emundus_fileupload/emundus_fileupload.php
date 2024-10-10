@@ -57,6 +57,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
         $db = JFactory::getDBO();
 
         $attachId = $jinput->post->get('attachId');
+	    $description = $jinput->getString('description', '');
 
         if (!empty($attachId)) {
             $eMConfig = JComponentHelper::getParams('com_emundus');
@@ -131,7 +132,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
                         require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
                         $h_date = new EmundusHelperDate();
                         $now = $h_date->getNow();
-                        $insert[] = $db->quote($now) . ' , ' . $db->quote($user) . ' , ' . $db->quote($fnum) . ' , ' . $db->quote($cid) . ' , ' . $db->quote($attachId) . ' , ' . $db->quote($fileName) . ' , ' . $db->quote(1) . ' , ' . $db->quote(1) . ' , ' . $db->quote($now) . ' , ' . $db->quote($file['name']);
+                        $insert[] = $db->quote($now) . ' , ' . $db->quote($user) . ' , ' . $db->quote($fnum) . ' , ' . $db->quote($cid) . ' , ' . $db->quote($attachId) . ' , ' . $db->quote($fileName) . ' , ' . $db->quote(1) . ' , ' . $db->quote(1) . ' , ' . $db->quote($now) . ' , ' . $db->quote($file['name'] . ' , ' . $db->quote($description));
                     }
 
 
@@ -587,6 +588,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 
         if (!$this->isEditable()) {
             $attachmentId = $params['attachmentId'];
+	        $descriptionInput = $params['description_input'];
             $attachmentResult = $this->getAttachment($attachmentId);
             $jinput = JFactory::getApplication()->input;
             $fnum = $jinput->get('rowid');
@@ -619,6 +621,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
         $bits['class'] .= ' ' . $params->get('text_format');
         $bits['attachmentId'] = $params->get('attachmentId');
         $bits['size'] = $params->get('size');
+	    $bits['description_input'] = $params->get('description_input');
         $bits['max_size_txt'] = $this->formatBytes($bits['size']);
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
@@ -828,7 +831,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
             $db = JFactory::getDBO();
             $query = $db->getQuery(true);
 
-            $columns = array('timedate', 'user_id', 'fnum', 'campaign_id', 'attachment_id', 'filename', 'can_be_deleted', 'can_be_viewed', 'modified', 'local_filename');
+            $columns = array('timedate', 'user_id', 'fnum', 'campaign_id', 'attachment_id', 'filename', 'can_be_deleted', 'can_be_viewed', 'modified', 'local_filename', 'description');
 
             $query->insert($db->quoteName('#__emundus_uploads'))
                 ->columns($db->quoteName($columns))

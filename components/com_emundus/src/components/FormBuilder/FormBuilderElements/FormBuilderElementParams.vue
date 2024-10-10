@@ -182,7 +182,7 @@ export default {
         formBuilderService.getSqlDropdownOptions(table,key,value,param.translate).then((response) => {
           param.options = response.data;
 
-          if(this.element.params[param.name] != ""){
+          if(this.element.params[param.name] && this.element.params[param.name].length > 0){
             let ids_to_exclude = this.element.params[param.name].split(',');
             const regex = /\'|"/ig;
 
