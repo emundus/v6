@@ -432,13 +432,13 @@ $selectors: "div[itemprop="articleBody"], div[itemprop="blogPost"], .ql-editor, 
     border-bottom: 1px solid #e0e0e5;
   }
 
-  a, p > a {
+  a:not(.btn), p > a:not(.btn) {
     text-decoration: underline;
     color: var(--link-regular);
     cursor: pointer;
   }
 
-  a:hover {
+  a:not(.btn):hover {
     text-decoration: none;
     font-weight: normal;
     color: var(--link-hover);
