@@ -24,6 +24,7 @@
 				<option value="actions-users">actions-users</option>
 				<option value="actions-shared-files">actions-shared-files</option>
 			</field>
+			<field name="em_columns_ordered" value="" type="textarea" label="COM_EMUNDUS_COLUMNS_ORDERDED" description="COM_EMUNDUS_COLUMNS_ORDERDED_DESC"></field>
 		</fieldset>
 	</fields>
 </metadata>
