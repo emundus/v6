@@ -434,14 +434,14 @@ $selectors: "div[itemprop="articleBody"], div[itemprop="blogPost"], .ql-editor, 
 
   a, p > a {
     text-decoration: underline;
-    color: var(--link-regular) !important;
+    color: var(--link-regular);
     cursor: pointer;
   }
 
   a:hover {
     text-decoration: none;
     font-weight: normal;
-    color: var(--link-hover) !important;
+    color: var(--link-hover);
   }
 
   blockquote {
