@@ -4266,29 +4266,36 @@ class EmundusModelFiles extends JModelLegacy
         return $db->loadAssocList();
     }
 
-    public function getUnreadMessages() {
+    /**
+     * @param int current_user_id, if given, user messages won't be counted 
+     */
+    public function getUnreadMessages($current_user_id = null) {
+        $unread_messages = [];
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
-        $user = JFactory::getUser();
-        $default = array();
-
 
         try {
             $query->select('ecc.fnum, COUNT(m.message_id) as nb')
                 ->from($db->quoteName('#__emundus_campaign_candidature','ecc'))
                 ->leftJoin($db->quoteName('#__emundus_chatroom','ec').' ON '.$db->quoteName('ec.fnum').' LIKE '.$db->quoteName('ecc.fnum'))
-                ->leftJoin($db->quoteName('#__messages','m').' ON '.$db->quoteName('m.page').' = '.$db->quoteName('ec.id') . ' AND ' . $db->quoteName('m.state') . ' = ' . $db->quote(0))
-                ->group('ecc.fnum');
+                ->leftJoin($db->quoteName('#__messages','m').' ON '.$db->quoteName('m.page').' = '.$db->quoteName('ec.id') . ' AND ' . $db->quoteName('m.state') . ' = ' . $db->quote(0));
+            
+            if (!empty($current_user_id)) {
+                $query->where($db->quoteName('m.user_id_from') . ' <> ' . $current_user_id);
+            }
+            
+            $query->group('ecc.fnum');
 
             $db->setQuery($query);
-            $result = $db->loadAssocList();
-
-            return $result;
-        } catch (Exception $e){
+            $unread_messages = $db->loadAssocList();
+        } catch (Exception $e) {
+            $user = JFactory::getUser();
             JLog::add('component/com_emundus_messages/models/messages | Error when try to get messages associated to user : '. $user->id . ' with query : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return 0;
-    }}
+        }
+
+        return $unread_messages;
+    }
 
 
     public function getTagsAssocStatus($status){

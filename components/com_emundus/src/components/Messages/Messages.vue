@@ -16,7 +16,7 @@
       >
         <div class="em-flex-row em-flex-align-start em-w-100 em-h-100 em-small-flex-column">
           <div class="messages__campaigns-list em-h-100">
-            <div v-for="file in files" @click="fileSelected = file.fnum" :class="file.fnum == fileSelected ? 'messages__active-campaign' : ''" class="messages__block">
+            <div v-for="file in files" @click="fileSelected = file.fnum" :key="file.fnum" :class="file.fnum == fileSelected ? 'messages__active-campaign' : ''" class="messages__block">
               <div class="messages__campaign-block em-w-100">
                 <div class="em-w-100">
                   <p class="messages__campaigns_title">{{file.label}}</p>
@@ -28,11 +28,11 @@
             </div>
           </div>
 
-	        <div class="messages__campaigns-list-select">
-		        <select v-model="fileSelected">
-			        <option v-for="file in files" :value="file.fnum">{{ file.label }} - {{ file.fnum }}</option>
-		        </select>
-	        </div>
+          <div class="messages__campaigns-list-select">
+            <select v-model="fileSelected">
+              <option v-for="file in files" :value="file.fnum" :key="file.fnum">{{ file.label }} - {{ file.fnum }}</option>
+            </select>
+          </div>
 
           <div class="messages__list em-w-100 em-h-100 em-flex-column em-flex-space-between">
             <div class="message__header em-w-100">
@@ -40,13 +40,13 @@
               <i class="fas fa-times pointer" @click="$modal.hide('messages')"></i>
             </div>
             <div class="messages__list-block em-w-100 em-h-100" id="messages__list">
-              <div v-for="date in messageByDates">
+              <div v-for="date in messageByDates" :key="date.date">
                 <div class="messages__date-section">
                   <hr>
                   <p>{{ moment(date.date).format("DD/MM/YYYY") }}</p>
                   <hr>
                 </div>
-                <div v-for="message in date.messages" class="messages__message-item" :class="user == message.user_id_from ? 'messages__current_user' : 'messages__other_user'">
+                <div v-for="message in date.messages" :key="message.message_id" class="messages__message-item" :class="user == message.user_id_from ? 'messages__current_user' : 'messages__other_user'">
                   <div class="messages__message-item-block" @click="showDate != message.message_id ? showDate = message.message_id : showDate = 0" :class="user == message.user_id_from ? 'messages__text-align-right' : 'messages__text-align-left'">
                     <p>
                       <span class="messages__message-item-from">
@@ -77,7 +77,7 @@
                           @keydown.enter.exact.prevent="sendMessage($event)"
                 />
               </div>
-              <div class="messages__bottom-input-actions">
+              <div class="messages__bottom-input-actions" v-if="!send_progress">
                 <div class="messages__actions_bar">
                   <span class="material-icons-outlined em-pointer" @click="attachDocument">attach_file</span>
                 </div>
@@ -128,13 +128,16 @@ export default {
       showDate: 0,
       attachOpen: false,
       send_progress: false,
-
+      currentUserName: '',
       translations:{
         messages: Joomla.JText._("COM_EMUNDUS_MESSENGER_TITLE"),
         send: Joomla.JText._("COM_EMUNDUS_MESSENGER_SEND"),
         writeMessage: Joomla.JText._("COM_EMUNDUS_MESSENGER_WRITE_MESSAGE"),
       }
     };
+  },
+  mounted() {
+    this.getUsername();
   },
 
   methods: {
@@ -144,6 +147,19 @@ export default {
 
     beforeClose() {
       clearInterval(this.interval);
+    },
+
+    getUsername() {
+      fetch('index.php?option=com_emundus&controller=users&task=getuserbyid')
+        .then((res) => {
+          if (res.ok) {
+            return res.json();
+          }
+        }).then((response) => {
+          if (response.status) {
+            this.currentUserName = response.user[0].firstname + ' ' + response.user[0].lastname;
+          }
+        });
     },
 
     getFilesByUser(){
@@ -164,7 +180,7 @@ export default {
       });
     },
 
-    getMessagesByFnum(loader = true,scroll = true){
+    async getMessagesByFnum(loader = true,scroll = true){
       this.loading = loader;
       axios({
         method: "get",
@@ -188,55 +204,79 @@ export default {
     },
 
     markAsRead(){
-      axios({
-        method: "get",
-        url: "index.php?option=com_emundus&controller=messenger&task=markasread",
-        params: {
-          fnum: this.fileSelected,
-        },
-        paramsSerializer: params => {
-          return qs.stringify(params);
-        }
-      }).then(response => {
-        this.$emit('removeNotifications',response.data.data);
-      });
-    },
-
-    sendMessage(e){
-      if(typeof e != 'undefined') {
-        e.stopImmediatePropagation();
-      }
-      if(this.message.trim() !== '' && !this.send_progress) {
-        this.send_progress = true;
-        axios({
-          method: "post",
-          url: "index.php?option=com_emundus&controller=messenger&task=sendmessage",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          data: qs.stringify({
-            message: this.message,
-            fnum: this.fileSelected
-          })
-        }).then(response => {
-          if (response.data.status) {
-            this.message = '';
-            this.send_progress = false;
-            this.pushToDatesArray(response.data.data);
-            this.scrollToBottom();
+      fetch('index.php?option=com_emundus&controller=messenger&task=markasread&fnum=' + this.fileSelected)
+        .then((res) => {
+          if (res.ok) {
+            return res.json;
+          }
+        }).then((response) => {
+          if (response.status) {
+            this.$emit('removeNotifications',response.data);
           }
         });
+    },
+
+    async sendMessage(e){
+      if (this.message.trim() !== '' && !this.send_progress) {
+        this.send_progress = true;
+ 
+        const formData = new FormData();
+        formData.append('message', this.message);
+        formData.append('fnum', this.fileSelected);
+
+        fetch('index.php?option=com_emundus&controller=messenger&task=sendmessage', {
+          method: 'POST',
+          body: formData
+        }).then((res) => {
+          if (res.ok) {
+            return res.json();
+          }
+        }).then((response) => {
+          this.send_progress = false;
+          
+          if (response.status) {
+            this.getMessagesByFnum(true, true);
+          } else {
+            Swal.fire({
+              title: Joomla.JText._("COM_EMUNDUS_ONBOARD_ERROR"),
+              text: response.msg,
+              type: "error",
+              showCancelButton: false,
+              showConfirmButton: false,
+              timer: 3000,
+            });
+          }
+        });
+
+        this.pushToDatesArray({
+            message_id: Math.floor(Math.random() * 1000) + 9999,
+            user_id_from: this.user,
+            user_id_to: null,
+            folder_id: 2,
+            date_time: this.formatedTimestamp(),
+            state: 0, 
+            priority: 0, 
+            subject: 0,
+            message: this.message, 
+            email_from: null, 
+            email_cc: null, 
+            email_to: null, 
+            name: this.currentUserName
+          });
+
+          this.message = '';
+          this.send_progress = false;
       }
     },
 
-    pushToDatesArray(message){
+    pushToDatesArray(message) {
       let pushToDate = false;
 
-	    let message_date = this.moment().format("YYYY-MM-DD");
-			if (message.date_time) {
-				 message_date = message.date_time.split(' ')[0];
-			}
-	    this.dates.forEach((elt,index) => {
+      let message_date = this.moment().format("YYYY-MM-DD");
+      if (message.date_time) {
+        message_date = message.date_time.split(' ')[0];
+      }
+      this.dates.forEach((elt,index) => {
         if(elt.dates == message_date){
           this.dates[index].messages.push(message.message_id);
           pushToDate = true;
@@ -274,6 +314,13 @@ export default {
       this.pushToDatesArray(message);
       this.scrollToBottom();
       this.attachOpen = !this.attachOpen;
+    },
+
+    formatedTimestamp()  {
+      const d = new Date()
+      const date = d.toISOString().split('T')[0];
+      const time = d.toTimeString().split(' ')[0];
+      return `${date} ${time}`
     }
   },
 
