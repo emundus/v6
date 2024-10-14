@@ -2134,7 +2134,7 @@ class EmundusHelperFiles
             $fnum = $unread_message['fnum'];
 
             if (!isset($unreadmessagesList[$fnum])) {
-                    $unreadmessagesList[$fnum] = '<p class="messenger__notifications_counter">'. $unread_message['nb'] .'</p> ';
+                $unreadmessagesList[$fnum] = '<p class="messenger__notifications_counter">'. $unread_message['nb'] .'</p> ';
             }
         }
         return $unreadmessagesList;

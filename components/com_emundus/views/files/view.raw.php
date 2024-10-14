@@ -448,7 +448,7 @@ class EmundusViewFiles extends JViewLegacy
 
                     if (isset($colsSup['unread_messages'])) {
                         $unread_messages = array();
-                        $unread_messages[] = $m_files->getUnreadMessages();
+                        $unread_messages[] = $m_files->getUnreadMessages($current_user->id);
                         $unread_messages = $h_files->createUnreadMessageList($unread_messages[0]);
 
                         $keys = array_keys($unread_messages);

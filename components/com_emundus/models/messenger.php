@@ -244,7 +244,7 @@ class EmundusModelMessenger extends JModelList
             $db->setQuery($query);
             $messages_readed = $db->loadColumn();
 
-            if(!empty($messages_readed)) {
+            if (!empty($messages_readed)) {
                 $query->clear()
                     ->update($db->quoteName('#__messages'))
                     ->set($db->quoteName('state') . ' = 1')
