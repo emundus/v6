@@ -81,10 +81,37 @@ export default {
       }
     };
   },
+  created(){
+    this.fnum = this.$store.getters['global/datas'].fnum.value;
+    this.user = this.$store.getters['global/datas'].user.value;
 
+    if (typeof this.fnum != 'undefined') {
+      this.fileSelected = this.fnum;
+      this.getMessagesByFnum();
+      setInterval(() => {
+        this.getMessagesByFnum(false, false);
+      }, 20000);
+    }
+
+    this.getUsername();
+
+  },
   methods: {
     moment(date) {
       return moment(date);
+    },
+
+    getUsername() {
+      fetch('index.php?option=com_emundus&controller=users&task=getuserbyid')
+        .then((res) => {
+          if (res.ok) {
+            return res.json();
+          }
+        }).then((response) => {
+          if (response.status) {
+            this.currentUserName = response.user[0].firstname + ' ' + response.user[0].lastname;
+          }
+        });
     },
 
     getMessagesByFnum(loader = true, scroll = true){
@@ -136,24 +163,51 @@ export default {
         this.message = '';
       } else {
         if (this.message.trim() !== '') {
-          axios({
-            method: "post",
-            url:
-                "index.php?option=com_emundus&controller=messenger&task=sendmessage",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded"
-            },
-            data: qs.stringify({
-              message: this.message,
-              fnum: this.fileSelected
-            })
-          }).then(response => {
-            if (response.data.status) {
-              this.message = '';
-              this.pushToDatesArray(response.data.data);
-              this.scrollToBottom();
+          const formData = new FormData();
+          formData.append('message', this.message);
+          formData.append('fnum', this.fileSelected);
+
+          fetch('index.php?option=com_emundus&controller=messenger&task=sendmessage', {
+            method: 'POST',
+            body: formData
+          }).then((res) => {
+            if (res.ok) {
+              return res.json();
+            }
+          }).then((response) => {
+            this.send_progress = false;
+            
+            if (response.status) {
+              this.getMessagesByFnum(true, true);
+            } else {
+              Swal.fire({
+                title: Joomla.JText._("COM_EMUNDUS_ONBOARD_ERROR"),
+                text: response.msg,
+                type: "error",
+                showCancelButton: false,
+                showConfirmButton: false,
+                timer: 3000,
+              });
             }
           });
+
+          this.pushToDatesArray({
+            message_id: Math.floor(Math.random() * 1000) + 9999,
+            user_id_from: this.user,
+            user_id_to: null,
+            folder_id: 2,
+            date_time: this.formatedTimestamp(),
+            state: 0, 
+            priority: 0, 
+            subject: 0,
+            message: this.message, 
+            email_from: null, 
+            email_cc: null, 
+            email_to: null, 
+            name: this.currentUserName
+          });
+
+          this.message = '';
         }
       }
     },
@@ -202,19 +256,13 @@ export default {
       this.pushToDatesArray(message);
       this.scrollToBottom();
       this.attachDocument();
-    }
-  },
+    },
 
-  created(){
-    this.fnum = this.$store.getters['global/datas'].fnum.value;
-    this.user = this.$store.getters['global/datas'].user.value;
-
-    if (typeof this.fnum != 'undefined') {
-      this.fileSelected = this.fnum;
-      this.getMessagesByFnum();
-      setInterval(() => {
-        this.getMessagesByFnum(false, false);
-      }, 20000);
+    formatedTimestamp()  {
+      const d = new Date()
+      const date = d.toISOString().split('T')[0];
+      const time = d.toTimeString().split(' ')[0];
+      return `${date} ${time}`
     }
   },
 
