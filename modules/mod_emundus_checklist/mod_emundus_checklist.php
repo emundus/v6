@@ -65,6 +65,8 @@ if (isset($user->fnum) && !empty($user->fnum)) {
     $application_fee = $eMConfig->get('application_fee', 0);
     $application_fee = (!empty($application_fee) && !empty($m_profile->getHikashopMenu($user->profile)));
 
+    $use_session = $eMConfig->get('use_session', 0);
+
     $checkout_url = null;
     if ($application_fee) {
         $fnumInfos = $m_files->getFnumInfos($user->fnum);
@@ -217,8 +219,8 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 
     $current_phase = $m_campaign->getCurrentCampaignWorkflow($user->fnum);
     $current_phase = !empty($current_phase->id) ? $current_phase : null;
-    $attachments_progress = $m_application->getAttachmentsProgress($user->fnum);
-    $forms_progress 	= $m_application->getFormsProgress($user->fnum);
+    $attachments_progress = $m_application->getAttachmentsProgress($user->fnum,$use_session);
+    $forms_progress 	= $m_application->getFormsProgress($user->fnum,$use_session);
 
     $app = JFactory::getApplication();
     $offset = $app->get('offset', 'UTC');

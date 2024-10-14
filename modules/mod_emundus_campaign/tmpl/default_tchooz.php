@@ -1420,4 +1420,11 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     })
 
 
+    let introHomePage = document.querySelector('.mod_emundus_campaign__intro');
+    const styleHomePage = window.getComputedStyle(introHomePage);
+    if (styleHomePage.backgroundImage === 'none') {
+        introHomePage.style.paddingRight = "0";
+    } else {
+        introHomePage.style.paddingRight = "28%";
+    }
 </script>
