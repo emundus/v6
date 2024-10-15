@@ -1,0 +1,16 @@
+.mod_emundus_events__month {
+    background-color: purple;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.mod_emundus_events__day {
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}

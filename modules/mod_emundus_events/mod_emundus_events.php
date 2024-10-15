@@ -13,6 +13,9 @@ $hash = EmundusHelperCache::getCurrentGitHash();
 $document = Factory::getDocument();
 $document->addStyleSheet("modules/mod_emundus_events/css/mod_emundus_events.css?".$hash);
 
+$table = $params->get('table', 'data_events');
+
+$events = modEmundusEventsHelper::getEvents($table);
 
 require(ModuleHelper::getLayoutPath('mod_emundus_events'));
 ?>
