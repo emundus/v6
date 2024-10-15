@@ -147,6 +147,8 @@ class EmundusControllerModules extends JControllerLegacy
 	{
 		require_once (JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
 
+		EmundusHelperUpdate::installExtension('MOD_EMUNDUS_EVENTS', 'mod_emundus_events', '{"name":"MOD_EMUNDUS_EVENTS","type":"module","creationDate":"October 2024","author":"eMundus","copyright":"Copyright (C) 2024 eMundus. All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"www.emundus.fr","version":"1.39.8","description":"MOD_EMUNDUS_EVENTS_DESCRIPTION","group":"","filename":"mod_emundus_events"}', 'module', 1, '', '{"table":"data_events"}');
+
 		$columns      = [
 			[
 				'name'   => 'date_time',
