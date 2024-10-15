@@ -19,6 +19,7 @@
 		<config>
 			<fields name="params">
 				<fieldset name="basic" label="Options">
+					<field type="text" name="table" label="MOD_EMUNDUS_EVENTS_DB_TABLE" description="MOD_EMUNDUS_EVENTS_DB_TABLE_DESC" default="data_events" />
 				</fieldset>
 			</fields>
 		</config>

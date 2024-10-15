@@ -39,6 +39,9 @@ class EmundusControllerModules extends JControllerLegacy
             case 'checklist':
                 $result['status'] = $this->installChecklist();
                 break;
+	        case 'events':
+				$result['status'] = $this->installEvents();
+				break;
             default:
                 $result['message'] = 'Module not found';
         }
@@ -139,4 +142,52 @@ class EmundusControllerModules extends JControllerLegacy
 
         return $installed;
     }
+
+	function installEvents()
+	{
+		require_once (JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
+
+		$columns      = [
+			[
+				'name'   => 'date_time',
+				'type'   => 'DATETIME'
+			],
+			[
+				'name' => 'title',
+				'type' => 'VARCHAR',
+				'length' => 255,
+				'null' => 0,
+			],
+			[
+				'name'    => 'start_date',
+				'type'    => 'DATETIME',
+				'null'    => 1,
+			],
+			[
+				'name'    => 'end_date',
+				'type'    => 'DATETIME',
+				'null'    => 1,
+			],
+			[
+				'name'    => 'description',
+				'type'    => 'TEXT',
+				'null'    => 1,
+			],
+			[
+				'name'    => 'link',
+				'type'    => 'VARCHAR',
+				'length'  => 255,
+				'null'    => 1,
+			],
+			[
+				'name'    => 'published',
+				'type'    => 'TINYINT',
+				'length'  => 1,
+				'null'    => 0,
+				'default' => 1
+			]
+		];
+
+		return EmundusHelperUpdate::createTable('data_events', $columns, [], 'Event for websites')['status'];
+	}
 }
