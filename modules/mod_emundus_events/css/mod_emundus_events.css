@@ -15,3 +15,12 @@
     font-size: 24px;
     height: 42px;
 }
+
+.mod_emundus_events__date {
+    font-weight: 300;
+    font-size: 18px;
+}
+
+.mod_emundus_events__link {
+    text-decoration: underline;
+}
