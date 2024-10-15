@@ -6867,6 +6867,10 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .rounded-lg {
   border-radius: 0.5rem;
 }
+.rounded-b-2xl {
+  border-bottom-right-radius: 1rem;
+  border-bottom-left-radius: 1rem;
+}
 .rounded-t-2xl {
   border-top-left-radius: 1rem;
   border-top-right-radius: 1rem;
@@ -12098,9 +12102,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
   --tw-bg-opacity: 1;
   background-color: rgb(254 246 238 / var(--tw-bg-opacity));
 }
-.bg-neutral-300 {
+.bg-neutral-200 {
   --tw-bg-opacity: 1;
-  background-color: rgb(212 212 212 / var(--tw-bg-opacity));
+  background-color: rgb(229 229 229 / var(--tw-bg-opacity));
 }
 .bg-red-500 {
   --tw-bg-opacity: 1;
