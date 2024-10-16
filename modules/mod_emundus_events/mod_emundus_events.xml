@@ -20,6 +20,9 @@
 			<fields name="params">
 				<fieldset name="basic" label="Options">
 					<field type="text" name="table" label="MOD_EMUNDUS_EVENTS_DB_TABLE" description="MOD_EMUNDUS_EVENTS_DB_TABLE_DESC" default="data_events" />
+					<field type="color" name="background_color" label="MOD_EMUNDUS_EVENTS_BG_COLOR" default="#FDFBFF" />
+					<field type="color" name="text_color" label="MOD_EMUNDUS_EVENTS_TEXT_COLOR" default="#622E68" />
+					<field type="color" name="border_color" label="MOD_EMUNDUS_EVENTS_BORDER_COLOR" default="#E8E2F5" />
 				</fieldset>
 			</fields>
 		</config>

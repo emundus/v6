@@ -16,6 +16,9 @@ $document->addStyleSheet("modules/mod_emundus_events/css/mod_emundus_events.css?
 $table = $params->get('table', 'data_events');
 
 $events = modEmundusEventsHelper::getEvents($table);
+$bg_color = $params->get('bg_color', '#FDFBFF');
+$text_color = $params->get('text_color', '#622E68');
+$border_color = $params->get('border_color', '#E8E2F5');
 
 require(ModuleHelper::getLayoutPath('mod_emundus_events'));
 ?>
