@@ -234,6 +234,12 @@ class EmundusControllerModules extends JControllerLegacy
 
 					EmundusHelperUpdate::joinFormGroup($form_id, [$group_id]);
 
+					EmundusHelperUpdate::insertTranslationsTag('FORM_DATA_EVENTS', 'Ajouter un événement');
+					EmundusHelperUpdate::insertTranslationsTag('FORM_DATA_EVENTS', 'Add an event', 'override', null, null, null, 'en-GB');
+
+					EmundusHelperUpdate::insertTranslationsTag('LIST_DATA_EVENTS', 'Liste des événements');
+					EmundusHelperUpdate::insertTranslationsTag('LIST_DATA_EVENTS', 'Event\'s list', 'override', null, null, null, 'en-GB');
+
 					EmundusHelperUpdate::insertTranslationsTag('ELEMENT_DATA_EVENTS_TITLE', 'Nom');
 					EmundusHelperUpdate::insertTranslationsTag('ELEMENT_DATA_EVENTS_TITLE', 'Name', 'override', null, null, null, 'en-GB');
 
@@ -297,7 +303,10 @@ class EmundusControllerModules extends JControllerLegacy
 						'label'                => 'ELEMENT_DATA_EVENTS_DESC',
 						'show_in_list_summary' => 1
 					];
-					EmundusHelperUpdate::addFabrikElement($datas, [], false);
+					$textarea_params = [
+						'textarea_showmax' => 1,
+					];
+					EmundusHelperUpdate::addFabrikElement($datas, $textarea_params, false);
 
 					$datas = [
 						'name'                 => 'link',
