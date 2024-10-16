@@ -761,29 +761,26 @@ class EmundusControllerApplication extends JControllerLegacy
     }
 
 
-    public function getattachmentpreview()
-    {
-	    $response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
+	public function getattachmentpreview()
+	{
+		$response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
 		$current_user = JFactory::getUser();
 
-		$m_application = new EmundusModelApplication();
+		if (EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
+			$m_application = new EmundusModelApplication();
 
-	    $upload_id      = $this->input->getInt('upload_id', null);
-	    $upload_details = $m_application->getUploadByID($upload_id);
-	    $e_user         = JFactory::getSession()->get('emundusUser');
-
-	    if (EmundusHelperAccess::asPartnerAccessLevel($current_user->id) || (in_array($upload_details['fnum'], array_keys($e_user->fnums)) && $upload_details['can_be_viewed'] == 1)) {
 			$jinput = JFactory::getApplication()->input;
+			$user = $jinput->getInt('user', null);
 			$filename = $jinput->getString('filename', null);
 
-			if (!empty($filename) && !empty($upload_details['user_id'])) {
-				$response = $m_application->getAttachmentPreview($upload_details['user_id'], $filename);
+			if (!empty($filename) && !empty($user)) {
+				$response = $m_application->getAttachmentPreview($user, $filename);
 			}
 		}
 
-        echo json_encode($response);
-        exit;
-    }
+		echo json_encode($response);
+		exit;
+	}
 
     public function reorderapplications()
     {
