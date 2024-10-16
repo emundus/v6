@@ -112,6 +112,8 @@ class Evaluations extends Files
 	        $this->setAll($all);
 			//
 
+            $eval_elements = [];
+
 	        if(!empty($files_associated)) {
 		        $fnums = [];
 		        foreach ($files_associated as $file) {
