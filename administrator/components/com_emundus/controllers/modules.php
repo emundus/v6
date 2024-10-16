@@ -297,7 +297,7 @@ class EmundusControllerModules extends JControllerLegacy
 						'label'                => 'ELEMENT_DATA_EVENTS_DESC',
 						'show_in_list_summary' => 1
 					];
-					EmundusHelperUpdate::addFabrikElement($datas, $params);
+					EmundusHelperUpdate::addFabrikElement($datas, [], false);
 
 					$datas = [
 						'name'                 => 'link',
@@ -306,7 +306,7 @@ class EmundusControllerModules extends JControllerLegacy
 						'label'                => 'ELEMENT_DATA_EVENTS_LINK',
 						'show_in_list_summary' => 1
 					];
-					EmundusHelperUpdate::addFabrikElement($datas);
+					EmundusHelperUpdate::addFabrikElement($datas,[],false);
 
 					$datas = [
 						'name'                 => 'published',
