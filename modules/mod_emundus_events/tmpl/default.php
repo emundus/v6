@@ -22,11 +22,11 @@ defined('_JEXEC') or die;
                     <p class="mod_emundus_events__date mb-2"><?php echo date('d.m.Y',strtotime($event->start_date)); ?></p>
                     <!-- TITLE -->
 	                <?php if(!empty($event->link)) : ?>
-                        <a class="mod_emundus_events__title mod_emundus_events__link" href="<?php echo $event->link; ?>">
+                        <a style="text-decoration-color: <?php echo $text_color; ?>" class="mod_emundus_events__title mod_emundus_events__link" href="<?php echo $event->link; ?>">
                             <label style="color: <?php echo $text_color; ?>" class="font-bold"><?php echo $event->title; ?></label>
                         </a>
                     <?php else : ?>
-                        <label style="color: <?php echo $text_color; ?>" class="mod_emundus_events__title font-bold"><?php echo $event->title; ?></label>
+                        <label style="color: <?php echo $text_color; ?>;cursor: unset" class="mod_emundus_events__title font-bold"><?php echo $event->title; ?></label>
                     <?php endif; ?>
                     <!-- DESCRIPTION -->
                     <p class="mod_emundus_events__description"><?php echo $event->description; ?></p>
