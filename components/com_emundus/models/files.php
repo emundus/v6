@@ -5122,7 +5122,7 @@ class EmundusModelFiles extends JModelLegacy
                         }
                     }
 
-                    $filename = $application_form_name . DS . $application_pdf;
+					$filename = $concat_attachments_with_form ? $application_pdf : $application_form_name . DS . $application_pdf;
                     if (!$zip->addFile($dossier . $application_pdf, $filename)) {
                         continue;
                     }
