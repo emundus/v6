@@ -316,7 +316,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 
             //// set tags and set fabrik tags for email subject + email body ////
             $m_emails = new EmundusModelEmails();
-            $tags = $m_emails->setTags($fnum_detail['applicant_id'], ['FNUM' => $fnum], $fnum, '', $obj);
+            $tags = $m_emails->setTags($fnum_detail['applicant_id'], ['FNUM' => $fnum], $fnum, '', $subject.$body);
 
             $subject = $m_emails->setTagsFabrik($subject, [$fnum]);
             $subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);

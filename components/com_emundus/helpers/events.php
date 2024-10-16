@@ -786,6 +786,7 @@ class EmundusHelperEvents {
             $params	= JComponentHelper::getParams('com_emundus');
             $scholarship_document_id 	= $params->get('scholarship_document_id', NULL);
             $application_fee = $params->get('application_fee', 0);
+            $use_session = $params->get('use_session', 0);
 
             $mApplication = new EmundusModelApplication;
             $mEmails = new EmundusModelEmails;
@@ -800,7 +801,7 @@ class EmundusHelperEvents {
 	        $db    = JFactory::getDbo();
 	        $query = $db->getQuery(true);
 
-	        $profile_by_status = $mProfile->getProfileByStatus($user->fnum);
+	        $profile_by_status = $mProfile->getProfileByStatus($user->fnum,$use_session);
 
 	        if (empty($profile_by_status['profile'])) {
 		        $query->select('esc.profile_id AS profile_id, ecc.campaign_id AS campaign_id')

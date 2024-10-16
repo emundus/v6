@@ -3581,6 +3581,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .mt-px {
   margin-top: 1px;
 }
+.\!block {
+  display: block !important;
+}
 .block {
   display: block;
 }
@@ -37974,7 +37977,6 @@ body {
     background-repeat: no-repeat;
     background-position: top 50% right -40px;
     width: 100%;
-    padding-right: 28%;
     min-height: 150px;
 }
 /* Connexion */

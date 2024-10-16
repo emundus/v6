@@ -1960,7 +1960,7 @@ class EmundusModelCampaign extends JModelList {
 		            ->set($this->_db->quoteName('attachment_id') . ' = ' . $this->_db->quote($did))
 		            ->set($this->_db->quoteName('mandatory') . ' = ' . $this->_db->quote($document['mandatory']))
 		            ->set($this->_db->quoteName('ordering') . ' = ' . $this->_db->quote($ordering + 1))
-		            ->set($this->_db->quoteName('has_sample') . ' = '. $params['has_sample']);
+		            ->set($this->_db->quoteName('has_sample') . ' = '. $this->_db->quote($params['has_sample']));
 
 				if ($did === 20) {
 					$query->set($this->_db->quoteName('displayed') . ' = '. 0);
