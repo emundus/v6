@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+	<extension type="module" version="2.5.0" method="upgrade">
+		<name>MOD_EMUNDUS_EVENTS</name>
+        <author>eMundus</author>
+        <creationDate>October 2024</creationDate>
+        <copyright>Copyright (C) 2024 eMundus. All rights reserved.</copyright>
+        <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+        <authorEmail>dev@emundus.fr</authorEmail>
+        <authorUrl>www.emundus.fr</authorUrl>
+        <version>1.39.8</version>
+		<description>MOD_EMUNDUS_EVENTS_DESCRIPTION</description>
+		<files>
+			<filename>mod_emundus_events.xml</filename>
+			<filename module="mod_emundus_events">mod_emundus_events.php</filename>
+			<filename>index.html</filename>
+			<folder>tmpl</folder>
+			<folder>language</folder>
+		</files>
+		<config>
+			<fields name="params">
+				<fieldset name="basic" label="Options">
+					<field type="text" name="table" label="MOD_EMUNDUS_EVENTS_DB_TABLE" description="MOD_EMUNDUS_EVENTS_DB_TABLE_DESC" default="data_events" />
+					<field type="color" name="background_color" label="MOD_EMUNDUS_EVENTS_BG_COLOR" default="#FDFBFF" />
+					<field type="color" name="text_color" label="MOD_EMUNDUS_EVENTS_TEXT_COLOR" default="#622E68" />
+					<field type="color" name="border_color" label="MOD_EMUNDUS_EVENTS_BORDER_COLOR" default="#E8E2F5" />
+				</fieldset>
+			</fields>
+		</config>
+	</extension>

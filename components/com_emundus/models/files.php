@@ -2443,7 +2443,7 @@ class EmundusModelFiles extends JModelLegacy
 
 					$element_attribs = json_decode($elt->element_attribs);
 
-					if ($element_attribs->database_join_display_type == "checkbox") {
+					if ($element_attribs->database_join_display_type == "checkbox" || $element_attribs->database_join_display_type == "multilist") {
 						$select_check = $element_attribs->join_val_column;
 						if (!empty($element_attribs->join_val_column_concat)) {
 							$select_check = $element_attribs->join_val_column_concat;
@@ -3918,7 +3918,7 @@ class EmundusModelFiles extends JModelLegacy
             $dateFormat = $this->dateFormatToMysql($dateFormat);
             $query = "select fnum, DATE_FORMAT({$name}, ".$dbo->quote($dateFormat).") as val from {$tableName} where fnum in ('".implode("','", $fnums)."')";
         } else {
-            $query = "select fnum, $dbo->quote({$name}) as val from {$tableName} where fnum in ('".implode("','", $fnums)."')";
+			$query = "select fnum, " . $dbo->quoteName($name) . " as val from {$tableName} where fnum in ('".implode("','", $fnums)."')";
         }
 
         try {
@@ -4242,37 +4242,68 @@ class EmundusModelFiles extends JModelLegacy
 		}
 	}
 
-    public function getFormProgress($fnums) {
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-        $fnums_string = implode(',',$fnums);
+	/**
+	 * @param $fnums
+	 * @return array
+	 */
+	public function getFormProgress($fnums)
+	{
+		$fnums_progress = [];
 
-        $query->select('fnum,form_progress')
-            ->from ($db->quoteName('#__emundus_campaign_candidature'))
-            ->where($db->quoteName('fnum') . ' IN (' . $fnums_string . ')');
-        $db->setQuery($query);
-        return $db->loadAssocList();
-    }
+		if (!empty($fnums)) {
+			$db = JFactory::getDBO();
+			$query = $db->getQuery(true);
+			$fnums_string = implode(',', $db->quote($fnums));
 
-    public function getAttachmentProgress($fnums) {
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-        $fnums_string = implode(',',$fnums);
+			$query->select('fnum,form_progress')
+				->from($db->quoteName('#__emundus_campaign_candidature'))
+				->where($db->quoteName('fnum') . ' IN (' . $fnums_string . ')');
 
-        $query->select('fnum,attachment_progress')
-            ->from ($db->quoteName('#__emundus_campaign_candidature'))
-            ->where($db->quoteName('fnum') . ' IN (' . $fnums_string . ')');
-        $db->setQuery($query);
-        return $db->loadAssocList();
-    }
+			try {
+				$db->setQuery($query);
+				$fnums_progress = $db->loadAssocList();
+			} catch (Exception $e) {
+				JLog::add('component/com_emundus/models/files | Error when try to get forms progress with query : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			}
+		}
 
-    public function getUnreadMessages() {
+		return $fnums_progress;
+	}
+
+	/**
+	 * @param $fnums
+	 * @return array
+	 */
+	public function getAttachmentProgress($fnums)
+	{
+		$attachment_progress = [];
+
+		if (!empty($fnums)) {
+			$db = JFactory::getDBO();
+			$query = $db->getQuery(true);
+			$fnums_string = implode(',', $db->quote($fnums));
+
+			$query->select('fnum,attachment_progress')
+				->from($db->quoteName('#__emundus_campaign_candidature'))
+				->where($db->quoteName('fnum') . ' IN (' . $fnums_string . ')');
+
+			try {
+				$db->setQuery($query);
+				$attachment_progress = $db->loadAssocList();
+			} catch (Exception $e) {
+				JLog::add('component/com_emundus/models/files | Error when try to get attachment progress with query : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		return $attachment_progress;
+	}
+
+	public function getUnreadMessages() {
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $user = JFactory::getUser();
         $default = array();
-
 
         try {
             $query->select('ecc.fnum, COUNT(m.message_id) as nb')
