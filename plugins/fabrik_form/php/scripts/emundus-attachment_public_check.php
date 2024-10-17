@@ -92,7 +92,7 @@ if (isset($obj)) {
 
 			if (!empty($sid)) {
 				$student = Factory::getUser($sid);
-				echo '<h1>' . $student->name . '</h1><br/>';
+                echo '<h1>' . JText::_('SETUP_PUBLIC_UPLOAD_FILE') . '</h1><p>' . sprintf(JText::_('COM_EMUNDUS_REFERENT_ADD_LETTER_INTRO'), $student->name ) . '</p><br/>';
 			}
 		}
 	}
