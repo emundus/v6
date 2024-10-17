@@ -39,6 +39,9 @@ class EmundusControllerModules extends JControllerLegacy
             case 'checklist':
                 $result['status'] = $this->installChecklist();
                 break;
+	        case 'events':
+				$result['status'] = $this->installEvents();
+				break;
             default:
                 $result['message'] = 'Module not found';
         }
@@ -139,4 +142,196 @@ class EmundusControllerModules extends JControllerLegacy
 
         return $installed;
     }
+
+	function installEvents()
+	{
+		require_once (JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
+
+		EmundusHelperUpdate::installExtension('MOD_EMUNDUS_EVENTS', 'mod_emundus_events', '{"name":"MOD_EMUNDUS_EVENTS","type":"module","creationDate":"October 2024","author":"eMundus","copyright":"Copyright (C) 2024 eMundus. All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"www.emundus.fr","version":"1.39.8","description":"MOD_EMUNDUS_EVENTS_DESCRIPTION","group":"","filename":"mod_emundus_events"}', 'module', 1, '', '{"table":"data_events"}');
+
+		$columns      = [
+			[
+				'name'   => 'date_time',
+				'type'   => 'DATETIME'
+			],
+			[
+				'name' => 'title',
+				'type' => 'VARCHAR',
+				'length' => 255,
+				'null' => 0,
+			],
+			[
+				'name'    => 'start_date',
+				'type'    => 'DATETIME',
+				'null'    => 1,
+			],
+			[
+				'name'    => 'end_date',
+				'type'    => 'DATETIME',
+				'null'    => 1,
+			],
+			[
+				'name'    => 'description',
+				'type'    => 'TEXT',
+				'null'    => 1,
+			],
+			[
+				'name'    => 'link',
+				'type'    => 'VARCHAR',
+				'length'  => 255,
+				'null'    => 1,
+			],
+			[
+				'name'    => 'published',
+				'type'    => 'TINYINT',
+				'length'  => 1,
+				'null'    => 0,
+				'default' => 1
+			]
+		];
+
+		EmundusHelperUpdate::createTable('data_events', $columns, [], 'Event for websites')['status'];
+
+		$datas        = [
+			'label'              => 'FORM_DATA_EVENTS',
+			'form_template'      => 'emundus',
+			'view_only_template' => 'emundus',
+		];
+		$form_created = EmundusHelperUpdate::addFabrikForm($datas);
+		if ($form_created['status'])
+		{
+			$form_id = $form_created['id'];
+
+			$datas  = [
+				'label'         => 'LIST_DATA_EVENTS',
+				'form_id'       => $form_id,
+				'db_table_name' => 'data_events',
+				'access'        => 7,
+				'template'      => 'emundus'
+			];
+			$params = [
+				'hidecheckbox'            => 1,
+				'alter_existing_db_cols'  => 'addonly',
+				'group_by_access'         => 10,
+				'allow_drop'              => 10,
+				'menu_access_only'        => 1,
+			];
+			$list   = EmundusHelperUpdate::addFabrikList($datas, $params);
+
+			if ($list['status'])
+			{
+				$datas = [
+					'name' => 'FORM_DATA_EVENTS'
+				];
+				$params = [
+					'repeat_group_show_first' => 1,
+				];
+				$group = EmundusHelperUpdate::addFabrikGroup($datas, $params, 1, true);
+
+				if ($group['status'])
+				{
+					$group_id = $group['id'];
+
+					EmundusHelperUpdate::joinFormGroup($form_id, [$group_id]);
+
+					EmundusHelperUpdate::insertTranslationsTag('FORM_DATA_EVENTS', 'Ajouter un événement');
+					EmundusHelperUpdate::insertTranslationsTag('FORM_DATA_EVENTS', 'Add an event', 'override', null, null, null, 'en-GB');
+
+					EmundusHelperUpdate::insertTranslationsTag('LIST_DATA_EVENTS', 'Liste des événements');
+					EmundusHelperUpdate::insertTranslationsTag('LIST_DATA_EVENTS', 'Event\'s list', 'override', null, null, null, 'en-GB');
+
+					EmundusHelperUpdate::insertTranslationsTag('ELEMENT_DATA_EVENTS_TITLE', 'Nom');
+					EmundusHelperUpdate::insertTranslationsTag('ELEMENT_DATA_EVENTS_TITLE', 'Name', 'override', null, null, null, 'en-GB');
+
+					EmundusHelperUpdate::insertTranslationsTag('ELEMENT_DATA_EVENTS_START_DATE', 'Date de début');
+					EmundusHelperUpdate::insertTranslationsTag('ELEMENT_DATA_EVENTS_START_DATE', 'Start date', 'override', null, null, null, 'en-GB');
+
+					EmundusHelperUpdate::insertTranslationsTag('ELEMENT_DATA_EVENTS_END_DATE', 'Date de fin');
+					EmundusHelperUpdate::insertTranslationsTag('ELEMENT_DATA_EVENTS_END_DATE', 'End date', 'override', null, null, null, 'en-GB');
+
+					EmundusHelperUpdate::insertTranslationsTag('ELEMENT_DATA_EVENTS_DESC', 'Description');
+					EmundusHelperUpdate::insertTranslationsTag('ELEMENT_DATA_EVENTS_DESC', 'Description', 'override', null, null, null, 'en-GB');
+
+					EmundusHelperUpdate::insertTranslationsTag('ELEMENT_DATA_EVENTS_LINK', 'Lien');
+					EmundusHelperUpdate::insertTranslationsTag('ELEMENT_DATA_EVENTS_LINK', 'Link', 'override', null, null, null, 'en-GB');
+
+					$datas = [
+						'name'                 => 'id',
+						'group_id'             => $group_id,
+						'plugin'               => 'internalid',
+						'label'                => 'id',
+						'show_in_list_summary' => 0
+					];
+					EmundusHelperUpdate::addFabrikElement($datas);
+
+					$datas = [
+						'name'                 => 'title',
+						'group_id'             => $group_id,
+						'plugin'               => 'field',
+						'label'                => 'ELEMENT_DATA_EVENTS_TITLE',
+						'show_in_list_summary' => 1
+					];
+					EmundusHelperUpdate::addFabrikElement($datas);
+
+					$datas = [
+						'name'                 => 'start_date',
+						'group_id'             => $group_id,
+						'plugin'               => 'date',
+						'label'                => 'ELEMENT_DATA_EVENTS_START_DATE',
+						'show_in_list_summary' => 1
+					];
+
+					$params = [
+						'date_store_as_local' => 1,
+						'date_table_format'   => 'd\/m\/Y H:i',
+					];
+					EmundusHelperUpdate::addFabrikElement($datas,$params);
+
+					$datas = [
+						'name'                 => 'end_date',
+						'group_id'             => $group_id,
+						'plugin'               => 'date',
+						'label'                => 'ELEMENT_DATA_EVENTS_END_DATE',
+						'show_in_list_summary' => 1
+					];
+					EmundusHelperUpdate::addFabrikElement($datas,$params);
+
+					$datas  = [
+						'name'                 => 'description',
+						'group_id'             => $group_id,
+						'plugin'               => 'textarea',
+						'label'                => 'ELEMENT_DATA_EVENTS_DESC',
+						'show_in_list_summary' => 1
+					];
+					$textarea_params = [
+						'textarea_showmax' => 1,
+					];
+					EmundusHelperUpdate::addFabrikElement($datas, $textarea_params, false);
+
+					$datas = [
+						'name'                 => 'link',
+						'group_id'             => $group_id,
+						'plugin'               => 'field',
+						'label'                => 'ELEMENT_DATA_EVENTS_LINK',
+						'show_in_list_summary' => 1
+					];
+					EmundusHelperUpdate::addFabrikElement($datas,[],false);
+
+					$datas = [
+						'name'                 => 'published',
+						'group_id'             => $group_id,
+						'plugin'               => 'yesno',
+						'label'                => 'PUBLISHED',
+						'show_in_list_summary' => 1
+					];
+					EmundusHelperUpdate::addFabrikElement($datas);
+				}
+			}
+		}
+
+		// Insert new translations in overrides files
+		EmundusHelperUpdate::languageBaseToFile();
+
+		return true;
+	}
 }
