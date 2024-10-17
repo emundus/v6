@@ -4969,6 +4969,11 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 			$db->execute();
 		}
 
+		if (version_compare($cache_version, '1.39.8', '<=') || $firstrun) {
+			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_REFERENT_ADD_LETTER_INTRO', 'Nous vous remercions de déposer votre lettre de recommandation pour %s. Seuls les documents au format .pdf sont acceptés. Pour toute aide, vous pouvez contacter x@.fr.');
+			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_REFERENT_ADD_LETTER_INTRO', 'Thank you for submitting your letter of recommendation for %s. Only documents in .pdf format are accepted. For further assistance, please contact x@.fr', 'override', null, null, null, 'en-GB');
+		}
+
 		return $succeed;
 	}
 
