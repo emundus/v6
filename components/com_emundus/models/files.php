@@ -2443,7 +2443,7 @@ class EmundusModelFiles extends JModelLegacy
 
 					$element_attribs = json_decode($elt->element_attribs);
 
-					if ($element_attribs->database_join_display_type == "checkbox") {
+					if ($element_attribs->database_join_display_type == "checkbox" || $element_attribs->database_join_display_type == "multilist") {
 						$select_check = $element_attribs->join_val_column;
 						if (!empty($element_attribs->join_val_column_concat)) {
 							$select_check = $element_attribs->join_val_column_concat;
@@ -3918,7 +3918,7 @@ class EmundusModelFiles extends JModelLegacy
             $dateFormat = $this->dateFormatToMysql($dateFormat);
             $query = "select fnum, DATE_FORMAT({$name}, ".$dbo->quote($dateFormat).") as val from {$tableName} where fnum in ('".implode("','", $fnums)."')";
         } else {
-            $query = "select fnum, $dbo->quote({$name}) as val from {$tableName} where fnum in ('".implode("','", $fnums)."')";
+			$query = "select fnum, " . $dbo->quoteName($name) . " as val from {$tableName} where fnum in ('".implode("','", $fnums)."')";
         }
 
         try {
