@@ -49,6 +49,7 @@
               :fileTabsStr="fileTabsStr"
               :specificTabs="specificTabs"
               :packageId="selectedPackage"
+              :readonly="readonly"
           >
           </ranking>
         </div>
@@ -95,6 +96,10 @@ export default {
     canExport: {
       type: Boolean,
       default: true
+    },
+    readonly: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

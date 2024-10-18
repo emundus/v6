@@ -145,6 +145,7 @@ Text::script('COM_EMUNDUS_FILES_FILTER_NO_ELEMENTS_FOUND');
              sysadminAccess="<?= $sysadmin_access ?>"
              fileTabsStr="<?= $this->comparison_modal_tabs ?>"
              specificTabs='<?= $this->comparison_modal_specific_tabs ?>'
+             readonly="<?= $this->readonly ?>"
         ></div>
     </div>
 </div>
