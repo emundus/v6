@@ -211,9 +211,13 @@ class EmundusHelperExport {
 
         	$nb_application_forms = 0;
             foreach ($files as $file) {
+				if (empty($sid))  {
+					$sid = $file->user_id;
+				}
+
                 if (strrpos($file->filename, 'application_form') === false) {
                     $exFileName = explode('.', $file->filename);
-                    $filePath = EMUNDUS_PATH_ABS.$file->user_id.DS.$file->filename;
+                    $filePath = EMUNDUS_PATH_ABS.$sid.DS.$file->filename;
                     if (file_exists($filePath) && filesize($filePath) != 0) {
                         if (strtolower($exFileName[1]) != 'pdf') {
                             $fn = EmundusHelperExport::makePDF($file->filename, $exFileName[1], $sid);
