@@ -5059,6 +5059,26 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 					file_put_contents($g5_style, $new_style_g5);
 				}
 			}
+
+			// Update program logo code
+			$query = $db->getQuery(true);
+			$query->clear()
+				->select('fe.id,fe.params')
+				->from($db->quoteName('#__fabrik_elements','fe'))
+				->leftJoin($db->quoteName('#__fabrik_groups','fg').' ON '.$db->quoteName('fg.id').' = '.$db->quoteName('fe.group_id'))
+				->where($db->quoteName('fe.name') . ' LIKE ' . $db->quote('logo'))
+				->where($db->quoteName('fg.name') . ' = ' . $db->quote('GROUP_PROGRAM_DETAIL'));
+			$db->setQuery($query);
+			$logo_element = $db->loadObject();
+
+			if(!empty($logo_element->id)) {
+				$params = json_decode($logo_element->params, true);
+				$params['fu_rename_file_code'] = 'error_clear_last();$new_name = $formModel->formData[\'jos_emundus_setup_programmes___code_raw\'];$new_name = preg_replace(\'/[^A-Za-z0-9_\-]/\', \'\', $new_name);$new_name .= \'-\'.rand(0,10000);$new_name .= \'.\' . pathinfo($filename, PATHINFO_EXTENSION);return $new_name;';
+
+				$logo_element->params = json_encode($params);
+				$db->updateObject('#__fabrik_elements', $logo_element, 'id');
+			}
+			//
 		}
 
 		return $succeed;
