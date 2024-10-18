@@ -23,6 +23,16 @@ $element = $this->element;?>
 	<?php endif ?>
 
 	<div class="fabrikElement">
+		<?php
+		if($element->plugin == 'yesno') {
+			if($element->value == 1) {
+				$element->element = JText::_('JYES');
+			} else {
+				$element->element = JText::_('JNO');
+			}
+		}
+		?>
+
 		<?php echo $element->element;?>
 	</div>
 

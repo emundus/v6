@@ -81,7 +81,9 @@ class EmundusViewUsers extends JViewLegacy
 		$this->assignRef('users', $users);
 
 		$pagination = $m_users->getPagination();
+		$pageNavigation = $m_users->getPageNavigation();
 		$this->assignRef('pagination', $pagination);
+		$this->assignRef('pageNavigation', $pageNavigation);
 
 		$lists['order_dir'] = JFactory::getSession()->get( 'filter_order_Dir' );
 		$lists['order']     = JFactory::getSession()->get( 'filter_order' );
