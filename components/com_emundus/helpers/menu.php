@@ -174,5 +174,24 @@ class EmundusHelperMenu {
 
 		return $menu;
 	}
+
+	public static function getLogoutRedirectLink()
+	{
+		$logout_page_item_id = ComponentHelper::getParams('com_emundus')->get('logout_page_link', '');
+
+		if (empty($logout_page_item_id)) {
+			$menu = EmundusHelperMenu::getHomepageLink();
+		} else {
+			$menu = Factory::getApplication()->getMenu()->getItem($logout_page_item_id);
+
+			if (!empty($menu)) {
+				$menu = $menu->alias;
+			} else {
+				$menu = EmundusHelperMenu::getHomepageLink();
+			}
+		}
+
+		return $menu;
+	}
 }
 ?>
