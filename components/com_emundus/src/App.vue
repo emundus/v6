@@ -29,6 +29,7 @@
         :user="datas.user.value"
         :fileTabsStr="datas.fileTabsStr.value"
         :specificTabs="datas.specificTabs.value"
+        :readonly="datas.readonly.value == '1'"
     ></rankings>
 
     <transition v-else name="slide-right">

@@ -241,7 +241,7 @@
             :hierarchy_id="hierarchy_id"
             :user="user" context="modal"
             :showOtherHierarchies="false"
-            :package-id="packageId"
+            :package-id="packageId" :readonly="readonly"
           >
           </ranking>
         </template>
@@ -334,7 +334,11 @@ export default {
     packageId: {
       type: Number,
       default: 0
-    }
+    },
+    readonly: {
+      type: Boolean,
+      default: false
+    },
   },
   mixins: [translate],
   data() {
@@ -550,6 +554,20 @@ export default {
       }
     },
     onChangeRankValue(file) {
+      if (this.readonly) {
+        Swal.fire({
+          title: this.translate('COM_EMUNDUS_RANKING_UPDATE_RANKING_ERROR_TITLE'),
+          text: this.translate('COM_EMUNDUS_RANKING_UPDATE_RANKING_ERROR_LOCKED'),
+          icon: 'error',
+          customClass: {
+            title: 'em-swal-title',
+            confirmButton: 'em-swal-confirm-button',
+          },
+        });
+
+        return;
+      }
+
       if (file.locked == 1) {
         Swal.fire({
           title: this.translate('COM_EMUNDUS_RANKING_UPDATE_RANKING_ERROR_TITLE'),
@@ -767,6 +785,10 @@ export default {
       return this.rankedFiles.concat(this.unrankedFiles);
     },
     ismyRankingLocked() {
+      if (this.readonly) {
+        return true;
+      }
+
       return this.rankings.myRanking.length > 0 ? this.rankings.myRanking.every(file => file.locked == 1) : false;
     },
     rankingsToLock() {

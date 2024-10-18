@@ -34,6 +34,8 @@ class EmundusViewRanking extends JViewLegacy
     var $comparison_modal_tabs = '';
     var $comparison_modal_specific_tabs = '';
 
+	var $readonly = false;
+
     function __construct($config = array())
     {
         $this->user = Factory::getUser();
@@ -78,6 +80,8 @@ class EmundusViewRanking extends JViewLegacy
 
             $this->comparison_modal_specific_tabs = json_encode($this->comparison_modal_specific_tabs);
         }
+
+		$this->readonly = $this->params->get('force_readonly', false);
         parent::__construct($config);
     }
 
