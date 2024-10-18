@@ -51,6 +51,18 @@ class FixCollation extends JApplicationCli {
 		$db_name = JFactory::getConfig()->get('db');
 		$db_tables        = $db->getTableList();
 
+		$sql_engine = $db->setQuery("SHOW VARIABLES LIKE 'version_comment'")->loadAssoc();
+		if(empty($sql_engine)) {
+			$this->out($this->colorLog("Failed to get sql engine version\n",'e'));
+			return;
+		}
+
+		$sql_engine = $sql_engine['Value'];
+		$collation = 'utf8mb4_0900_ai_ci';
+		if(strpos($sql_engine, 'MySQL') === false) {
+			$collation = 'utf8mb4_unicode_ci';
+		}
+
 		if (empty($db_tables)) {
 			$this->out($this->colorLog("No tables found in the database\n",'e'));
 			return;
@@ -79,9 +91,9 @@ class FixCollation extends JApplicationCli {
 				$this->out($this->colorLog("Failed to fix fnum length and collation for table $table\n",'e'));
 			}
 
-			$this->out($this->colorLog("Converting table $table to utf8mb4\n"));
-			if (!$this->convertToUtf8mb4($table, $db)) {
-				$this->out($this->colorLog("Failed to convert table $table to utf8mb4\n",'e'));
+			$this->out($this->colorLog("Converting table $table to ".$collation."\n"));
+			if (!$this->convertToUtf8mb4($table, $db, $collation)) {
+				$this->out($this->colorLog("Failed to convert table $table to ".$collation."\n",'e'));
 			}
 		}
 
@@ -104,11 +116,11 @@ class FixCollation extends JApplicationCli {
 		return $fixed;
 	}
 
-	private function convertToUtf8mb4($table, $db): bool
+	private function convertToUtf8mb4($table, $db, $collation): bool
 	{
 		$converted = false;
 		try {
-			$query = 'ALTER TABLE ' . $db->quoteName($table) . ' CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci';
+			$query = 'ALTER TABLE ' . $db->quoteName($table) . ' CONVERT TO CHARACTER SET utf8mb4 COLLATE ' . $collation;
 			$converted = $db->setQuery($query)->execute();
 		}
 		catch (\Exception $e) {
