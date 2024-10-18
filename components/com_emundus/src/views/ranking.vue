@@ -205,7 +205,7 @@
       >
         <template v-slot:before-default-file-tabs>
           <div class="em-flex-row em-ml-8 em-mt-8 mb-4">
-            <div v-if="defaultFile.locked !== 1" class="flex flex-row items-center">
+            <div v-if="defaultFile.locked !== 1 && !ismyRankingLocked" class="flex flex-row items-center">
               <label class="em-mr-4"> {{ translate('COM_EMUNDUS_CLASSEMENT_RANKING_SELECT_LABEL') }} </label>
               <select name="default-file-select" v-model="defaultFile.rank" @change="onChangeRankValue(defaultFile)">
                 <option value="-1">{{ translate('COM_EMUNDUS_CLASSEMENT_NOT_RANKED') }}</option>
@@ -220,7 +220,7 @@
         </template>
         <template v-slot:before-compare-file-tabs>
           <div class="em-flex-row em-ml-8 em-mt-8 mb-4">
-            <div v-if="selectedOtherFile && selectedOtherFile.locked !== 1" class="flex flex-row items-center">
+            <div v-if="selectedOtherFile && selectedOtherFile.locked !== 1 && !ismyRankingLocked" class="flex flex-row items-center">
               <label class="em-mr-4"> {{ translate('COM_EMUNDUS_CLASSEMENT_RANKING_SELECT_LABEL') }} </label>
               <select v-model="selectedOtherFile.rank"
                       @change="onChangeRankValue(selectedOtherFile)">
