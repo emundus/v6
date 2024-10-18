@@ -1873,7 +1873,7 @@ class EmundusModelRanking extends JModelList
                             $hierarchy_label = $this->getHierarchyData($hierachy_id)['label'];
 
                             $header[] = Text::_('COM_EMUNDUS_RANKING_EXPORT_RANKING') . ' ' . $hierarchy_label;
-                            $header[] = Text::_('COM_EMUNDUS_RANKING_EXPORT_STATUS') . ' - ' . $hierarchy_label;
+                            $header[] = Text::_('COM_EMUNDUS_RANKING_EXPORT_RANKER') . ' - ' . $hierarchy_label;
                         }
 
                         $this->dispatchEvent('onBeforeExportRanking', ['header' => &$header, 'lines' => &$export_array, 'fnums' => $fnums, 'ccids' => $ccids]);
