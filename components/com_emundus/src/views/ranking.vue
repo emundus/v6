@@ -74,9 +74,9 @@
           >
             <tr v-for="file in rankedFiles" :key="file.id" :data-file-id="file.id" class="ranked-file">
               <td>
-                <span class="material-icons-outlined" v-if="file.locked == 1">lock</span>
+                <span class="material-icons-outlined" v-if="file.locked == 1 || ismyRankingLocked">lock</span>
                 <span class="material-icons-outlined" v-else>lock_open</span>
-                <span class="material-icons-outlined handle" v-if="file.locked != 1 && ordering.orderBy === 'default'">drag_indicator</span>
+                <span class="material-icons-outlined handle" v-if="file.locked != 1 && !ismyRankingLocked && ordering.orderBy === 'default'">drag_indicator</span>
               </td>
               <td class="em-flex-column file-identifier em-pointer" @click="openClickOpenFile(file)">
                 <span>{{ file.applicant }}</span>
