@@ -1534,7 +1534,7 @@ form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row-flu
                 }
 @supports (-webkit-touch-callout: none) {
                     form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row-fluid .fabrikgrid_checkbox label input {
-                        transform: scale(0.8,0.8);
+                        transform: scale(0.7,0.7);
                     }
                 }
 form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row-fluid .fabrikgrid_checkbox label span {
