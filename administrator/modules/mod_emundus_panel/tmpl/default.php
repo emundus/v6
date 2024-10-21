@@ -8,7 +8,6 @@
 defined('_JEXEC') or die;
 
 JHtml::_('bootstrap.tooltip');
-
 JHTML::styleSheet('https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined');
 ?>
 <div class="em-p-8-12">

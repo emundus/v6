@@ -136,6 +136,7 @@ components/com_eventbooking/fields.xml
 /plugins/authentication/miniorangesaml/
 /plugins/system/samlredirect/
 /plugins/user/samllogout/
+plugins/user/minioragejoomlaidp/
 
 ## FABRIK JS ##
 /components/com_fabrik/js/form_*.js

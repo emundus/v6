@@ -756,6 +756,94 @@ class EmundusModelUsers extends JModelList {
         return $this->_pagination;
     }
 
+	public function getPageNavigation() : string {
+		if ($this->getPagination()->pagesTotal <= 1) {
+			return '';
+		}
+
+		$pageNavigation = "<div class='em-container-pagination-selectPage'>";
+		$pageNavigation .= "<ul class='pagination pagination-sm'>";
+
+		if($this->getPagination()->pagesCurrent == $this->getPagination()->pagesStart) {
+			$pageNavigation .= "<li><a class='disabled cursor-pointer'><span class='material-icons'>navigate_before</span></a></li>";
+		} else
+		{
+			$pageNavigation .= "<li><a href='#em-data' id='" . ($this->getPagination()->pagesCurrent - 1) . "'><span class='material-icons'>navigate_before</span></a></li>";
+		}
+
+		if ($this->getPagination()->pagesTotal > 15) {
+			$index = 5;
+			if($this->getPagination()->pagesCurrent > 5 && $this->getPagination()->pagesCurrent < 8)
+			{
+				$index = $this->getPagination()->pagesCurrent - 3;
+			}
+
+			for ($i = 1; $i <= $index; $i++ ) {
+				$pageNavigation .= "<li ";
+				if ($this->getPagination()->pagesCurrent == $i) {
+					$pageNavigation .= "class='active'";
+				}
+				$pageNavigation .= "><a id='" . $i . "' href='#em-data'>" . $i . "</a></li>";
+			}
+			if($this->getPagination()->pagesCurrent > 8)
+			{
+				$pageNavigation .= "<li class='disabled'><span>...</span></li>";
+			}
+			if ($this->getPagination()->pagesCurrent <= 5) {
+				for ($i = 6; $i <= 10; $i++ ) {
+					$pageNavigation .= "<li ";
+					if ($this->getPagination()->pagesCurrent == $i) {
+						$pageNavigation .= "class='active'";
+					}
+					$pageNavigation .= "><a id=" . $i . " href='#em-data'>" . $i . "</a></li>";
+				}
+			} else {
+				for ( $i = $this->getPagination()->pagesCurrent - 2 ; $i <= $this->getPagination()->pagesCurrent + 2 ; $i++) {
+					if ( $i <= $this->getPagination()->pagesTotal ) {
+						$pageNavigation .= "<li ";
+						if ( $this->getPagination()->pagesCurrent == $i ) {
+							$pageNavigation .= "class='active'";
+						}
+						$pageNavigation .= "><a id=" . $i . " href='#em-data'>" . $i . "</a></li>";
+					}
+				}
+			}
+
+
+			// if total pages - current page is less than 5
+			$index = 4;
+			if($this->getPagination()->pagesTotal - $this->getPagination()->pagesCurrent < 7)
+			{
+				$index = $this->getPagination()->pagesTotal - ($this->getPagination()->pagesCurrent+3);
+			} else {
+				$pageNavigation .= "<li class='disabled'><span>...</span></li>";
+			}
+			for ( $i = $this->getPagination()->pagesTotal - $index ; $i <= $this->getPagination()->pagesTotal ; $i++ ) {
+				$pageNavigation .= "<li ";
+				if ( $this->getPagination()->pagesCurrent == $i ) {
+					$pageNavigation .= "class='active'";
+				}
+				$pageNavigation .= "><a id='" . $i . "' href='#em-data'>" . $i . "</a></li>";
+			}
+		} else {
+			for ( $i = 1 ; $i <= $this->getPagination()->pagesStop ; $i++) {
+				$pageNavigation .= "<li ";
+				if ( $this->getPagination()->pagesCurrent == $i ) {
+					$pageNavigation .= "class='active'";
+				}
+				$pageNavigation .= "><a id='" . $i . "' href='#em-data'>" . $i . "</a></li>";
+			}
+		}
+
+		if($this->getPagination()->pagesCurrent == $this->getPagination()->pagesStop) {
+			$pageNavigation .= "<li><a class='disabled cursor-pointer'><span class='material-icons'>navigate_next</span></a></li></ul></div>";
+		} else {
+			$pageNavigation .= "<li><a href='#em-data' id='" . ($this->getPagination()->pagesCurrent + 1) . "'><span class='material-icons'>navigate_next</span></a></li></ul></div>";
+		}
+
+		return $pageNavigation;
+	}
+
     /**
      * Method to get the registration form.
      *

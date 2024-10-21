@@ -60,7 +60,7 @@ foreach ($fnums as $fnum => $fnumInfo) {
 	if (empty($attachments)) {
 
 		require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');
-        $files[$fnum] = letter_pdf($fnumInfo['applicant_id'], $fnumInfo['step'], $fnumInfo['training'], $fnumInfo['campaign_id'], 0, "F", $fnum);
+        //$files[$fnum] = letter_pdf($fnumInfo['applicant_id'], $fnumInfo['step'], $fnumInfo['training'], $fnumInfo['campaign_id'], 0, "F", $fnum);
 
 	} else {
 

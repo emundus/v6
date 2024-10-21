@@ -284,7 +284,9 @@ if($currentCampaign->apply_online == 0){
         if (headerNav && sidebar) {
             sidebar.style.top = headerNav.offsetHeight + 8 + 'px';
         }
-        document.getElementById('campaign_tab').classList.add('current-tab');
+        if(document.getElementById('campaign_tab')) {
+            document.getElementById('campaign_tab').classList.add('current-tab');
+        }
         <?php if (is_array($modules_tabs) && in_array('faq', $modules_tabs)) : ?>
         const faq = document.getElementById('faq');
         if (faq) {

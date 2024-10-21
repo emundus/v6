@@ -4399,22 +4399,13 @@ $(document).ready(function () {
                         data: {
                             fnums: fnums
                         },
-                        success: function (result) {
-                            var dataWrapper = document.getElementById('data');
-
-                            if (dataWrapper) {
-                                dataWrapper.innerHTML = result;
-                                document.querySelector('.em-swal-confirm-button').style.opacity = '0';
-                                $('#email-loader').remove();
-                                dataWrapper.classList.remove('em-loader');
-                            }
+                        success: function(result) {
+                            $('#data').append(result);
+                            document.querySelector('.em-swal-confirm-button').style.opacity = '0';
+                            $('#email-loader').remove();
+                            $('#data').removeClass('em-loader');
                         },
                         error: function (jqXHR) {
-                            var dataWrapper = document.getElementById('data');
-                            if (dataWrapper) {
-                                dataWrapper.classList.remove('em-loader');
-                                dataWrapper.innerHTML = '<p class="alert alert-error">' + Joomla.JText._('COM_EMUNDUS_ONBOARD_ERROR_MESSAGE') + '</p>';
-                            }
                             console.warn(jqXHR.responseText);
                         }
                     });
@@ -6105,9 +6096,23 @@ $(document).ready(function () {
 ;
 
 function updateProfileForm(profile) {
-    document.querySelector('.em-light-selected-tab p').classList.remove('em-neutral-900-color');
-    document.querySelector('.em-light-selected-tab p').classList.add('em-neutral-600-color');
-    document.querySelector('.em-light-selected-tab').classList.remove('em-light-selected-tab');
+    let selectedProfile = 0;
+
+    const alreadySelectedTab = document.querySelector('#em-switch-profiles .em-light-selected-tab');
+    if (alreadySelectedTab) {
+        const match = alreadySelectedTab.id.match(/tab_link_(\d+)/);
+        if (match) {
+            selectedProfile = match[1];
+        }
+    }
+
+    if (selectedProfile == profile) {
+        return;
+    }
+
+    document.querySelector('#em-switch-profiles .em-light-selected-tab p').classList.remove('em-neutral-900-color');
+    document.querySelector('#em-switch-profiles .em-light-selected-tab p').classList.add('em-neutral-600-color');
+    document.querySelector('#em-switch-profiles .em-light-selected-tab').classList.remove('em-light-selected-tab');
 
     document.querySelector('#tab_link_' + profile).classList.add('em-light-selected-tab');
     document.querySelector('#tab_link_' + profile + ' p').classList.remove('em-neutral-600-color');
