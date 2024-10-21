@@ -380,11 +380,7 @@ class EmundusControllerEmail extends JControllerLegacy {
         if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
             $categories = $this->m_emails->getEmailCategories();
 
-            if (!empty($categories)) {
-	            $response = array('status' => true, 'msg' => JText::_('EMAIL_CATEGORIES_RETRIEVED'), 'data' => $categories);
-            } else {
-	            $response['msg'] = JText::_('ERROR_CANNOT_RETRIEVE_EMAIL_CATEGORIES');
-            }
+			$response = array('status' => true, 'msg' => JText::_('EMAIL_CATEGORIES_RETRIEVED'), 'data' => $categories);
         }
 
         echo json_encode((object)$response);
