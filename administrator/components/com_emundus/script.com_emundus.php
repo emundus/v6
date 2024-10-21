@@ -5291,7 +5291,7 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 
 			foreach ($forms_ids as $formId)
 			{
-				$columns_not_present = [];
+				$dead_columns = [];
 
 				$query->clear()
 					->select('db_table_name')
@@ -5312,14 +5312,23 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 					$db->setQuery($query);
 					$element_id = $db->loadResult();
 
-					if(empty($element_id)) {
-						$columns_not_present[] = $column->Field;
+					// Check if some datas are present in the column
+					$query->clear()
+						->select('COUNT(*)')
+						->from($db->quoteName($db_table_name))
+						->where($db->quoteName($column->Field) . ' IS NOT NULL');
+					$db->setQuery($query);
+					$datas = $db->loadResult();
+
+					// If not element is associated to the column and no data are present in the column
+					if(empty($element_id) && empty($datas)) {
+						$dead_columns[] = $column->Field;
 					}
 				}
 
-				if(!empty($columns_not_present)) {
-					$count = count($columns_not_present);
-					echo "\r\033[33m$count columns of table $db_table_name have no associated Fabrik element : " . implode(', ', $columns_not_present) . "\033[0m\n";
+				if(!empty($dead_columns)) {
+					$count = count($dead_columns);
+					echo "\r\033[33m$count columns of table $db_table_name have no associated Fabrik element : " . implode(', ', $dead_columns) . "\033[0m\n";
 				}
 			}
 		}
