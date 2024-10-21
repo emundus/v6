@@ -2047,21 +2047,63 @@ class EmundusModelForm extends JModelList {
         }
     }
 
-    public function getAssociatedCampaign($profile_id) {
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+    public function getAssociatedCampaign($profile_id, $user_id) {
 
-        $query->select(['id as id','label as label'])
-            ->from ($db->quoteName('#__emundus_setup_campaigns'))
-            ->where($db->quoteName('profile_id') . ' = ' . $db->quote($profile_id));
+        $campaigns = [];
 
-        try {
-            $db->setQuery($query);
-            return $db->loadObjectList();
-        } catch(Exception $e) {
-            JLog::add('component/com_emundus/models/form | Error at getting campaigns link to the form ' . $profile_id . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return false;
+        // Get affected programs
+        require_once(JPATH_SITE . '/components/com_emundus/models/programme.php');
+        $m_programme = new EmundusModelProgramme;
+        $programs = $m_programme->getUserPrograms($user_id);
+
+        if (!empty($programs)) {
+
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select([
+                'sc.id as id',
+                'sc.label as label'
+            ])
+                ->from($db->quoteName('#__emundus_setup_campaigns', 'sc'))
+                ->leftJoin(
+                    $db->quoteName('#__emundus_campaign_candidature', 'cc') .
+                    ' ON ' .
+                    $db->quoteName('cc.campaign_id') .
+                    ' = ' .
+                    $db->quoteName('sc.id') .
+                    ' AND ' .
+                    $db->quoteName('cc.published') . ' = 1'
+                )
+                ->leftJoin(
+                    $db->quoteName('#__emundus_setup_programmes', 'sp') .
+                    ' ON ' .
+                    $db->quoteName('sp.code') .
+                    ' LIKE ' .
+                    $db->quoteName('sc.training')
+                )
+                ->leftJoin(
+                    $db->quoteName('#__users', 'u') .
+                    ' ON ' .
+                    $db->quoteName('u.id') .
+                    ' = ' .
+                    $db->quoteName('cc.applicant_id') .
+                    ' AND ' .
+                    $db->quoteName('u.block') . ' = 0'
+                );
+
+            $query->where($db->quoteName('sc.training') . ' IN (' . implode(',', $db->quote($programs)) . ')');
+
+            try {
+                $db->setQuery($query);
+                $campaigns = $db->loadObjectList();
+
+            } catch (Exception $e) {
+                JLog::add('component/com_emundus/models/form | Error at getting campaigns link to the form ' . $profile_id . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            }
         }
+
+        return $campaigns;
     }
 
     public function getAssociatedProgram($form_id) {
