@@ -217,7 +217,7 @@ class EmundusModelFiles extends JModelLegacy
                                     where `' . $t . '`.parent_id = `'.$def_elmt->join_from_table.'`.id
                                 )) AS `'.$t.'___'. $def_elmt->element_name . '`';
                         } else if( $attribs->database_join_display_type == 'multilist' ) {
-	                        $t = $def_elmt->tab_name.'_repeat_'.$def_elmt->element_name;
+                            $t = $def_elmt->table_join;
 	                        $query = '(
                                 select DISTINCT '.$column.'
                                 from '.$attribs->join_db_name.'
