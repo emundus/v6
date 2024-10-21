@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<extension type="module" version="2.5.0" method="upgrade" client="site">
+    <name>MOD_EMUNDUS_REBECCA</name>
+    <author>eMundus</author>
+    <creationDate>October 2024</creationDate>
+    <copyright>Copyright (C) 2024 eMundus. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>dev@emundus.fr</authorEmail>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>1.39.9</version>
+    <description>MOD_EMUNDUS_REBECCA_DESCRIPTION</description>
+    <files>
+        <filename>mod_emundus_rebecca.xml</filename>
+        <filename module="mod_emundus_rebecca">mod_emundus_rebecca.php</filename>
+        <filename>index.html</filename>
+        <folder>tmpl</folder>
+        <folder>language</folder>
+    </files>
+    <config>
+        <fields name="params">
+            <fieldset name="basic" label="Options">
+
+                <field type="sql" name="profiles" label="MOD_EMUNDUS_REBECCA_PROFILES"
+                       multiple="true"
+                       query="SELECT id, label FROM #__emundus_setup_profiles WHERE published = 0" key_field="id" value_field="label" default="2"
+                       />
+
+                <field type="note" label="MOD_EMUNDUS_REBECCA_STYLE" />
+
+                <field type="color" name="call_btn_colors" label="MOD_EMUNDUS_REBECCA_CALL_BTN_COLORS" description=""
+                       default="#c01717"/>
+                <field type="text" name="call_btn_txt" label="MOD_EMUNDUS_REBECCA_CALL_BTN_TEXT"
+                       default="Une question réglementaire ?"/>
+                <field type="text" name="default_flag" label="MOD_EMUNDUS_REBECCA_DEFAULT_FLAG" default="Titulaire"/>
+                <field type="text" name="width" label="MOD_EMUNDUS_REBECCA_WIDTH" default="313"/>
+                <field type="text" name="height" label="MOD_EMUNDUS_REBECCA_HEIGHT" default="34"/>
+                <field type="text" name="right" label="MOD_EMUNDUS_REBECCA_RIGHT_POSITION" default="10"/>
+                <field type="text" name="bottom" label="MOD_EMUNDUS_REBECCA_BOTTOM_POSITION" default="0"/>
+
+                <field type="note" label="MOD_EMUNDUS_REBECCA_CONTEXT" />
+
+                <field type="text" name="application" label="MOD_EMUNDUS_REBECCA_APPLICATION" default="JOOMLA"/>
+                <field type="text" name="entite" label="MOD_EMUNDUS_REBECCA_ENTITE" default="SUN"/>
+                <field type="text" name="partenaire" label="MOD_EMUNDUS_REBECCA_PARTENAIRE" default="SUN"/>
+                <field type="text" name="ministere" label="MOD_EMUNDUS_REBECCA_MINISTERE" default="SUN"/>
+                <field type="text" name="contact_email" label="MOD_EMUNDUS_REBECCA_CONTACT_EMAIL"
+                       default="dsi-equipeschemadirecteurnumerique@listes.sorbonne-universite.fr"/>
+            </fieldset>
+        </fields>
+    </config>
+</extension>
