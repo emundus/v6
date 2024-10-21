@@ -51,7 +51,7 @@ class EmundusControllerForm extends JControllerLegacy {
 
             foreach ($data['datas'] as $key => $form) {
                 // find campaigns associated with form
-                $campaigns = $this->m_form->getAssociatedCampaign($form->id);
+                $campaigns = $this->m_form->getAssociatedCampaign($form->id, $user->id);
 
                 if (!empty($campaigns)) {
                     if (count($campaigns) < 2) {
@@ -748,7 +748,7 @@ class EmundusControllerForm extends JControllerLegacy {
 
 	        $profile_id = $jinput->getInt('pid');
 
-            $campaigns = $this->m_form->getAssociatedCampaign($profile_id);
+            $campaigns = $this->m_form->getAssociatedCampaign($profile_id, $user->id);
 
             $tab = array('status' => 1, 'msg' => 'worked', 'data' => $campaigns);
         }
