@@ -58,7 +58,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
                                             <label for="em-check-all" class="check-box"></label>
                                         </div>
                                         <div class="selectDropdown" id="selectDropdown">
-                                            <i class="fas fa-sort-down"></i>
+                                            <span class="material-icons-outlined">keyboard_arrow_down</span>
                                         </div>
 
                                     </div>
