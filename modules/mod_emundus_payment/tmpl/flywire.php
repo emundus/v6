@@ -55,8 +55,7 @@ $lang = Factory::getLanguage()->getTag();
 
                     <div class="row-fluid mb-3">
                         <label for="sender_email"><?= Text::_('FLYWIRE_SENDER_EMAIL') ?><b class="asterisk">*</b></label>
-                        <input id="sender_email" type="email" class="w-full" placeholder="" pattern="^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
-                               value="<?=  !empty($config['sender_email']) ? $config['sender_email'] : ''  ?>">
+                        <input id="sender_email" type="email" class="w-full" placeholder="" value="<?= !empty($config['sender_email']) ? $config['sender_email'] : ''  ?>">
                     </div>
 
                     <div class="row-fluid mb-3">
@@ -96,7 +95,6 @@ $lang = Factory::getLanguage()->getTag();
                     </div>
 
                     <div class="row-fluid mb-3">
-
                         <label for="sender_country"><?= Text::_('FLYWIRE_SENDER_COUNTRY') ?><b class="asterisk">*</b></label>
                         <select id="sender_country" class="w-full">
                             <?php
