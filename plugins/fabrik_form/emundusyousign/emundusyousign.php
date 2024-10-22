@@ -162,9 +162,21 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 		// Warning: For expert invitations, which may have multiple fnums, this does not support making and signing a doc for each file.
 		// Only batch signing of a single doc generated based on a single file will work.
 		// However, in the case of expert invitations, multiple files_requests will be generated and updated for the signature requests.
-		$fnum = $jinput->get->get('rowid');
-
+		$fnum = '';
+		$file_request_id = $jinput->get->get('rowid');
 		$key_id = $jinput->get('jos_emundus_files_request___keyid');
+
+		if (!empty($file_request_id) && !empty($key_id)) {
+			$query->clear()
+				->select('fnum')
+				->from('jos_emundus_files_request')
+				->where('id = ' . $db->quote($file_request_id))
+				->andWhere('keyid = ' . $db->quote($key_id));
+
+			$db->setQuery($query);
+			$fnum = $db->loadResult();
+		}
+
 		if ($this->signer_type === 'other_user' && !empty($key_id)) {
 
 			// Files_requests uses fnum field but in the case of expert invitations there can be multiple fnums.
@@ -224,6 +236,63 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 		$api_key = $eMConfig->get('yousign_api_key', 'https://staging-api.yousign.com');
 		if (empty($host) || empty($api_key)) {
 			throw new Exception('Missing YouSign info.');
+		}
+
+		// check if user associated to key has nor already signed confidentiality file, and if so do not start another signature request
+		$query->clear()
+			->select('email')
+			->from('jos_emundus_files_request')
+			->where('keyid = ' . $db->quote($key_id));
+
+		$db->setQuery($query);
+		$signer_email = $db->loadResult();
+
+		if (!empty($signer_email)) {
+			$query->clear()
+				->select('signed_file')
+				->from('jos_emundus_files_request')
+				->where('email LIKE ' . $db->quote($signer_email))
+				->andWhere('signed_file LIKE "%.pdf%"');
+
+			$db->setQuery($query);
+			$signed_file = $db->loadResult();
+
+			if (!empty($signed_file)) {
+				// remove yousign params from user
+				$query->clear()
+					->update('#__users')
+					->set('params = "{}"')
+					->where('email = ' . $db->quote($signer_email));
+
+				$db->setQuery($query);
+				$db->execute();
+
+				// set values of current file request
+				$query->clear()
+					->select('signed_file, signer_id, keyid, filename, yousign_document_id')
+					->from('jos_emundus_files_request')
+					->where('email LIKE ' . $db->quote($signer_email))
+					->andWhere('signed_file LIKE "%.pdf%"');
+
+				$db->setQuery($query);
+				$user_signed_file_request_infos = $db->loadAssoc();
+
+
+				$query->clear()
+					->update('jos_emundus_files_request')
+					->set('signed_file = ' . $db->quote($user_signed_file_request_infos['signed_file']))
+					->set('signer_id = ' . $db->quote($user_signed_file_request_infos['signer_id']))
+					->set('keyid = ' . $db->quote($user_signed_file_request_infos['keyid']))
+					->set('filename = ' . $db->quote($user_signed_file_request_infos['filename']))
+					->set('yousign_document_id = ' . $db->quote($user_signed_file_request_infos['yousign_document_id']))
+					->where('keyid = ' . $db->quote($key_id));
+				$db->setQuery($query);
+				$db->execute();
+
+				// copy in files request
+				$application->enqueueMessage(JText::_('Rapport de confidentialité déjà signé.'), 'success');
+				$application->redirect('/');
+			}
 		}
 
         $fileNamePath = '';
@@ -327,6 +396,9 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 
 		// And now begins the YouSign API Magic.
         try {
+			if (empty($fileName)) {
+				throw new Exception('Le document de confidentialité n\'a pas pu être généré.');
+			}
             $method = $this->getParam('method');
 
             $client = new GuzzleClient();
@@ -371,7 +443,7 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 					}
 
                     $file_pointer = fopen($fileNamePath, 'r');
-                    if ($file_pointer) {
+					if ($file_pointer && strpos($fileNamePath, 'pdf') !== false) {
                         $document_response = $client->request('POST', $host.'/signature_requests/' . $signatureRequestId . '/documents',
                             [
                                 'multipart' => [
@@ -388,7 +460,7 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
                                 ],
                                 'headers' => ['Accept' => 'application/json', 'Authorization' => 'Bearer '.$api_key]
                             ]);
-                        fclose($file_pointer);
+						//fclose($file_pointer);
 
                         if ($document_response->getStatusCode() == 201) {
                             $document_body = json_decode($document_response->getBody());
@@ -501,11 +573,24 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
                 ->andWhere($db->quoteName('fnum').' IN ("'.implode('","', $fnums).'")');
             $db->setQuery($query);
 
-            try {
-                $db->execute();
-            } catch (Exception $e) {
-                JLog::add('Error removing assoc users : '.$e->getMessage(), JLog::ERROR, 'com_emundus.yousign');
-            }
+			try {
+				$db->setQuery($query);
+				$db->execute();
+			} catch (Exception $e) {
+				JLog::add('Error removing assoc users : '.$e->getMessage(), JLog::ERROR, 'com_emundus.yousign');
+			}
+
+			$query->clear()
+				->update('jos_emundus_files_request')
+				->set('uploaded = 0')
+				->where('keyid = ' . $db->quote($key_id));
+
+			try {
+				$db->setQuery($query);
+				$db->execute();
+			} catch (Exception $e) {
+				JLog::add('Error removing assoc users : '.$e->getMessage(), JLog::ERROR, 'com_emundus.yousign');
+			}
 
             JLog::add('Failed yousign api request.' . $e->getMessage() . ' file name was : ' . $file->name, JLog::ERROR, 'com_emundus.yousign');
             throw new Exception($e->getMessage());

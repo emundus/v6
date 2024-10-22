@@ -11,7 +11,15 @@
 defined('_JEXEC') or die;
 $eMConfig = JComponentHelper::getParams('com_emundus');
 
+if (!empty($yousignSession['iframe_url'])) {
+	?>
+    <div class="em-w-100 em-flex-row" style="justify-content: flex-end;">
+        <a class="em-mt-16 em-pointer" href="<?= $yousignSession['iframe_url']; ?>" target="_blank"><button class="em-primary-button">Signer l'engagement de confidentialité.</button></a>
+    </div>
+	<?php
+} else {
+	?>
+    <p>Impossible de retrouver la requête de signature</p>
+	<?php
+}
 ?>
-<div class="em-w-100 em-flex-row" style="justify-content: flex-end;">
-    <a class="em-mt-16 em-pointer" href="<?= $yousignSession['iframe_url']; ?>" target="_blank"><button class="em-primary-button">Signer l'engagement de confidentialité.</button></a>
-</div>
