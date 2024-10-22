@@ -145,43 +145,43 @@ class EmundusModelEmails extends JModelList {
             return true;
         });
 
-        $emails_tmpl = array();
+        $emails_triggers = array();
 
-        if (!empty($triggers) && !empty($triggers[0]->id)) {
+        if (!empty($triggers) && !empty($triggers[0]->trigger_id)) {
             foreach ($triggers as $trigger) {
                 // email tmpl
-                $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['subject'] = $trigger->subject;
-                $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['emailfrom'] = $trigger->emailfrom;
-                $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['message'] = $trigger->message;
-                $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['name'] = $trigger->name;
-                $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['tags'] = $trigger->tags;
-                $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['attachments'] = $trigger->attachments;
-                $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['letter_attachment'] = $trigger->letter_attachments;
+                $emails_triggers[$trigger->trigger_id][$trigger->code]['tmpl']['subject'] = $trigger->subject;
+                $emails_triggers[$trigger->trigger_id][$trigger->code]['tmpl']['emailfrom'] = $trigger->emailfrom;
+                $emails_triggers[$trigger->trigger_id][$trigger->code]['tmpl']['message'] = $trigger->message;
+                $emails_triggers[$trigger->trigger_id][$trigger->code]['tmpl']['name'] = $trigger->name;
+                $emails_triggers[$trigger->trigger_id][$trigger->code]['tmpl']['tags'] = $trigger->tags;
+                $emails_triggers[$trigger->trigger_id][$trigger->code]['tmpl']['attachments'] = $trigger->attachments;
+                $emails_triggers[$trigger->trigger_id][$trigger->code]['tmpl']['letter_attachment'] = $trigger->letter_attachments;
 
                 // This is the email template model, the HTML structure that makes the email look good.
-                $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['template'] = $trigger->Template;
+                $emails_triggers[$trigger->trigger_id][$trigger->code]['tmpl']['template'] = $trigger->Template;
 
                 // default recipients
                 if (isset($trigger->profile_id) && !empty($trigger->profile_id)) {
-                    $emails_tmpl[$trigger->id][$trigger->code]['to']['profile'] = explode(',', $trigger->profile_id);
+                    $emails_triggers[$trigger->trigger_id][$trigger->code]['to']['profile'] = explode(',', $trigger->profile_id);
                 }
 
                 if (isset($trigger->group_id) && !empty($trigger->group_id)) {
-                    $emails_tmpl[$trigger->id][$trigger->code]['to']['group'] = explode(',', $trigger->group_id);
+                    $emails_triggers[$trigger->trigger_id][$trigger->code]['to']['group'] = explode(',', $trigger->group_id);
                 }
 
                 if (isset($trigger->user_id) && !empty($trigger->user_id)) {
-                    $emails_tmpl[$trigger->id][$trigger->code]['to']['user'] = explode(',', $trigger->user_id);
+                    $emails_triggers[$trigger->trigger_id][$trigger->code]['to']['user'] = explode(',', $trigger->user_id);
                 }
 
-                $emails_tmpl[$trigger->id][$trigger->code]['to']['to_applicant'] = $trigger->to_applicant;
-                $emails_tmpl[$trigger->id][$trigger->code]['to']['to_current_user'] = $trigger->to_current_user;
-                $emails_tmpl[$trigger->id][$trigger->code]['to']['cc'] = $trigger->cc;
-                $emails_tmpl[$trigger->id][$trigger->code]['to']['bcc'] = $trigger->bcc;
+                $emails_triggers[$trigger->trigger_id][$trigger->code]['to']['to_applicant'] = $trigger->to_applicant;
+                $emails_triggers[$trigger->trigger_id][$trigger->code]['to']['to_current_user'] = $trigger->to_current_user;
+                $emails_triggers[$trigger->trigger_id][$trigger->code]['to']['cc'] = $trigger->cc;
+                $emails_triggers[$trigger->trigger_id][$trigger->code]['to']['bcc'] = $trigger->bcc;
             }
 
             // generate list of default recipient email + name
-            foreach ($emails_tmpl as $key => $codes) {
+            foreach ($emails_triggers as $key => $codes) {
                 $trigger_id = $key;
 
                 foreach ($codes as $key => $tmpl) {
@@ -237,13 +237,13 @@ class EmundusModelEmails extends JModelList {
                         $recipients[$current_user->id] = array('id' => $current_user->id, 'name' => $current_user->name, 'email' => $current_user->email, 'university_id' => $current_user->university_id);
                     }
 
-                    $emails_tmpl[$trigger_id][$code]['to']['recipients'] = $recipients;
+                    $emails_triggers[$trigger_id][$code]['to']['recipients'] = $recipients;
                 }
 
             }
         }
 
-        return $emails_tmpl;
+        return $emails_triggers;
     }
 
     /**
@@ -259,7 +259,7 @@ class EmundusModelEmails extends JModelList {
      * @since version v6
      * @throws Exception
      */
-    public function sendEmailTrigger($step, $code, $to_applicant = 0, $student = null, $to_current_user = null) {
+    public function sendEmailTrigger($step, $code, $to_applicant = 0, $student = null, $to_current_user = null, $trigger_emails = null) {
         $app = JFactory::getApplication();
         $config = JFactory::getConfig();
         $email_from_sys = $config->get('mailfrom');
@@ -267,7 +267,9 @@ class EmundusModelEmails extends JModelList {
         jimport('joomla.log.log');
         JLog::addLogger(array('text_file' => 'com_emundus.email.php'), JLog::ALL, array('com_emundus'));
 
-        $trigger_emails = $this->getEmailTrigger($step, $code, $to_applicant, $to_current_user, $student);
+        if (empty($trigger_emails)) {
+            $trigger_emails = $this->getEmailTrigger($step, $code, $to_applicant, $to_current_user, $student);
+        }
 
         if (count($trigger_emails) > 0) {
             // get current applicant course
@@ -294,7 +296,12 @@ class EmundusModelEmails extends JModelList {
             $h_access = new EmundusHelperAccess();
             $h_emails = new EmundusHelperEmails();
 
-            foreach ($trigger_emails as $trigger_email_id => $trigger_email) {
+            foreach ($trigger_emails as $trigger_id => $trigger_email) {
+                $recipients = $trigger_email[$student->code]['to']['recipients'];
+
+                if ($trigger_email[$student->code]['to']['to_applicant'] == 1) {
+                    $recipients[$student->id] = array('id' => $student->id, 'name' => $student->name, 'email' => $student->email, 'university_id' => $student->university_id);
+                }
 
                 foreach ($trigger_email[$student->code]['to']['recipients'] as $recipient) {
                     // Check if the user has access to the file
@@ -386,9 +393,9 @@ class EmundusModelEmails extends JModelList {
                             'user_id_from' => $from_id,
                             'user_id_to' => $to_id,
                             'subject' => $subject,
-                            'message' => $body,
-                            'email_id' => $trigger_email_id,
-                            'email_to' => $to
+                            'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body,
+                            'email_id' => $trigger_email[$student->code]['tmpl']['email_id'],
+							'email_to' => $to
                         );
                         $this->logEmail($message, $student->fnum);
                     }
