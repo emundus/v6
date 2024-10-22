@@ -74,17 +74,6 @@ class EmundusControllerApplication extends JControllerLegacy
 
                 if ($result != 1) {
                     echo JText::_('ATTACHMENT_DELETE_ERROR').' : '.$attachment['value'].' : '.$upload['filename'];
-                } else {
-                    $file = EMUNDUS_PATH_ABS.$user_id.DS.$upload['filename'];
-                    @unlink($file);
-
-                    $row['applicant_id'] = $upload['user_id'];
-                    $row['user_id'] = $user->id;
-                    $row['reason'] = JText::_('COM_EMUNDUS_ATTACHMENTS_DELETED');
-                    $row['comment_body'] = $attachment['value'].' : '.$upload['filename'];
-                    $m_application->addComment($row);
-
-                    echo $result;
                 }
             }
             else {
@@ -820,16 +809,24 @@ class EmundusControllerApplication extends JControllerLegacy
         $emundusUserFnums = array_keys($emundusUser->fnums);
 
         $jinput = JFactory::getApplication()->input;
-        $fnum_from = $jinput->getString('fnum_from', '');
-        $fnum_to = $jinput->getString('fnum_to', '');
+        $fnum = $jinput->getString('fnum', '');
+        $direction = $jinput->getString('direction', 'up');
         $order_column = $jinput->getString('order_column', 'ordering');
+        $redirect = $jinput->getString('redirect', true);
 
-        if (EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id) || (in_array($fnum_from, $emundusUserFnums) && in_array($fnum_to, $emundusUserFnums))) {
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id) || in_array($fnum, $emundusUserFnums)) {
             $m_application = new EmundusModelApplication();
-            $reordered = $m_application->invertFnumsOrderByColumn($fnum_from, $fnum_to, $order_column);
+            try {
+                $reordered = $m_application->moveApplicationByColumn($fnum, $direction, $order_column);
+                $response['status'] = $reordered;
+                $response['msg'] =  $reordered ? JText::_('SUCCESS') : JText::_('FAILED');
+            } catch (Exception $e) {
+                $response['msg'] = $e->getMessage();
+            }
+        }
 
-            $response['status'] = $reordered;
-            $response['msg'] =  $reordered ? JText::_('SUCCESS') : JText::_('FAILED');
+        if ($redirect) {
+            JFactory::getApplication()->redirect('/index.php');
         }
 
         echo json_encode($response);

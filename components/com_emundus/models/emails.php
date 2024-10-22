@@ -557,6 +557,9 @@ class EmundusModelEmails extends JModelList {
         );
 
         if(!empty($fnum)){
+            $patterns[] = '/\[FNUM\]/';
+            $replacements[] = $fnum;
+
             require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
             $m_files = new EmundusModelFiles();
             $status = $m_files->getStatusByFnums([$fnum]);
@@ -2505,6 +2508,8 @@ class EmundusModelEmails extends JModelList {
      * @since version 1.0
      */
     public function getEmailCategories() {
+        $categories = [];
+
         $query = $this->_db->getQuery(true);
 
         $query->select('DISTINCT(category)')
@@ -2514,11 +2519,12 @@ class EmundusModelEmails extends JModelList {
 
         try {
             $this->_db->setQuery($query);
-            return $this->_db->loadColumn();
+            $categories = $this->_db->loadColumn();
         } catch(Exception $e) {
             JLog::add('component/com_emundus/models/email | Cannot get emails categories : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return false;
         }
+
+        return $categories;
     }
 
     /**

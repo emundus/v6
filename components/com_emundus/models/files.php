@@ -217,7 +217,7 @@ class EmundusModelFiles extends JModelLegacy
                                     where `' . $t . '`.parent_id = `'.$def_elmt->join_from_table.'`.id
                                 )) AS `'.$t.'___'. $def_elmt->element_name . '`';
                         } else if( $attribs->database_join_display_type == 'multilist' ) {
-	                        $t = $def_elmt->tab_name.'_repeat_'.$def_elmt->element_name;
+                            $t = $def_elmt->table_join;
 	                        $query = '(
                                 select DISTINCT '.$column.'
                                 from '.$attribs->join_db_name.'
@@ -1032,16 +1032,32 @@ class EmundusModelFiles extends JModelLegacy
 
         $pageNavigation = "<div class='em-container-pagination-selectPage'>";
         $pageNavigation .= "<ul class='pagination pagination-sm'>";
-        $pageNavigation .= "<li><a href='#em-data' id='" . ($this->getPagination()->pagesCurrent - 1) . "'><span class='material-icons'>navigate_before</span></a></li>";
+
+	    if($this->getPagination()->pagesCurrent == $this->getPagination()->pagesStart) {
+		    $pageNavigation .= "<li><a class='disabled cursor-pointer'><span class='material-icons'>navigate_before</span></a></li>";
+	    } else
+	    {
+		    $pageNavigation .= "<li><a href='#em-data' id='" . ($this->getPagination()->pagesCurrent - 1) . "'><span class='material-icons'>navigate_before</span></a></li>";
+	    }
+
         if ($this->getPagination()->pagesTotal > 15) {
-            for ($i = 1; $i <= 5; $i++ ) {
+	        $index = 5;
+	        if($this->getPagination()->pagesCurrent > 5 && $this->getPagination()->pagesCurrent < 8)
+	        {
+		        $index = $this->getPagination()->pagesCurrent - 3;
+	        }
+
+            for ($i = 1; $i <= $index; $i++ ) {
                 $pageNavigation .= "<li ";
                 if ($this->getPagination()->pagesCurrent == $i) {
                     $pageNavigation .= "class='active'";
                 }
                 $pageNavigation .= "><a id='" . $i . "' href='#em-data'>" . $i . "</a></li>";
             }
-            $pageNavigation .= "<li class='disabled'><span>...</span></li>";
+	        if($this->getPagination()->pagesCurrent > 8)
+	        {
+		        $pageNavigation .= "<li class='disabled'><span>...</span></li>";
+	        }
             if ($this->getPagination()->pagesCurrent <= 5) {
                 for ($i = 6; $i <= 10; $i++ ) {
                     $pageNavigation .= "<li ";
@@ -1061,8 +1077,17 @@ class EmundusModelFiles extends JModelLegacy
                     }
                 }
             }
-            $pageNavigation .= "<li class='disabled'><span>...</span></li>";
-            for ( $i = $this->getPagination()->pagesTotal - 4 ; $i <= $this->getPagination()->pagesTotal ; $i++ ) {
+
+
+			// if total pages - current page is less than 5
+			$index = 4;
+	        if($this->getPagination()->pagesTotal - $this->getPagination()->pagesCurrent < 7)
+	        {
+				$index = $this->getPagination()->pagesTotal - ($this->getPagination()->pagesCurrent+3);
+	        } else {
+		        $pageNavigation .= "<li class='disabled'><span>...</span></li>";
+	        }
+            for ( $i = $this->getPagination()->pagesTotal - $index ; $i <= $this->getPagination()->pagesTotal ; $i++ ) {
                 $pageNavigation .= "<li ";
                 if ( $this->getPagination()->pagesCurrent == $i ) {
                     $pageNavigation .= "class='active'";
@@ -1078,7 +1103,12 @@ class EmundusModelFiles extends JModelLegacy
                 $pageNavigation .= "><a id='" . $i . "' href='#em-data'>" . $i . "</a></li>";
             }
         }
-        $pageNavigation .= "<li><a href='#em-data' id='" . ($this->getPagination()->pagesCurrent + 1) . "'><span class='material-icons'>navigate_next</span></a></li></ul></div>";
+
+	    if($this->getPagination()->pagesCurrent == $this->getPagination()->pagesStop) {
+		    $pageNavigation .= "<li><a class='disabled cursor-pointer'><span class='material-icons'>navigate_next</span></a></li></ul></div>";
+	    } else {
+		    $pageNavigation .= "<li><a href='#em-data' id='" . ($this->getPagination()->pagesCurrent + 1) . "'><span class='material-icons'>navigate_next</span></a></li></ul></div>";
+	    }
 
         return $pageNavigation;
     }
@@ -2431,7 +2461,7 @@ class EmundusModelFiles extends JModelLegacy
 
 					$element_attribs = json_decode($elt->element_attribs);
 
-					if ($element_attribs->database_join_display_type == "checkbox") {
+					if ($element_attribs->database_join_display_type == "checkbox" || $element_attribs->database_join_display_type == "multilist") {
 						$select_check = $element_attribs->join_val_column;
 						if (!empty($element_attribs->join_val_column_concat)) {
 							$select_check = $element_attribs->join_val_column_concat;
@@ -3906,7 +3936,7 @@ class EmundusModelFiles extends JModelLegacy
             $dateFormat = $this->dateFormatToMysql($dateFormat);
             $query = "select fnum, DATE_FORMAT({$name}, ".$dbo->quote($dateFormat).") as val from {$tableName} where fnum in ('".implode("','", $fnums)."')";
         } else {
-            $query = "select fnum, $dbo->quote({$name}) as val from {$tableName} where fnum in ('".implode("','", $fnums)."')";
+			$query = "select fnum, " . $dbo->quoteName($name) . " as val from {$tableName} where fnum in ('".implode("','", $fnums)."')";
         }
 
         try {
@@ -4230,37 +4260,68 @@ class EmundusModelFiles extends JModelLegacy
 		}
 	}
 
-    public function getFormProgress($fnums) {
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-        $fnums_string = implode(',',$fnums);
+	/**
+	 * @param $fnums
+	 * @return array
+	 */
+	public function getFormProgress($fnums)
+	{
+		$fnums_progress = [];
 
-        $query->select('fnum,form_progress')
-            ->from ($db->quoteName('#__emundus_campaign_candidature'))
-            ->where($db->quoteName('fnum') . ' IN (' . $fnums_string . ')');
-        $db->setQuery($query);
-        return $db->loadAssocList();
-    }
+		if (!empty($fnums)) {
+			$db = JFactory::getDBO();
+			$query = $db->getQuery(true);
+			$fnums_string = implode(',', $db->quote($fnums));
 
-    public function getAttachmentProgress($fnums) {
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-        $fnums_string = implode(',',$fnums);
+			$query->select('fnum,form_progress')
+				->from($db->quoteName('#__emundus_campaign_candidature'))
+				->where($db->quoteName('fnum') . ' IN (' . $fnums_string . ')');
 
-        $query->select('fnum,attachment_progress')
-            ->from ($db->quoteName('#__emundus_campaign_candidature'))
-            ->where($db->quoteName('fnum') . ' IN (' . $fnums_string . ')');
-        $db->setQuery($query);
-        return $db->loadAssocList();
-    }
+			try {
+				$db->setQuery($query);
+				$fnums_progress = $db->loadAssocList();
+			} catch (Exception $e) {
+				JLog::add('component/com_emundus/models/files | Error when try to get forms progress with query : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			}
+		}
 
-    public function getUnreadMessages() {
+		return $fnums_progress;
+	}
+
+	/**
+	 * @param $fnums
+	 * @return array
+	 */
+	public function getAttachmentProgress($fnums)
+	{
+		$attachment_progress = [];
+
+		if (!empty($fnums)) {
+			$db = JFactory::getDBO();
+			$query = $db->getQuery(true);
+			$fnums_string = implode(',', $db->quote($fnums));
+
+			$query->select('fnum,attachment_progress')
+				->from($db->quoteName('#__emundus_campaign_candidature'))
+				->where($db->quoteName('fnum') . ' IN (' . $fnums_string . ')');
+
+			try {
+				$db->setQuery($query);
+				$attachment_progress = $db->loadAssocList();
+			} catch (Exception $e) {
+				JLog::add('component/com_emundus/models/files | Error when try to get attachment progress with query : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		return $attachment_progress;
+	}
+
+	public function getUnreadMessages() {
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $user = JFactory::getUser();
         $default = array();
-
 
         try {
             $query->select('ecc.fnum, COUNT(m.message_id) as nb')

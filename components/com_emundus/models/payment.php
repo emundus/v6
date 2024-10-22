@@ -214,18 +214,22 @@ class EmundusModelPayment extends JModelList
 
     private function getHikashopUserId($user_id)
     {
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $hikashop_user_id = 0;
 
-        $query->select('jhu.user_id')
-            ->from('#__hikashop_user AS jhu')
-            ->where('jhu.user_cms_id = ' . $user_id);
+        if (!empty($user_id)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
 
-        $db->setQuery($query);
-        $hikashop_user_id = $db->loadResult();
+            $query->select('jhu.user_id')
+                ->from('#__hikashop_user AS jhu')
+                ->where('jhu.user_cms_id = ' . $user_id);
 
-        if (empty($hikashop_user_id)) {
-            $hikashop_user_id = $this->createHikashopUser($user_id);
+            $db->setQuery($query);
+            $hikashop_user_id = $db->loadResult();
+
+            if (empty($hikashop_user_id)) {
+                $hikashop_user_id = $this->createHikashopUser($user_id);
+            }
         }
 
         return $hikashop_user_id;

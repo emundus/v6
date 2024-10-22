@@ -181,6 +181,10 @@ class PlgFabrik_FormEmundusRsaauthentication extends plgFabrik_Form
 						}
 					}
 
+                    if (is_array($username)) {
+                        $username = '';
+                    }
+
 					// Then we check if username corresponding to existing email if we have no username
 					if (empty(UserHelper::getUserId($username)) && empty($new_email))
 					{
@@ -202,10 +206,18 @@ class PlgFabrik_FormEmundusRsaauthentication extends plgFabrik_Form
 						}
 					}
 
+                    if (empty($username)) {
+                        $username = $attributes['id'];
+
+                        if (empty($username)) {
+                            $username = !empty($new_email) ? $new_email : $email;
+                        }
+                    }
+
 					if (empty(UserHelper::getUserId($username)))
 					{
 						$user                 = new User();
-						$user->name           = $lastname . ' ' . $firstname;
+                        $user->name           = $firstname . ' ' . $lastname;
 						$user->username       = (string) $username;
 						$user->email          = !empty($new_email) ? $new_email : $email;
 						$user->password_clear = '';

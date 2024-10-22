@@ -14,7 +14,6 @@
 defined( '_JEXEC' ) or die( 'Restricted access' );
 JHTML::_('behavior.tooltip');
 JHTML::stylesheet('media/com_emundus/css/emundus_panel.css');
-JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.4.1/css/all.css');
 
 if ($this->open_file_in_modal) {
     JText::script('COM_EMUNDUS_FILES_EVALUATION');

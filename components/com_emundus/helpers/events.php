@@ -512,7 +512,10 @@ class EmundusHelperEvents {
 
                                             if (!empty($stored)) {
                                                 foreach ($stored as $store) {
-                                                    if (count($formModel->data[$repeat_table . '___id']) < count($stored)) {
+                                                    // Use this line to not crash the following count as $formModel->data[$repeat_table . '___id'] returns null if the element does not exist yet (like onload)
+                                                    $instances = (!empty($formModel->data[$repeat_table . '___id'])) ? $formModel->data[$repeat_table . '___id'] : [];
+
+                                                    if (count($instances) < count($stored)) {
                                                         $formModel->data[$repeat_table . '___id'][] = "";
                                                         $formModel->data[$repeat_table . '___id_raw'][] = "";
                                                         $formModel->data[$repeat_table . '___parent_id'][] = "";
@@ -656,6 +659,7 @@ class EmundusHelperEvents {
             $params	= JComponentHelper::getParams('com_emundus');
             $scholarship_document_id 	= $params->get('scholarship_document_id', NULL);
             $application_fee = $params->get('application_fee', 0);
+            $use_session = $params->get('use_session', 0);
 
             $mApplication = new EmundusModelApplication;
             $mEmails = new EmundusModelEmails;
@@ -670,7 +674,7 @@ class EmundusHelperEvents {
 	        $db    = JFactory::getDbo();
 	        $query = $db->getQuery(true);
 
-	        $profile_by_status = $mProfile->getProfileByStatus($user->fnum);
+	        $profile_by_status = $mProfile->getProfileByStatus($user->fnum,$use_session);
 
 	        if (empty($profile_by_status['profile'])) {
 		        $query->select('esc.profile_id AS profile_id, ecc.campaign_id AS campaign_id')
@@ -798,7 +802,7 @@ class EmundusHelperEvents {
                             $checkout_url = $mEmails->setTagsFabrik($checkout_url, [$user->fnum], true);
                         }
                         // If $accept_other_payments is 2 : that means we do not redirect to the payment page.
-                        if ($accept_other_payments != 2 && empty($mApplication->getHikashopOrder($fnumInfos)) && $attachments >= 100 && $forms >= 100) {
+                        if ($accept_other_payments != 2 && empty($mApplication->getHikashopOrder($fnumInfos)) && $attachments_progress >= 100 && $forms_progress >= 100) {
                             if($params->get('hikashop_session', 0)) {
                                 // check if there is not another cart open
                                 $hikashop_user = JFactory::getSession()->get('emundusPayment');

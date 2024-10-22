@@ -373,8 +373,8 @@ class SmartAgenda
 					JLog::add('Failed to save smart agenda user_id ' . $response->id . ' for user with mail ' . $params['mail'] . ' and fnum ' . $params['id_interne_candidat'] . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.smart_agenda');
 				}
 			} else {
-				JLog::add('Request failed for params ' . json_encode($params), JLog::WARNING, 'com_emundus.smart_agenda');
-			}
+                JLog::add('Request failed for params ' . json_encode($params) . ' response => ' . json_encode($response), JLog::WARNING, 'com_emundus.smart_agenda');
+            }
 		} else {
 			JLog::add('Wrong call to userinvit, missing params', JLog::WARNING, 'com_emundus.smart_agenda');
 		}

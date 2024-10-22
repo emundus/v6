@@ -500,38 +500,48 @@ class EmundusModelApplication extends JModelList
     {
 	    $deleted = false;
 
-        try {
-            $query = 'SELECT * FROM #__emundus_uploads WHERE id=' . $id;
-            $this->_db->setQuery($query);
-            $file = $this->_db->loadAssoc();
-        } catch (Exception $e) {
-            JLog::add('Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
-        }
+		if (!empty($id)) {
+			$query = $this->_db->getQuery(true);
+			try {
+				$query->clear()
+					->select('*')
+					->from('#__emundus_uploads')
+					->where('id = ' . $id);
 
-        $f = EMUNDUS_PATH_ABS . $file['user_id'] . DS . $file['filename'];
-        @unlink($f);
+				$this->_db->setQuery($query);
+				$file = $this->_db->loadAssoc();
+			} catch (Exception $e) {
+				JLog::add('Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
+			}
 
-        try {
-            $query = 'DELETE FROM #__emundus_uploads WHERE id=' . $id;
-            $this->_db->setQuery($query);
-            $deleted = $this->_db->execute();
+			if (!empty($file)) {
+				$f = EMUNDUS_PATH_ABS . $file['user_id'] . DS . $file['filename'];
+				$deleted_file = unlink($f);
 
-            if ($deleted) {
-                // Log the tag in the eMundus logging system.
-                $logsStd = new stdClass();
+				if ($deleted_file) {
+					try {
+						$query->clear()
+							->delete('#__emundus_uploads')
+							->where('id = ' . $id);
+						$this->_db->setQuery($query);
+						$deleted = $this->_db->execute();
 
-                // get attachment data
-                $attachmentTpe = $this->getAttachmentByID($file['attachment_id']);
+						if ($deleted) {
+							$logsStd = new stdClass();
+							$attachmentTpe = $this->getAttachmentByID($file['attachment_id']);
 
-                $logsStd->element = "[" . $attachmentTpe['value'] . "]";
-                $logsStd->details = $file['filename'];
-                $logsParams = array('deleted' => [$logsStd]);
+							$logsStd->element = '[' . $attachmentTpe['value'] . ']';
+							$logsStd->details = $file['filename'];
+							$logsParams = array('deleted' => [$logsStd]);
 
-                EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($file['fnum'], -7), $file['fnum'], 4, 'd', 'COM_EMUNDUS_ACCESS_ATTACHMENT_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
-            }
-		} catch (Exception $e) {
-            JLog::add('Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
-        }
+							EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($file['fnum'], -7), $file['fnum'], 4, 'd', 'COM_EMUNDUS_ACCESS_ATTACHMENT_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+						}
+					} catch (Exception $e) {
+						JLog::add('Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
+					}
+				}
+			}
+		}
 
 		return $deleted;
     }
@@ -592,7 +602,7 @@ class EmundusModelApplication extends JModelList
      *
      * @since version
      */
-    public function getFormsProgress($fnum = "0")
+    public function getFormsProgress($fnum = "0",$use_session = 0)
     {
         require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
         $m_profile = new EmundusModelProfile;
@@ -605,7 +615,7 @@ class EmundusModelApplication extends JModelList
         $current_user = $session->get('emundusUser');
 
         if (!is_array($fnum)) {
-            $profile_by_status = $m_profile->getProfileByStatus($fnum);
+            $profile_by_status = $m_profile->getProfileByStatus($fnum,$use_session);
 
             if (empty($profile_by_status['profile'])) {
                 $query = 'SELECT esc.profile_id AS profile_id, ecc.campaign_id AS campaign_id
@@ -762,7 +772,7 @@ class EmundusModelApplication extends JModelList
      *
      * @since version
      */
-	public function getAttachmentsProgress($fnums = null)
+	public function getAttachmentsProgress($fnums = null,$use_session = 0)
 	{
 		$progress = 0.0;
 		$return_array = true;
@@ -786,7 +796,7 @@ class EmundusModelApplication extends JModelList
 			foreach ($fnums as $f) {
 				$result[$f] = 0.0;
 
-				$profile_by_status = $m_profile->getProfileByStatus($f);
+				$profile_by_status = $m_profile->getProfileByStatus($f,$use_session);
 
 				if (empty($profile_by_status["profile"])) {
 					$query = 'SELECT esc.profile_id AS profile_id, ecc.campaign_id AS campaign_id
@@ -1697,7 +1707,7 @@ class EmundusModelApplication extends JModelList
                                                 if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
 
                                                     if ($elements[$j]->plugin == 'date') {
-                                                        if (!empty($r_elt) && $r_elt != '0000-00-00 00:00:00') {
+                                                        if (!empty($r_elt) && ($r_elt != '0000-00-00 00:00:00' || $r_elt != '0000-00-00')) {
                                                             $elt = date($params->date_form_format, strtotime($r_elt));
                                                         } else {
                                                             $elt = '';
@@ -1726,7 +1736,7 @@ class EmundusModelApplication extends JModelList
                                                         if ($params->database_join_display_type == 'checkbox' || $params->database_join_display_type == 'multilist') {
                                                             $query = $this->_db->getQuery(true);
 
-                                                            $select = $this->getSelectFromDBJoinElementParams($params);
+                                                            $select = $this->getSelectFromDBJoinElementParams($params, 't');
                                                             $query->select($select)
                                                                 ->from($this->_db->quoteName($params->join_db_name, 't'))
                                                                 ->leftJoin($this->_db->quoteName($itemt->db_table_name . '_' . $itemg->id . '_repeat_repeat_' . $elements[$j]->name, 'checkbox_repeat') . ' ON ' . $this->_db->quoteName('checkbox_repeat.' . $elements[$j]->name) . ' = ' . $this->_db->quoteName('t.id'))
@@ -1967,13 +1977,13 @@ class EmundusModelApplication extends JModelList
 
                                             // Decrypt datas encoded
                                             if($form_params->note == 'encrypted'){
-	                                            $element->content = EmundusHelperFabrik::decryptDatas($element->content);
+	                                            $element->content = EmundusHelperFabrik::decryptDatas($element->content,null,'aes-128-cbc',$element->plugin);
                                             }
                                             //
 
                                             if ($element->plugin == 'date' && !empty($element->content))
 											{
-                                                if ($element->content != '0000-00-00 00:00:00') {
+                                                if ($element->content != '0000-00-00 00:00:00' || $element->content != '0000-00-00') {
                                                     $date_params = json_decode($element->params);
                                                     $elt = date($date_params->date_form_format, strtotime($element->content));
                                                 } else {
@@ -2398,7 +2408,7 @@ class EmundusModelApplication extends JModelList
                                                         $query = $db->getQuery(true);
 
                                                         $parent_id = strlen($elements[$j]->content_id) > 0 ? $elements[$j]->content_id : 0;
-                                                        $select = $this->getSelectFromDBJoinElementParams($params);
+                                                        $select = $this->getSelectFromDBJoinElementParams($params, 't');
 
                                                         $query->select($select)
                                                             ->from($db->quoteName($params->join_db_name, 't'))
@@ -2597,7 +2607,7 @@ class EmundusModelApplication extends JModelList
                                                         $query = $db->getQuery(true);
 
                                                         $parent_id = strlen($elements[$j]->content_id) > 0 ? $elements[$j]->content_id : 0;
-                                                        $select = $this->getSelectFromDBJoinElementParams($params);
+                                                        $select = $this->getSelectFromDBJoinElementParams($params, 't');
 
                                                         $query->select($select)
                                                             ->from($db->quoteName($params->join_db_name, 't'))
@@ -2742,7 +2752,7 @@ class EmundusModelApplication extends JModelList
                                                         if (!empty($params) && $params->use_wysiwyg == 1) {
                                                             $forms .= '<div style="width: 100%; padding: 4px 8px;color: #000000;border: solid 1px #A4A4A4;font-size: 12px">' . preg_replace('/<br\s*\/?>/','',JText::_($elt)) . '</div>';
                                                         } else {
-                                                            $forms .= '<div style="width: 100%; padding: 4px 8px;color: #000000;border: solid 1px #A4A4A4;font-size: 12px;word-break:break-word; hyphens:auto;">' . JText::_($elt) . '</div>';
+                                                            $forms .= '<div style="width: 100%; padding: 4px 8px;color: #000000;border: solid 1px #A4A4A4;font-size: 12px;word-break:break-all; hyphens:auto;">' . JText::_($elt) . '</div>';
                                                         }
                                                         $forms .= '</div>';
                                                         $forms .= '<table class="pdf-forms">';
@@ -2797,7 +2807,7 @@ class EmundusModelApplication extends JModelList
 
                                     // Decrypt datas encoded
                                     if($form_params->note == 'encrypted'){
-	                                    $element->content = EmundusHelperFabrik::decryptDatas($element->content);
+	                                    $element->content = EmundusHelperFabrik::decryptDatas($element->content,null,'aes-128-cbc',$element->plugin);
                                     }
                                     //
 
@@ -5528,66 +5538,88 @@ class EmundusModelApplication extends JModelList
     }
 
 
-    public function invertFnumsOrderByColumn($fnum_from, $target_fnum, $order_column = 'ordering')
+    public function moveApplicationByColumn($fnum, $direction = 'up', $order_column = 'ordering')
     {
-        $reordered = false;
+        $moved = false;
 
-        $excluded_columns = ['fnum', 'id', 'user', 'user_id', 'applicant_id'];
-        if (!in_array($order_column, $excluded_columns) && !empty($order_column) && !empty($fnum_from) && !empty($target_fnum)) {
-            $db = JFactory::getDbo();
-            $query = $db->getQuery(true);
+        $exclude_columns = ['fnum', 'id', 'user', 'user_id', 'applicant_id', 'status', 'submitted'];
+        if (in_array($order_column, $exclude_columns) || empty($order_column) || empty($fnum)) {
+            throw new Exception('Invalid order column or fnum');
+        }
 
-            $query->select($order_column)
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select($order_column)
+            ->from('#__emundus_campaign_candidature as ecc')
+            ->where('fnum LIKE ' . $db->quote($fnum));
+
+        try {
+            $db->setQuery($query);
+            $current_position = $db->loadResult();
+
+            $query->clear()
+                ->select('esc.year, ecc.applicant_id')
                 ->from('#__emundus_campaign_candidature as ecc')
-                ->where('fnum LIKE ' . $db->quote($fnum_from));
+                ->join('INNER', '#__emundus_setup_campaigns as esc ON esc.id = ecc.campaign_id')
+                ->where('fnum LIKE ' . $db->quote($fnum));
 
             $db->setQuery($query);
+            $current_file_infos = $db->loadAssoc();
 
-            try {
-                $old_position = $db->loadResult();
+            $query->clear()
+                ->select($order_column . ' as target_position, ecc.fnum')
+                ->from('#__emundus_campaign_candidature as ecc')
+                ->join('INNER', '#__emundus_setup_campaigns as esc ON esc.id = ecc.campaign_id')
+                ->where('ecc.applicant_id = ' . $db->quote($current_file_infos['applicant_id']))
+                ->andWhere('esc.year = ' . $db->quote($current_file_infos['year']))
+                ->andWhere($db->quoteName($order_column) . ' ' . ($direction == 'up' ? '<' : '>') . ' ' . $db->quote($current_position))
+                ->andWhere('ecc.published = 1')
+                ->order($db->quoteName($order_column) . ' ' . ($direction == 'up' ? 'DESC' : 'ASC'))
+                ->setLimit(1);
 
-                $query->clear()
-                    ->select($order_column)
-                    ->from('#__emundus_campaign_candidature as ecc')
-                    ->where('fnum LIKE ' . $db->quote($target_fnum));
+            $db->setQuery($query);
+            $target_file = $db->loadAssoc();
 
-                $db->setQuery($query);
-                $new_position = $db->loadResult();
-
+            if (!empty($target_file)) {
                 $query->clear()
                     ->update('#__emundus_campaign_candidature')
-                    ->set($db->quoteName($order_column) . ' = ' . $new_position)
-                    ->where('fnum LIKE ' . $db->quote($fnum_from));
+                    ->set($db->quoteName($order_column) . ' = ' . $target_file['target_position'])
+                    ->where('fnum LIKE ' . $db->quote($fnum));
 
                 $db->setQuery($query);
-                $reordered = $db->execute();
+                $moved = $db->execute();
 
-                if ($reordered) {
+                if ($moved) {
                     $query->clear()
                         ->update('#__emundus_campaign_candidature')
-                        ->set($db->quoteName($order_column) . ' = ' . $old_position)
-                        ->where('fnum LIKE ' . $db->quote($target_fnum));
+                        ->set($db->quoteName($order_column) . ' = ' . $current_position)
+                        ->where('fnum LIKE ' . $db->quote($target_file['fnum']));
 
                     $db->setQuery($query);
-                    $reordered = $db->execute();
+                    $moved = $db->execute();
                 }
-            } catch (Exception $e) {
-                JLog::add('Failed to get ' . $order_column . ' in __emundus_campaign_candidature for ' . $fnum_from . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
             }
+        } catch (Exception $e) {
+            JLog::add('Failed to get ' . $order_column . ' in #__emundus_campaign_candidature for ' . $fnum . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            throw new Exception($e->getMessage());
         }
 
-        return $reordered;
+        return $moved;
     }
 
-    private function getSelectFromDBJoinElementParams($params) {
-        $db = JFactory::getDBO();
+    private function getSelectFromDBJoinElementParams($params, $alias = 'jd') {
+		$select = '';
 
-        $select = $db->quoteName($params->join_val_column);
-        if (!empty($params->join_val_column_concat)) {
-            $select = 'CONCAT(' . $params->join_val_column_concat . ')';
-            $select = preg_replace('#{thistable}#', 'jd', $select);
-            $select = preg_replace('#{shortlang}#', $this->locales, $select);
-        }
+		if (!empty($params)) {
+			$db = JFactory::getDBO();
+			$select = $db->quoteName($params->join_val_column);
+			if (!empty($params->join_val_column_concat)) {
+				$select = 'CONCAT(' . $params->join_val_column_concat . ')';
+				$select = preg_replace('#{thistable}#', $alias, $select);
+				$select = preg_replace('#{shortlang}#', $this->locales, $select);
+			}
+		}
 
         return $select;
     }

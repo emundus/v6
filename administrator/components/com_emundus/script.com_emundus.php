@@ -8,6 +8,7 @@ require_once JPATH_CONFIGURATION . '/configuration.php';
 
 define('DS', DIRECTORY_SEPARATOR);
 
+use Symfony\Component\Yaml\Yaml;
 
 class com_emundusInstallerScript
 {
@@ -262,7 +263,7 @@ class com_emundusInstallerScript
 				// Add back button to login, register and reset view
 				$back_module = EmundusHelperUpdate::getModule(0, 'eMundus - Back button');
 				if (!empty($back_module) && !empty($back_module['id'])) {
-					$moduleid = $back_module['id'];
+					$moduleid = $back_module;
 				}
 				else {
 					$datas    = [
@@ -758,11 +759,14 @@ if (password_value.match(regex) != null) {
 					$db->execute();
 				}
 
-				EmundusHelperUpdate::addYamlVariable('location', 'https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css', true, true);
-				EmundusHelperUpdate::addYamlVariable('inline', '', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
-				EmundusHelperUpdate::addYamlVariable('extra', '{  }', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
-				EmundusHelperUpdate::addYamlVariable('priority', '0', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
-				EmundusHelperUpdate::addYamlVariable('name', 'Material Icons', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+				if(file_exists(JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml'))
+				{
+					EmundusHelperUpdate::addYamlVariable('location', 'https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css', true, true);
+					EmundusHelperUpdate::addYamlVariable('inline', '', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+					EmundusHelperUpdate::addYamlVariable('extra', '{  }', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+					EmundusHelperUpdate::addYamlVariable('priority', '0', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+					EmundusHelperUpdate::addYamlVariable('name', 'Material Icons', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+				}
 
 				$old_values = [
 					'fr-FR' => 'Créer votre compte',
@@ -1681,7 +1685,7 @@ try {
 
 				if (!empty($program_form_params)) {
 					$program_form_params = json_decode($program_form_params);
-					if (!in_array('onAfterProgramCreate', $program_form_params->plugin_description)) {
+					if (empty($program_form_params->plugin_description) || !in_array('onAfterProgramCreate', $program_form_params->plugin_description)) {
 						$program_form_params->plugin_state[]       = "1";
 						$program_form_params->only_process_curl[]  = "onAfterProcess";
 						$program_form_params->form_php_file[]      = "-1";
@@ -4798,29 +4802,32 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 			EmundusHelperUpdate::updateYamlVariable('button','COM_EMUNDUS_ERROR_404_BUTTON',JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/error.yaml');
 
 			// Fix 404 styles
-			EmundusHelperUpdate::addYamlVariable('location', 'gantry-assets://custom/scss/custom.scss', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css', true, true);
-			EmundusHelperUpdate::addYamlVariable('inline', '', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
-			EmundusHelperUpdate::addYamlVariable('extra', '{  }', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
-			EmundusHelperUpdate::addYamlVariable('priority', '0', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
-			EmundusHelperUpdate::addYamlVariable('name', 'Custom', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+			if(file_exists(JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml'))
+			{
+				EmundusHelperUpdate::addYamlVariable('location', 'gantry-assets://custom/scss/custom.scss', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css', true, true);
+				EmundusHelperUpdate::addYamlVariable('inline', '', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+				EmundusHelperUpdate::addYamlVariable('extra', '{  }', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+				EmundusHelperUpdate::addYamlVariable('priority', '0', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+				EmundusHelperUpdate::addYamlVariable('name', 'Custom', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
 
-			EmundusHelperUpdate::addYamlVariable('location', 'modules/mod_falang/style/mod_falang_emundus.css', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css', true, true);
-			EmundusHelperUpdate::addYamlVariable('inline', '', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
-			EmundusHelperUpdate::addYamlVariable('extra', '{  }', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
-			EmundusHelperUpdate::addYamlVariable('priority', '0', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
-			EmundusHelperUpdate::addYamlVariable('name', 'Falang', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+				EmundusHelperUpdate::addYamlVariable('location', 'modules/mod_falang/style/mod_falang_emundus.css', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css', true, true);
+				EmundusHelperUpdate::addYamlVariable('inline', '', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+				EmundusHelperUpdate::addYamlVariable('extra', '{  }', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+				EmundusHelperUpdate::addYamlVariable('priority', '0', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+				EmundusHelperUpdate::addYamlVariable('name', 'Falang', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
 
-			EmundusHelperUpdate::addYamlVariable('location', 'modules/mod_emundus_footer/css/mod_emundus_footer.css', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css', true, true);
-			EmundusHelperUpdate::addYamlVariable('inline', '', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
-			EmundusHelperUpdate::addYamlVariable('extra', '{  }', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
-			EmundusHelperUpdate::addYamlVariable('priority', '0', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
-			EmundusHelperUpdate::addYamlVariable('name', 'Footer', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+				EmundusHelperUpdate::addYamlVariable('location', 'modules/mod_emundus_footer/css/mod_emundus_footer.css', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css', true, true);
+				EmundusHelperUpdate::addYamlVariable('inline', '', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+				EmundusHelperUpdate::addYamlVariable('extra', '{  }', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+				EmundusHelperUpdate::addYamlVariable('priority', '0', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+				EmundusHelperUpdate::addYamlVariable('name', 'Footer', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
 
-			EmundusHelperUpdate::addYamlVariable('location', 'modules/mod_emundusmenu/style/mod_emundusmenu.css', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css', true, true);
-			EmundusHelperUpdate::addYamlVariable('inline', '', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
-			EmundusHelperUpdate::addYamlVariable('extra', '{  }', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
-			EmundusHelperUpdate::addYamlVariable('priority', '0', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
-			EmundusHelperUpdate::addYamlVariable('name', 'Menu', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+				EmundusHelperUpdate::addYamlVariable('location', 'modules/mod_emundusmenu/style/mod_emundusmenu.css', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css', true, true);
+				EmundusHelperUpdate::addYamlVariable('inline', '', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+				EmundusHelperUpdate::addYamlVariable('extra', '{  }', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+				EmundusHelperUpdate::addYamlVariable('priority', '0', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+				EmundusHelperUpdate::addYamlVariable('name', 'Menu', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
+			}
 			//
 
 			// References translations
@@ -4906,6 +4913,171 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 				->where($db->quoteName('submit_button_label') . ' = ' . $db->quote('Upload'));
 			$db->setQuery($query);
 			$db->execute();
+			//
+		}
+
+		if (version_compare($cache_version, '1.39.1', '<=') || $firstrun) {
+			EmundusHelperUpdate::installExtension('System - eMundus', 'emundus','{"name":"System - eMundus","type":"plugin","creationDate":"15 juillet 2024","author":"eMundus","copyright":"Copyright (C) 2024 eMundus","authorEmail":"dev@emundus.io","authorUrl":"http:\/\/www.emundus.fr","version":"1.39.1","description":"eMundus plugin to call jQuery","group":"","filename":"emundus"}','plugin',1,'system');
+		}
+
+        if (version_compare($cache_version, '1.39.2', '<=') || $firstrun) {
+            $db->setQuery("alter table jos_emundus_evaluations modify user int null");
+            $db->execute();
+
+            $db->setQuery("alter table jos_emundus_evaluations drop foreign key jos_emundus_evaluations_ibfk_4");
+            $db->execute();
+
+            $db->setQuery("alter table jos_emundus_evaluations
+                add constraint jos_emundus_evaluations_ibfk_4
+                foreign key (user) references jos_emundus_users (user_id)
+                on update cascade on delete set null");
+            $db->execute();
+
+	        EmundusHelperUpdate::installExtension('plg_fabrik_element_iban','iban','{"name":"plg_fabrik_element_iban","type":"plugin","creationDate":"March 2024","author":"Media A-Team, Inc.","copyright":"Copyright (C) 2005-2024 Media A-Team, Inc. - All rights reserved.","authorEmail":"brice.hubinet@emundus.fr","authorUrl":"www.emundus.fr","version":"4.0Zeta","description":"PLG_ELEMENT_IBAN_DESCRIPTION","group":"","filename":"iban"}','plugin',1,'fabrik_element');
+        }
+
+		if (version_compare($cache_version, '1.39.3', '<=') || $firstrun) {
+			$columns       = [
+				[
+					'name'   => 'date_time',
+					'type'   => 'datetime',
+					'null'   => 1,
+				],
+				[
+					'name'   => 'category_label',
+					'type'   => 'varchar',
+					'length' => 255,
+					'null'   => 1,
+				],
+				[
+					'name'   => 'group_id',
+					'type'   => 'int',
+					'length' => 11,
+					'null'   => 1,
+				],
+				[
+					'name'   => 'published',
+					'type'   => 'tinyint',
+					'length' => 1,
+					'null'   => 0,
+					'default' => 1
+				]
+			];
+			EmundusHelperUpdate::createTable('jos_emundus_intranet_categories', $columns);
+
+			$query = $db->getQuery(true);
+			$query->clear()
+				->update($db->quoteName('#__extensions'))
+				->set($db->quoteName('enabled') . ' = 0')
+				->where($db->quoteName('name') . ' LIKE ' . $db->quote('plg_system_p3p'))
+				->where($db->quoteName('element') . ' LIKE ' . $db->quote('p3p'))
+				->where($db->quoteName('type') . ' LIKE ' . $db->quote('plugin'));
+			$db->setQuery($query);
+			$db->execute();
+		}
+
+		if (version_compare($cache_version, '1.39.8', '<=') || $firstrun) {
+			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_REFERENT_ADD_LETTER_INTRO', 'Nous vous remercions de déposer votre lettre de recommandation pour %s. Seuls les documents au format .pdf sont acceptés. Pour toute aide, vous pouvez contacter x@.fr.');
+			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_REFERENT_ADD_LETTER_INTRO', 'Thank you for submitting your letter of recommendation for %s. Only documents in .pdf format are accepted. For further assistance, please contact x@.fr', 'override', null, null, null, 'en-GB');
+		}
+
+		if (version_compare($cache_version, '1.39.9', '<=') || $firstrun) {
+			// Replace Google CDN
+			$g5_assets = JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml';
+			$g5_style = JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml';
+			$g5_head = JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/head.yaml';
+			$g5_head_24 = JPATH_ROOT . '/templates/g5_helium/custom/config/24/page/head.yaml';
+			$g5_head_22 = JPATH_ROOT . '/templates/g5_helium/custom/config/22/page/head.yaml';
+			if(file_exists($g5_assets))
+			{
+				$g5_assets_yaml = Yaml::parse(file_get_contents($g5_assets));
+
+				if(!empty($g5_assets_yaml['css'])) {
+					$key_to_remove = null;
+					foreach ($g5_assets_yaml['css'] as $key => $css) {
+						if($css['location'] == 'https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined') {
+							$key_to_remove = $key;
+						}
+					}
+
+					if($key_to_remove !== null) {
+						unset($g5_assets_yaml['css'][$key_to_remove]);
+
+						// Reindex array
+						$g5_assets_yaml['css'] = array_values($g5_assets_yaml['css']);
+
+						$new_assets_g5 = Yaml::dump($g5_assets_yaml, 10, 2);
+						file_put_contents($g5_assets, $new_assets_g5);
+					}
+				}
+			}
+
+			if(file_exists($g5_head))
+			{
+				$g5_head_yaml = Yaml::parse(file_get_contents($g5_head));
+
+				if(!empty($g5_head_yaml['head_bottom'])) {
+					$g5_head_yaml['head_bottom'] = '';
+
+					$new_head_g5 = Yaml::dump($g5_head_yaml, 10, 2);
+					file_put_contents($g5_head, $new_head_g5);
+				}
+			}
+
+			if(file_exists($g5_head_24))
+			{
+				$g5_head_yaml = Yaml::parse(file_get_contents($g5_head_24));
+
+				if(!empty($g5_head_yaml['head_bottom'])) {
+					$g5_head_yaml['head_bottom'] = '';
+
+					$new_head_g5 = Yaml::dump($g5_head_yaml, 10, 2);
+					file_put_contents($g5_head_24, $new_head_g5);
+				}
+			}
+
+			if(file_exists($g5_head_22))
+			{
+				$g5_head_yaml = Yaml::parse(file_get_contents($g5_head_22));
+
+				if(!empty($g5_head_yaml['head_bottom'])) {
+					$g5_head_yaml['head_bottom'] = '';
+
+					$new_head_g5 = Yaml::dump($g5_head_yaml, 10, 2);
+					file_put_contents($g5_head_22, $new_head_g5);
+				}
+			}
+
+			if(file_exists($g5_style))
+			{
+				$g5_style_yaml = Yaml::parse(file_get_contents($g5_style));
+
+				if(!empty($g5_style_yaml['font']) && !empty($g5_style_yaml['font']['family-title']) && $g5_style_yaml['font']['family-title'] == 'family=Inter:300,400,500,600,700,800,900,400&subset=latin,vietnamese,latin-ext') {
+					$g5_style_yaml['font']['family-title'] = 'Inter';
+
+					$new_style_g5 = Yaml::dump($g5_style_yaml, 10, 2);
+					file_put_contents($g5_style, $new_style_g5);
+				}
+			}
+
+			// Update program logo code
+			$query = $db->getQuery(true);
+			$query->clear()
+				->select('fe.id,fe.params')
+				->from($db->quoteName('#__fabrik_elements','fe'))
+				->leftJoin($db->quoteName('#__fabrik_groups','fg').' ON '.$db->quoteName('fg.id').' = '.$db->quoteName('fe.group_id'))
+				->where($db->quoteName('fe.name') . ' LIKE ' . $db->quote('logo'))
+				->where($db->quoteName('fg.name') . ' = ' . $db->quote('GROUP_PROGRAM_DETAIL'));
+			$db->setQuery($query);
+			$logo_element = $db->loadObject();
+
+			if(!empty($logo_element->id)) {
+				$params = json_decode($logo_element->params, true);
+				$params['fu_rename_file_code'] = 'error_clear_last();$new_name = $formModel->formData[\'jos_emundus_setup_programmes___code_raw\'];$new_name = preg_replace(\'/[^A-Za-z0-9_\-]/\', \'\', $new_name);$new_name .= \'-\'.rand(0,10000);$new_name .= \'.\' . pathinfo($filename, PATHINFO_EXTENSION);return $new_name;';
+
+				$logo_element->params = json_encode($params);
+				$db->updateObject('#__fabrik_elements', $logo_element, 'id');
+			}
 			//
 		}
 

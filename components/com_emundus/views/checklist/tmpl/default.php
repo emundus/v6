@@ -645,14 +645,14 @@ if (!empty($this->custom_title)) :?>
                         </div>
                     </div>
                 </div>
-                <div class="em-submit-form-button">
+                <div class="btn-group cursor-pointer"  <?php if ($block_upload || $this->attachments_prog < 100 || $this->forms_prog < 100) :?> style="opacity: 0.6; cursor: not-allowed !important;" <?php endif; ?>>
                     <div class="btn-group">
 
                         <button type="button"
 	                        <?php if (!$block_upload && $this->attachments_prog >= 100 && $this->forms_prog >= 100) :?>
                                 onclick="window.location.href='<?php echo $this->confirm_form_url; ?>'" style="opacity: 1"
 	                        <?php else: ?>
-                                style="opacity: 0.6; cursor: not-allowed"
+                                style="opacity: 0.6; cursor: not-allowed !important;" disabled
 	                        <?php endif; ?>
                                 class="btn btn-primary save-btn sauvegarder button save_continue" name="Submit" id="fabrikSubmit_287">
                             <?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_SEND_FILE') ?>
