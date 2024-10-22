@@ -248,11 +248,27 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 		$signer_email = $db->loadResult();
 
 		if (!empty($signer_email)) {
+			// select fnum's current year
 			$query->clear()
-				->select('signed_file')
-				->from('jos_emundus_files_request')
-				->where('email LIKE ' . $db->quote($signer_email))
-				->andWhere('signed_file LIKE "%.pdf%"');
+				->select('stu.schoolyear')
+				->from($db->quoteName('#__emundus_setup_teaching_unity', 'stu'))
+				->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'sc') . ' ON ' . $db->quoteName('sc.training').' = '.$db->quoteName('stu.code'))
+				->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'cc') . ' ON ' . $db->quoteName('cc.campaign_id').' = '.$db->quoteName('sc.id'))
+				->where($db->quoteName('cc.fnum').' = '.$db->quote($fnum));
+
+			$db->setQuery($query);
+			$year = $db->loadResult();
+
+			// check if user has already signed confidentiality file for current year
+			$query->clear()
+				->select('efr.signed_file')
+				->from($db->quoteName('jos_emundus_files_request', 'efr'))
+				->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'cc') . ' ON cc.fnum = efr.fnum')
+				->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'sc') . ' ON ' . $db->quoteName('sc.id').' = '.$db->quoteName('cc.campaign_id'))
+				->leftJoin($db->quoteName('#__emundus_setup_teaching_unity', 'stu') . ' ON ' . $db->quoteName('stu.code').' = '.$db->quoteName('sc.training'))
+				->where('efr.email LIKE ' . $db->quote($signer_email))
+				->andWhere('efr.signed_file LIKE "%.pdf%"')
+				->andWhere('stu.schoolyear = ' . $db->quote($year));
 
 			$db->setQuery($query);
 			$signed_file = $db->loadResult();
