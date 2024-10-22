@@ -12,61 +12,103 @@ use Symfony\Component\Yaml\Yaml;
 
 class com_emundusInstallerScript
 {
+	private $dbo;
+
 	protected $manifest_cache;
 	protected $schema_version;
-	protected EmundusHelperUpdate $h_update;
 
 	public function __construct()
 	{
-		// Get component manifest cache
-		$db    = JFactory::getDBO();
-		$query = $db->getQuery(true);
+		$this->dbo    = Factory::getDbo();
+		$query = $this->dbo->getQuery(true);
 
-		$query->select('manifest_cache')
-			->from('#__extensions')
-			->where("element = 'com_emundus'");
-		$db->setQuery($query);
-		$this->manifest_cache = json_decode($db->loadObject()->manifest_cache);
+		$query->select('extension_id, manifest_cache')
+			->from($this->dbo->quoteName('#__extensions'))
+			->where($this->dbo->quoteName('element') . ' = ' . $this->dbo->quote('com_emundus'));
+		$this->dbo->setQuery($query);
+		$extension = $this->dbo->loadObject();
+		$this->manifest_cache = json_decode($extension->manifest_cache);
 
 		$query->clear()
 			->select('version_id')
-			->from($db->quoteName('#__schemas'))
-			->where($db->quoteName('extension_id') . ' = ' . $db->quote(700));
-		$db->setQuery($query);
-		$this->schema_version = $db->loadResult();
+			->from($this->dbo->quoteName('#__schemas'))
+			->where($this->dbo->quoteName('extension_id') . ' = ' . $this->dbo->quote(700));
+		$this->dbo->setQuery($query);
+		$this->schema_version = $this->dbo->loadResult();
 
 		require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
-		$this->h_update = new EmundusHelperUpdate();
 	}
 
-
 	/**
-	 * @param $type
-	 * @param $parent
+	 * Run before installation or upgrade run
 	 *
+	 * @param   string $type   discover_install (Install unregistered extensions that have been discovered.)
+	 *                         or install (standard install)
+	 *                         or update (update)
+	 * @param   object $parent installer object
 	 *
-	 * @since version 1.33
+	 * @return  void
 	 */
-	public function install($type, $parent)
+	public function preflight($type, $parent)
 	{
+		$query = $this->dbo->getQuery(true);
+
+		// Check minimum PHP version
+		if (version_compare(PHP_VERSION, '7.4.0', '<')) {
+			echo "\033[31mThis extension works with PHP 7.4.0 or newer. Please contact your web hosting provider to update your PHP version. \033[0m\n";
+			exit;
+		}
+		//
+
+		// Check minimum Joomla version
+		if ($this->schema_version != '3.10.9-2022-10-05-em') {
+			echo "\033[31mYou have to run update-db.sh before CLI ! \033[0m\n";
+			exit;
+		}
+		//
+
+		// If we have PHP 8, we need to disable DPCalendar to avoid a fatal error
+		if (version_compare(PHP_VERSION, '8.0.0', '>=')) {
+			$query->clear()
+				->update('#__extensions')
+				->set($this->dbo->quoteName('enabled') . ' = 0')
+				->where($this->dbo->quoteName('name') . ' LIKE ' . $this->dbo->quote('%dpcalendar%'));
+			$this->dbo->setQuery($query);
+			$this->dbo->execute();
+		}
+		//
+
+		// Check all rights group parameter
+		$query->clear()
+			->select($this->dbo->quoteName('id'))
+			->from($this->dbo->quoteName('#__emundus_setup_groups'))
+			->order($this->dbo->quoteName('id'));
+		$this->dbo->setQuery($query);
+		$all_rights_group = $this->dbo->loadResult();
+
+		if (!empty($all_rights_group)) {
+			EmundusHelperUpdate::updateComponentParameter('com_emundus', 'all_rights_group', $all_rights_group);
+		}
+		//
 	}
 
 
 	/**
-	 * Actions to run if we uninstall eMundus component
+	 * Run when the component is installed
 	 *
-	 * @since version 1.33.0
+	 * @param   object $parent installer object
+	 *
+	 * @return bool
 	 */
-	public function uninstall()
-	{
-	}
+	public function install($type, $parent) {}
 
 
 	/**
-	 * @param $parent
+	 * Run when the component is updated
 	 *
+	 * @param   object $parent installer object
 	 *
-	 * @since version 1.33.0
+	 * @return  bool
 	 */
 	public function update($parent)
 	{
@@ -5092,129 +5134,235 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 		return $succeed;
 	}
 
-
 	/**
-	 * @param $type
-	 * @param $parent
+	 * Run when the component is uninstalled.
 	 *
+	 * @param   object $parent installer object
 	 *
-	 * @since version 1.33.0
+	 * @return  void
 	 */
-	public function preflight($type, $parent)
-	{
-		if (version_compare(PHP_VERSION, '7.4.0', '<')) {
-			echo "\033[31mThis extension works with PHP 7.4.0 or newer. Please contact your web hosting provider to update your PHP version. \033[0m\n";
-			exit;
-		}
-
-		if ($this->schema_version != '3.10.9-2022-10-05-em') {
-			echo "\033[31mYou have to run update-db.sh before CLI ! \033[0m\n";
-			exit;
-		}
-
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-
-		if (version_compare(PHP_VERSION, '8.0.0', '>=')) {
-			$query->clear()
-				->update('#__extensions')
-				->set($db->quoteName('enabled') . ' = 0')
-				->where($db->quoteName('name') . ' LIKE ' . $db->quote('%dpcalendar%'));
-			$db->setQuery($query);
-			$db->execute();
-		}
-
-		// Check all rights group parameter
-		$query->clear()
-			->select($db->quoteName('id'))
-			->from($db->quoteName('#__emundus_setup_groups'))
-			->order($db->quoteName('id'));
-		$db->setQuery($query);
-		$all_rights_group = $db->loadResult();
-
-		if (!empty($all_rights_group)) {
-			EmundusHelperUpdate::updateComponentParameter('com_emundus', 'all_rights_group', $all_rights_group);
-		}
-	}
+	public function uninstall($parent) {}
 
 
 	/**
-	 * @param $type
-	 * @param $parent
+	 * Run after installation or upgrade run
 	 *
+	 * @param   string $type   discover_install (Install unregistered extensions that have been discovered.)
+	 *                         or install (standard install)
+	 *                         or update (update)
+	 * @param   object $parent installer object
 	 *
-	 * @since version 1.33.0
+	 * @return  bool
 	 */
 	function postflight($type, $parent)
 	{
-		// Update jos_extensions informations
-		$config = JFactory::getConfig();
-
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-
-		$query->select('custom_data')
-			->from($db->quoteName('#__extensions'))
-			->where($db->quoteName('element') . ' LIKE ' . $db->quote('com_emundus'));
-		$db->setQuery($query);
-		$custom_data = $db->loadResult();
-
-		if (!empty($custom_data)) {
-			$custom_data = json_decode($custom_data, true);
-
-			$custom_data['sitename'] = $config->get('sitename');
-		}
-		else {
-			$custom_data = [
-				'sitename' => $config->get('sitename'),
-			];
+		if(!$this->setSitename()) {
+			EmundusHelperUpdate::displayMessage('Erreur lors de la mise à jour du nom du site dans la configuration de eMundus.', 'error');
 		}
 
-		$query->clear()
-			->update($db->quoteName('#__extensions'))
-			->set($db->quoteName('custom_data') . ' = ' . $db->quote(json_encode($custom_data)))
-			->where($db->quoteName('element') . ' LIKE ' . $db->quote('com_emundus'));
-		$db->setQuery($query);
-		if (!$db->execute()) {
+		if(!EmundusHelperUpdate::languageBaseToFile()['status']) {
+			EmundusHelperUpdate::displayMessage('Erreur lors de la mise à jour des fichiers de langue.', 'error');
+		}
+
+		if(!EmundusHelperUpdate::recompileGantry5()) {
+			EmundusHelperUpdate::displayMessage('Erreur lors de la recompilation de Gantry5.', 'error');
+		}
+
+		if(!EmundusHelperUpdate::clearJoomlaCache()) {
+			EmundusHelperUpdate::displayMessage('Erreur lors de la suppression du cache Joomla.', 'error');
+		}
+
+		if(!$this->clearDashboard()) {
+			EmundusHelperUpdate::displayMessage('Erreur lors de la suppression des tableaux de bord par défaut.', 'error');
+		}
+
+		if(!$this->clearExternalLoginLogs()) {
+			EmundusHelperUpdate::displayMessage('Erreur lors de la suppression des logs ExternalLogin', 'error');
+		}
+
+		if(!EmundusHelperUpdate::checkHealth()) {
+			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification de la santé de l\'installation.', 'error');
+		}
+
+		if(!EmundusHelperUpdate::checkPageClass()) {
+			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification des classes de pages.', 'error');
+		}
+
+		if(!$this->checkPaymentCookie()) {
+			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification du cookie de paiement.', 'error');
+		}
+
+		if(!$this->checkPasswordFields()) {
+			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification du stockage des champs mot de passe.', 'error');
+		}
+
+		if(!$this->checkColumnsNotAssociatedToFabrik()) {
+			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification des colonnes non associées à Fabrik.', 'error');
+		}
+
+		if(!$this->checkFilterPosition()) {
+			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification de la position des filtres.', 'error');
+		}
+
+		if(!$this->checkActivationMenu()) {
+			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification du menu d\'activation de compte', 'error');
+		}
+
+		if(!$this->checkDropfilesComponent()) {
+			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification de la présence du composant Dropfiles', 'error');
+		}
+
+		if(!$this->checkDropfilesPlugins()) {
+			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification de la présence des plugins Dropfiles', 'error');
+		}
+
+		if(!$this->checkEmundusRegistrationRedirect()) {
+			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification de la redirection après l\'inscription', 'error');
+		}
+
+		if(!$this->checkPayboxFiles()) {
+			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification des fichiers Paybox', 'error');
+		}
+
+		return true;
+	}
+
+	private function checkColumnsNotAssociatedToFabrik()
+	{
+		$query = $this->dbo->getQuery(true);
+
+		try
+		{
+			$query->select('menutype')
+				->from($this->dbo->quoteName('#__emundus_setup_profiles'))
+				->where($this->dbo->quoteName('published') . ' = ' . $this->dbo->quote('1'))
+				->where($this->dbo->quoteName('menutype') . ' IS NOT NULL');
+			$this->dbo->setQuery($query);
+			$applicant_profiles = $this->dbo->loadColumn();
+
+			foreach ($applicant_profiles as $applicantProfile) {
+				$query->clear()
+					->select('SUBSTRING_INDEX(SUBSTRING(link, LOCATE("formid=",link)+7, 4), "&", 1)')
+					->from($this->dbo->quoteName('#__menu'))
+					->where($this->dbo->quoteName('menutype') . ' LIKE ' . $this->dbo->quote($applicantProfile))
+					->where($this->dbo->quoteName('link') . ' LIKE ' . $this->dbo->quote('%com_fabrik%'));
+				$this->dbo->setQuery($query);
+				$forms_ids = $this->dbo->loadColumn();
+
+				foreach ($forms_ids as $formId)
+				{
+					$dead_columns = [];
+
+					$query->clear()
+						->select('db_table_name')
+						->from($this->dbo->quoteName('#__fabrik_lists'))
+						->where($this->dbo->quoteName('form_id') . ' = ' . $this->dbo->quote($formId));
+					$this->dbo->setQuery($query);
+					$db_table_name = $this->dbo->loadResult();
+
+					$columns = "SHOW COLUMNS FROM $db_table_name";
+					$this->dbo->setQuery($columns);
+					$columns = $this->dbo->loadObjectList();
+
+					foreach ($columns as $column) {
+						$query->clear()
+							->select('id')
+							->from($this->dbo->quoteName('#__fabrik_elements'))
+							->where($this->dbo->quoteName('name') . ' LIKE ' . $this->dbo->quote($column->Field));
+						$this->dbo->setQuery($query);
+						$element_id = $this->dbo->loadResult();
+
+						// Check if some datas are present in the column
+						$query->clear()
+							->select('COUNT(*)')
+							->from($this->dbo->quoteName($db_table_name))
+							->where($this->dbo->quoteName($column->Field) . ' IS NOT NULL');
+						$this->dbo->setQuery($query);
+						$datas = $this->dbo->loadResult();
+
+						// If not element is associated to the column and no data are present in the column
+						if(empty($element_id) && empty($datas)) {
+							$dead_columns[] = $column->Field;
+						}
+					}
+
+					if(!empty($dead_columns)) {
+						$count = count($dead_columns);
+						echo "\r\033[33m$count columns of table $db_table_name have no associated Fabrik element : " . implode(', ', $dead_columns) . "\033[0m\n";
+					}
+				}
+			}
+		}
+		catch (Exception $e)
+		{
 			return false;
 		}
 
-		// Insert new translations in overrides files
-		EmundusHelperUpdate::languageBaseToFile();
+		return true;
+	}
 
-		// Recompile Gantry5 css at each update
-		EmundusHelperUpdate::recompileGantry5();
+	private function setSitename() {
+		$updated = false;
 
-		// Clear Joomla Cache
-		EmundusHelperUpdate::clearJoomlaCache();
+		$query = $this->dbo->getQuery(true);
+		$config = Factory::getConfig();
 
-		// Clear dashboard of emundus accounts
-		$query->clear()
-			->delete($db->quoteName('#__emundus_setup_dashboard'))
-			->where($db->quoteName('user') . ' IN (62,95)');
-		$db->setQuery($query);
-		$db->execute();
+		try
+		{
+			$query->select('custom_data')
+				->from($this->dbo->quoteName('#__extensions'))
+				->where($this->dbo->quoteName('element') . ' LIKE ' . $this->dbo->quote('com_emundus'));
+			$this->dbo->setQuery($query);
+			$custom_data = $this->dbo->loadResult();
 
-		// Clear external_login logs
-		$query->clear()
-			->delete($db->quoteName('#__externallogin_logs'))
-			->where("from_unixtime(round(`date`)) < DATE_SUB(DATE(now()), INTERVAL 15 DAY)");
-		$db->setQuery($query);
-		$db->execute();
+			if (!empty($custom_data))
+			{
+				$custom_data = json_decode($custom_data, true);
 
-		EmundusHelperUpdate::checkHealth();
+				$custom_data['sitename'] = $config->get('sitename');
+			}
+			else
+			{
+				$custom_data = [
+					'sitename' => $config->get('sitename'),
+				];
+			}
 
-		EmundusHelperUpdate::checkPageClass();
-
-		if (file_exists(JPATH_SITE . '/.git') && file_exists(JPATH_SITE . '/administrator/components/com_emundus/scripts/pre-commit')) {
-			copy(JPATH_SITE . '/administrator/components/com_emundus/scripts/pre-commit', JPATH_SITE . '/.git/hooks/pre-commit');
-			chmod(JPATH_SITE . '/.git/hooks/pre-commit', 0755);
-
-			echo ' - Git pre-commit hook installed' . PHP_EOL;
+			$query->clear()
+				->update($this->dbo->quoteName('#__extensions'))
+				->set($this->dbo->quoteName('custom_data') . ' = ' . $this->dbo->quote(json_encode($custom_data)))
+				->where($this->dbo->quoteName('element') . ' LIKE ' . $this->dbo->quote('com_emundus'));
+			$this->dbo->setQuery($query);
+			$updated = $this->dbo->execute();
 		}
+		catch (Exception $e)
+		{}
 
-		// if payment is activated, remove cookie samesite line in .htaccess file, else add it
-		$eMConfig          = JComponentHelper::getParams('com_emundus');
+		return $updated;
+	}
+
+	private function clearDashboard() {
+		$query = $this->dbo->getQuery(true);
+
+		$query->clear()
+			->delete($this->dbo->quoteName('#__emundus_setup_dashboard'))
+			->where($this->dbo->quoteName('user') . ' IN (62,95)');
+		$this->dbo->setQuery($query);
+		return $this->dbo->execute();
+	}
+
+	private function clearExternalLoginLogs() {
+		$query = $this->dbo->getQuery(true);
+
+		$query->clear()
+			->delete($this->dbo->quoteName('#__externallogin_logs'))
+			->where("from_unixtime(round(`date`)) < DATE_SUB(DATE(now()), INTERVAL 15 DAY)");
+		$this->dbo->setQuery($query);
+		return $this->dbo->execute();
+	}
+
+	private function checkPaymentCookie() {
+		$eMConfig          = ComponentHelper::getParams('com_emundus');
 		$payment_activated = $eMConfig->get('application_fee');
 
 		EmundusHelperUpdate::removeFromFile(JPATH_ROOT . '/.htaccess', ['php_value session.cookie_samesite Strict']);
@@ -5222,115 +5370,146 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 			EmundusHelperUpdate::insertIntoFile(JPATH_ROOT . '/.htaccess', "php_value session.cookie_samesite Lax" . PHP_EOL);
 		}
 
-		// We check at each update that no password fields are stored in the database
-		$query->clear()
-			->select('id,params')
-			->from($db->quoteName('#__fabrik_elements'))
-			->where('json_valid(`params`)')
-			->where('json_extract(`params`, "$.password") = "1"');
-		$db->setQuery($query);
-		$password_elements = $db->loadObjectList();
-
-		foreach ($password_elements as $password_element) {
-			$params                = json_decode($password_element->params, true);
-			$params['store_in_db'] = "0";
-
-			$query->clear()
-				->update($db->quoteName('#__fabrik_elements'))
-				->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
-				->where($db->quoteName('id') . ' = ' . $db->quote($password_element->id));
-			$db->setQuery($query);
-			$db->execute();
-		}
-
-		// Check if all columns of Fabrik tables are associated to an element
-		$this->checkColumnsNotAssociatedToFabrik();
-
 		return true;
 	}
 
-
-	/**
-	 * Delete old SQL files named ...-em
-	 *
-	 * @since version 1.33.0
-	 */
-	private function deleteOldSqlFiles()
+	private function checkPasswordFields()
 	{
-		$source = JPATH_ADMINISTRATOR . '/components/com_admin/sql/updates/mysql';
-		if ($files = scandir($source)) {
-			foreach ($files as $file) {
-				if (strpos($file, 'em') !== false and is_file($file)) JFile::delete($file);
-			}
-		}
-		else {
-			echo("Can't scan SQL Files");
-		}
-	}
+		$checked = true;
 
-	private function checkColumnsNotAssociatedToFabrik()
-	{
-		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->dbo->getQuery(true);
 
-		$query->select('menutype')
-			->from($db->quoteName('#__emundus_setup_profiles'))
-			->where($db->quoteName('published') . ' = ' . $db->quote('1'))
-			->where($db->quoteName('menutype') . ' IS NOT NULL');
-		$db->setQuery($query);
-		$applicant_profiles = $db->loadColumn();
-
-		foreach ($applicant_profiles as $applicantProfile) {
+		try {
 			$query->clear()
-				->select('SUBSTRING_INDEX(SUBSTRING(link, LOCATE("formid=",link)+7, 4), "&", 1)')
-				->from($db->quoteName('#__menu'))
-				->where($db->quoteName('menutype') . ' LIKE ' . $db->quote($applicantProfile))
-				->where($db->quoteName('link') . ' LIKE ' . $db->quote('%com_fabrik%'));
-			$db->setQuery($query);
-			$forms_ids = $db->loadColumn();
+				->select('id,params')
+				->from($this->dbo->quoteName('#__fabrik_elements'))
+				->where('json_valid(`params`)')
+				->where('json_extract(`params`, "$.password") = "1"');
+			$this->dbo->setQuery($query);
+			$password_elements = $this->dbo->loadObjectList();
 
-			foreach ($forms_ids as $formId)
-			{
-				$dead_columns = [];
+			foreach ($password_elements as $password_element) {
+				$params = json_decode($password_element->params, true);
+				$params['store_in_db'] = "0";
 
 				$query->clear()
-					->select('db_table_name')
-					->from($db->quoteName('#__fabrik_lists'))
-					->where($db->quoteName('form_id') . ' = ' . $db->quote($formId));
-				$db->setQuery($query);
-				$db_table_name = $db->loadResult();
-
-				$columns = "SHOW COLUMNS FROM $db_table_name";
-				$db->setQuery($columns);
-				$columns = $db->loadObjectList();
-
-				foreach ($columns as $column) {
-					$query->clear()
-						->select('id')
-						->from($db->quoteName('#__fabrik_elements'))
-						->where($db->quoteName('name') . ' LIKE ' . $db->quote($column->Field));
-					$db->setQuery($query);
-					$element_id = $db->loadResult();
-
-					// Check if some datas are present in the column
-					$query->clear()
-						->select('COUNT(*)')
-						->from($db->quoteName($db_table_name))
-						->where($db->quoteName($column->Field) . ' IS NOT NULL');
-					$db->setQuery($query);
-					$datas = $db->loadResult();
-
-					// If not element is associated to the column and no data are present in the column
-					if(empty($element_id) && empty($datas)) {
-						$dead_columns[] = $column->Field;
-					}
-				}
-
-				if(!empty($dead_columns)) {
-					$count = count($dead_columns);
-					echo "\r\033[33m$count columns of table $db_table_name have no associated Fabrik element : " . implode(', ', $dead_columns) . "\033[0m\n";
-				}
+					->update($this->dbo->quoteName('#__fabrik_elements'))
+					->set($this->dbo->quoteName('params') . ' = ' . $this->dbo->quote(json_encode($params)))
+					->where($this->dbo->quoteName('id') . ' = ' . $this->dbo->quote($password_element->id));
+				$this->dbo->setQuery($query);
+				$checked = $this->dbo->execute();
 			}
 		}
+		catch (Exception $e) {
+			$checked = false;
+		}
+
+		return $checked;
+	}
+
+	private function checkFilterPosition() {
+		$checked = false;
+
+		$xml_file = JPATH_SITE . '/templates/g5_helium/templateDetails.xml';
+		$xml      = simplexml_load_file($xml_file);
+		if ($xml) {
+			$positions = $xml->xpath('//extension/positions');
+
+			// Check if position emundus_filters exist
+			$checked = false;
+			foreach ($positions[0]->children() as $position) {
+				if ($position == 'emundus_filters') {
+					$checked = true;
+				}
+			}
+			if (!$checked) {
+				$positions[0]->addChild('position', 'emundus_filters');
+				$checked = true;
+			}
+
+			$xml->asXML($xml_file);
+		}
+
+		return $checked;
+	}
+
+	private function checkActivationMenu() {
+		$checked = false;
+		$query = $this->dbo->getQuery(true);
+
+		try
+		{
+			$query->select('id,params')
+				->from($this->dbo->quoteName('#__menu'))
+				->where($this->dbo->quoteName('link') . ' LIKE ' . $this->dbo->quote('index.php?option=com_users&task=edit'))
+				->where($this->dbo->quoteName('menutype') . ' LIKE ' . $this->dbo->quote('mainmenu'));
+			$this->dbo->setQuery($query);
+			$activation_menu = $this->dbo->loadObject();
+
+			if(empty($activation_menu->id)) {
+				$datas = [
+					'menutype'     => 'mainmenu',
+					'title'        => 'Activation',
+					'alias'        => 'activation',
+					'path'         => 'activation',
+					'link'         => 'index.php?option=com_users&task=edit',
+					'type'         => 'url',
+					'component_id' => 0,
+					'params'       => [
+						'menu-anchor_title' => 'activation-page',
+						'menu-anchor_css' => 'activation-page',
+						'menu_text' => 1,
+						'menu_show' => 1,
+					]
+				];
+				$checked = EmundusHelperUpdate::addJoomlaMenu($datas)['status'];
+			} else {
+				$params = json_decode($activation_menu->params, true);
+				$params['menu_text'] = 1;
+				$params['menu_show'] = 1;
+				$params['menu-anchor_title'] = 'activation-page';
+				$params['menu-anchor_css'] = 'activation-page';
+
+				$activation_menu->params = json_encode($params);
+				$checked = $this->dbo->updateObject('#__menu', $activation_menu, 'id');
+			}
+		}
+		catch (Exception $e)
+		{}
+
+		return $checked;
+	}
+
+	private function checkDropfilesComponent() {
+		$installed = EmundusHelperUpdate::installExtension('Dropfiles','com_dropfiles','{"name":"Dropfiles","type":"component","creationDate":"2021-10-11 02:44:17","author":"JoomUnited","copyright":"","authorEmail":"contact@joomunited.com","authorUrl":"http:\/\/www.joomunited.com","version":"5.8.5","description":"Dropfiles files manager","group":"","filename":"dropfiles"}','component',1,'','{"updated":"1","allowedext":"7z,ace,bz2,dmg,gz,rar,tgz,zip,csv,doc,docx,html,key,keynote,odp,ods,odt,pages,pdf,pps,ppt,pptx,rtf,tex,txt,xls,xlsx,xml,bmp,exif,gif,ico,jpeg,jpg,png,psd,tif,tiff,aac,aif,aiff,alac,amr,au,cdda,flac,m3u,m4a,m4p,mid,mp3,mp4,mpa,ogg,pac,ra,wav,wma,3gp,asf,avi,flv,m4v,mkv,mov,mpeg,mpg,rm,swf,vob,wmv","maxinputfile":"10","add_category_owner":"0","categoryrestriction":"accesslevel","restrictfile":"1","catcollapsed":"1","import":"0","usereditor":"1","addremotefile":"0","versioning_number":"10","allowedgoogleext":"pdf,ppt,doc,xls,dxf,ps,eps,xps,psd,tif,tiff,bmp,svg,pages,ai,dxf,ttf,txt,mp3,mp4,png","open_pdf_in":"0","usegoogleviewer":"1","uri":"files","date_format":"Y-m-d","loadthemecategory":"0","download_category":"0","custom_icon":"0","show_empty_folder":"1","plain_text_search":"0","show_filters":"1","cat_filter":"1","tag_filter":"1","display_tag":"searchbox","creation_date":"1","update_date":"1","search_limit":"20","cat_tags":"[]","readfiletype":"0","sync_log_option":"0","track_user_download":"0","default_marginleft":"10","default_marginright":"10","default_margintop":"10","default_marginbottom":"10","default_showsize":"1","default_showtitle":"1","default_showversion":"1","default_showhits":"1","default_showdownload":"1","default_bgdownloadlink":"#c102cf","default_colordownloadlink":"#1a7fa1","default_showdateadd":"1","default_showdatemodified":"0","default_showcategorytitle":"1","default_showsubcategories":"1","default_showbreadcrumb":"1","default_showfoldertree":"1","default_columns":"2","ggd_marginleft":"10","ggd_marginright":"5","ggd_margintop":"5","ggd_marginbottom":"5","ggd_showsize":"1","ggd_showtitle":"1","ggd_showversion":"1","ggd_showhits":"1","ggd_showdownload":"1","ggd_bgdownloadlink":"#006dcc","ggd_colordownloadlink":"#ffffff","ggd_showdateadd":"1","ggd_showdatemodified":"0","ggd_showcategorytitle":"1","ggd_showsubcategories":"1","ggd_showbreadcrumb":"1","ggd_showfoldertree":"0","ggd_download_popup":"1","table_stylingmenu":"1","table_showsize":"1","table_showtitle":"1","table_showdescription":"1","table_showversion":"1","table_showhits":"1","table_showdownload":"1","table_bgdownloadlink":"#006dcc","table_colordownloadlink":"#ffffff","table_showdateadd":"0","table_showdatemodified":"0","table_showsubcategories":"1","table_showcategorytitle":"1","table_showbreadcrumb":"1","table_showfoldertree":"0","table_showcategoriesposition":"0","tree_showsize":"1","tree_bgdownloadlink":"#006dcc","tree_colordownloadlink":"#ffffff","tree_showtitle":"1","tree_showdescription":"1","tree_showversion":"1","tree_showhits":"1","tree_showdateadd":"1","tree_showdatemodified":"0","tree_showsubcategories":"1","tree_showcategorytitle":"1","tree_download_popup":"1","singlebg":"#444444","singlefontcolor":"#ffffff","singlebghovercolor":"#444444","singlehover":"#888888","newtheme":"","fromtheme":"default","sender_name":"Dropfiles","sender_email":"","category_owner":"0","file_owner":"0","notify_super_admin":"0","placeholder":"1","add_event":"1","placeholder1":"1","add_event_subject":"A new file has been added","add_event_additional_email":"","add_event_editor":"<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" bgcolor=\"#fafafa\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table border=\"0\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" align=\"center\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table class=\"content\" style=\"max-width: 700px; width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"center\" bgcolor=\"#ffffff\">\r\n<tbody>\r\n<tr>\r\n<td class=\"header\" style=\"padding: 40px 30px 20px 30px;\" bgcolor=\"#64B7EB\">\r\n<table border=\"0\" width=\"70\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td style=\"padding: 0 20px 20px 0;\" height=\"70\"><img class=\"fix\" style=\"height: auto;\" src=\"components\/com_dropfiles\/assets\/images\/icon-download.png\" alt=\"\" width=\"70\" height=\"70\" border=\"0\" \/><\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<table border=\"0\" width=\"425\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table class=\"col425\" style=\"max-width: 525px; width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td height=\"70\">\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"subhead\" style=\"color: #ffffff; font-family: sans-serif; font-size: 15px; letter-spacing: 5px; padding: 0 0 0 3px;\">File manager<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"h1\" style=\"color: #fff; font-family: sans-serif; font-size: 33px; font-weight: bold; line-height: 38px; padding: 5px 0 0 0;\">A file has been added<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"innerpadding borderbottom\" style=\"border-bottom: 1px solid #f2eeed; padding: 30px 30px 30px 30px;\">\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"h2\" style=\"color: #153643; font-family: sans-serif; font-size: 24px; font-weight: bold; line-height: 28px; padding: 0 0 15px 0;\">Hello {receiver},<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"bodycopy\" style=\"color: #153643; font-family: sans-serif; font-size: 16px; line-height: 22px;\">You receive this notification because a file has been added on {website_url}<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"innerpadding borderbottom\" style=\"border-bottom: 1px solid #f2eeed; padding: 30px 30px 30px 30px;\">\r\n<table class=\"col380\" style=\"width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"bodycopy\" style=\"color: #153643; font-family: sans-serif; font-size: 16px; line-height: 22px;\">A file has been added by a user who owns it or an administrator, you can visit the website to get more information about it.<\/td>\r\n<\/tr>\r\n<tr>\r\n<td style=\"padding: 20px 0 0 0;\">\r\n<table class=\"buttonwrapper\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" bgcolor=\"#64B7EB\">\r\n<tbody>\r\n<tr>\r\n<td class=\"button\" style=\"font-family: sans-serif; font-size: 18px; font-weight: bold; padding: 0 30px 0 30px; text-align: center;\" height=\"45\"><a style=\"color: #ffffff; text-decoration: none;\" href=\"{website_url}\">Visit the website<\/a><\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"footer\" style=\"padding: 20px 30px 15px 30px;\" bgcolor=\"#44525f\">\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"footercopy\" style=\"color: #ffffff; font-family: sans-serif; font-size: 12px;\" align=\"center\">You receive this Email because an administrator has registered it in the file manager notification system. Please get in touch with an administrator to manage your email preference.<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>","edit_event":"1","placeholder3":"1","edit_event_subject":"A file has been edited","edit_event_additional_email":"","edit_event_editor":"<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" bgcolor=\"#fafafa\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table border=\"0\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" align=\"center\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table class=\"content\" style=\"max-width: 700px; width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"center\" bgcolor=\"#ffffff\">\r\n<tbody>\r\n<tr>\r\n<td class=\"header\" style=\"padding: 40px 30px 20px 30px;\" bgcolor=\"#64B7EB\">\r\n<table border=\"0\" width=\"70\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td style=\"padding: 0 20px 20px 0;\" height=\"70\"><img class=\"fix\" style=\"height: auto;\" src=\"components\/com_dropfiles\/assets\/images\/icon-download.png\" alt=\"\" width=\"70\" height=\"70\" border=\"0\" \/><\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<table border=\"0\" width=\"425\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table class=\"col425\" style=\"max-width: 525px; width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td height=\"70\">\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"subhead\" style=\"color: #ffffff; font-family: sans-serif; font-size: 15px; letter-spacing: 5px; padding: 0 0 0 3px;\">File manager<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"h1\" style=\"color: #fff; font-family: sans-serif; font-size: 33px; font-weight: bold; line-height: 38px; padding: 5px 0 0 0;\">A file has been edited<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"innerpadding borderbottom\" style=\"border-bottom: 1px solid #f2eeed; padding: 30px 30px 30px 30px;\">\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"h2\" style=\"color: #153643; font-family: sans-serif; font-size: 24px; font-weight: bold; line-height: 28px; padding: 0 0 15px 0;\">Hello {receiver},<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"bodycopy\" style=\"color: #153643; font-family: sans-serif; font-size: 16px; line-height: 22px;\">You receive this notification because a file has been edited on {website_url}<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"innerpadding borderbottom\" style=\"border-bottom: 1px solid #f2eeed; padding: 30px 30px 30px 30px;\">\r\n<table class=\"col380\" style=\"width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"bodycopy\" style=\"color: #153643; font-family: sans-serif; font-size: 16px; line-height: 22px;\">A file has been edited by a user who owns it or an administrator, you can visit the website to get more information about it.<\/td>\r\n<\/tr>\r\n<tr>\r\n<td style=\"padding: 20px 0 0 0;\">\r\n<table class=\"buttonwrapper\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" bgcolor=\"#64B7EB\">\r\n<tbody>\r\n<tr>\r\n<td class=\"button\" style=\"font-family: sans-serif; font-size: 18px; font-weight: bold; padding: 0 30px 0 30px; text-align: center;\" height=\"45\"><a style=\"color: #ffffff; text-decoration: none;\" href=\"{website_url}\">Visit the website<\/a><\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"footer\" style=\"padding: 20px 30px 15px 30px;\" bgcolor=\"#44525f\">\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"footercopy\" style=\"color: #ffffff; font-family: sans-serif; font-size: 12px;\" align=\"center\">You receive this Email because an administrator has registered it in the file manager notification system. Please get in touch with an administrator to manage your email preference.<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>","delete_event":"1","placeholder4":"1","delete_event_subject":"A file has been deleted","delete_event_additional_email":"","delete_event_editor":"<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" bgcolor=\"#fafafa\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table border=\"0\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" align=\"center\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table class=\"content\" style=\"max-width: 700px; width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"center\" bgcolor=\"#ffffff\">\r\n<tbody>\r\n<tr>\r\n<td class=\"header\" style=\"padding: 40px 30px 20px 30px;\" bgcolor=\"#64B7EB\">\r\n<table border=\"0\" width=\"70\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td style=\"padding: 0 20px 20px 0;\" height=\"70\"><img class=\"fix\" style=\"height: auto;\" src=\"components\/com_dropfiles\/assets\/images\/icon-download.png\" alt=\"\" width=\"70\" height=\"70\" border=\"0\" \/><\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<table border=\"0\" width=\"425\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table class=\"col425\" style=\"max-width: 525px; width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td height=\"70\">\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"subhead\" style=\"color: #ffffff; font-family: sans-serif; font-size: 15px; letter-spacing: 5px; padding: 0 0 0 3px;\">File manager<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"h1\" style=\"color: #fff; font-family: sans-serif; font-size: 33px; font-weight: bold; line-height: 38px; padding: 5px 0 0 0;\">A file has been removed<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"innerpadding borderbottom\" style=\"border-bottom: 1px solid #f2eeed; padding: 30px 30px 30px 30px;\">\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"h2\" style=\"color: #153643; font-family: sans-serif; font-size: 24px; font-weight: bold; line-height: 28px; padding: 0 0 15px 0;\">Hello {receiver},<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"bodycopy\" style=\"color: #153643; font-family: sans-serif; font-size: 16px; line-height: 22px;\">You receive this notification because a file has been removed on {website_url}<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"innerpadding borderbottom\" style=\"border-bottom: 1px solid #f2eeed; padding: 30px 30px 30px 30px;\">\r\n<table class=\"col380\" style=\"width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"bodycopy\" style=\"color: #153643; font-family: sans-serif; font-size: 16px; line-height: 22px;\">A file has been removed by a user who owns it or an administrator, you can visit the website to get more information about it.<\/td>\r\n<\/tr>\r\n<tr>\r\n<td style=\"padding: 20px 0 0 0;\">\r\n<table class=\"buttonwrapper\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" bgcolor=\"#64B7EB\">\r\n<tbody>\r\n<tr>\r\n<td class=\"button\" style=\"font-family: sans-serif; font-size: 18px; font-weight: bold; padding: 0 30px 0 30px; text-align: center;\" height=\"45\"><a style=\"color: #ffffff; text-decoration: none;\" href=\"{website_url}\">Visit the website<\/a><\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"footer\" style=\"padding: 20px 30px 15px 30px;\" bgcolor=\"#44525f\">\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"footercopy\" style=\"color: #ffffff; font-family: sans-serif; font-size: 12px;\" align=\"center\">You receive this Email because an administrator has registered it in the file manager notification system. Please get in touch with an administrator to manage your email preference.<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>","download_event":"0","placeholder5":"1","download_event_subject":"A file has been downloaded","download_event_additional_email":"","download_event_editor":"<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" bgcolor=\"#fafafa\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table border=\"0\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" align=\"center\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table class=\"content\" style=\"max-width: 700px; width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"center\" bgcolor=\"#ffffff\">\r\n<tbody>\r\n<tr>\r\n<td class=\"header\" style=\"padding: 40px 30px 20px 30px;\" bgcolor=\"#64B7EB\">\r\n<table border=\"0\" width=\"70\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td style=\"padding: 0 20px 20px 0;\" height=\"70\"><img class=\"fix\" style=\"height: auto;\" src=\"components\/com_dropfiles\/assets\/images\/icon-download.png\" alt=\"\" width=\"70\" height=\"70\" border=\"0\" \/><\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<table border=\"0\" width=\"425\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table class=\"col425\" style=\"max-width: 525px; width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td height=\"70\">\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"subhead\" style=\"color: #ffffff; font-family: sans-serif; font-size: 15px; letter-spacing: 5px; padding: 0 0 0 3px;\">File manager<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"h1\" style=\"color: #fff; font-family: sans-serif; font-size: 33px; font-weight: bold; line-height: 38px; padding: 5px 0 0 0;\">A file has been downloaded<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"innerpadding borderbottom\" style=\"border-bottom: 1px solid #f2eeed; padding: 30px 30px 30px 30px;\">\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"h2\" style=\"color: #153643; font-family: sans-serif; font-size: 24px; font-weight: bold; line-height: 28px; padding: 0 0 15px 0;\">Hello {receiver},<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"bodycopy\" style=\"color: #153643; font-family: sans-serif; font-size: 16px; line-height: 22px;\">You receive this notification because a file has been downloaded on {website_url}<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"innerpadding borderbottom\" style=\"border-bottom: 1px solid #f2eeed; padding: 30px 30px 30px 30px;\">\r\n<table class=\"col380\" style=\"width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"bodycopy\" style=\"color: #153643; font-family: sans-serif; font-size: 16px; line-height: 22px;\">A file has been downloaded by a user who owns it or an administrator, you can visit the website to get more information about it.<\/td>\r\n<\/tr>\r\n<tr>\r\n<td style=\"padding: 20px 0 0 0;\">\r\n<table class=\"buttonwrapper\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" bgcolor=\"#64B7EB\">\r\n<tbody>\r\n<tr>\r\n<td class=\"button\" style=\"font-family: sans-serif; font-size: 18px; font-weight: bold; padding: 0 30px 0 30px; text-align: center;\" height=\"45\"><a style=\"color: #ffffff; text-decoration: none;\" href=\"{website_url}\">Visit the website<\/a><\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"footer\" style=\"padding: 20px 30px 15px 30px;\" bgcolor=\"#44525f\">\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"footercopy\" style=\"color: #ffffff; font-family: sans-serif; font-size: 12px;\" align=\"center\">You receive this Email because an administrator has registered it in the file manager notification system. Please get in touch with an administrator to manage your email preference.<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>","dropbox_key":"","dropbox_secret":"","dropbox_authorization_code":"","dropbox_token":"","dropbox_sync_method":"dropbox_sync_page_curl_ajax","dropbox_sync_time":"5","dropbox_last_log":"","google_client_id":"","google_client_secret":"","google_credentials":"","google_base_folder":"","sync_method":"sync_page_curl_ajax","sync_time":"5","google_watch_changes":"1","last_log":"","indexgoogle":"1","dropfiles_google_watch_data":"","dropfiles_google_last_changes_token":"","dropfiles_google_last_sync_changes":"","onedriveKey":"","onedriveSecret":"","onedriveSyncMethod":"sync_page_curl_ajax","onedriveSyncTime":"5","onedrive_last_log":"","onedriveCredentials":"","onedriveBaseFolderId":"","onedriveBaseFolderName":"","onedriveKeyOld":"","onedriveSecretOld":"","onedriveCredentialsOld":"","onedriveBaseFolderIdOld":"","onedriveBaseFolderNameOld":"","searchindexer":"","ref_exclude_category_id":"","createtheme":"","customthemelist":"","__field1":"","__field2":"","dropbox_cron_task_url":"","dropboxbtn":"","dropbox_document":"","cron_task_url":"","googlebtn":"","google_document":"","onedrivebtn":"","onedrive_document":"","note1":"","note2":"","doccat":"","jdowncat":"","edocmancategory":"","phocadownloadcat":"","rules":{"core.admin":{"1":"","2":"","11":"","3":"","4":"","5":"","13":"","14":"","6":"","7":"","9":"","10":"","15":"","8":""},"core.manage":{"1":"","2":"","11":"","3":"","4":"","5":"","13":"","14":"","6":"","7":"","9":"","10":"","15":"","8":""},"core.create":{"1":"","2":"","11":"","3":"","4":"","5":"","13":"","14":"","6":"","7":"","9":"","10":"","15":"","8":""},"core.delete":{"1":"","2":"","11":"","3":"","4":"","5":"","13":"","14":"","6":"","7":"","9":"","10":"","15":"","8":""},"core.edit":{"1":"","2":"","11":"","3":"","4":"","5":"","13":"","14":"","6":"","7":"","9":"","10":"","15":"","8":""},"core.edit.own":{"1":"","2":"","11":"","3":"","4":"","5":"","13":"","14":"","6":"","7":"","9":"","10":"","15":"","8":""},"com_dropfiles.viewfile_download":{"1":"1","2":"","11":"","3":"","4":"","5":"","13":"","14":"","6":"","7":"","9":"","10":"","15":"","8":""}},"adminassets":"","jutranslation":"","liveupdate":"","component":"com_dropfiles"}');
+		if($installed) {
+			EmundusHelperUpdate::enableEmundusPlugins('com_dropfiles');
+		}
+
+		return $installed;
+	}
+
+	private function checkDropfilesPlugins() {
+		$installed = EmundusHelperUpdate::installExtension('Emundus - Create new dropfiles category','setup_category','{"name":"Emundus - Create new dropfiles category","type":"plugin","creationDate":"July 2020","author":"eMundus","copyright":"(C) 2010-2019 EMUNDUS SOFTWARE. All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"https:\/\/www.emundus.fr","version":"6.9.10","description":"PLG_EMUNDUS_SETUP_CATEGORY_DESCRIPTION","group":"","filename":"setup_category"}','plugin',1,'emundus');
+		if($installed) {
+			EmundusHelperUpdate::enableEmundusPlugins('setup_category', 'emundus');
+		}
+
+		return $installed;
+	}
+
+	private function checkEmundusRegistrationRedirect() {
+		$installed = EmundusHelperUpdate::installExtension('Emundus Registration Redirect Plugin','emundusregistrationredirect', '{"name":"Emundus Registration Redirect Plugin","type":"plugin","creationDate":"16 May 2018","author":"eMundus","copyright":"(C) 2010-2018 EMUNDUS SOFTWARE. All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"http:\/\/www.emundus.fr","version":"6.6.3","description":"This plugin enables you to handle redirect to a custom registration page","group":"","filename":"emundusregistrationredirect"}','plugin',1,'system','{"url_to_registration":"PLG_EMUNDUS_REGISTRATION_REDIRECT_URL","item_id":""}');
+		if($installed) {
+			EmundusHelperUpdate::enableEmundusPlugins('emundusregistrationredirect', 'system');
+		}
+
+		return $installed;
+	}
+
+	private function checkPayboxFiles() {
+		$checked = true;
+
+		return $checked;
 	}
 }

@@ -17,6 +17,25 @@ use Joomla\CMS\Table\Table;
 class EmundusHelperUpdate
 {
 
+	public static function displayMessage($message, $type = 'info'): void
+	{
+		switch ($type)
+		{
+			case 'info':
+				echo "\033[36m" . $message . "\033[0m\n";
+				break;
+			case 'success':
+				echo "\033[32m" . $message . "\033[0m\n";
+				break;
+			case 'warning':
+				echo "\033[33m" . $message . "\033[0m\n";
+				break;
+			case 'error':
+				echo "\033[31m" . $message . "\033[0m\n";
+				break;
+		}
+	}
+
 	public static function clearJoomlaCache($group = null){
 		require_once (JPATH_ROOT . '/administrator/components/com_cache/models/cache.php');
 		$m_cache = new CacheModelCache();
