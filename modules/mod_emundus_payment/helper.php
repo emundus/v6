@@ -1,5 +1,11 @@
 <?php
 
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Helper\ModuleHelper;
+use Joomla\CMS\Log\Log;
+use Joomla\CMS\Uri\Uri;
+
 class modEmundusPaymentHelper
 {
     /**
@@ -10,7 +16,7 @@ class modEmundusPaymentHelper
     {
         $doINeedToPay = true;
 
-        $db = JFactory::getDBO();
+        $db = Factory::getDbo();
         $query = $db->getQuery(true);
 
         $query->select('jespbc.*')
@@ -23,7 +29,7 @@ class modEmundusPaymentHelper
         try {
             $payment = $db->loadObject();
         } catch (Exception $e) {
-            JLog::add('Error getting payment infos from fnum ('. $fnum .')', JLog::ERROR, 'com_emundus_payment');
+            Log::add('Error getting payment infos from fnum ('. $fnum .')', Log::ERROR, 'com_emundus_payment');
         }
 
         if (empty($payment) || empty($payment->id)) {
@@ -41,7 +47,7 @@ class modEmundusPaymentHelper
     {
         $didIAlreadyPay = false;
 
-        $db = JFactory::getDBO();
+        $db = Factory::getDBO();
         $query = $db->getQuery(true);
 
         $query->select('jho.order_id, jho.order_status')
@@ -54,7 +60,7 @@ class modEmundusPaymentHelper
         try {
             $order = $db->loadObject();
         } catch (Exception $e) {
-            JLog::add('Error getting order infos from fnum ('. $fnum .') : '. $e, JLog::ERROR, 'com_emundus_payment');
+            Log::add('Error getting order infos from fnum ('. $fnum .') : '. $e, Log::ERROR, 'com_emundus_payment');
         }
 
         if (!empty($order) && $order->order_status === 'confirmed') {
@@ -71,7 +77,7 @@ class modEmundusPaymentHelper
      */
     public function didIStartPayment($fnum)
     {
-        $db = JFactory::getDBO();
+        $db = Factory::getDBO();
         $query = $db->getQuery(true);
 
         $query->select('jeh.*, jho.order_status, jho.order_type, jho.order_id as hikashop_order')
@@ -84,7 +90,7 @@ class modEmundusPaymentHelper
         try {
             $payment = $db->loadObject();
         } catch (Exception $e) {
-            JLog::add('Error getting payment infos from fnum ('. $fnum .') : '. $e, JLog::ERROR, 'com_emundus_payment');
+            Log::add('Error getting payment infos from fnum ('. $fnum .') : '. $e, Log::ERROR, 'com_emundus_payment');
         }
 
         return $payment;
@@ -134,7 +140,7 @@ class modEmundusPaymentHelper
      */
     public function doesScholarshipHoldersNeedToPay(): bool
     {
-        $params	= JComponentHelper::getParams('com_emundus');
+        $params	= ComponentHelper::getParams('com_emundus');
         return $params->get('pay_scholarship', 0) == 1;
     }
 
@@ -148,7 +154,7 @@ class modEmundusPaymentHelper
         $payment = false;
 
         if (!empty($fnum)) {
-            $db = JFactory::getDBO();
+            $db = Factory::getDBO();
             $query = $db->getQuery(true);
 
             $query->select('jespbc.*, jec.campaign_id')
@@ -162,10 +168,10 @@ class modEmundusPaymentHelper
             try {
                 $payment = $db->loadObject();
             } catch (Exception $e) {
-                JLog::add('Error getting payment infos from fnum ('. $fnum .') : '. $e, JLog::ERROR, 'com_emundus_payment');
+                Log::add('Error getting payment infos from fnum ('. $fnum .') : '. $e, Log::ERROR, 'com_emundus_payment');
             }
         } else {
-            JLog::add('Error getting payment infos from fnum : fnum is empty', JLog::WARNING, 'com_emundus_payment');
+            Log::add('Error getting payment infos from fnum : fnum is empty', Log::WARNING, 'com_emundus_payment');
         }
 
         return $payment;
@@ -181,7 +187,7 @@ class modEmundusPaymentHelper
         $product = false;
 
         if (!empty($product_id)) {
-            $db = JFactory::getDbo();
+            $db = Factory::getDbo();
             $query = $db->getQuery(true);
 
             $query->select('*')
@@ -192,10 +198,10 @@ class modEmundusPaymentHelper
             try {
                 $product = $db->loadObject();
             } catch (Exception $e) {
-                JLog::add('Error getting product ('. $product_id .') : '. $e, JLog::ERROR, 'com_emundus_payment');
+                Log::add('Error getting product ('. $product_id .') : '. $e, Log::ERROR, 'com_emundus_payment');
             }
         } else {
-            JLog::add('Error getting product : product_id is empty', JLog::WARNING, 'com_emundus_payment');
+            Log::add('Error getting product : product_id is empty', Log::WARNING, 'com_emundus_payment');
         }
 
         return $product;
@@ -211,7 +217,7 @@ class modEmundusPaymentHelper
         $campaign = false;
 
         if (!empty($campaign_id)) {
-            $db = JFactory::getDbo();
+            $db = Factory::getDbo();
             $query = $db->getQuery(true);
 
             $query->select('*')
@@ -222,10 +228,10 @@ class modEmundusPaymentHelper
             try {
                 $campaign = $db->loadObject();
             } catch (Exception $e) {
-                JLog::add('Error getting campaign ('. $campaign_id .') : '. $e, JLog::ERROR, 'com_emundus_payment');
+                Log::add('Error getting campaign ('. $campaign_id .') : '. $e, Log::ERROR, 'com_emundus_payment');
             }
         } else {
-            JLog::add('Error getting campaign : campaign_id is empty', JLog::WARNING, 'com_emundus_payment');
+            Log::add('Error getting campaign : campaign_id is empty', Log::WARNING, 'com_emundus_payment');
         }
 
         return $campaign;
@@ -239,7 +245,7 @@ class modEmundusPaymentHelper
     {
         $countries = [];
 
-        $db = JFactory::getDbo();
+        $db = Factory::getDbo();
         $query = $db->getQuery(true);
 
         $query->select('*')
@@ -250,7 +256,7 @@ class modEmundusPaymentHelper
         try {
             $countries = $db->loadObjectList();
         } catch (Exception $e) {
-            JLog::add('Error getting countries : '. $e, JLog::ERROR, 'com_emundus_payment');
+            Log::add('Error getting countries : '. $e, Log::ERROR, 'com_emundus_payment');
         }
 
         return $countries;
@@ -272,7 +278,7 @@ class modEmundusPaymentHelper
     public function getFilePaymentStatus($fnum)
     {
         $status = 'unknown';
-        $db = JFactory::getDBO();
+        $db = Factory::getDBO();
         $query = $db->getQuery(true);
 
         $query->select('jho.status')
@@ -285,7 +291,7 @@ class modEmundusPaymentHelper
         try {
             $status = $db->loadResult();
         } catch (Exception $e) {
-            JLog::add('Error getting file payment status from fnum ('. $fnum .') : '. $e, JLog::ERROR, 'com_emundus_payment');
+            Log::add('Error getting file payment status from fnum ('. $fnum .') : '. $e, Log::ERROR, 'com_emundus_payment');
         }
 
         return $status;
@@ -296,7 +302,7 @@ class modEmundusPaymentHelper
         $lbl = '';
 
         if (!empty($attachmentId)) {
-            $db = JFactory::getDBO();
+            $db = Factory::getDBO();
             $query = $db->getQuery(true);
 
             $query->select('lbl')
@@ -309,7 +315,7 @@ class modEmundusPaymentHelper
                 $lbl = $db->loadResult();
             } catch (Exception $e) {
                 $lbl = '';
-                JLog::add('Error getting attachment lbl : ' . $e->getMessage(), JLog::ERROR, 'com_emundus_payment');
+                Log::add('Error getting attachment lbl : ' . $e->getMessage(), Log::ERROR, 'com_emundus_payment');
             }
         }
 
@@ -321,7 +327,7 @@ class modEmundusPaymentHelper
         $ext = array();
 
         if (!empty($attachmentId)) {
-            $db = JFactory::getDBO();
+            $db = Factory::getDBO();
             $query = $db->getQuery(true);
 
             $query->select('allowed_types')
@@ -334,7 +340,7 @@ class modEmundusPaymentHelper
                 $allowed_types = $db->loadResult();
             } catch (Exception $e) {
                 $allowed_types = '';
-                JLog::add('Error getting attachment ext : ' . $e->getMessage(), JLog::ERROR, 'com_emundus_payment');
+                Log::add('Error getting attachment ext : ' . $e->getMessage(), Log::ERROR, 'com_emundus_payment');
             }
 
             if (!empty($allowed_types)) {
@@ -405,7 +411,8 @@ class modEmundusPaymentHelper
             'ods' => 'application/vnd.oasis.opendocument.spreadsheet',
         );
 
-        $ext = strtolower(array_pop(explode('.',$filename)));
+		$file_ext = explode('.',$filename);
+        $ext = strtolower(array_pop($file_ext));
         if (array_key_exists($ext, $mime_types)) {
             return $mime_types[$ext];
         }
@@ -423,7 +430,7 @@ class modEmundusPaymentHelper
         $m_payment = new EmundusModelPayment();
         $axepta = new Axepta();
 
-        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $eMConfig = ComponentHelper::getParams('com_emundus');
 
         $currentPayment = $this->didIStartPayment($fnum);
         if(empty($currentPayment)) {
@@ -438,9 +445,9 @@ class modEmundusPaymentHelper
         $currency = $params->get('axepta_currency','EUR');
         $hmac_key = $eMConfig->get('axepta_hmac_key','4n!BmF3_?9oJ2Q*z(iD7q6[RSb5)a]A8');
         $blowfish_key = $eMConfig->get('axepta_blowfish_key','Tc5*2D_xs7B[6E?w');
-        $notify_url = $params->get('axepta_notify_url',JUri::base() . '/notify');
-        $success_url = $params->get('axepta_success_url',JUri::base());
-        $failed_url = $params->get('axepta_failed_url',JUri::base());
+        $notify_url = $params->get('axepta_notify_url',Uri::base() . '/notify');
+        $success_url = $params->get('axepta_success_url',Uri::base());
+        $failed_url = $params->get('axepta_failed_url',Uri::base());
 
         /* BUILD payment_url */
         $mac_value = $axepta->ctHMAC('',$order,$merchant_id,$amount,$currency,$hmac_key);
@@ -471,7 +478,7 @@ class modEmundusPaymentHelper
         $datas = $axepta->ctEncrypt($blowfish_string,$len,$blowfish_key);
 
         // Get logo
-        $logo_module = JModuleHelper::getModuleById('90');
+        $logo_module = ModuleHelper::getModuleById('90');
         preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
         $pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
                                     (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
@@ -481,7 +488,7 @@ class modEmundusPaymentHelper
         if ((bool) preg_match($pattern, $tab[1])) {
             $tab[1] = parse_url($tab[1], PHP_URL_PATH);
         }
-        $logo = JURI::base().$tab[1];
+        $logo = Uri::base().$tab[1];
         //
 
         // Display Price
@@ -496,7 +503,7 @@ class modEmundusPaymentHelper
         $desc = $params->get('axepta_order_desc','');
         //
 
-        $payment_url = 'https://paymentpage.axepta.bnpparibas/payssl.aspx' . '?MerchantID=' . $merchant_id . '&CustomField1='.$price.$currency_icon.'&CustomField3='.$logo.'&CustomField4='.$desc.'&URLBack='.JUri::base().'&Len='.$len.'&Data='.$datas;
+        $payment_url = 'https://paymentpage.axepta.bnpparibas/payssl.aspx' . '?MerchantID=' . $merchant_id . '&CustomField1='.$price.$currency_icon.'&CustomField3='.$logo.'&CustomField4='.$desc.'&URLBack='.Uri::base().'&Len='.$len.'&Data='.$datas;
 
         return $payment_url;
     }
