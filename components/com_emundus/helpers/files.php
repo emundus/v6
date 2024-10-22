@@ -4971,7 +4971,7 @@ class EmundusHelperFiles
                             }
 
                             if ((!empty($menu_item) && $menu_item->query['view'] == 'evaluation') || $applied_filter['uid'] == 'to_evaluate') {
-                                $query .= 'LEFT JOIN jos_emundus_evaluations on jos_emundus_evaluations.fnum = jecc.fnum';
+                                $query .= 'LEFT JOIN jos_emundus_evaluations on jos_emundus_evaluations.fnum = jecc.fnum AND jos_emundus_evaluations.user = ' . $user->id;
                                 $already_joined['jos_emundus_evaluations'] = 'jos_emundus_evaluations';
                                 $where_params['eval'] = true;
                             }
