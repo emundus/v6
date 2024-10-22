@@ -19,14 +19,14 @@ class com_emundusInstallerScript
 
 	public function __construct()
 	{
-		$this->dbo    = Factory::getDbo();
-		$query = $this->dbo->getQuery(true);
+		$this->dbo = Factory::getDbo();
+		$query     = $this->dbo->getQuery(true);
 
 		$query->select('extension_id, manifest_cache')
 			->from($this->dbo->quoteName('#__extensions'))
 			->where($this->dbo->quoteName('element') . ' = ' . $this->dbo->quote('com_emundus'));
 		$this->dbo->setQuery($query);
-		$extension = $this->dbo->loadObject();
+		$extension            = $this->dbo->loadObject();
 		$this->manifest_cache = json_decode($extension->manifest_cache);
 
 		$query->clear()
@@ -42,10 +42,10 @@ class com_emundusInstallerScript
 	/**
 	 * Run before installation or upgrade run
 	 *
-	 * @param   string $type   discover_install (Install unregistered extensions that have been discovered.)
-	 *                         or install (standard install)
-	 *                         or update (update)
-	 * @param   object $parent installer object
+	 * @param   string  $type    discover_install (Install unregistered extensions that have been discovered.)
+	 *                           or install (standard install)
+	 *                           or update (update)
+	 * @param   object  $parent  installer object
 	 *
 	 * @return  void
 	 */
@@ -54,21 +54,24 @@ class com_emundusInstallerScript
 		$query = $this->dbo->getQuery(true);
 
 		// Check minimum PHP version
-		if (version_compare(PHP_VERSION, '7.4.0', '<')) {
+		if (version_compare(PHP_VERSION, '7.4.0', '<'))
+		{
 			echo "\033[31mThis extension works with PHP 7.4.0 or newer. Please contact your web hosting provider to update your PHP version. \033[0m\n";
 			exit;
 		}
 		//
 
 		// Check minimum Joomla version
-		if ($this->schema_version != '3.10.9-2022-10-05-em') {
+		if ($this->schema_version != '3.10.9-2022-10-05-em')
+		{
 			echo "\033[31mYou have to run update-db.sh before CLI ! \033[0m\n";
 			exit;
 		}
 		//
 
 		// If we have PHP 8, we need to disable DPCalendar to avoid a fatal error
-		if (version_compare(PHP_VERSION, '8.0.0', '>=')) {
+		if (version_compare(PHP_VERSION, '8.0.0', '>='))
+		{
 			$query->clear()
 				->update('#__extensions')
 				->set($this->dbo->quoteName('enabled') . ' = 0')
@@ -86,7 +89,8 @@ class com_emundusInstallerScript
 		$this->dbo->setQuery($query);
 		$all_rights_group = $this->dbo->loadResult();
 
-		if (!empty($all_rights_group)) {
+		if (!empty($all_rights_group))
+		{
 			EmundusHelperUpdate::updateComponentParameter('com_emundus', 'all_rights_group', $all_rights_group);
 		}
 		//
@@ -96,17 +100,19 @@ class com_emundusInstallerScript
 	/**
 	 * Run when the component is installed
 	 *
-	 * @param   object $parent installer object
+	 * @param   object  $parent  installer object
 	 *
 	 * @return bool
 	 */
-	public function install($type, $parent) {}
+	public function install($type, $parent)
+	{
+	}
 
 
 	/**
 	 * Run when the component is updated
 	 *
-	 * @param   object $parent installer object
+	 * @param   object  $parent  installer object
 	 *
 	 * @return  bool
 	 */
@@ -122,17 +128,20 @@ class com_emundusInstallerScript
 		$firstrun = false;
 		$regex    = '/^6\.[0-9]*/m';
 		preg_match_all($regex, $cache_version, $matches, PREG_SET_ORDER, 0);
-		if (!empty($matches)) {
+		if (!empty($matches))
+		{
 			$cache_version = (string) $parent->manifest->version;
 			$firstrun      = true;
 		}
 
-		if ($this->manifest_cache) {
+		if ($this->manifest_cache)
+		{
 			$db    = JFactory::getDbo();
 			$query = $db->getQuery(true);
 
 			# First run condition
-			if (version_compare($cache_version, '1.33.0', '<') || $firstrun) {
+			if (version_compare($cache_version, '1.33.0', '<') || $firstrun)
+			{
 				# Delete emundus sql files in con_admin
 				#$this->deleteOldSqlFiles();
 
@@ -287,15 +296,18 @@ class com_emundusInstallerScript
 				EmundusHelperUpdate::addJoomlaMenu($datas);
 			}
 
-			if ((version_compare($cache_version, '1.33.28', '<') || $firstrun)) {
+			if ((version_compare($cache_version, '1.33.28', '<') || $firstrun))
+			{
 				EmundusHelperUpdate::installExtension('PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_TITLE', 'custom_event_handler', '{"name":"PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_TITLE","type":"plugin","creationDate":"18 August 2021","author":"James Dean","copyright":"(C) 2010-2019 EMUNDUS SOFTWARE. All rights reserved.","authorEmail":"james@emundus.fr","authorUrl":"https:\/\/www.emundus.fr","version":"1.22.1","description":"PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_TITLE_DESC","group":"","filename":"custom_event_handler"}', 'plugin', 1, 'emundus');
 			}
 
-			if ((version_compare($cache_version, '1.33.32', '<') || $firstrun)) {
+			if ((version_compare($cache_version, '1.33.32', '<') || $firstrun))
+			{
 				EmundusHelperUpdate::disableEmundusPlugins('emundus_su');
 			}
 
-			if (version_compare($cache_version, '1.34.0', '<') || $firstrun) {
+			if (version_compare($cache_version, '1.34.0', '<') || $firstrun)
+			{
 				EmundusHelperUpdate::addColumn('jos_emundus_setup_campaigns', 'pinned', 'TINYINT', 1);
 				EmundusHelperUpdate::addColumn('jos_emundus_setup_campaigns', 'eval_start_date', 'DATETIME');
 				EmundusHelperUpdate::addColumn('jos_emundus_setup_programmes', 'color', 'VARCHAR', 10);
@@ -304,10 +316,12 @@ class com_emundusInstallerScript
 
 				// Add back button to login, register and reset view
 				$back_module = EmundusHelperUpdate::getModule(0, 'eMundus - Back button');
-				if (!empty($back_module) && !empty($back_module['id'])) {
+				if (!empty($back_module) && !empty($back_module['id']))
+				{
 					$moduleid = $back_module;
 				}
-				else {
+				else
+				{
 					$datas    = [
 						'title'    => 'eMundus - Back button',
 						'note'     => 'Back button available on login and register views',
@@ -328,7 +342,8 @@ class com_emundusInstallerScript
 					$moduleid = EmundusHelperUpdate::addJoomlaModule($datas);
 				}
 
-				if (!empty($moduleid)) {
+				if (!empty($moduleid))
+				{
 					$query->clear()
 						->select('id')
 						->from($db->quoteName('#__menu'))
@@ -336,7 +351,8 @@ class com_emundusInstallerScript
 					$db->setQuery($query);
 					$menus = $db->loadColumn();
 
-					foreach ($menus as $menu) {
+					foreach ($menus as $menu)
+					{
 						$query->clear()
 							->select('moduleid')
 							->from($db->quoteName('#__modules_menu'))
@@ -345,7 +361,8 @@ class com_emundusInstallerScript
 						$db->setQuery($query);
 						$is_existing = $db->loadResult();
 
-						if (!$is_existing) {
+						if (!$is_existing)
+						{
 							$query->clear()
 								->insert($db->quoteName('#__modules_menu'))
 								->set($db->quoteName('moduleid') . ' = ' . $db->quote($moduleid['id']))
@@ -399,8 +416,10 @@ class com_emundusInstallerScript
 				$db->setQuery($query);
 				$campaign_elements = $db->loadColumn();
 
-				if (!empty($campaign_elements)) {
-					foreach ($campaign_elements as $campaign_element) {
+				if (!empty($campaign_elements))
+				{
+					foreach ($campaign_elements as $campaign_element)
+					{
 						EmundusHelperUpdate::genericUpdateParams('#__fabrik_elements', 'id', $campaign_element, ['validations'], [], null, true);
 					}
 				}
@@ -532,12 +551,14 @@ class com_emundusInstallerScript
 				$db->execute();
 			}
 
-			if (version_compare($cache_version, '1.34.4', '<') || $firstrun) {
+			if (version_compare($cache_version, '1.34.4', '<') || $firstrun)
+			{
 				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_MISSING_MANDATORY_FILE_UPLOAD', 'Veuillez remplir le champ obligatoire %s du formulaire %s');
 				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_MISSING_MANDATORY_FILE_UPLOAD', 'Please fill the mandatory field %s of form %s', 'override', null, null, null, 'en-GB');
 			}
 
-			if (version_compare($cache_version, '1.34.10', '<') || $firstrun) {
+			if (version_compare($cache_version, '1.34.10', '<') || $firstrun)
+			{
 				EmundusHelperUpdate::insertTranslationsTag('APPLICATION_CREATION_DATE', 'Dossier crée le');
 				EmundusHelperUpdate::insertTranslationsTag('APPLICATION_CREATION_DATE', 'File created on', 'override', null, null, null, 'en-GB');
 
@@ -548,11 +569,13 @@ class com_emundusInstallerScript
 				EmundusHelperUpdate::insertTranslationsTag('SEND_ON', 'Send on', 'override', null, null, null, 'en-GB');
 			}
 
-			if (version_compare($cache_version, '1.34.33', '<') || $firstrun) {
+			if (version_compare($cache_version, '1.34.33', '<') || $firstrun)
+			{
 				EmundusHelperUpdate::addColumn('jos_emundus_uploads', 'local_filename', 'VARCHAR', 255);
 			}
 
-			if (version_compare($cache_version, '1.34.36', '<') || $firstrun) {
+			if (version_compare($cache_version, '1.34.36', '<') || $firstrun)
+			{
 				$db    = JFactory::getDbo();
 				$query = $db->getQuery(true);
 
@@ -562,23 +585,32 @@ class com_emundusInstallerScript
 				$db->setQuery($query);
 				$forms_to_update = $db->loadObjectList();
 
-				foreach ($forms_to_update as $form) {
+				foreach ($forms_to_update as $form)
+				{
 					$params = json_decode($form->params);
-					if (isset($params->curl_code)) {
-						foreach ($params->curl_code as $key => $code) {
-							if (strpos($code, 'media/com_emundus/lib/chosen/chosen.min.css') !== false) {
-								if (is_object($params->curl_code)) {
+					if (isset($params->curl_code))
+					{
+						foreach ($params->curl_code as $key => $code)
+						{
+							if (strpos($code, 'media/com_emundus/lib/chosen/chosen.min.css') !== false)
+							{
+								if (is_object($params->curl_code))
+								{
 									$params->curl_code->{$key} = str_replace('media/com_emundus/lib/chosen/chosen.min.css', 'media/jui/css/chosen.css', $params->curl_code->{$key});
 								}
-								elseif (is_array($params->curl_code)) {
+								elseif (is_array($params->curl_code))
+								{
 									$params->curl_code[$key] = str_replace('media/com_emundus/lib/chosen/chosen.min.css', 'media/jui/css/chosen.css', $params->curl_code[$key]);
 								}
 							}
-							if (strpos($code, 'media/com_emundus/lib/chosen/chosen.jquery.min.js') !== false) {
-								if (is_object($params->curl_code)) {
+							if (strpos($code, 'media/com_emundus/lib/chosen/chosen.jquery.min.js') !== false)
+							{
+								if (is_object($params->curl_code))
+								{
 									$params->curl_code->{$key} = str_replace('media/com_emundus/lib/chosen/chosen.jquery.min.js', 'media/jui/js/chosen.jquery.min.js', $params->curl_code->{$key});
 								}
-								elseif (is_array($params->curl_code)) {
+								elseif (is_array($params->curl_code))
+								{
 									$params->curl_code[$key] = str_replace('media/com_emundus/lib/chosen/chosen.jquery.min.js', 'media/jui/js/chosen.jquery.min.js', $params->curl_code[$key]);
 								}
 							}
@@ -595,7 +627,8 @@ class com_emundusInstallerScript
 				}
 			}
 
-			if (version_compare($cache_version, '1.34.49', '<') || $firstrun) {
+			if (version_compare($cache_version, '1.34.49', '<') || $firstrun)
+			{
 				EmundusHelperUpdate::addCustomEvents([
 					['label' => 'onHikashopAfterCheckoutStep', 'category' => 'Hikashop', 'published' => 1],
 					['label' => 'onHikashopAfterCartProductsLoad', 'category' => 'Hikashop', 'published' => 1],
@@ -603,7 +636,8 @@ class com_emundusInstallerScript
 				]);
 			}
 
-			if (version_compare($cache_version, '1.34.56', '<') || $firstrun) {
+			if (version_compare($cache_version, '1.34.56', '<') || $firstrun)
+			{
 				$db    = JFactory::getDbo();
 				$query = $db->getQuery(true);
 
@@ -614,7 +648,8 @@ class com_emundusInstallerScript
 				$db->setQuery($query);
 				$moduleid = $db->loadResult();
 
-				if (!empty($moduleid)) {
+				if (!empty($moduleid))
+				{
 					$query->clear()
 						->delete($db->quoteName('#__modules_menu'))
 						->where($db->quoteName('moduleid') . ' = ' . $moduleid);
@@ -636,7 +671,8 @@ class com_emundusInstallerScript
 				$db->execute();
 			}
 
-			if (version_compare($cache_version, '1.34.64', '<') || $firstrun) {
+			if (version_compare($cache_version, '1.34.64', '<') || $firstrun)
+			{
 				$db    = JFactory::getDbo();
 				$query = $db->getQuery(true);
 
@@ -682,8 +718,10 @@ if (password_value.match(regex) != null) {
 				$db->setQuery($query);
 				$password_inputs = $db->loadColumn();
 
-				if (!empty($password_inputs)) {
-					foreach ($password_inputs as $password) {
+				if (!empty($password_inputs))
+				{
+					foreach ($password_inputs as $password)
+					{
 						$password_jsaction['element_id'] = $password;
 						$query->clear()
 							->select($db->quoteName('id'))
@@ -694,11 +732,13 @@ if (password_value.match(regex) != null) {
 						$db->setQuery($query);
 						$password_onchange = $db->loadResult();
 
-						if (!empty($password_onchange)) {
+						if (!empty($password_onchange))
+						{
 							$password_jsaction['action_id'] = $password_onchange;
 							EmundusHelperUpdate::updateJsAction($password_jsaction);
 						}
-						else {
+						else
+						{
 							EmundusHelperUpdate::addJsAction($password_jsaction);
 						}
 					}
@@ -711,7 +751,8 @@ if (password_value.match(regex) != null) {
 				//
 			}
 
-			if (version_compare($cache_version, '1.35.0', '<=') || $firstrun) {
+			if (version_compare($cache_version, '1.35.0', '<=') || $firstrun)
+			{
 				EmundusHelperUpdate::updateYamlVariable('offcanvas', '16rem', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'width');
 				EmundusHelperUpdate::updateYamlVariable('breakpoints', '75rem', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'large-desktop-container');
 				EmundusHelperUpdate::updateYamlVariable('breakpoints', '60rem', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'desktop-container');
@@ -739,10 +780,12 @@ if (password_value.match(regex) != null) {
 				$db->setQuery($query);
 				$modules = $db->loadObjectList();
 
-				foreach ($modules as $module) {
+				foreach ($modules as $module)
+				{
 					$params = json_decode($module->params);
 
-					if (isset($params->layout) && $params->layout == '_:default') {
+					if (isset($params->layout) && $params->layout == '_:default')
+					{
 						$params->layout = '_:tchooz';
 						$query->clear()
 							->update($db->quoteName('#__modules'))
@@ -760,10 +803,12 @@ if (password_value.match(regex) != null) {
 						$db->setQuery($query);
 						$module_translations = $db->loadObjectList();
 
-						foreach ($module_translations as $module_translation) {
+						foreach ($module_translations as $module_translation)
+						{
 							$translation_params = json_decode($module_translation->value);
 
-							if (isset($translation_params->layout) && $translation_params->layout == '_:default') {
+							if (isset($translation_params->layout) && $translation_params->layout == '_:default')
+							{
 								$translation_params->layout = '_:tchooz';
 
 								$query->clear()
@@ -789,7 +834,8 @@ if (password_value.match(regex) != null) {
 				$db->setQuery($query);
 				$fabrik_extension = $db->loadResult();
 
-				if (!empty($fabrik_extension)) {
+				if (!empty($fabrik_extension))
+				{
 					$fabrik_params                    = json_decode($fabrik_extension, true);
 					$fabrik_params['disable_caching'] = "1";
 
@@ -801,7 +847,7 @@ if (password_value.match(regex) != null) {
 					$db->execute();
 				}
 
-				if(file_exists(JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml'))
+				if (file_exists(JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml'))
 				{
 					EmundusHelperUpdate::addYamlVariable('location', 'https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css', true, true);
 					EmundusHelperUpdate::addYamlVariable('inline', '', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
@@ -985,12 +1031,15 @@ if (password_value.match(regex) != null) {
 				$db->setQuery($query);
 				$fabrik_lists = $db->loadObjectList();
 
-				if (!empty($fabrik_lists)) {
-					foreach ($fabrik_lists as $list) {
+				if (!empty($fabrik_lists))
+				{
+					foreach ($fabrik_lists as $list)
+					{
 						$params                    = json_decode($list->params, true);
 						$params['advanced-filter'] = "0";
 
-						if ($params['show-table-filters'] != "0") {
+						if ($params['show-table-filters'] != "0")
+						{
 							$params['show-table-filters'] = "1";
 						}
 
@@ -1007,7 +1056,8 @@ if (password_value.match(regex) != null) {
 				EmundusHelperUpdate::enableEmundusPlugins('emundus', 'authentication');
 			}
 
-			if (version_compare($cache_version, '1.35.5', '<=') || $firstrun) {
+			if (version_compare($cache_version, '1.35.5', '<=') || $firstrun)
+			{
 				$db    = JFactory::getDbo();
 				$query = $db->getQuery(true);
 
@@ -1017,7 +1067,8 @@ if (password_value.match(regex) != null) {
 				$db->setQuery($query);
 				$waiting_room_params = $db->loadResult();
 
-				if (!empty($waiting_room_params)) {
+				if (!empty($waiting_room_params))
+				{
 					$strings_allowed_to_add = [
 						'paybox_',
 						'stripeconnect_',
@@ -1027,23 +1078,28 @@ if (password_value.match(regex) != null) {
 					$strings                = [];
 
 					$params = json_decode($waiting_room_params, true);
-					if (empty($params['strings_allowed'])) {
+					if (empty($params['strings_allowed']))
+					{
 						$params['strings_allowed'] = [];
 					}
 
 					// We get values from the database.
-					foreach ($params['strings_allowed'] as $string) {
+					foreach ($params['strings_allowed'] as $string)
+					{
 						$strings[] = $string['string_allowed_text'];
 					}
 
-					foreach ($strings_allowed_to_add as $string_allowed_to_add) {
-						if (!in_array($string_allowed_to_add, $strings)) {
+					foreach ($strings_allowed_to_add as $string_allowed_to_add)
+					{
+						if (!in_array($string_allowed_to_add, $strings))
+						{
 							$strings[] = $string_allowed_to_add;
 						}
 					}
 
 					$params['strings_allowed'] = [];
-					foreach ($strings as $key => $string) {
+					foreach ($strings as $key => $string)
+					{
 						$params['strings_allowed']['strings_allowed' . $key] = [
 							'string_allowed_text' => $string
 						];
@@ -1059,7 +1115,8 @@ if (password_value.match(regex) != null) {
 				}
 			}
 
-			if (version_compare($cache_version, '1.35.9', '<=') || $firstrun) {
+			if (version_compare($cache_version, '1.35.9', '<=') || $firstrun)
+			{
 				EmundusHelperUpdate::addColumn('jos_messages', 'email_cc', 'TEXT');
 				EmundusHelperUpdate::addColumn('jos_emundus_logs', 'timestamp', 'TIMESTAMP', null, 0);
 
@@ -1362,7 +1419,8 @@ try {
 				EmundusHelperUpdate::addCustomEvents([['label' => 'onAfterMoveApplication', 'category' => 'Campaign']]);
 			}
 
-			if (version_compare($cache_version, '1.36.0', '<=') || $firstrun) {
+			if (version_compare($cache_version, '1.36.0', '<=') || $firstrun)
+			{
 				EmundusHelperUpdate::addCustomEvents([
 					['label' => 'onBeforeEmundusRedirectToHikashopCart', 'category' => 'Hikashop'],
 					['label' => 'onBeforeApplicantEnterApplication', 'category' => 'Files'],
@@ -1461,8 +1519,10 @@ try {
 				$db->setQuery($query);
 				$element_id = $db->loadResult();
 
-				if (empty($element_id)) {
-					if (!empty($group_id)) {
+				if (empty($element_id))
+				{
+					if (!empty($group_id))
+					{
 						$values = ['display_preliminary_documents', $group_id, 'yesno', 'Afficher les documents à télécharger ?', '0', '0000-00-00 00:00:00', '2023-03-29 07:47:05', '62', 'sysadmin', '0000-00-00 00:00:00', '0', '0', '0', '0', '0', '0', '10', '0', "", '1', '1', '0', '0', '0', '1', '0', '0', '{"yesno_default":"0","yesno_icon_yes":"","yesno_icon_no":"","options_per_row":"4","toggle_others":"0","toggle_where":"","show_in_rss_feed":"0","show_label_in_rss_feed":"0","use_as_rss_enclosure":"0","rollover":"","tipseval":"0","tiplocation":"top-left","labelindetails":"0","labelinlist":"0","comment":"","edit_access":"1","edit_access_user":"","view_access":"1","view_access_user":"","list_view_access":"1","encrypt":"0","store_in_db":"1","default_on_copy":"0","can_order":"0","alt_list_heading":"","custom_link":"","custom_link_target":"","custom_link_indetails":"1","use_as_row_class":"0","include_in_list_query":"1","always_render":"0","icon_folder":"0","icon_hovertext":"1","icon_file":"","icon_subdir":"","filter_length":"20","filter_access":"1","full_words_only":"0","filter_required":"0","filter_build_method":"0","filter_groupby":"text","inc_in_adv_search":"1","filter_class":"input-medium","filter_responsive_class":"","tablecss_header_class":"","tablecss_header":"","tablecss_cell_class":"","tablecss_cell":"","sum_on":"0","sum_label":"Sum","sum_access":"1","sum_split":"","avg_on":"0","avg_label":"Average","avg_access":"1","avg_round":"0","avg_split":"","median_on":"0","median_label":"Median","median_access":"1","median_split":"","count_on":"0","count_label":"Count","count_condition":"","count_access":"1","count_split":"","custom_calc_on":"0","custom_calc_label":"Custom","custom_calc_query":"","custom_calc_access":"1","custom_calc_split":"","custom_calc_php":"","validations":[]}'];
 						$query->clear()
 							->insert($db->quoteName('#__fabrik_elements'))
@@ -1472,7 +1532,8 @@ try {
 						$db->setQuery($query);
 						$inserted = $db->execute();
 
-						if ($inserted) {
+						if ($inserted)
+						{
 							$display_preliminary_documents_id = $db->insertid();
 							EmundusHelperUpdate::addJsAction([
 								'element_id' => $display_preliminary_documents_id,
@@ -1498,8 +1559,10 @@ try {
 				$db->setQuery($query);
 				$element_id = $db->loadResult();
 
-				if (empty($element_id)) {
-					if (!empty($group_id)) {
+				if (empty($element_id))
+				{
+					if (!empty($group_id))
+					{
 						$values = ['specific_documents', $group_id, 'yesno', 'Afficher des documents  spécifique ?', '0', '0000-00-00 00:00:00', '2023-03-29 07:47:05', '62', 'sysadmin', '0000-00-00 00:00:00', '0', '0', '0', '0', '0', '0', '10', '0', "", '1', '1', '0', '0', '0', '1', '0', '0', '{"yesno_default":"0","yesno_icon_yes":"","yesno_icon_no":"","options_per_row":"4","toggle_others":"0","toggle_where":"","show_in_rss_feed":"0","show_label_in_rss_feed":"0","use_as_rss_enclosure":"0","rollover":"","tipseval":"0","tiplocation":"top-left","labelindetails":"0","labelinlist":"0","comment":"","edit_access":"1","edit_access_user":"","view_access":"1","view_access_user":"","list_view_access":"1","encrypt":"0","store_in_db":"1","default_on_copy":"0","can_order":"0","alt_list_heading":"","custom_link":"","custom_link_target":"","custom_link_indetails":"1","use_as_row_class":"0","include_in_list_query":"1","always_render":"0","icon_folder":"0","icon_hovertext":"1","icon_file":"","icon_subdir":"","filter_length":"20","filter_access":"1","full_words_only":"0","filter_required":"0","filter_build_method":"0","filter_groupby":"text","inc_in_adv_search":"1","filter_class":"input-medium","filter_responsive_class":"","tablecss_header_class":"","tablecss_header":"","tablecss_cell_class":"","tablecss_cell":"","sum_on":"0","sum_label":"Sum","sum_access":"1","sum_split":"","avg_on":"0","avg_label":"Average","avg_access":"1","avg_round":"0","avg_split":"","median_on":"0","median_label":"Median","median_access":"1","median_split":"","count_on":"0","count_label":"Count","count_condition":"","count_access":"1","count_split":"","custom_calc_on":"0","custom_calc_label":"Custom","custom_calc_query":"","custom_calc_access":"1","custom_calc_split":"","custom_calc_php":"","validations":[]}'];
 						$query->clear()
 							->insert($db->quoteName('#__fabrik_elements'))
@@ -1509,7 +1572,8 @@ try {
 						$db->setQuery($query);
 						$inserted = $db->execute();
 
-						if ($inserted) {
+						if ($inserted)
+						{
 							$specific_documents_id = $db->insertid();
 							EmundusHelperUpdate::addJsAction([
 								'element_id' => $specific_documents_id,
@@ -1530,7 +1594,8 @@ try {
 					['name' => 'href', 'type' => 'text'],
 					['name' => 'title', 'type' => 'VARCHAR', 'length' => 255]
 				]);
-				if ($result['status']) {
+				if ($result['status'])
+				{
 					$sql = "create index fb_parent_fk_parent_id_INDEX on jos_emundus_campaign_workflow_repeat_documents (parent_id)";
 					$db->setQuery($sql);
 					$db->execute();
@@ -1544,7 +1609,8 @@ try {
 					$db->setQuery($query);
 					$inserted = $db->execute();
 
-					if ($inserted) {
+					if ($inserted)
+					{
 						$new_group_id = $db->insertid();
 
 						$columns        = array('name', 'group_id', 'plugin', 'label', 'checked_out', 'checked_out_time', 'created', 'created_by', 'created_by_alias', 'modified', 'modified_by', 'width', 'height', 'default', 'hidden', 'eval', 'ordering', 'show_in_list_summary', 'filter_type', 'filter_exact_match', 'published', 'link_to_detail', 'primary_key', 'auto_increment', 'access', 'use_in_page_title', 'parent_id', 'params');
@@ -1555,7 +1621,8 @@ try {
 							['title', $new_group_id, 'field', 'Nom du document', 0, '0000-00-00 00:00:00', '2023-04-19 09:11:42', 62, 'sysadmin', '0000-00-00 00:00:00', 0, 0, 0, '', 0, 0, 12, 0, '', 1, 1, 0, 0, 0, 1, 0, 0, '{"placeholder":"","password":"0","maxlength":"255","disable":"0","readonly":"0","autocomplete":"1","speech":"0","advanced_behavior":"0","bootstrap_class":"input-medium","text_format":"text","integer_length":"11","decimal_length":"2","field_use_number_format":"0","field_thousand_sep":",","field_decimal_sep":".","text_format_string":"","field_format_string_blank":"1","text_input_mask":"","text_input_mask_autoclear":"0","text_input_mask_definitions":"","render_as_qrcode":"0","scan_qrcode":"0","guess_linktype":"0","link_target_options":"default","rel":"","link_title":"","link_attributes":"","show_in_rss_feed":"0","show_label_in_rss_feed":"0","use_as_rss_enclosure":"0","rollover":"","tipseval":"0","tiplocation":"top-left","labelindetails":"0","labelinlist":"0","comment":"","edit_access":"1","edit_access_user":"","view_access":"1","view_access_user":"","list_view_access":"1","encrypt":"0","store_in_db":"1","default_on_copy":"0","can_order":"0","alt_list_heading":"","custom_link":"","custom_link_target":"","custom_link_indetails":"1","use_as_row_class":"0","include_in_list_query":"1","always_render":"0","icon_folder":"0","icon_hovertext":"1","icon_file":"","icon_subdir":"","filter_length":"20","filter_access":"1","full_words_only":"0","filter_required":"0","filter_build_method":"0","filter_groupby":"text","inc_in_adv_search":"1","filter_class":"input-medium","filter_responsive_class":"","tablecss_header_class":"","tablecss_header":"","tablecss_cell_class":"","tablecss_cell":"","sum_on":"0","sum_label":"Sum","sum_access":"1","sum_split":"","avg_on":"0","avg_label":"Average","avg_access":"1","avg_round":"0","avg_split":"","median_on":"0","median_label":"Median","median_access":"1","median_split":"","count_on":"0","count_label":"Count","count_condition":"","count_access":"1","count_split":"","custom_calc_on":"0","custom_calc_label":"Custom","custom_calc_query":"","custom_calc_access":"1","custom_calc_split":"","custom_calc_php":"","notempty-message":[""],"notempty-validation_condition":[""],"tip_text":[""],"icon":[""],"validations":{"plugin":["notempty"],"plugin_published":["1"],"validate_in":["both"],"validation_on":["both"],"validate_hidden":["0"],"must_validate":["0"],"show_icon":["1"]}}']
 						];
 
-						foreach ($element_values as $values) {
+						foreach ($element_values as $values)
+						{
 							$query->clear()
 								->insert($db->quoteName('#__fabrik_elements'))
 								->columns($db->quoteName($columns))
@@ -1574,7 +1641,8 @@ try {
 						$db->execute();
 
 						// add fabrik joins on list id of campaign workflows
-						if (!empty($list_id)) {
+						if (!empty($list_id))
+						{
 							$query->clear()
 								->insert($db->quoteName('#__fabrik_joins'))
 								->columns($db->quoteName(['list_id', 'element_id', 'join_from_table', 'table_join', 'table_key', 'table_join_key', 'join_type', 'group_id', 'params']))
@@ -1607,7 +1675,8 @@ try {
 				$db->setQuery($str_query);
 				$table_exists = $db->loadResult();
 
-				if (!$table_exists) {
+				if (!$table_exists)
+				{
 					// create it if it doesn't exist
 					$str_query = 'create table jos_emundus_setup_config
 					(
@@ -1628,7 +1697,8 @@ try {
 				$db->setQuery($query);
 				$onboarding_lists = $db->loadResult();
 
-				if (empty($onboarding_lists)) {
+				if (empty($onboarding_lists))
+				{
 					// insert default values
 					$query->clear()
 						->insert($db->quoteName('#__emundus_setup_config'))
@@ -1667,7 +1737,8 @@ try {
 					['name' => 'member', 'type' => 'tinyint', 'length' => 1]
 				]);
 
-				if ($country_table['status']) {
+				if ($country_table['status'])
+				{
 					EmundusHelperUpdate::executeSQlFile('insert_data_country');
 				}
 
@@ -1687,9 +1758,11 @@ try {
 				$db->setQuery($query);
 				$applicant_menus = $db->loadObjectList();
 
-				foreach ($applicant_menus as $menu) {
+				foreach ($applicant_menus as $menu)
+				{
 					$text = 'All campaigns';
-					if ($menu->path == 'mes-candidatures') {
+					if ($menu->path == 'mes-candidatures')
+					{
 						$text = 'My applications';
 					}
 					$query->clear()
@@ -1701,13 +1774,15 @@ try {
 					$db->setQuery($query);
 					$translation = $db->loadObject();
 
-					if (empty($translation)) {
+					if (empty($translation))
+					{
 						$query->clear()
 							->insert($db->quoteName('#__falang_content'))
 							->columns($db->quoteName('reference_table') . ',' . $db->quoteName('reference_field') . ',' . $db->quoteName('reference_id') . ',' . $db->quoteName('value') . ',' . $db->quoteName('language_id') . ',' . $db->quoteName('published'))
 							->values($db->quote('menu') . ',' . $db->quote('title') . ',' . $menu->id . ',' . $db->quote($text) . ',' . $db->quote(1) . ',' . $db->quote(1));
 					}
-					else {
+					else
+					{
 						$query->clear()
 							->update($db->quoteName('#__falang_content'))
 							->set($db->quoteName('value') . ' = ' . $db->quote($text))
@@ -1725,9 +1800,11 @@ try {
 				$db->setQuery($query);
 				$program_form_params = $db->loadResult();
 
-				if (!empty($program_form_params)) {
+				if (!empty($program_form_params))
+				{
 					$program_form_params = json_decode($program_form_params);
-					if (empty($program_form_params->plugin_description) || !in_array('onAfterProgramCreate', $program_form_params->plugin_description)) {
+					if (empty($program_form_params->plugin_description) || !in_array('onAfterProgramCreate', $program_form_params->plugin_description))
+					{
 						$program_form_params->plugin_state[]       = "1";
 						$program_form_params->only_process_curl[]  = "onAfterProcess";
 						$program_form_params->form_php_file[]      = "-1";
@@ -1761,7 +1838,8 @@ try {
 				$db->setQuery($query);
 				$program_logo_element = $db->loadResult();
 
-				if (!empty($program_logo_element)) {
+				if (!empty($program_logo_element))
+				{
 					EmundusHelperUpdate::genericUpdateParams('#__fabrik_elements', 'id', $program_logo_element, ['fu_rename_file_code'], ['error_clear_last();
 					$new_name = $formModel->formData[\'jos_emundus_setup_programmes___code_raw\'];
 					$new_name = preg_replace(\'/[^A-Za-z0-9_\\-]/\', \'\', $new_name);
@@ -1809,11 +1887,13 @@ structure:
 				EmundusHelperUpdate::updateYamlVariable('', '', JPATH_ROOT . '/templates/g5_helium/custom/config/_offline/layout.yaml', '', $content_layout_offline);
 			}
 
-			if (version_compare($cache_version, '1.36.2', '<=') || $firstrun) {
+			if (version_compare($cache_version, '1.36.2', '<=') || $firstrun)
+			{
 				$tags_to_publish = [
 					'APPLICANT_ID', 'USER_ID', 'APPLICANT_NAME', 'CURRENT_DATE', 'ID', 'NAME', 'EMAIL', 'USERNAME', 'SITE_URL', 'USER_NAME', 'USER_EMAIL', 'CAMPAIGN_LABEL', 'CAMPAIGN_YEAR', 'CAMPAIGN_START', 'CAMPAIGN_END', 'FNUM', 'PHOTO'
 				];
-				foreach ($tags_to_publish as $key => $tag) {
+				foreach ($tags_to_publish as $key => $tag)
+				{
 					$tags_to_publish[$key] = $db->quote($tag);
 				}
 				$query->clear()
@@ -1824,7 +1904,8 @@ structure:
 				$db->execute();
 			}
 
-			if (version_compare($cache_version, '1.36.3', '<=') || $firstrun) {
+			if (version_compare($cache_version, '1.36.3', '<=') || $firstrun)
+			{
 				$query->clear()
 					->select('DISTINCT ' . $db->quoteName('form_id'))
 					->from($db->quoteName('#__fabrik_lists'))
@@ -1832,7 +1913,8 @@ structure:
 				$db->setQuery($query);
 				$forms = $db->loadColumn();
 
-				if (!empty($forms)) {
+				if (!empty($forms))
+				{
 					$query->clear()
 						->select('DISTINCT ' . $db->quoteName('group_id'))
 						->from($db->quoteName('#__fabrik_formgroup'))
@@ -1840,7 +1922,8 @@ structure:
 					$db->setQuery($query);
 					$groups = $db->loadColumn();
 
-					if (!empty($groups)) {
+					if (!empty($groups))
+					{
 						$params = array(
 							'bootstrap_class'            => 'input-medium',
 							'date_showtime'              => 1,
@@ -1862,7 +1945,8 @@ structure:
 							'date_allow_php_func'        => '',
 							'date_observe'               => ''
 						);
-						foreach ($groups as $group_id) {
+						foreach ($groups as $group_id)
+						{
 							$datas = array(
 								'name'     => 'timedate',
 								'group_id' => $group_id,
@@ -1877,18 +1961,21 @@ structure:
 
 				EmundusHelperUpdate::updateExtensionParam('fbConf_alter_existing_db_cols', 'addonly', null, 'com_fabrik');
 
-				if (file_exists(JPATH_ROOT . '/templates/g5_helium/custom/config/24/page/assets.yaml')) {
+				if (file_exists(JPATH_ROOT . '/templates/g5_helium/custom/config/24/page/assets.yaml'))
+				{
 					unlink(JPATH_ROOT . '/templates/g5_helium/custom/config/24/page/assets.yaml');
 				}
 			}
 
-			if (version_compare($cache_version, '1.36.4', '<=') || $firstrun) {
+			if (version_compare($cache_version, '1.36.4', '<=') || $firstrun)
+			{
 				EmundusHelperUpdate::addColumn('jos_emundus_uploads', 'size', 'INT', 11);
 
 				EmundusHelperUpdate::updateExtensionParam('gotenberg_url', 'https://gotenberg.microservices.tchooz.app', 'http://localhost:3000');
 			}
 
-			if (version_compare($cache_version, '1.36.6', '<=') || $firstrun) {
+			if (version_compare($cache_version, '1.36.6', '<=') || $firstrun)
+			{
 				// Add missing columns from previous updates
 				EmundusHelperUpdate::addColumn('jos_emundus_personal_detail', 'profile', 'INT', 11);
 				EmundusHelperUpdate::addColumn('jos_emundus_logs', 'ip_from', 'VARCHAR', 26);
@@ -1925,7 +2012,8 @@ structure:
 				$db->setQuery($query);
 				$lists = $db->loadObjectList();
 
-				foreach ($lists as $list) {
+				foreach ($lists as $list)
+				{
 					$params                         = json_decode($list->params);
 					$params->alter_existing_db_cols = 0;
 					$params                         = json_encode($params);
@@ -1945,7 +2033,8 @@ structure:
 				$db->setQuery($query);
 				$evaluation_application_menu = $db->loadResult();
 
-				if (!empty($evaluation_application_menu)) {
+				if (!empty($evaluation_application_menu))
+				{
 					$query->clear()
 						->select('id')
 						->from($db->quoteName('#__falang_content'))
@@ -1956,7 +2045,8 @@ structure:
 					$db->setQuery($query);
 					$evaluation_application_menu_falang = $db->loadResult();
 
-					if (!empty($evaluation_application_menu_falang)) {
+					if (!empty($evaluation_application_menu_falang))
+					{
 						$query->clear()
 							->update($db->quoteName('#__falang_content'))
 							->set($db->quoteName('value') . ' = ' . $db->quote('Évaluation'))
@@ -1964,7 +2054,8 @@ structure:
 						$db->setQuery($query);
 						$db->execute();
 					}
-					else {
+					else
+					{
 						$query->clear()
 							->insert($db->quoteName('#__falang_content'))
 							->columns($db->quoteName(array('reference_id', 'reference_table', 'reference_field', 'language_id', 'value', 'original_text', 'published')))
@@ -1982,7 +2073,8 @@ structure:
 				$db->setQuery($query);
 				$redirect_menu = $db->loadResult();
 
-				if (empty($redirect_menu)) {
+				if (empty($redirect_menu))
+				{
 					$query->clear()
 						->insert($db->quoteName('#__menu'))
 						->columns(array('menutype', 'title', 'alias', 'note', 'path', 'link', 'type', 'published', 'parent_id', 'level', 'component_id', 'checked_out', 'checked_out_time', 'browserNav', 'access', 'img', 'template_style_id', 'params', 'lft', 'rgt', 'home', 'language', 'client_id'))
@@ -1990,7 +2082,8 @@ structure:
 					$db->setQuery($query);
 					$db->execute();
 				}
-				else {
+				else
+				{
 					$query->clear()
 						->update($db->quoteName('#__menu'))
 						->set($db->quoteName('menutype') . ' = ' . $db->quote('main'))
@@ -2001,7 +2094,8 @@ structure:
 				//
 			}
 
-			if (version_compare($cache_version, '1.36.7', '<=') || $firstrun) {
+			if (version_compare($cache_version, '1.36.7', '<=') || $firstrun)
+			{
 				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_COMMENTAIRE', 'Comments', 'override', null, null, null, 'en-GB');
 				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_COMMENTAIRE', 'Commentaires', 'override', null, null, null, 'fr-FR');
 				$data                  = array(
@@ -2172,14 +2266,16 @@ structure:
 				);
 				$accessibility_article = EmundusHelperUpdate::createJoomlaArticle($data, 'rgpd');
 
-				if ($accessibility_article['status']) {
+				if ($accessibility_article['status'])
+				{
 					$query->select('params')
 						->from($db->quoteName('#__modules'))
 						->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_footer'));
 					$db->setQuery($query);
 					$params = $db->loadResult();
 
-					if (!empty($params)) {
+					if (!empty($params))
+					{
 						$params = json_decode($params);
 						$alias  = $params->mod_emundus_footer_accessibility_alias ?: 'accessibilite';
 
@@ -2190,7 +2286,8 @@ structure:
 						$db->setQuery($query);
 						$accessibility_menu = $db->loadResult();
 
-						if (!empty($accessibility_menu)) {
+						if (!empty($accessibility_menu))
+						{
 							$query->clear()
 								->update($db->quoteName('#__menu'))
 								->set($db->quoteName('link') . ' = ' . $db->quote('index.php?option=com_content&view=article&id=' . $accessibility_article['id']))
@@ -2199,7 +2296,8 @@ structure:
 							$db->setQuery($query);
 							$db->execute();
 						}
-						else {
+						else
+						{
 							$datas = [
 								'menutype'     => 'topmenu',
 								'title'        => 'Accessibilité',
@@ -2219,7 +2317,8 @@ structure:
 				}
 			}
 
-			if (version_compare($cache_version, '1.37.0', '<=') || $firstrun) {
+			if (version_compare($cache_version, '1.37.0', '<=') || $firstrun)
+			{
 				EmundusHelperUpdate::updateProfileMenu();
 
 				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_ACCOUNT_PERSONAL_DETAILS', 'Informations personnelles', 'override', null, 'fabrik_groups', 'label');
@@ -2239,16 +2338,20 @@ structure:
 
 				$xml_file = JPATH_SITE . '/templates/g5_helium/templateDetails.xml';
 				$xml      = simplexml_load_file($xml_file);
-				if ($xml) {
+				if ($xml)
+				{
 					$positions = $xml->xpath('//extension/positions');
 					// Check if position emundus_filters exist
 					$exist = false;
-					foreach ($positions[0]->children() as $position) {
-						if ($position == 'emundus_filters') {
+					foreach ($positions[0]->children() as $position)
+					{
+						if ($position == 'emundus_filters')
+						{
 							$exist = true;
 						}
 					}
-					if (!$exist) {
+					if (!$exist)
+					{
 						$positions[0]->addChild('position', 'emundus_filters');
 					}
 					$xml->asXML($xml_file);
@@ -2326,7 +2429,8 @@ structure:
 				];
 				$data_currency = EmundusHelperUpdate::createTable('data_currency', $columns);
 
-				if ($data_currency['status']) {
+				if ($data_currency['status'])
+				{
 					EmundusHelperUpdate::executeSQlFile('insert_data_currency');
 				}
 
@@ -2481,7 +2585,8 @@ try {
 				$db->setQuery($query);
 				$groups = $db->loadColumn();
 
-				if (!empty($groups)) {
+				if (!empty($groups))
+				{
 					$query->clear()
 						->select('id,params')
 						->from($db->quoteName('#__fabrik_elements'))
@@ -2490,7 +2595,8 @@ try {
 					$db->setQuery($query);
 					$elements = $db->loadObjectList();
 
-					foreach ($elements as $element) {
+					foreach ($elements as $element)
+					{
 						$params                    = json_decode($element->params, true);
 						$params['bootstrap_class'] = 'input-large';
 
@@ -2529,7 +2635,8 @@ try {
 				$db->setQuery($query);
 				$emails_history_formid = $db->loadResult();
 
-				if (!empty($emails_history_formid)) {
+				if (!empty($emails_history_formid))
+				{
 					$query->clear()
 						->select('group_id')
 						->from($db->quoteName('#__fabrik_formgroup'))
@@ -2568,7 +2675,8 @@ try {
 					$db->setQuery($query);
 					$list = $db->loadObject();
 
-					if (!empty($list)) {
+					if (!empty($list))
+					{
 						$params                        = json_decode($list->params, true);
 						$params['csv_export_frontend'] = '10';
 						$params['allow_edit_details']  = '10';
@@ -2593,7 +2701,8 @@ try {
 				$db->setQuery($query);
 				$existing_dashboard = $db->loadResult();
 
-				if (empty($existing_dashboard)) {
+				if (empty($existing_dashboard))
+				{
 					$query->clear()
 						->select('*')
 						->from($db->quoteName('#__emundus_widgets_repeat_access'))
@@ -2601,15 +2710,19 @@ try {
 					$db->setQuery($query);
 					$dashboards = $db->loadObjectList();
 
-					foreach ($dashboards as $dashboard) {
+					foreach ($dashboards as $dashboard)
+					{
 						$query->clear()
 							->insert($db->quoteName('#__emundus_widgets_repeat_access'));
-						foreach ($dashboard as $key => $widget) {
-							if ($key == 'id') {
+						foreach ($dashboard as $key => $widget)
+						{
+							if ($key == 'id')
+							{
 								continue;
 							}
 
-							if ($key == 'profile') {
+							if ($key == 'profile')
+							{
 								$query->set($db->quoteName($key) . ' = 1');
 								continue;
 							}
@@ -2728,7 +2841,8 @@ try {
 				$db->setQuery($query);
 				$registration_form_id = $db->loadResult();
 
-				if (!empty($registration_form_id)) {
+				if (!empty($registration_form_id))
+				{
 					$query->clear()
 						->update($db->quoteName('#__fabrik_forms'))
 						->set($db->quoteName('intro') . ' = ' . $db->quote(''))
@@ -2744,7 +2858,8 @@ try {
 					$db->setQuery($query);
 					$group_civility = $db->loadAssoc();
 
-					if (empty($group_civility)) {
+					if (empty($group_civility))
+					{
 						$datas          = [
 							'name' => 'GROUP_REGISTRATION_CIVILITY'
 						];
@@ -2761,7 +2876,8 @@ try {
 					$db->setQuery($query);
 					$group = $db->loadAssoc();
 
-					if (empty($group)) {
+					if (empty($group))
+					{
 						$datas = [
 							'name' => 'GROUP_REGISTRATION_NAMES'
 						];
@@ -2781,7 +2897,8 @@ try {
 					$db->setQuery($query);
 					$elements = $db->loadColumn();
 
-					if (!empty($elements)) {
+					if (!empty($elements))
+					{
 						$query->clear()
 							->update($db->quoteName('#__fabrik_elements'))
 							->set($db->quoteName('group_id') . ' = ' . $db->quote($group['id']))
@@ -2800,7 +2917,8 @@ try {
 					$db->setQuery($query);
 					$elements = $db->loadColumn();
 
-					if (!empty($elements)) {
+					if (!empty($elements))
+					{
 						$query->clear()
 							->update($db->quoteName('#__fabrik_elements'))
 							->set($db->quoteName('group_id') . ' = ' . $db->quote($group_civility['id']))
@@ -2819,7 +2937,8 @@ try {
 					$db->setQuery($query);
 					$email_field = $db->loadObject();
 
-					if (!empty($email_field)) {
+					if (!empty($email_field))
+					{
 						$params             = json_decode($email_field->params, true);
 						$params['password'] = 3;
 
@@ -2841,7 +2960,8 @@ try {
 					$db->setQuery($query);
 					$password_field = $db->loadObject();
 
-					if (!empty($password_field)) {
+					if (!empty($password_field))
+					{
 						$tip_code              = '$params = JComponentHelper::getParams(\'com_users\');
 $min_length = $params->get(\'minimum_length\');
 $min_int = $params->get(\'minimum_integers\');
@@ -2920,7 +3040,8 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 						$db->setQuery($query);
 						$password_js = $db->loadObject();
 
-						if (!empty($password_js)) {
+						if (!empty($password_js))
+						{
 							$params                 = json_decode($password_js->params, true);
 							$params['js_published'] = 1;
 
@@ -2941,7 +3062,8 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 						$db->setQuery($query);
 						$password_js_change = $db->loadObject();
 
-						if (!empty($password_js_change)) {
+						if (!empty($password_js_change))
+						{
 
 							$query->clear()
 								->update($db->quoteName('#__fabrik_jsactions'))
@@ -2967,7 +3089,8 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 				$db->setQuery($query);
 				$form_id = $db->loadResult();
 
-				if (!empty($form_id)) {
+				if (!empty($form_id))
+				{
 					$query->clear()
 						->select('id,params')
 						->from($db->quoteName('#__fabrik_forms'))
@@ -2975,10 +3098,12 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 					$db->setQuery($query);
 					$form = $db->loadObject();
 
-					if (!empty($form)) {
+					if (!empty($form))
+					{
 						$params = json_decode($form->params, true);
 
-						if (is_array($params['form_php_file']) && !in_array('emundus-updatesession.php', $params['form_php_file'])) {
+						if (is_array($params['form_php_file']) && !in_array('emundus-updatesession.php', $params['form_php_file']))
+						{
 							$params['plugin_state'][]          = 1;
 							$params['only_process_curl'][]     = 'onAfterProcess';
 							$params['form_php_file'][]         = 'emundus-updatesession.php';
@@ -3048,7 +3173,8 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 				$db->setQuery($query);
 				$course_elt = $db->loadObject();
 
-				if (!empty($course_elt)) {
+				if (!empty($course_elt))
+				{
 					$params                           = json_decode($course_elt->params, true);
 					$params['join_db_name']           = 'jos_emundus_setup_programmes';
 					$params['join_key_column']        = 'code';
@@ -3087,7 +3213,8 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 				$db->setQuery($query);
 				$faq_widget_id = $db->loadColumn();
 
-				if (!empty($faq_widget_id)) {
+				if (!empty($faq_widget_id))
+				{
 					$query->clear()
 						->delete($db->quoteName('#__emundus_widgets_repeat_access'))
 						->where($db->quoteName('parent_id') . ' IN (' . implode(',', $faq_widget_id) . ')');
@@ -3101,7 +3228,8 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 				}
 			}
 
-			if (version_compare($cache_version, '1.37.2', '<=') || $firstrun) {
+			if (version_compare($cache_version, '1.37.2', '<=') || $firstrun)
+			{
 				EmundusHelperUpdate::updateComponentParameter('com_users', 'minimum_length', 12);
 				EmundusHelperUpdate::updateComponentParameter('com_users', 'minimum_integers', 1);
 				EmundusHelperUpdate::updateComponentParameter('com_users', 'minimum_symbols', 1);
@@ -3111,7 +3239,8 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 				EmundusHelperUpdate::updateComponentParameter('com_users', 'reset_time', 1);
 			}
 
-			if (version_compare($cache_version, '1.37.3', '<=') || $firstrun) {
+			if (version_compare($cache_version, '1.37.3', '<=') || $firstrun)
+			{
 				$old_values = [
 					'fr-FR' => "<div>J'accepte <a href=\"fr/politique-de-confidentialite-des-donnees\" target=\"_blank\"> <i> la politique de confidentialité des données </i></a><i data-isicon=\"true\" class=\"icon-star small \"></i></div>",
 					'en-GB' => "<div> I accept <a href=\"en/politique-de-confidentialite-des-donnees\" target=\"_blank\"><i>the terms and conditions </i></a><i data-isicon=\"true\" class=\"icon-star small \"></i></div>",
@@ -3133,7 +3262,8 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 				$db->setQuery($query);
 				$group = $db->loadResult();
 
-				if (empty($group)) {
+				if (empty($group))
+				{
 					$query->clear()
 						->insert($db->quoteName('#__emundus_groups'))
 						->columns($db->quoteName('user_id') . ',' . $db->quoteName('group_id'))
@@ -3143,7 +3273,8 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 				}
 			}
 
-			if (version_compare($cache_version, '1.37.7', '<=') || $firstrun) {
+			if (version_compare($cache_version, '1.37.7', '<=') || $firstrun)
+			{
 				$query->clear()
 					->select('value')
 					->from('#__emundus_setup_config')
@@ -3153,14 +3284,20 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 				$onboarding_lists = $db->loadResult();
 				$onboarding_lists = json_decode($onboarding_lists, true);
 
-				if (!empty($onboarding_lists)) {
+				if (!empty($onboarding_lists))
+				{
 					$something_to_update = false;
 
-					foreach ($onboarding_lists as $l_key => $list) {
-						if ($l_key === 'emails') {
-							foreach ($list['tabs'] as $t_key => $tab) {
-								if ($tab['getter'] === 'getallemail') {
-									if ($tab['filters'][0]['key'] !== 'category') {
+					foreach ($onboarding_lists as $l_key => $list)
+					{
+						if ($l_key === 'emails')
+						{
+							foreach ($list['tabs'] as $t_key => $tab)
+							{
+								if ($tab['getter'] === 'getallemail')
+								{
+									if ($tab['filters'][0]['key'] !== 'category')
+									{
 										$tab['filters'][0]['key']                 = 'category';
 										$onboarding_lists[$l_key]['tabs'][$t_key] = $tab;
 										$something_to_update                      = true;
@@ -3170,7 +3307,8 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 						}
 					}
 
-					if ($something_to_update) {
+					if ($something_to_update)
+					{
 						$query->clear()
 							->update('#__emundus_setup_config')
 							->set('value = ' . $db->quote(json_encode($onboarding_lists)))
@@ -3188,10 +3326,12 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 				$db->setQuery($query);
 				$textarea_elts = $db->loadObjectList();
 
-				foreach ($textarea_elts as $textarea_elt) {
+				foreach ($textarea_elts as $textarea_elt)
+				{
 					$params = json_decode($textarea_elt->params, true);
 
-					if ($params['bootstrap_class'] == 'input-medium') {
+					if ($params['bootstrap_class'] == 'input-medium')
+					{
 						$params['bootstrap_class'] = 'input-xlarge';
 
 						$query->clear()
@@ -3211,7 +3351,8 @@ spanShowPassword.addEventListener(&#039;click&#039;, function () {
 				$succeed['add_htaccess_exception'] = EmundusHelperUpdate::insertIntoFile($file, $insertLines);
 			}
 
-			if (version_compare($cache_version, '1.37.9', '<=') || $firstrun) {
+			if (version_compare($cache_version, '1.37.9', '<=') || $firstrun)
+			{
 				EmundusHelperUpdate::installExtension('plg_extension_emundus', 'emundus', '{"name":"plg_extension_emundus","type":"plugin","creationDate":"November 2023","author":"J\u00e9r\u00e9my LEGENDRE","copyright":"(C) 2010 Open Source Matters, Inc.","authorEmail":"jeremy.legendre@emundus.fr","authorUrl":"www.emundus.fr","version":"1.0.0","description":"PLG_EXTENSION_EMUNDUS_XML_DESCRIPTION","group":"","filename":"emundus"}', 'plugin', 1, 'extension', '{}');
 				EmundusHelperUpdate::enableEmundusPlugins('emundus', 'extension');
 
@@ -3301,7 +3442,8 @@ try {
 				EmundusHelperUpdate::updateWidget('COM_EMUNDUS_DASHBOARD_FILES_ASSOCIATED_BY_STATUS', $dashboard_files_associated_by_status_params);
 			}
 
-			if (version_compare($cache_version, '1.38.0', '<=') || $firstrun) {
+			if (version_compare($cache_version, '1.38.0', '<=') || $firstrun)
+			{
 				EmundusHelperUpdate::updateYamlVariable('error-4677', 'Error', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/index.yaml', 'error');
 				$full_layout_error = "version: 2
 preset:
@@ -3524,15 +3666,20 @@ structure:
 				$db->setQuery($query);
 				$class_elts = $db->loadObjectList();
 
-				foreach ($class_elts as $class_elt) {
-					if (!empty($class_elt)) {
+				foreach ($class_elts as $class_elt)
+				{
+					if (!empty($class_elt))
+					{
 						$params           = json_decode($class_elt->params, true);
 						$colors_to_remove = ['label-lightblue', 'label-lightyellow', 'label-yellow', 'label-darkyellow', 'label-lightgreen', 'label-darkgreen', 'label-lightgreen', 'label-darkgreen', 'label-lightorange', 'label-darkorange', 'label-lightred', 'label-darkred', 'label-lightpurple', 'label-darkpurple'];
 
-						if (!empty($params['sub_options'])) {
-							foreach ($colors_to_remove as $color_to_remove) {
+						if (!empty($params['sub_options']))
+						{
+							foreach ($colors_to_remove as $color_to_remove)
+							{
 								$index = array_search($color_to_remove, $params['sub_options']['sub_values']);
-								if ($index !== false) {
+								if ($index !== false)
+								{
 									unset($params['sub_options']['sub_values'][$index]);
 									unset($params['sub_options']['sub_labels'][$index]);
 								}
@@ -3541,12 +3688,14 @@ structure:
 							$params['sub_options']['sub_values'] = array_values($params['sub_options']['sub_values']);
 							$params['sub_options']['sub_labels'] = array_values($params['sub_options']['sub_labels']);
 
-							if (!in_array('label-pink', $params['sub_options']['sub_values'])) {
+							if (!in_array('label-pink', $params['sub_options']['sub_values']))
+							{
 								$params['sub_options']['sub_values'][] = 'label-pink';
 								$params['sub_options']['sub_labels'][] = 'Pink';
 							}
 
-							if (!in_array('label-pink', $params['sub_options']['sub_values'])) {
+							if (!in_array('label-pink', $params['sub_options']['sub_values']))
+							{
 								$params['sub_options']['sub_values'][] = 'label-pink';
 								$params['sub_options']['sub_labels'][] = 'Pink';
 							}
@@ -3601,7 +3750,8 @@ structure:
 				$db->setQuery($query);
 				$setup_groups_form = $db->loadObject();
 
-				if (!empty($setup_groups_form->id)) {
+				if (!empty($setup_groups_form->id))
+				{
 					$params = json_decode($setup_groups_form->params, true);
 
 					$params['plugin_events'][0] = 'both';
@@ -3622,7 +3772,8 @@ structure:
 				$db->setQuery($query);
 				$copy_tag_elt = $db->loadObject();
 
-				if (!empty($copy_tag_elt->id)) {
+				if (!empty($copy_tag_elt->id))
+				{
 					$params = json_decode($copy_tag_elt->params, true);
 
 					$params['sub_options']['sub_initial_selection'] = ["0"];
@@ -3643,7 +3794,8 @@ structure:
 				$db->setQuery($query);
 				$date_history_emails = $db->loadObject();
 
-				if (!empty($date_history_emails->id)) {
+				if (!empty($date_history_emails->id))
+				{
 					$params = json_decode($date_history_emails->params, true);
 
 					$params['date_store_as_local'] = 0;
@@ -3682,7 +3834,8 @@ structure:
 				$db->setQuery($query);
 				$profile_form_id = $db->loadResult();
 
-				if (!empty($profile_form_id)) {
+				if (!empty($profile_form_id))
+				{
 					$query->clear()
 						->select('params')
 						->from($db->quoteName('#__fabrik_forms'))
@@ -3725,14 +3878,19 @@ structure:
 				$db->setQuery($query);
 				$list_config = $db->loadResult();
 
-				if (!empty($list_config)) {
+				if (!empty($list_config))
+				{
 					$changed     = false;
 					$list_config = json_decode($list_config, true);
 
-					if (!empty($list_config['campaigns'])) {
-						foreach ($list_config['campaigns']['tabs'] as $tab_key => $tab) {
-							foreach ($tab['actions'] as $action_key => $action) {
-								if ($action['action'] == 'pincampaign' || $action['action'] == 'unpincampaign') {
+					if (!empty($list_config['campaigns']))
+					{
+						foreach ($list_config['campaigns']['tabs'] as $tab_key => $tab)
+						{
+							foreach ($tab['actions'] as $action_key => $action)
+							{
+								if ($action['action'] == 'pincampaign' || $action['action'] == 'unpincampaign')
+								{
 									unset($tab['actions'][$action_key]);
 									$list_config['campaigns']['tabs'][$tab_key]['actions'] = array_values($tab['actions']);
 									$changed                                               = true;
@@ -3741,7 +3899,8 @@ structure:
 						}
 					}
 
-					if ($changed) {
+					if ($changed)
+					{
 						$query->clear()
 							->update($db->quoteName('#__emundus_setup_config'))
 							->set($db->quoteName('value') . ' = ' . $db->quote(json_encode($list_config)))
@@ -3760,11 +3919,14 @@ structure:
 				$db->setQuery($query);
 				$setup_upload_file_for_applicant_form = $db->loadObject();
 
-				if (!empty($setup_upload_file_for_applicant_form->id)) {
+				if (!empty($setup_upload_file_for_applicant_form->id))
+				{
 					$params = json_decode($setup_upload_file_for_applicant_form->params, true);
 
-					foreach ($params['plugin_description'] as $key => $plugin) {
-						if ($plugin == 'saved') {
+					foreach ($params['plugin_description'] as $key => $plugin)
+					{
+						if ($plugin == 'saved')
+						{
 							$params['curl_code'][$key] = str_replace("parent.$('#em-modal-actions').modal('hide');", "window.parent.document.querySelector('.em-modal-actions .swal2-close').click();", $params['curl_code'][$key]);
 						}
 					}
@@ -3784,11 +3946,14 @@ structure:
 				$db->setQuery($query);
 				$setup_program_form = $db->loadObject();
 
-				if (!empty($setup_program_form->id)) {
+				if (!empty($setup_program_form->id))
+				{
 					$params = json_decode($setup_program_form->params, true);
 
-					foreach ($params['plugin_description'] as $key => $plugin) {
-						if ($plugin == 'onAfterProgramCreate') {
+					foreach ($params['plugin_description'] as $key => $plugin)
+					{
+						if ($plugin == 'onAfterProgramCreate')
+						{
 							$params['plugin_events'][$key] = 'both';
 						}
 					}
@@ -3815,17 +3980,21 @@ structure:
 				$start_date_element = null;
 				$end_date_element   = null;
 
-				foreach ($elements as $element) {
-					if ($element->name == 'start_date') {
+				foreach ($elements as $element)
+				{
+					if ($element->name == 'start_date')
+					{
 						$start_date_element = $element;
 					}
 
-					if ($element->name == 'end_date') {
+					if ($element->name == 'end_date')
+					{
 						$end_date_element = $element;
 					}
 				}
 
-				if (!empty($start_date_element) && !empty($end_date_element)) {
+				if (!empty($start_date_element) && !empty($end_date_element))
+				{
 					$params = '{"bootstrap_class":"input-xxlarge","date_showtime":"1","date_which_time_picker":"clock","date_show_seconds":"0","date_24hour":"1","bootstrap_time_class":"input-xxlarge","placeholder":"","date_store_as_local":"1","date_table_format":"d/m/Y H\\\hi","date_form_format":"d/m/Y","date_defaulttotoday":"0","date_alwaystoday":"0","date_firstday":"1","date_allow_typing_in_field":"1","date_csv_offset_tz":"0","date_advanced":"0","date_allow_func":"","date_allow_php_func":"","date_observe":"","show_in_rss_feed":"0","show_label_in_rss_feed":"0","use_as_rss_enclosure":"0","rollover":"","tipseval":"0","tiplocation":"top-left","labelindetails":"0","labelinlist":"0","comment":"","edit_access":"1","edit_access_user":"","view_access":"1","view_access_user":"","list_view_access":"1","encrypt":"0","store_in_db":"1","default_on_copy":"0","can_order":"0","alt_list_heading":"","custom_link":"","custom_link_target":"","custom_link_indetails":"1","use_as_row_class":"0","include_in_list_query":"1","always_render":"0","icon_folder":"0","icon_hovertext":"1","icon_file":"","icon_subdir":"","filter_length":"20","filter_access":"1","full_words_only":"0","filter_required":"0","filter_build_method":"0","filter_groupby":"text","inc_in_adv_search":"1","filter_class":"input-medium","filter_responsive_class":"","tablecss_header_class":"","tablecss_header":"","tablecss_cell_class":"","tablecss_cell":"","sum_on":"0","sum_label":"Sum","sum_access":"1","sum_split":"","avg_on":"0","avg_label":"Average","avg_access":"1","avg_round":"0","avg_split":"","median_on":"0","median_label":"Median","median_access":"1","median_split":"","count_on":"0","count_label":"Count","count_condition":"","count_access":"1","count_split":"","custom_calc_on":"0","custom_calc_label":"Custom","custom_calc_query":"","custom_calc_access":"1","custom_calc_split":"","custom_calc_php":"","isgreaterorlessthan-message":["La date de fin doit être supérieure à la date de début"],"isgreaterorlessthan-greaterthan":["3"],"isgreaterorlessthan-comparewith":["' . $start_date_element->id . '"],"compare_value":[""],"isgreaterorlessthan-allow_empty":["0"],"isgreaterorlessthan-validation_condition":["if (empty($data)) {\r\n  return false;\r\n}\r\n\r\nreturn true;"],"tip_text":["La date de fin doit être supérieure à la date de début"],"icon":[""],"validations":{"plugin":["isgreaterorlessthan"],"plugin_published":["1"],"validate_in":["both"],"validation_on":["both"],"validate_hidden":["1"],"must_validate":["0"],"show_icon":["1"]}}';
 
 					$query->clear()
@@ -3839,7 +4008,8 @@ structure:
 				$current_favicon = EmundusHelperUpdate::getYamlVariable('favicon', JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml');
 				$current_favicon = str_replace('gantry-media:/', 'images', $current_favicon);
 
-				if (!file_exists($current_favicon)) {
+				if (!file_exists($current_favicon))
+				{
 					$current_favicon = 'gantry-media://custom/default_favicon.ico';
 
 					EmundusHelperUpdate::updateYamlVariable('favicon', $current_favicon, JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml');
@@ -3852,7 +4022,8 @@ structure:
 				// check if parameter is already filled
 				$eMConfig                  = JComponentHelper::getParams('com_emundus');
 				$automated_task_user_param = $eMConfig->get('automated_task_user', '');
-				if (!empty($automated_task_user_param)) {
+				if (!empty($automated_task_user_param))
+				{
 					$query->clear()
 						->select('id')
 						->from($db->quoteName('#__users'))
@@ -3860,21 +4031,25 @@ structure:
 					$db->setQuery($query);
 					$automated_task_user = $db->loadResult();
 				}
-				else {
+				else
+				{
 					$automated_task_user = '';
 				}
 
-				if (empty($automated_task_user)) {
+				if (empty($automated_task_user))
+				{
 					// Get an available user id
 					$available_user_id = '';
-					for ($i = 2; $i < 62; $i++) {
+					for ($i = 2; $i < 62; $i++)
+					{
 						$query->clear()
 							->select('id')
 							->from($db->quoteName('#__users'))
 							->where($db->quoteName('id') . ' = ' . $db->quote($i));
 						$db->setQuery($query);
 						$user_found = $db->loadResult();
-						if (empty($user_found)) {
+						if (empty($user_found))
+						{
 							$available_user_id = $i;
 							break;
 						}
@@ -3896,20 +4071,24 @@ structure:
 					$profile_id = $db->loadResult();
 
 
-					if (!empty($available_user_id)) {
+					if (!empty($available_user_id))
+					{
 						$user_created = $h_samples->createSampleUser($profile_id, 'automatedtask@emundus.fr', $password, [2], $available_user_id, 'Task', 'AUTOMATED');
 					}
-					else {
+					else
+					{
 						$user_created = $h_samples->createSampleUser($profile_id, 'automatedtask@emundus.fr', $password, [2], 0, 'Task', 'AUTOMATED');
 					}
 
-					if ($user_created) {
+					if ($user_created)
+					{
 						EmundusHelperUpdate::updateComponentParameter('com_emundus', 'automated_task_user', $user_created);
 					}
 				}
 			}
 
-			if (version_compare($cache_version, '1.38.2', '<=') || $firstrun) {
+			if (version_compare($cache_version, '1.38.2', '<=') || $firstrun)
+			{
 				$query->clear()
 					->select('id')
 					->from($db->quoteName('#__menu'))
@@ -3926,7 +4105,8 @@ structure:
 				$db->setQuery($query);
 				$exceptions_form = $db->loadObject();
 
-				if (!empty($exceptions_form)) {
+				if (!empty($exceptions_form))
+				{
 					$params = json_decode($exceptions_form->params, true);
 
 					$params['plugin_events'][0] = 'both';
@@ -3969,7 +4149,8 @@ if(!in_array($applicant,$exceptions)){
 				$db->setQuery($query);
 				$exceptions_list = $db->loadObject();
 
-				if (!empty($exceptions_list)) {
+				if (!empty($exceptions_list))
+				{
 					$params = json_decode($exceptions_list->params, true);
 
 					$params['list_phpevents_ondeleterows'][0] = '$applicant = $model->rowsToDelete[0][0]->jos_emundus_setup_exceptions___user_raw;
@@ -4015,7 +4196,8 @@ if(in_array($applicant,$exceptions)){
 				$db->setQuery($query);
 				$profile_form_id = $db->loadResult();
 
-				if (!empty($profile_form_id)) {
+				if (!empty($profile_form_id))
+				{
 					$query->clear()
 						->select('fe.id')
 						->from($db->quoteName('#__fabrik_elements', 'fe'))
@@ -4025,7 +4207,8 @@ if(in_array($applicant,$exceptions)){
 					$db->setQuery($query);
 					$elements = $db->loadColumn();
 
-					foreach ($elements as $element) {
+					foreach ($elements as $element)
+					{
 						EmundusHelperFabrik::addNotEmptyValidation($element);
 					}
 				}
@@ -4033,7 +4216,8 @@ if(in_array($applicant,$exceptions)){
 				EmundusHelperUpdate::updateExtensionParam('photo_attachment', 10, '');
 			}
 
-			if (version_compare($cache_version, '1.38.5', '<=') || $firstrun) {
+			if (version_compare($cache_version, '1.38.5', '<=') || $firstrun)
+			{
 				EmundusHelperUpdate::installExtension('plg_fabrik_list_runcron', 'runcron', '{"name":"plg_fabrik_list_runcron","type":"plugin","creationDate":"January 2024","author":"eMundus","copyright":"Copyright (C) 2005-2024 eMundus - All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"www.emundus.fr","version":"3.10","description":"PLG_LIST_RUNCRON_DESCRIPTION","group":"","filename":"runcron"}', 'plugin', 1, 'fabrik_list');
 
 				EmundusHelperUpdate::insertTranslationsTag('FORM_RUN_CRON', 'Créer une tâche planifiée');
@@ -4048,7 +4232,8 @@ if(in_array($applicant,$exceptions)){
 					'view_only_template' => 'emundus',
 				];
 				$form_created = EmundusHelperUpdate::addFabrikForm($datas);
-				if ($form_created['status']) {
+				if ($form_created['status'])
+				{
 					$form_id = $form_created['id'];
 
 					$datas  = [
@@ -4088,13 +4273,15 @@ if(in_array($applicant,$exceptions)){
 					];
 					$list   = EmundusHelperUpdate::addFabrikList($datas, $params);
 
-					if ($list['status']) {
+					if ($list['status'])
+					{
 						$datas = [
 							'name' => 'FORM_RUN_CRON'
 						];
 						$group = EmundusHelperUpdate::addFabrikGroup($datas, [], 1, true);
 
-						if ($group['status']) {
+						if ($group['status'])
+						{
 							$group_id = $group['id'];
 
 							EmundusHelperUpdate::joinFormGroup($form_id, [$group_id]);
@@ -4164,7 +4351,8 @@ if(in_array($applicant,$exceptions)){
 
 						$menu_item = Factory::getApplication()->getMenu()->getItems('alias', 'modules-complementaires', true);
 
-						if ($menu_item) {
+						if ($menu_item)
+						{
 							$datas = [
 								'menutype'     => 'adminmenu',
 								'title'        => 'Tâches planifiées',
@@ -4178,7 +4366,8 @@ if(in_array($applicant,$exceptions)){
 				}
 			}
 
-			if (version_compare($cache_version, '1.38.6', '<=') || $firstrun) {
+			if (version_compare($cache_version, '1.38.6', '<=') || $firstrun)
+			{
 				EmundusHelperUpdate::installExtension('plg_fabrik_element_emundus_colorpicker', 'emundus_colorpicker', '{"name":"plg_fabrik_element_emundus_colorpicker","type":"plugin","creationDate":"November 2023","author":"Media A-Team, Inc.","copyright":"Copyright (C) 2005-2023 Media A-Team, Inc. - All rights reserved.","authorEmail":"brice.hubinet@emundus.fr","authorUrl":"www.emundus.fr","version":"4.0Zeta","description":"PLG_ELEMENT_COLOURPICKER_DESCRIPTION","group":"","filename":"emundus_colorpicker"}', 'plugin', 1, 'fabrik_element');
 
 				$query->clear()
@@ -4206,7 +4395,8 @@ if(in_array($applicant,$exceptions)){
 				$db->execute();
 			}
 
-			if (version_compare($cache_version, '1.38.10', '<=') || $firstrun) {
+			if (version_compare($cache_version, '1.38.10', '<=') || $firstrun)
+			{
 				// Create new id_prog table
 				$columns      = [
 					[
@@ -4246,7 +4436,8 @@ if(in_array($applicant,$exceptions)){
 				$db->setQuery($query);
 				$form_id = $db->loadResult();
 
-				if (!empty($form_id)) {
+				if (!empty($form_id))
+				{
 					$query->clear()
 						->select('DISTINCT ' . $db->quoteName('group_id'))
 						->from($db->quoteName('#__fabrik_formgroup'))
@@ -4254,7 +4445,8 @@ if(in_array($applicant,$exceptions)){
 					$db->setQuery($query);
 					$groups = $db->loadColumn();
 
-					if (!empty($groups)) {
+					if (!empty($groups))
+					{
 						$query->clear()
 							->select('group_id, id')
 							->from($db->quoteName('#__fabrik_elements'))
@@ -4281,7 +4473,8 @@ if(in_array($applicant,$exceptions)){
 				];
 				EmundusHelperUpdate::addFabrikElement($datas, $params);
 
-				if (!empty($element_id)) {
+				if (!empty($element_id))
+				{
 					$query->clear()
 						->update('#__fabrik_elements')
 						->set('published = 0')
@@ -4297,7 +4490,8 @@ if(in_array($applicant,$exceptions)){
 				$db->setQuery($query);
 				$count = $db->loadResult();
 
-				if ($count == 0) {
+				if ($count == 0)
+				{
 					$query->clear()
 						->select('parent_id, code_prog')
 						->from('#__emundus_hikashop_programs_repeat_code_prog');
@@ -4305,7 +4499,8 @@ if(in_array($applicant,$exceptions)){
 					$codes = $db->loadAssocList();
 
 					$ids_to_insert = [];
-					foreach ($codes as $code) {
+					foreach ($codes as $code)
+					{
 						$query->clear()
 							->select('id')
 							->from('#__emundus_setup_programmes')
@@ -4318,11 +4513,13 @@ if(in_array($applicant,$exceptions)){
 						];
 					}
 
-					if (!empty($ids_to_insert)) {
+					if (!empty($ids_to_insert))
+					{
 						$query->clear()
 							->insert('#__emundus_hikashop_programs_repeat_id_prog')
 							->columns('parent_id, id_prog');
-						foreach ($ids_to_insert as $id_to_insert) {
+						foreach ($ids_to_insert as $id_to_insert)
+						{
 							$query->values($db->quote($id_to_insert['parent_id']) . ',' . $db->quote($id_to_insert['id_prog']));
 						}
 						$db->setQuery($query);
@@ -4337,7 +4534,8 @@ if(in_array($applicant,$exceptions)){
 				$db->setQuery($query);
 				$menus = $db->loadObjectList();
 
-				foreach ($menus as $menu) {
+				foreach ($menus as $menu)
+				{
 					$params                     = json_decode($menu->params);
 					$params->show_info_panel    = 0;
 					$params->show_info_legend   = 1;
@@ -4353,7 +4551,8 @@ if(in_array($applicant,$exceptions)){
 				}
 			}
 
-			if (version_compare($cache_version, '1.38.11', '<=') || $firstrun) {
+			if (version_compare($cache_version, '1.38.11', '<=') || $firstrun)
+			{
 				$query->clear()
 					->update($db->quoteName('#__extensions'))
 					->set($db->quoteName('enabled') . ' = 0')
@@ -4363,7 +4562,8 @@ if(in_array($applicant,$exceptions)){
 				$db->execute();
 			}
 
-			if (version_compare($cache_version, '1.38.12', '<=') || $firstrun) {
+			if (version_compare($cache_version, '1.38.12', '<=') || $firstrun)
+			{
 				$query->clear()
 					->select('id,params')
 					->from($db->quoteName('#__fabrik_forms'))
@@ -4371,7 +4571,8 @@ if(in_array($applicant,$exceptions)){
 				$db->setQuery($query);
 				$registration_form = $db->loadObject();
 
-				if (!empty($registration_form)) {
+				if (!empty($registration_form))
+				{
 					$params                     = json_decode($registration_form->params, true);
 					$params['juser_auto_login'] = ["1"];
 
@@ -4387,7 +4588,8 @@ if(in_array($applicant,$exceptions)){
 			}
 		}
 
-		if (version_compare($cache_version, '1.39.0', '<=') || $firstrun) {
+		if (version_compare($cache_version, '1.39.0', '<=') || $firstrun)
+		{
 			$succeed['get_attachments_for_profile_event_added'] = EmundusHelperUpdate::addCustomEvents([
 				['label' => 'onAfterGetAttachmentsForProfile', 'category' => 'Files']
 			]);
@@ -4427,8 +4629,9 @@ if(in_array($applicant,$exceptions)){
 			$db->setQuery($query);
 			$setup_groups = $db->loadAssoc();
 
-			if (!empty($setup_groups['group_id'])) {
-				$datas = [
+			if (!empty($setup_groups['group_id']))
+			{
+				$datas             = [
 					'name'                 => 'filter_status',
 					'group_id'             => $setup_groups['group_id'],
 					'plugin'               => 'yesno',
@@ -4477,7 +4680,8 @@ if(in_array($applicant,$exceptions)){
 				$db->setQuery($query);
 				$js_action_load = $db->loadResult();
 
-				if(empty($js_action_load)) {
+				if (empty($js_action_load))
+				{
 					$status_load_jsaction = [
 						'action' => 'load',
 						'params' => '{"js_e_event":"","js_e_trigger":"fabrik_trigger_group_group139","js_e_condition":"","js_e_value":"","js_published":"1"}',
@@ -4512,7 +4716,8 @@ if(value == 1) {
 				$db->setQuery($query);
 				$js_action_change = $db->loadResult();
 
-				if(empty($js_action_change)) {
+				if (empty($js_action_change))
+				{
 					$status_change_jsaction = [
 						'action' => 'change',
 						'params' => '{"js_e_event":"","js_e_trigger":"fabrik_trigger_group_group139","js_e_condition":"","js_e_value":"","js_published":"1"}',
@@ -4555,7 +4760,8 @@ if(value == 1) {
 				];
 				$export_menu = EmundusHelperUpdate::addJoomlaMenu($datas);
 
-				if ($export_menu['status']) {
+				if ($export_menu['status'])
+				{
 					EmundusHelperUpdate::insertFalangTranslation(1, $export_menu['id'], 'menu', 'title', 'Export');
 
 					$datas         = [
@@ -4569,7 +4775,8 @@ if(value == 1) {
 					];
 					$export_action = EmundusHelperUpdate::addJoomlaMenu($datas, $export_menu['id']);
 
-					if ($export_action['status']) {
+					if ($export_action['status'])
+					{
 						EmundusHelperUpdate::insertFalangTranslation(1, $export_action['id'], 'menu', 'title', 'Export to Excel');
 					}
 				}
@@ -4584,7 +4791,8 @@ if(value == 1) {
 			EmundusHelperUpdate::addColumn('jos_emundus_widgets_repeat_access', 'access_level', 'INT', 11);
 
 
-			if (!class_exists('EmundusModelAdministratorCampaign')) {
+			if (!class_exists('EmundusModelAdministratorCampaign'))
+			{
 				require_once(JPATH_ROOT . '/administrator/components/com_emundus/models/campaign.php');
 			}
 			$m_admin_campaign                 = new EmundusModelAdministratorCampaign();
@@ -4597,7 +4805,8 @@ if(value == 1) {
 			$db->setQuery($query);
 			$group_program_detail = $db->loadResult();
 
-			if (!empty($group_program_detail)) {
+			if (!empty($group_program_detail))
+			{
 				EmundusHelperUpdate::addColumn('jos_emundus_setup_programmes', 'evaluation_form', 'INT', 11, 1);
 
 				EmundusHelperUpdate::insertTranslationsTag('ELEMENT_PROGRAM_FORM_EVALUATION', 'Formulaire d\'évaluation');
@@ -4618,7 +4827,8 @@ if(value == 1) {
 				];
 				$eid    = EmundusHelperUpdate::addFabrikElement($datas, $params, false)['id'];
 
-				if (!empty($eid)) {
+				if (!empty($eid))
+				{
 					$datas  = [
 						'element_id'      => $eid,
 						'join_from_table' => '',
@@ -4649,8 +4859,10 @@ if(value == 1) {
 					$db->setQuery($query);
 					$programs = $db->loadAssocList();
 
-					foreach ($programs as $program) {
-						if (!empty($program['fabrik_group_id'])) {
+					foreach ($programs as $program)
+					{
+						if (!empty($program['fabrik_group_id']))
+						{
 							$fabrik_groups = explode(',', $program['fabrik_group_id']);
 
 							$query->clear()
@@ -4660,7 +4872,8 @@ if(value == 1) {
 							$db->setQuery($query);
 							$evaluation_form_id = $db->loadResult();
 
-							if (!empty($evaluation_form_id)) {
+							if (!empty($evaluation_form_id))
+							{
 								$query->clear()
 									->update($db->quoteName('#__emundus_setup_programmes'))
 									->set($db->quoteName('evaluation_form') . ' = ' . $db->quote($evaluation_form_id))
@@ -4680,7 +4893,8 @@ if(value == 1) {
 			$db->setQuery($query);
 			$logrotation = $db->loadObject();
 
-			if (!empty($logrotation->extension_id)) {
+			if (!empty($logrotation->extension_id))
+			{
 				$params = json_decode($logrotation->params, true);
 
 				$params['cachetimeout'] = 7;
@@ -4703,15 +4917,19 @@ if(value == 1) {
 			$db->setQuery($query);
 			$existing_cron = $db->loadResult();
 
-			if ($existing_cron !== null) {
+			if ($existing_cron !== null)
+			{
 				echo "Plugin cron already created.";
 			}
-			else {
+			else
+			{
 				$current_hour = date('G');
-				if ($current_hour < 4) {
+				if ($current_hour < 4)
+				{
 					$last_four_hour = date('Y-m-d 04:00:00', strtotime('yesterday'));
 				}
-				else {
+				else
+				{
 					$last_four_hour = date('Y-m-d 04:00:00');
 				}
 
@@ -4738,9 +4956,11 @@ if(value == 1) {
 			$db->setQuery($query);
 			$form_registration = $db->loadObject();
 
-			if (!empty($form_registration->id)) {
+			if (!empty($form_registration->id))
+			{
 				$params = json_decode($form_registration->params, true);
-				if (empty($params['outro'])) {
+				if (empty($params['outro']))
+				{
 					$params['outro'] = '<p style="text-align: center;">BACK_TO_LOGIN</p>';
 					$query->clear()
 						->update($db->quoteName('#__fabrik_forms'))
@@ -4763,7 +4983,8 @@ if(value == 1) {
 			$db->setQuery($query);
 			$form_letters = $db->loadObject();
 
-			if (!empty($form_letters->id)) {
+			if (!empty($form_letters->id))
+			{
 				$params                  = json_decode($form_letters->params, true);
 				$params['plugin_events'] = ['both'];
 				$query->clear()
@@ -4785,22 +5006,23 @@ if(value == 1) {
 			EmundusHelperUpdate::updateOverrideTag('JGLOBAL_AUTH_INVALID_PASS', $old_values, $new_values);
 			EmundusHelperUpdate::updateOverrideTag('JGLOBAL_AUTH_NO_USER', $old_values, $new_values);
 
-			EmundusHelperUpdate::installExtension('eMundus - Update profile', 'emundusupdateprofile','{"name":"eMundus - Update profile","type":"plugin","creationDate":"April 2024","author":"eMundus","copyright":"Copyright (C) 2024 eMundus.fr - All rights reserved.","authorEmail":"laura.grandin@emundus.fr","authorUrl":"www.emundus.fr","version":"2.0.0","description":"PLG_FORM_EMUNDUSUPDATEPROFILE_DESCRIPTION","group":"","filename":"emundusupdateprofile"}','plugin',1,'fabrik_form');
+			EmundusHelperUpdate::installExtension('eMundus - Update profile', 'emundusupdateprofile', '{"name":"eMundus - Update profile","type":"plugin","creationDate":"April 2024","author":"eMundus","copyright":"Copyright (C) 2024 eMundus.fr - All rights reserved.","authorEmail":"laura.grandin@emundus.fr","authorUrl":"www.emundus.fr","version":"2.0.0","description":"PLG_FORM_EMUNDUSUPDATEPROFILE_DESCRIPTION","group":"","filename":"emundusupdateprofile"}', 'plugin', 1, 'fabrik_form');
 
 			$query->clear()
 				->select('ff.id,ff.params')
-				->from($db->quoteName('#__emundus_setup_formlist','esf'))
-				->leftJoin($db->quoteName('#__fabrik_forms','ff').' ON '.$db->quoteName('ff.id').' = '.$db->quoteName('esf.form_id'))
+				->from($db->quoteName('#__emundus_setup_formlist', 'esf'))
+				->leftJoin($db->quoteName('#__fabrik_forms', 'ff') . ' ON ' . $db->quoteName('ff.id') . ' = ' . $db->quoteName('esf.form_id'))
 				->where($db->quoteName('esf.type') . ' = ' . $db->quote('profile'));
 			$db->setQuery($query);
 			$profile_form = $db->loadObject();
 
-			if(!empty($profile_form->id)) {
+			if (!empty($profile_form->id))
+			{
 				$params = json_decode($profile_form->params, true);
 				unset($params['form_php_file']);
 				unset($params['only_process_curl']);
 				unset($params['curl_code']);
-				$params['plugins'] = ['emundusupdateprofile'];
+				$params['plugins']                          = ['emundusupdateprofile'];
 				$params['emundusupdateprofile_field_alias'] = 'mon-profil';
 
 				$query->clear()
@@ -4820,7 +5042,8 @@ if(value == 1) {
 			$db->setQuery($query);
 			$users_menu = $db->loadResult();
 
-			if(!empty($users_menu)) {
+			if (!empty($users_menu))
+			{
 				EmundusHelperUpdate::insertFalangTranslation(1, $users_menu, 'menu', 'title', 'Users', true);
 			}
 
@@ -4830,7 +5053,8 @@ if(value == 1) {
 			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_ERROR_404_BUTTON', 'Back to home page', 'override', null, null, null, 'en-GB');
 
 			$error_particle = file_get_contents(JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/error.yaml');
-			if($error_particle == 'null') {
+			if ($error_particle == 'null')
+			{
 				$error_particle = "enabled: '1'
 title: 'Oups !'
 image: /media/com_emundus/images/tchoozy/complex-illustrations/page-not-found.svg
@@ -4840,11 +5064,11 @@ css:
 button: COM_EMUNDUS_ERROR_404_BUTTON";
 				file_put_contents(JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/error.yaml', $error_particle);
 			}
-			EmundusHelperUpdate::updateYamlVariable('description','COM_EMUNDUS_ERROR_404',JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/error.yaml');
-			EmundusHelperUpdate::updateYamlVariable('button','COM_EMUNDUS_ERROR_404_BUTTON',JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/error.yaml');
+			EmundusHelperUpdate::updateYamlVariable('description', 'COM_EMUNDUS_ERROR_404', JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/error.yaml');
+			EmundusHelperUpdate::updateYamlVariable('button', 'COM_EMUNDUS_ERROR_404_BUTTON', JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/error.yaml');
 
 			// Fix 404 styles
-			if(file_exists(JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml'))
+			if (file_exists(JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml'))
 			{
 				EmundusHelperUpdate::addYamlVariable('location', 'gantry-assets://custom/scss/custom.scss', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css', true, true);
 				EmundusHelperUpdate::addYamlVariable('inline', '', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
@@ -4881,14 +5105,16 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 
 			$query->clear()
 				->select('ff.id,ff.submit_button_label')
-				->from($db->quoteName('#__fabrik_lists','fl'))
-				->leftJoin($db->quoteName('#__fabrik_forms','ff').' ON '.$db->quoteName('ff.id').' = '.$db->quoteName('fl.form_id'))
+				->from($db->quoteName('#__fabrik_lists', 'fl'))
+				->leftJoin($db->quoteName('#__fabrik_forms', 'ff') . ' ON ' . $db->quoteName('ff.id') . ' = ' . $db->quoteName('fl.form_id'))
 				->where($db->quoteName('fl.db_table_name') . ' LIKE ' . $db->quote('jos_emundus_references'));
 			$db->setQuery($query);
 			$reference_forms = $db->loadObjectList();
 
-			foreach ($reference_forms as $reference_form) {
-				if($reference_form->submit_button_label == 'Send the request for individual assessment') {
+			foreach ($reference_forms as $reference_form)
+			{
+				if ($reference_form->submit_button_label == 'Send the request for individual assessment')
+				{
 					$query->clear()
 						->update($db->quoteName('#__fabrik_forms'))
 						->set($db->quoteName('submit_button_label') . ' = ' . $db->quote('COM_EMUNDUS_SEND_REFERENCE_REQUEST'))
@@ -4899,16 +5125,18 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 
 				$query->clear()
 					->select('fe.id,fe.params')
-					->from($db->quoteName('#__fabrik_formgroup','ffg'))
-					->leftJoin($db->quoteName('#__fabrik_elements','fe').' ON '.$db->quoteName('fe.group_id').' = '.$db->quoteName('ffg.group_id'))
+					->from($db->quoteName('#__fabrik_formgroup', 'ffg'))
+					->leftJoin($db->quoteName('#__fabrik_elements', 'fe') . ' ON ' . $db->quoteName('fe.group_id') . ' = ' . $db->quoteName('ffg.group_id'))
 					->where($db->quoteName('ffg.form_id') . ' = ' . $reference_form->id)
-					->where($db->quoteName('fe.name') . ' IN (' . implode(',',$db->quote(['Email_1','Email_2','Email_3'])) . ')');
+					->where($db->quoteName('fe.name') . ' IN (' . implode(',', $db->quote(['Email_1', 'Email_2', 'Email_3'])) . ')');
 				$db->setQuery($query);
 				$emails_fields = $db->loadObjectList();
 
-				foreach ($emails_fields as $email_field) {
+				foreach ($emails_fields as $email_field)
+				{
 					$params = json_decode($email_field->params, true);
-					if ($params['rollover'] == 'The recommendation letter will be sent to this address.' || empty($params['rollover'])) {
+					if ($params['rollover'] == 'The recommendation letter will be sent to this address.' || empty($params['rollover']))
+					{
 						$params['rollover'] = 'COM_EMUNDUS_EMAIL_REFERENCE_TIP';
 
 						$query->clear()
@@ -4923,24 +5151,28 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 
 			$query->clear()
 				->select('fe.id,fe.label,fe.params')
-				->from($db->quoteName('#__fabrik_formgroup','ffg'))
-				->leftJoin($db->quoteName('#__fabrik_elements','fe').' ON '.$db->quoteName('fe.group_id').' = '.$db->quoteName('ffg.group_id'))
+				->from($db->quoteName('#__fabrik_formgroup', 'ffg'))
+				->leftJoin($db->quoteName('#__fabrik_elements', 'fe') . ' ON ' . $db->quoteName('fe.group_id') . ' = ' . $db->quoteName('ffg.group_id'))
 				->where($db->quoteName('ffg.form_id') . ' = 68')
 				->where($db->quoteName('fe.name') . ' LIKE ' . $db->quote('filename'));
 			$db->setQuery($query);
 			$fileupload_referent = $db->loadObject();
 
-			if(!empty($fileupload_referent->id)) {
+			if (!empty($fileupload_referent->id))
+			{
 				$query->clear();
-				$params = json_decode($fileupload_referent->params,true);
-				if(empty($params['rollover'])) {
+				$params = json_decode($fileupload_referent->params, true);
+				if (empty($params['rollover']))
+				{
 					$params['rollover'] = '.pdf';
 					$query->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)));
 				}
-				if($fileupload_referent->label == 'FILE (.pdf)') {
+				if ($fileupload_referent->label == 'FILE (.pdf)')
+				{
 					$query->set($db->quoteName('label') . ' = ' . $db->quote('FILE'));
 				}
-				if(empty($params['rollover']) || $fileupload_referent->label == 'FILE (.pdf)') {
+				if (empty($params['rollover']) || $fileupload_referent->label == 'FILE (.pdf)')
+				{
 					$query->update($db->quoteName('#__fabrik_elements'))
 						->where($db->quoteName('id') . ' = ' . $fileupload_referent->id);
 					$db->setQuery($query);
@@ -4958,32 +5190,35 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 			//
 		}
 
-		if (version_compare($cache_version, '1.39.1', '<=') || $firstrun) {
-			EmundusHelperUpdate::installExtension('System - eMundus', 'emundus','{"name":"System - eMundus","type":"plugin","creationDate":"15 juillet 2024","author":"eMundus","copyright":"Copyright (C) 2024 eMundus","authorEmail":"dev@emundus.io","authorUrl":"http:\/\/www.emundus.fr","version":"1.39.1","description":"eMundus plugin to call jQuery","group":"","filename":"emundus"}','plugin',1,'system');
+		if (version_compare($cache_version, '1.39.1', '<=') || $firstrun)
+		{
+			EmundusHelperUpdate::installExtension('System - eMundus', 'emundus', '{"name":"System - eMundus","type":"plugin","creationDate":"15 juillet 2024","author":"eMundus","copyright":"Copyright (C) 2024 eMundus","authorEmail":"dev@emundus.io","authorUrl":"http:\/\/www.emundus.fr","version":"1.39.1","description":"eMundus plugin to call jQuery","group":"","filename":"emundus"}', 'plugin', 1, 'system');
 		}
 
-        if (version_compare($cache_version, '1.39.2', '<=') || $firstrun) {
-            $db->setQuery("alter table jos_emundus_evaluations modify user int null");
-            $db->execute();
+		if (version_compare($cache_version, '1.39.2', '<=') || $firstrun)
+		{
+			$db->setQuery("alter table jos_emundus_evaluations modify user int null");
+			$db->execute();
 
-            $db->setQuery("alter table jos_emundus_evaluations drop foreign key jos_emundus_evaluations_ibfk_4");
-            $db->execute();
+			$db->setQuery("alter table jos_emundus_evaluations drop foreign key jos_emundus_evaluations_ibfk_4");
+			$db->execute();
 
-            $db->setQuery("alter table jos_emundus_evaluations
+			$db->setQuery("alter table jos_emundus_evaluations
                 add constraint jos_emundus_evaluations_ibfk_4
                 foreign key (user) references jos_emundus_users (user_id)
                 on update cascade on delete set null");
-            $db->execute();
+			$db->execute();
 
-	        EmundusHelperUpdate::installExtension('plg_fabrik_element_iban','iban','{"name":"plg_fabrik_element_iban","type":"plugin","creationDate":"March 2024","author":"Media A-Team, Inc.","copyright":"Copyright (C) 2005-2024 Media A-Team, Inc. - All rights reserved.","authorEmail":"brice.hubinet@emundus.fr","authorUrl":"www.emundus.fr","version":"4.0Zeta","description":"PLG_ELEMENT_IBAN_DESCRIPTION","group":"","filename":"iban"}','plugin',1,'fabrik_element');
-        }
+			EmundusHelperUpdate::installExtension('plg_fabrik_element_iban', 'iban', '{"name":"plg_fabrik_element_iban","type":"plugin","creationDate":"March 2024","author":"Media A-Team, Inc.","copyright":"Copyright (C) 2005-2024 Media A-Team, Inc. - All rights reserved.","authorEmail":"brice.hubinet@emundus.fr","authorUrl":"www.emundus.fr","version":"4.0Zeta","description":"PLG_ELEMENT_IBAN_DESCRIPTION","group":"","filename":"iban"}', 'plugin', 1, 'fabrik_element');
+		}
 
-		if (version_compare($cache_version, '1.39.3', '<=') || $firstrun) {
-			$columns       = [
+		if (version_compare($cache_version, '1.39.3', '<=') || $firstrun)
+		{
+			$columns = [
 				[
-					'name'   => 'date_time',
-					'type'   => 'datetime',
-					'null'   => 1,
+					'name' => 'date_time',
+					'type' => 'datetime',
+					'null' => 1,
 				],
 				[
 					'name'   => 'category_label',
@@ -4998,10 +5233,10 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 					'null'   => 1,
 				],
 				[
-					'name'   => 'published',
-					'type'   => 'tinyint',
-					'length' => 1,
-					'null'   => 0,
+					'name'    => 'published',
+					'type'    => 'tinyint',
+					'length'  => 1,
+					'null'    => 0,
 					'default' => 1
 				]
 			];
@@ -5018,31 +5253,37 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 			$db->execute();
 		}
 
-		if (version_compare($cache_version, '1.39.8', '<=') || $firstrun) {
+		if (version_compare($cache_version, '1.39.8', '<=') || $firstrun)
+		{
 			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_REFERENT_ADD_LETTER_INTRO', 'Nous vous remercions de déposer votre lettre de recommandation pour %s. Seuls les documents au format .pdf sont acceptés. Pour toute aide, vous pouvez contacter x@.fr.');
 			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_REFERENT_ADD_LETTER_INTRO', 'Thank you for submitting your letter of recommendation for %s. Only documents in .pdf format are accepted. For further assistance, please contact x@.fr', 'override', null, null, null, 'en-GB');
 		}
 
-		if (version_compare($cache_version, '1.39.9', '<=') || $firstrun) {
+		if (version_compare($cache_version, '1.39.9', '<=') || $firstrun)
+		{
 			// Replace Google CDN
-			$g5_assets = JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml';
-			$g5_style = JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml';
-			$g5_head = JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/head.yaml';
+			$g5_assets  = JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml';
+			$g5_style   = JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml';
+			$g5_head    = JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/head.yaml';
 			$g5_head_24 = JPATH_ROOT . '/templates/g5_helium/custom/config/24/page/head.yaml';
 			$g5_head_22 = JPATH_ROOT . '/templates/g5_helium/custom/config/22/page/head.yaml';
-			if(file_exists($g5_assets))
+			if (file_exists($g5_assets))
 			{
 				$g5_assets_yaml = Yaml::parse(file_get_contents($g5_assets));
 
-				if(!empty($g5_assets_yaml['css'])) {
+				if (!empty($g5_assets_yaml['css']))
+				{
 					$key_to_remove = null;
-					foreach ($g5_assets_yaml['css'] as $key => $css) {
-						if($css['location'] == 'https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined') {
+					foreach ($g5_assets_yaml['css'] as $key => $css)
+					{
+						if ($css['location'] == 'https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined')
+						{
 							$key_to_remove = $key;
 						}
 					}
 
-					if($key_to_remove !== null) {
+					if ($key_to_remove !== null)
+					{
 						unset($g5_assets_yaml['css'][$key_to_remove]);
 
 						// Reindex array
@@ -5054,11 +5295,12 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 				}
 			}
 
-			if(file_exists($g5_head))
+			if (file_exists($g5_head))
 			{
 				$g5_head_yaml = Yaml::parse(file_get_contents($g5_head));
 
-				if(!empty($g5_head_yaml['head_bottom'])) {
+				if (!empty($g5_head_yaml['head_bottom']))
+				{
 					$g5_head_yaml['head_bottom'] = '';
 
 					$new_head_g5 = Yaml::dump($g5_head_yaml, 10, 2);
@@ -5066,11 +5308,12 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 				}
 			}
 
-			if(file_exists($g5_head_24))
+			if (file_exists($g5_head_24))
 			{
 				$g5_head_yaml = Yaml::parse(file_get_contents($g5_head_24));
 
-				if(!empty($g5_head_yaml['head_bottom'])) {
+				if (!empty($g5_head_yaml['head_bottom']))
+				{
 					$g5_head_yaml['head_bottom'] = '';
 
 					$new_head_g5 = Yaml::dump($g5_head_yaml, 10, 2);
@@ -5078,11 +5321,12 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 				}
 			}
 
-			if(file_exists($g5_head_22))
+			if (file_exists($g5_head_22))
 			{
 				$g5_head_yaml = Yaml::parse(file_get_contents($g5_head_22));
 
-				if(!empty($g5_head_yaml['head_bottom'])) {
+				if (!empty($g5_head_yaml['head_bottom']))
+				{
 					$g5_head_yaml['head_bottom'] = '';
 
 					$new_head_g5 = Yaml::dump($g5_head_yaml, 10, 2);
@@ -5090,11 +5334,12 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 				}
 			}
 
-			if(file_exists($g5_style))
+			if (file_exists($g5_style))
 			{
 				$g5_style_yaml = Yaml::parse(file_get_contents($g5_style));
 
-				if(!empty($g5_style_yaml['font']) && !empty($g5_style_yaml['font']['family-title']) && $g5_style_yaml['font']['family-title'] == 'family=Inter:300,400,500,600,700,800,900,400&subset=latin,vietnamese,latin-ext') {
+				if (!empty($g5_style_yaml['font']) && !empty($g5_style_yaml['font']['family-title']) && $g5_style_yaml['font']['family-title'] == 'family=Inter:300,400,500,600,700,800,900,400&subset=latin,vietnamese,latin-ext')
+				{
 					$g5_style_yaml['font']['family-title'] = 'Inter';
 
 					$new_style_g5 = Yaml::dump($g5_style_yaml, 10, 2);
@@ -5106,15 +5351,16 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 			$query = $db->getQuery(true);
 			$query->clear()
 				->select('fe.id,fe.params')
-				->from($db->quoteName('#__fabrik_elements','fe'))
-				->leftJoin($db->quoteName('#__fabrik_groups','fg').' ON '.$db->quoteName('fg.id').' = '.$db->quoteName('fe.group_id'))
+				->from($db->quoteName('#__fabrik_elements', 'fe'))
+				->leftJoin($db->quoteName('#__fabrik_groups', 'fg') . ' ON ' . $db->quoteName('fg.id') . ' = ' . $db->quoteName('fe.group_id'))
 				->where($db->quoteName('fe.name') . ' LIKE ' . $db->quote('logo'))
 				->where($db->quoteName('fg.name') . ' = ' . $db->quote('GROUP_PROGRAM_DETAIL'));
 			$db->setQuery($query);
 			$logo_element = $db->loadObject();
 
-			if(!empty($logo_element->id)) {
-				$params = json_decode($logo_element->params, true);
+			if (!empty($logo_element->id))
+			{
+				$params                        = json_decode($logo_element->params, true);
 				$params['fu_rename_file_code'] = 'error_clear_last();$new_name = $formModel->formData[\'jos_emundus_setup_programmes___code_raw\'];$new_name = preg_replace(\'/[^A-Za-z0-9_\-]/\', \'\', $new_name);$new_name .= \'-\'.rand(0,10000);$new_name .= \'.\' . pathinfo($filename, PATHINFO_EXTENSION);return $new_name;';
 
 				$logo_element->params = json_encode($params);
@@ -5123,7 +5369,8 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 			//
 		}
 
-		if (version_compare($cache_version, '1.39.10', '<=') || $firstrun) {
+		if (version_compare($cache_version, '1.39.10', '<=') || $firstrun)
+		{
 			$db->setQuery("ALTER TABLE jos_emundus_personal_detail ROW_FORMAT=DYNAMIC");
 			$db->execute();
 
@@ -5137,91 +5384,125 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 	/**
 	 * Run when the component is uninstalled.
 	 *
-	 * @param   object $parent installer object
+	 * @param   object  $parent  installer object
 	 *
 	 * @return  void
 	 */
-	public function uninstall($parent) {}
+	public function uninstall($parent)
+	{
+	}
 
 
 	/**
 	 * Run after installation or upgrade run
 	 *
-	 * @param   string $type   discover_install (Install unregistered extensions that have been discovered.)
-	 *                         or install (standard install)
-	 *                         or update (update)
-	 * @param   object $parent installer object
+	 * @param   string  $type    discover_install (Install unregistered extensions that have been discovered.)
+	 *                           or install (standard install)
+	 *                           or update (update)
+	 * @param   object  $parent  installer object
 	 *
 	 * @return  bool
 	 */
 	function postflight($type, $parent)
 	{
-		if(!$this->setSitename()) {
+		if (!$this->setSitename())
+		{
 			EmundusHelperUpdate::displayMessage('Erreur lors de la mise à jour du nom du site dans la configuration de eMundus.', 'error');
 		}
 
-		if(!EmundusHelperUpdate::languageBaseToFile()['status']) {
+		if (!EmundusHelperUpdate::languageBaseToFile()['status'])
+		{
 			EmundusHelperUpdate::displayMessage('Erreur lors de la mise à jour des fichiers de langue.', 'error');
 		}
 
-		if(!EmundusHelperUpdate::recompileGantry5()) {
+		if (!EmundusHelperUpdate::recompileGantry5())
+		{
 			EmundusHelperUpdate::displayMessage('Erreur lors de la recompilation de Gantry5.', 'error');
 		}
 
-		if(!EmundusHelperUpdate::clearJoomlaCache()) {
+		if (!EmundusHelperUpdate::clearJoomlaCache())
+		{
 			EmundusHelperUpdate::displayMessage('Erreur lors de la suppression du cache Joomla.', 'error');
 		}
 
-		if(!$this->clearDashboard()) {
+		if (!$this->clearDashboard())
+		{
 			EmundusHelperUpdate::displayMessage('Erreur lors de la suppression des tableaux de bord par défaut.', 'error');
 		}
 
-		if(!$this->clearExternalLoginLogs()) {
+		if (!$this->clearExternalLoginLogs())
+		{
 			EmundusHelperUpdate::displayMessage('Erreur lors de la suppression des logs ExternalLogin', 'error');
 		}
 
-		if(!EmundusHelperUpdate::checkHealth()) {
+		if (!EmundusHelperUpdate::checkHealth())
+		{
 			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification de la santé de l\'installation.', 'error');
 		}
 
-		if(!EmundusHelperUpdate::checkPageClass()) {
+		if (!EmundusHelperUpdate::checkPageClass())
+		{
 			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification des classes de pages.', 'error');
 		}
 
-		if(!$this->checkPaymentCookie()) {
+		if (!$this->checkPaymentCookie())
+		{
 			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification du cookie de paiement.', 'error');
 		}
 
-		if(!$this->checkPasswordFields()) {
+		if (!$this->checkPasswordFields())
+		{
 			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification du stockage des champs mot de passe.', 'error');
 		}
 
-		if(!$this->checkColumnsNotAssociatedToFabrik()) {
+		if (!$this->checkColumnsNotAssociatedToFabrik())
+		{
 			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification des colonnes non associées à Fabrik.', 'error');
 		}
 
-		if(!$this->checkFilterPosition()) {
+		if (!$this->checkFilterPosition())
+		{
 			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification de la position des filtres.', 'error');
 		}
 
-		if(!$this->checkActivationMenu()) {
+		if (!$this->checkActivationMenu())
+		{
 			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification du menu d\'activation de compte', 'error');
 		}
 
-		if(!$this->checkDropfilesComponent()) {
+		if (!$this->checkDropfilesComponent())
+		{
 			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification de la présence du composant Dropfiles', 'error');
 		}
 
-		if(!$this->checkDropfilesPlugins()) {
+		if (!$this->checkDropfilesPlugins())
+		{
 			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification de la présence des plugins Dropfiles', 'error');
 		}
 
-		if(!$this->checkEmundusRegistrationRedirect()) {
+		if (!$this->checkEmundusRegistrationRedirect())
+		{
 			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification de la redirection après l\'inscription', 'error');
 		}
 
-		if(!$this->checkPayboxFiles()) {
+		if (!$this->checkPayboxFiles())
+		{
 			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification des fichiers Paybox', 'error');
+		}
+
+		if(!$this->checkFabrikMultipleSelect())
+		{
+			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification des champs de type multiple select', 'error');
+		}
+
+		if(!$this->checkFabrikFormTemplate())
+		{
+			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification des templates de formulaire Fabrik', 'error');
+		}
+		
+		if(!$this->checkNationalityTable())
+		{
+			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification de la table des nationalités', 'error');
 		}
 
 		return true;
@@ -5240,7 +5521,8 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 			$this->dbo->setQuery($query);
 			$applicant_profiles = $this->dbo->loadColumn();
 
-			foreach ($applicant_profiles as $applicantProfile) {
+			foreach ($applicant_profiles as $applicantProfile)
+			{
 				$query->clear()
 					->select('SUBSTRING_INDEX(SUBSTRING(link, LOCATE("formid=",link)+7, 4), "&", 1)')
 					->from($this->dbo->quoteName('#__menu'))
@@ -5264,7 +5546,8 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 					$this->dbo->setQuery($columns);
 					$columns = $this->dbo->loadObjectList();
 
-					foreach ($columns as $column) {
+					foreach ($columns as $column)
+					{
 						$query->clear()
 							->select('id')
 							->from($this->dbo->quoteName('#__fabrik_elements'))
@@ -5281,12 +5564,14 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 						$datas = $this->dbo->loadResult();
 
 						// If not element is associated to the column and no data are present in the column
-						if(empty($element_id) && empty($datas)) {
+						if (empty($element_id) && empty($datas))
+						{
 							$dead_columns[] = $column->Field;
 						}
 					}
 
-					if(!empty($dead_columns)) {
+					if (!empty($dead_columns))
+					{
 						$count = count($dead_columns);
 						echo "\r\033[33m$count columns of table $db_table_name have no associated Fabrik element : " . implode(', ', $dead_columns) . "\033[0m\n";
 					}
@@ -5301,10 +5586,11 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 		return true;
 	}
 
-	private function setSitename() {
+	private function setSitename()
+	{
 		$updated = false;
 
-		$query = $this->dbo->getQuery(true);
+		$query  = $this->dbo->getQuery(true);
 		$config = Factory::getConfig();
 
 		try
@@ -5336,37 +5622,44 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 			$updated = $this->dbo->execute();
 		}
 		catch (Exception $e)
-		{}
+		{
+		}
 
 		return $updated;
 	}
 
-	private function clearDashboard() {
+	private function clearDashboard()
+	{
 		$query = $this->dbo->getQuery(true);
 
 		$query->clear()
 			->delete($this->dbo->quoteName('#__emundus_setup_dashboard'))
 			->where($this->dbo->quoteName('user') . ' IN (62,95)');
 		$this->dbo->setQuery($query);
+
 		return $this->dbo->execute();
 	}
 
-	private function clearExternalLoginLogs() {
+	private function clearExternalLoginLogs()
+	{
 		$query = $this->dbo->getQuery(true);
 
 		$query->clear()
 			->delete($this->dbo->quoteName('#__externallogin_logs'))
 			->where("from_unixtime(round(`date`)) < DATE_SUB(DATE(now()), INTERVAL 15 DAY)");
 		$this->dbo->setQuery($query);
+
 		return $this->dbo->execute();
 	}
 
-	private function checkPaymentCookie() {
+	private function checkPaymentCookie()
+	{
 		$eMConfig          = ComponentHelper::getParams('com_emundus');
 		$payment_activated = $eMConfig->get('application_fee');
 
 		EmundusHelperUpdate::removeFromFile(JPATH_ROOT . '/.htaccess', ['php_value session.cookie_samesite Strict']);
-		if (!$payment_activated) {
+		if (!$payment_activated)
+		{
 			EmundusHelperUpdate::insertIntoFile(JPATH_ROOT . '/.htaccess', "php_value session.cookie_samesite Lax" . PHP_EOL);
 		}
 
@@ -5379,7 +5672,8 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 
 		$query = $this->dbo->getQuery(true);
 
-		try {
+		try
+		{
 			$query->clear()
 				->select('id,params')
 				->from($this->dbo->quoteName('#__fabrik_elements'))
@@ -5388,8 +5682,9 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 			$this->dbo->setQuery($query);
 			$password_elements = $this->dbo->loadObjectList();
 
-			foreach ($password_elements as $password_element) {
-				$params = json_decode($password_element->params, true);
+			foreach ($password_elements as $password_element)
+			{
+				$params                = json_decode($password_element->params, true);
 				$params['store_in_db'] = "0";
 
 				$query->clear()
@@ -5400,29 +5695,35 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 				$checked = $this->dbo->execute();
 			}
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			$checked = false;
 		}
 
 		return $checked;
 	}
 
-	private function checkFilterPosition() {
+	private function checkFilterPosition()
+	{
 		$checked = false;
 
 		$xml_file = JPATH_SITE . '/templates/g5_helium/templateDetails.xml';
 		$xml      = simplexml_load_file($xml_file);
-		if ($xml) {
+		if ($xml)
+		{
 			$positions = $xml->xpath('//extension/positions');
 
 			// Check if position emundus_filters exist
 			$checked = false;
-			foreach ($positions[0]->children() as $position) {
-				if ($position == 'emundus_filters') {
+			foreach ($positions[0]->children() as $position)
+			{
+				if ($position == 'emundus_filters')
+				{
 					$checked = true;
 				}
 			}
-			if (!$checked) {
+			if (!$checked)
+			{
 				$positions[0]->addChild('position', 'emundus_filters');
 				$checked = true;
 			}
@@ -5433,9 +5734,10 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 		return $checked;
 	}
 
-	private function checkActivationMenu() {
+	private function checkActivationMenu()
+	{
 		$checked = false;
-		$query = $this->dbo->getQuery(true);
+		$query   = $this->dbo->getQuery(true);
 
 		try
 		{
@@ -5446,8 +5748,9 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 			$this->dbo->setQuery($query);
 			$activation_menu = $this->dbo->loadObject();
 
-			if(empty($activation_menu->id)) {
-				$datas = [
+			if (empty($activation_menu->id))
+			{
+				$datas   = [
 					'menutype'     => 'mainmenu',
 					'title'        => 'Activation',
 					'alias'        => 'activation',
@@ -5457,58 +5760,223 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 					'component_id' => 0,
 					'params'       => [
 						'menu-anchor_title' => 'activation-page',
-						'menu-anchor_css' => 'activation-page',
-						'menu_text' => 1,
-						'menu_show' => 1,
+						'menu-anchor_css'   => 'activation-page',
+						'menu_text'         => 1,
+						'menu_show'         => 1,
 					]
 				];
 				$checked = EmundusHelperUpdate::addJoomlaMenu($datas)['status'];
-			} else {
-				$params = json_decode($activation_menu->params, true);
-				$params['menu_text'] = 1;
-				$params['menu_show'] = 1;
+			}
+			else
+			{
+				$params                      = json_decode($activation_menu->params, true);
+				$params['menu_text']         = 1;
+				$params['menu_show']         = 1;
 				$params['menu-anchor_title'] = 'activation-page';
-				$params['menu-anchor_css'] = 'activation-page';
+				$params['menu-anchor_css']   = 'activation-page';
 
 				$activation_menu->params = json_encode($params);
-				$checked = $this->dbo->updateObject('#__menu', $activation_menu, 'id');
+				$checked                 = $this->dbo->updateObject('#__menu', $activation_menu, 'id');
 			}
 		}
 		catch (Exception $e)
-		{}
+		{
+		}
 
 		return $checked;
 	}
 
-	private function checkDropfilesComponent() {
-		$installed = EmundusHelperUpdate::installExtension('Dropfiles','com_dropfiles','{"name":"Dropfiles","type":"component","creationDate":"2021-10-11 02:44:17","author":"JoomUnited","copyright":"","authorEmail":"contact@joomunited.com","authorUrl":"http:\/\/www.joomunited.com","version":"5.8.5","description":"Dropfiles files manager","group":"","filename":"dropfiles"}','component',1,'','{"updated":"1","allowedext":"7z,ace,bz2,dmg,gz,rar,tgz,zip,csv,doc,docx,html,key,keynote,odp,ods,odt,pages,pdf,pps,ppt,pptx,rtf,tex,txt,xls,xlsx,xml,bmp,exif,gif,ico,jpeg,jpg,png,psd,tif,tiff,aac,aif,aiff,alac,amr,au,cdda,flac,m3u,m4a,m4p,mid,mp3,mp4,mpa,ogg,pac,ra,wav,wma,3gp,asf,avi,flv,m4v,mkv,mov,mpeg,mpg,rm,swf,vob,wmv","maxinputfile":"10","add_category_owner":"0","categoryrestriction":"accesslevel","restrictfile":"1","catcollapsed":"1","import":"0","usereditor":"1","addremotefile":"0","versioning_number":"10","allowedgoogleext":"pdf,ppt,doc,xls,dxf,ps,eps,xps,psd,tif,tiff,bmp,svg,pages,ai,dxf,ttf,txt,mp3,mp4,png","open_pdf_in":"0","usegoogleviewer":"1","uri":"files","date_format":"Y-m-d","loadthemecategory":"0","download_category":"0","custom_icon":"0","show_empty_folder":"1","plain_text_search":"0","show_filters":"1","cat_filter":"1","tag_filter":"1","display_tag":"searchbox","creation_date":"1","update_date":"1","search_limit":"20","cat_tags":"[]","readfiletype":"0","sync_log_option":"0","track_user_download":"0","default_marginleft":"10","default_marginright":"10","default_margintop":"10","default_marginbottom":"10","default_showsize":"1","default_showtitle":"1","default_showversion":"1","default_showhits":"1","default_showdownload":"1","default_bgdownloadlink":"#c102cf","default_colordownloadlink":"#1a7fa1","default_showdateadd":"1","default_showdatemodified":"0","default_showcategorytitle":"1","default_showsubcategories":"1","default_showbreadcrumb":"1","default_showfoldertree":"1","default_columns":"2","ggd_marginleft":"10","ggd_marginright":"5","ggd_margintop":"5","ggd_marginbottom":"5","ggd_showsize":"1","ggd_showtitle":"1","ggd_showversion":"1","ggd_showhits":"1","ggd_showdownload":"1","ggd_bgdownloadlink":"#006dcc","ggd_colordownloadlink":"#ffffff","ggd_showdateadd":"1","ggd_showdatemodified":"0","ggd_showcategorytitle":"1","ggd_showsubcategories":"1","ggd_showbreadcrumb":"1","ggd_showfoldertree":"0","ggd_download_popup":"1","table_stylingmenu":"1","table_showsize":"1","table_showtitle":"1","table_showdescription":"1","table_showversion":"1","table_showhits":"1","table_showdownload":"1","table_bgdownloadlink":"#006dcc","table_colordownloadlink":"#ffffff","table_showdateadd":"0","table_showdatemodified":"0","table_showsubcategories":"1","table_showcategorytitle":"1","table_showbreadcrumb":"1","table_showfoldertree":"0","table_showcategoriesposition":"0","tree_showsize":"1","tree_bgdownloadlink":"#006dcc","tree_colordownloadlink":"#ffffff","tree_showtitle":"1","tree_showdescription":"1","tree_showversion":"1","tree_showhits":"1","tree_showdateadd":"1","tree_showdatemodified":"0","tree_showsubcategories":"1","tree_showcategorytitle":"1","tree_download_popup":"1","singlebg":"#444444","singlefontcolor":"#ffffff","singlebghovercolor":"#444444","singlehover":"#888888","newtheme":"","fromtheme":"default","sender_name":"Dropfiles","sender_email":"","category_owner":"0","file_owner":"0","notify_super_admin":"0","placeholder":"1","add_event":"1","placeholder1":"1","add_event_subject":"A new file has been added","add_event_additional_email":"","add_event_editor":"<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" bgcolor=\"#fafafa\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table border=\"0\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" align=\"center\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table class=\"content\" style=\"max-width: 700px; width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"center\" bgcolor=\"#ffffff\">\r\n<tbody>\r\n<tr>\r\n<td class=\"header\" style=\"padding: 40px 30px 20px 30px;\" bgcolor=\"#64B7EB\">\r\n<table border=\"0\" width=\"70\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td style=\"padding: 0 20px 20px 0;\" height=\"70\"><img class=\"fix\" style=\"height: auto;\" src=\"components\/com_dropfiles\/assets\/images\/icon-download.png\" alt=\"\" width=\"70\" height=\"70\" border=\"0\" \/><\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<table border=\"0\" width=\"425\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table class=\"col425\" style=\"max-width: 525px; width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td height=\"70\">\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"subhead\" style=\"color: #ffffff; font-family: sans-serif; font-size: 15px; letter-spacing: 5px; padding: 0 0 0 3px;\">File manager<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"h1\" style=\"color: #fff; font-family: sans-serif; font-size: 33px; font-weight: bold; line-height: 38px; padding: 5px 0 0 0;\">A file has been added<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"innerpadding borderbottom\" style=\"border-bottom: 1px solid #f2eeed; padding: 30px 30px 30px 30px;\">\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"h2\" style=\"color: #153643; font-family: sans-serif; font-size: 24px; font-weight: bold; line-height: 28px; padding: 0 0 15px 0;\">Hello {receiver},<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"bodycopy\" style=\"color: #153643; font-family: sans-serif; font-size: 16px; line-height: 22px;\">You receive this notification because a file has been added on {website_url}<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"innerpadding borderbottom\" style=\"border-bottom: 1px solid #f2eeed; padding: 30px 30px 30px 30px;\">\r\n<table class=\"col380\" style=\"width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"bodycopy\" style=\"color: #153643; font-family: sans-serif; font-size: 16px; line-height: 22px;\">A file has been added by a user who owns it or an administrator, you can visit the website to get more information about it.<\/td>\r\n<\/tr>\r\n<tr>\r\n<td style=\"padding: 20px 0 0 0;\">\r\n<table class=\"buttonwrapper\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" bgcolor=\"#64B7EB\">\r\n<tbody>\r\n<tr>\r\n<td class=\"button\" style=\"font-family: sans-serif; font-size: 18px; font-weight: bold; padding: 0 30px 0 30px; text-align: center;\" height=\"45\"><a style=\"color: #ffffff; text-decoration: none;\" href=\"{website_url}\">Visit the website<\/a><\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"footer\" style=\"padding: 20px 30px 15px 30px;\" bgcolor=\"#44525f\">\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"footercopy\" style=\"color: #ffffff; font-family: sans-serif; font-size: 12px;\" align=\"center\">You receive this Email because an administrator has registered it in the file manager notification system. Please get in touch with an administrator to manage your email preference.<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>","edit_event":"1","placeholder3":"1","edit_event_subject":"A file has been edited","edit_event_additional_email":"","edit_event_editor":"<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" bgcolor=\"#fafafa\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table border=\"0\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" align=\"center\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table class=\"content\" style=\"max-width: 700px; width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"center\" bgcolor=\"#ffffff\">\r\n<tbody>\r\n<tr>\r\n<td class=\"header\" style=\"padding: 40px 30px 20px 30px;\" bgcolor=\"#64B7EB\">\r\n<table border=\"0\" width=\"70\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td style=\"padding: 0 20px 20px 0;\" height=\"70\"><img class=\"fix\" style=\"height: auto;\" src=\"components\/com_dropfiles\/assets\/images\/icon-download.png\" alt=\"\" width=\"70\" height=\"70\" border=\"0\" \/><\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<table border=\"0\" width=\"425\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table class=\"col425\" style=\"max-width: 525px; width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td height=\"70\">\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"subhead\" style=\"color: #ffffff; font-family: sans-serif; font-size: 15px; letter-spacing: 5px; padding: 0 0 0 3px;\">File manager<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"h1\" style=\"color: #fff; font-family: sans-serif; font-size: 33px; font-weight: bold; line-height: 38px; padding: 5px 0 0 0;\">A file has been edited<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"innerpadding borderbottom\" style=\"border-bottom: 1px solid #f2eeed; padding: 30px 30px 30px 30px;\">\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"h2\" style=\"color: #153643; font-family: sans-serif; font-size: 24px; font-weight: bold; line-height: 28px; padding: 0 0 15px 0;\">Hello {receiver},<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"bodycopy\" style=\"color: #153643; font-family: sans-serif; font-size: 16px; line-height: 22px;\">You receive this notification because a file has been edited on {website_url}<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"innerpadding borderbottom\" style=\"border-bottom: 1px solid #f2eeed; padding: 30px 30px 30px 30px;\">\r\n<table class=\"col380\" style=\"width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"bodycopy\" style=\"color: #153643; font-family: sans-serif; font-size: 16px; line-height: 22px;\">A file has been edited by a user who owns it or an administrator, you can visit the website to get more information about it.<\/td>\r\n<\/tr>\r\n<tr>\r\n<td style=\"padding: 20px 0 0 0;\">\r\n<table class=\"buttonwrapper\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" bgcolor=\"#64B7EB\">\r\n<tbody>\r\n<tr>\r\n<td class=\"button\" style=\"font-family: sans-serif; font-size: 18px; font-weight: bold; padding: 0 30px 0 30px; text-align: center;\" height=\"45\"><a style=\"color: #ffffff; text-decoration: none;\" href=\"{website_url}\">Visit the website<\/a><\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"footer\" style=\"padding: 20px 30px 15px 30px;\" bgcolor=\"#44525f\">\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"footercopy\" style=\"color: #ffffff; font-family: sans-serif; font-size: 12px;\" align=\"center\">You receive this Email because an administrator has registered it in the file manager notification system. Please get in touch with an administrator to manage your email preference.<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>","delete_event":"1","placeholder4":"1","delete_event_subject":"A file has been deleted","delete_event_additional_email":"","delete_event_editor":"<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" bgcolor=\"#fafafa\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table border=\"0\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" align=\"center\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table class=\"content\" style=\"max-width: 700px; width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"center\" bgcolor=\"#ffffff\">\r\n<tbody>\r\n<tr>\r\n<td class=\"header\" style=\"padding: 40px 30px 20px 30px;\" bgcolor=\"#64B7EB\">\r\n<table border=\"0\" width=\"70\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td style=\"padding: 0 20px 20px 0;\" height=\"70\"><img class=\"fix\" style=\"height: auto;\" src=\"components\/com_dropfiles\/assets\/images\/icon-download.png\" alt=\"\" width=\"70\" height=\"70\" border=\"0\" \/><\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<table border=\"0\" width=\"425\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table class=\"col425\" style=\"max-width: 525px; width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td height=\"70\">\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"subhead\" style=\"color: #ffffff; font-family: sans-serif; font-size: 15px; letter-spacing: 5px; padding: 0 0 0 3px;\">File manager<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"h1\" style=\"color: #fff; font-family: sans-serif; font-size: 33px; font-weight: bold; line-height: 38px; padding: 5px 0 0 0;\">A file has been removed<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"innerpadding borderbottom\" style=\"border-bottom: 1px solid #f2eeed; padding: 30px 30px 30px 30px;\">\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"h2\" style=\"color: #153643; font-family: sans-serif; font-size: 24px; font-weight: bold; line-height: 28px; padding: 0 0 15px 0;\">Hello {receiver},<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"bodycopy\" style=\"color: #153643; font-family: sans-serif; font-size: 16px; line-height: 22px;\">You receive this notification because a file has been removed on {website_url}<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"innerpadding borderbottom\" style=\"border-bottom: 1px solid #f2eeed; padding: 30px 30px 30px 30px;\">\r\n<table class=\"col380\" style=\"width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"bodycopy\" style=\"color: #153643; font-family: sans-serif; font-size: 16px; line-height: 22px;\">A file has been removed by a user who owns it or an administrator, you can visit the website to get more information about it.<\/td>\r\n<\/tr>\r\n<tr>\r\n<td style=\"padding: 20px 0 0 0;\">\r\n<table class=\"buttonwrapper\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" bgcolor=\"#64B7EB\">\r\n<tbody>\r\n<tr>\r\n<td class=\"button\" style=\"font-family: sans-serif; font-size: 18px; font-weight: bold; padding: 0 30px 0 30px; text-align: center;\" height=\"45\"><a style=\"color: #ffffff; text-decoration: none;\" href=\"{website_url}\">Visit the website<\/a><\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"footer\" style=\"padding: 20px 30px 15px 30px;\" bgcolor=\"#44525f\">\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"footercopy\" style=\"color: #ffffff; font-family: sans-serif; font-size: 12px;\" align=\"center\">You receive this Email because an administrator has registered it in the file manager notification system. Please get in touch with an administrator to manage your email preference.<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>","download_event":"0","placeholder5":"1","download_event_subject":"A file has been downloaded","download_event_additional_email":"","download_event_editor":"<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" bgcolor=\"#fafafa\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table border=\"0\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" align=\"center\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table class=\"content\" style=\"max-width: 700px; width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"center\" bgcolor=\"#ffffff\">\r\n<tbody>\r\n<tr>\r\n<td class=\"header\" style=\"padding: 40px 30px 20px 30px;\" bgcolor=\"#64B7EB\">\r\n<table border=\"0\" width=\"70\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td style=\"padding: 0 20px 20px 0;\" height=\"70\"><img class=\"fix\" style=\"height: auto;\" src=\"components\/com_dropfiles\/assets\/images\/icon-download.png\" alt=\"\" width=\"70\" height=\"70\" border=\"0\" \/><\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<table border=\"0\" width=\"425\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table class=\"col425\" style=\"max-width: 525px; width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td height=\"70\">\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"subhead\" style=\"color: #ffffff; font-family: sans-serif; font-size: 15px; letter-spacing: 5px; padding: 0 0 0 3px;\">File manager<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"h1\" style=\"color: #fff; font-family: sans-serif; font-size: 33px; font-weight: bold; line-height: 38px; padding: 5px 0 0 0;\">A file has been downloaded<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"innerpadding borderbottom\" style=\"border-bottom: 1px solid #f2eeed; padding: 30px 30px 30px 30px;\">\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"h2\" style=\"color: #153643; font-family: sans-serif; font-size: 24px; font-weight: bold; line-height: 28px; padding: 0 0 15px 0;\">Hello {receiver},<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"bodycopy\" style=\"color: #153643; font-family: sans-serif; font-size: 16px; line-height: 22px;\">You receive this notification because a file has been downloaded on {website_url}<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"innerpadding borderbottom\" style=\"border-bottom: 1px solid #f2eeed; padding: 30px 30px 30px 30px;\">\r\n<table class=\"col380\" style=\"width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"bodycopy\" style=\"color: #153643; font-family: sans-serif; font-size: 16px; line-height: 22px;\">A file has been downloaded by a user who owns it or an administrator, you can visit the website to get more information about it.<\/td>\r\n<\/tr>\r\n<tr>\r\n<td style=\"padding: 20px 0 0 0;\">\r\n<table class=\"buttonwrapper\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" bgcolor=\"#64B7EB\">\r\n<tbody>\r\n<tr>\r\n<td class=\"button\" style=\"font-family: sans-serif; font-size: 18px; font-weight: bold; padding: 0 30px 0 30px; text-align: center;\" height=\"45\"><a style=\"color: #ffffff; text-decoration: none;\" href=\"{website_url}\">Visit the website<\/a><\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"footer\" style=\"padding: 20px 30px 15px 30px;\" bgcolor=\"#44525f\">\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"footercopy\" style=\"color: #ffffff; font-family: sans-serif; font-size: 12px;\" align=\"center\">You receive this Email because an administrator has registered it in the file manager notification system. Please get in touch with an administrator to manage your email preference.<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>","dropbox_key":"","dropbox_secret":"","dropbox_authorization_code":"","dropbox_token":"","dropbox_sync_method":"dropbox_sync_page_curl_ajax","dropbox_sync_time":"5","dropbox_last_log":"","google_client_id":"","google_client_secret":"","google_credentials":"","google_base_folder":"","sync_method":"sync_page_curl_ajax","sync_time":"5","google_watch_changes":"1","last_log":"","indexgoogle":"1","dropfiles_google_watch_data":"","dropfiles_google_last_changes_token":"","dropfiles_google_last_sync_changes":"","onedriveKey":"","onedriveSecret":"","onedriveSyncMethod":"sync_page_curl_ajax","onedriveSyncTime":"5","onedrive_last_log":"","onedriveCredentials":"","onedriveBaseFolderId":"","onedriveBaseFolderName":"","onedriveKeyOld":"","onedriveSecretOld":"","onedriveCredentialsOld":"","onedriveBaseFolderIdOld":"","onedriveBaseFolderNameOld":"","searchindexer":"","ref_exclude_category_id":"","createtheme":"","customthemelist":"","__field1":"","__field2":"","dropbox_cron_task_url":"","dropboxbtn":"","dropbox_document":"","cron_task_url":"","googlebtn":"","google_document":"","onedrivebtn":"","onedrive_document":"","note1":"","note2":"","doccat":"","jdowncat":"","edocmancategory":"","phocadownloadcat":"","rules":{"core.admin":{"1":"","2":"","11":"","3":"","4":"","5":"","13":"","14":"","6":"","7":"","9":"","10":"","15":"","8":""},"core.manage":{"1":"","2":"","11":"","3":"","4":"","5":"","13":"","14":"","6":"","7":"","9":"","10":"","15":"","8":""},"core.create":{"1":"","2":"","11":"","3":"","4":"","5":"","13":"","14":"","6":"","7":"","9":"","10":"","15":"","8":""},"core.delete":{"1":"","2":"","11":"","3":"","4":"","5":"","13":"","14":"","6":"","7":"","9":"","10":"","15":"","8":""},"core.edit":{"1":"","2":"","11":"","3":"","4":"","5":"","13":"","14":"","6":"","7":"","9":"","10":"","15":"","8":""},"core.edit.own":{"1":"","2":"","11":"","3":"","4":"","5":"","13":"","14":"","6":"","7":"","9":"","10":"","15":"","8":""},"com_dropfiles.viewfile_download":{"1":"1","2":"","11":"","3":"","4":"","5":"","13":"","14":"","6":"","7":"","9":"","10":"","15":"","8":""}},"adminassets":"","jutranslation":"","liveupdate":"","component":"com_dropfiles"}');
-		if($installed) {
+	private function checkDropfilesComponent()
+	{
+		$installed = EmundusHelperUpdate::installExtension('Dropfiles', 'com_dropfiles', '{"name":"Dropfiles","type":"component","creationDate":"2021-10-11 02:44:17","author":"JoomUnited","copyright":"","authorEmail":"contact@joomunited.com","authorUrl":"http:\/\/www.joomunited.com","version":"5.8.5","description":"Dropfiles files manager","group":"","filename":"dropfiles"}', 'component', 1, '', '{"updated":"1","allowedext":"7z,ace,bz2,dmg,gz,rar,tgz,zip,csv,doc,docx,html,key,keynote,odp,ods,odt,pages,pdf,pps,ppt,pptx,rtf,tex,txt,xls,xlsx,xml,bmp,exif,gif,ico,jpeg,jpg,png,psd,tif,tiff,aac,aif,aiff,alac,amr,au,cdda,flac,m3u,m4a,m4p,mid,mp3,mp4,mpa,ogg,pac,ra,wav,wma,3gp,asf,avi,flv,m4v,mkv,mov,mpeg,mpg,rm,swf,vob,wmv","maxinputfile":"10","add_category_owner":"0","categoryrestriction":"accesslevel","restrictfile":"1","catcollapsed":"1","import":"0","usereditor":"1","addremotefile":"0","versioning_number":"10","allowedgoogleext":"pdf,ppt,doc,xls,dxf,ps,eps,xps,psd,tif,tiff,bmp,svg,pages,ai,dxf,ttf,txt,mp3,mp4,png","open_pdf_in":"0","usegoogleviewer":"1","uri":"files","date_format":"Y-m-d","loadthemecategory":"0","download_category":"0","custom_icon":"0","show_empty_folder":"1","plain_text_search":"0","show_filters":"1","cat_filter":"1","tag_filter":"1","display_tag":"searchbox","creation_date":"1","update_date":"1","search_limit":"20","cat_tags":"[]","readfiletype":"0","sync_log_option":"0","track_user_download":"0","default_marginleft":"10","default_marginright":"10","default_margintop":"10","default_marginbottom":"10","default_showsize":"1","default_showtitle":"1","default_showversion":"1","default_showhits":"1","default_showdownload":"1","default_bgdownloadlink":"#c102cf","default_colordownloadlink":"#1a7fa1","default_showdateadd":"1","default_showdatemodified":"0","default_showcategorytitle":"1","default_showsubcategories":"1","default_showbreadcrumb":"1","default_showfoldertree":"1","default_columns":"2","ggd_marginleft":"10","ggd_marginright":"5","ggd_margintop":"5","ggd_marginbottom":"5","ggd_showsize":"1","ggd_showtitle":"1","ggd_showversion":"1","ggd_showhits":"1","ggd_showdownload":"1","ggd_bgdownloadlink":"#006dcc","ggd_colordownloadlink":"#ffffff","ggd_showdateadd":"1","ggd_showdatemodified":"0","ggd_showcategorytitle":"1","ggd_showsubcategories":"1","ggd_showbreadcrumb":"1","ggd_showfoldertree":"0","ggd_download_popup":"1","table_stylingmenu":"1","table_showsize":"1","table_showtitle":"1","table_showdescription":"1","table_showversion":"1","table_showhits":"1","table_showdownload":"1","table_bgdownloadlink":"#006dcc","table_colordownloadlink":"#ffffff","table_showdateadd":"0","table_showdatemodified":"0","table_showsubcategories":"1","table_showcategorytitle":"1","table_showbreadcrumb":"1","table_showfoldertree":"0","table_showcategoriesposition":"0","tree_showsize":"1","tree_bgdownloadlink":"#006dcc","tree_colordownloadlink":"#ffffff","tree_showtitle":"1","tree_showdescription":"1","tree_showversion":"1","tree_showhits":"1","tree_showdateadd":"1","tree_showdatemodified":"0","tree_showsubcategories":"1","tree_showcategorytitle":"1","tree_download_popup":"1","singlebg":"#444444","singlefontcolor":"#ffffff","singlebghovercolor":"#444444","singlehover":"#888888","newtheme":"","fromtheme":"default","sender_name":"Dropfiles","sender_email":"","category_owner":"0","file_owner":"0","notify_super_admin":"0","placeholder":"1","add_event":"1","placeholder1":"1","add_event_subject":"A new file has been added","add_event_additional_email":"","add_event_editor":"<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" bgcolor=\"#fafafa\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table border=\"0\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" align=\"center\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table class=\"content\" style=\"max-width: 700px; width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"center\" bgcolor=\"#ffffff\">\r\n<tbody>\r\n<tr>\r\n<td class=\"header\" style=\"padding: 40px 30px 20px 30px;\" bgcolor=\"#64B7EB\">\r\n<table border=\"0\" width=\"70\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td style=\"padding: 0 20px 20px 0;\" height=\"70\"><img class=\"fix\" style=\"height: auto;\" src=\"components\/com_dropfiles\/assets\/images\/icon-download.png\" alt=\"\" width=\"70\" height=\"70\" border=\"0\" \/><\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<table border=\"0\" width=\"425\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table class=\"col425\" style=\"max-width: 525px; width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td height=\"70\">\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"subhead\" style=\"color: #ffffff; font-family: sans-serif; font-size: 15px; letter-spacing: 5px; padding: 0 0 0 3px;\">File manager<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"h1\" style=\"color: #fff; font-family: sans-serif; font-size: 33px; font-weight: bold; line-height: 38px; padding: 5px 0 0 0;\">A file has been added<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"innerpadding borderbottom\" style=\"border-bottom: 1px solid #f2eeed; padding: 30px 30px 30px 30px;\">\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"h2\" style=\"color: #153643; font-family: sans-serif; font-size: 24px; font-weight: bold; line-height: 28px; padding: 0 0 15px 0;\">Hello {receiver},<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"bodycopy\" style=\"color: #153643; font-family: sans-serif; font-size: 16px; line-height: 22px;\">You receive this notification because a file has been added on {website_url}<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"innerpadding borderbottom\" style=\"border-bottom: 1px solid #f2eeed; padding: 30px 30px 30px 30px;\">\r\n<table class=\"col380\" style=\"width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"bodycopy\" style=\"color: #153643; font-family: sans-serif; font-size: 16px; line-height: 22px;\">A file has been added by a user who owns it or an administrator, you can visit the website to get more information about it.<\/td>\r\n<\/tr>\r\n<tr>\r\n<td style=\"padding: 20px 0 0 0;\">\r\n<table class=\"buttonwrapper\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" bgcolor=\"#64B7EB\">\r\n<tbody>\r\n<tr>\r\n<td class=\"button\" style=\"font-family: sans-serif; font-size: 18px; font-weight: bold; padding: 0 30px 0 30px; text-align: center;\" height=\"45\"><a style=\"color: #ffffff; text-decoration: none;\" href=\"{website_url}\">Visit the website<\/a><\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"footer\" style=\"padding: 20px 30px 15px 30px;\" bgcolor=\"#44525f\">\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"footercopy\" style=\"color: #ffffff; font-family: sans-serif; font-size: 12px;\" align=\"center\">You receive this Email because an administrator has registered it in the file manager notification system. Please get in touch with an administrator to manage your email preference.<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>","edit_event":"1","placeholder3":"1","edit_event_subject":"A file has been edited","edit_event_additional_email":"","edit_event_editor":"<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" bgcolor=\"#fafafa\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table border=\"0\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" align=\"center\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table class=\"content\" style=\"max-width: 700px; width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"center\" bgcolor=\"#ffffff\">\r\n<tbody>\r\n<tr>\r\n<td class=\"header\" style=\"padding: 40px 30px 20px 30px;\" bgcolor=\"#64B7EB\">\r\n<table border=\"0\" width=\"70\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td style=\"padding: 0 20px 20px 0;\" height=\"70\"><img class=\"fix\" style=\"height: auto;\" src=\"components\/com_dropfiles\/assets\/images\/icon-download.png\" alt=\"\" width=\"70\" height=\"70\" border=\"0\" \/><\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<table border=\"0\" width=\"425\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table class=\"col425\" style=\"max-width: 525px; width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td height=\"70\">\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"subhead\" style=\"color: #ffffff; font-family: sans-serif; font-size: 15px; letter-spacing: 5px; padding: 0 0 0 3px;\">File manager<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"h1\" style=\"color: #fff; font-family: sans-serif; font-size: 33px; font-weight: bold; line-height: 38px; padding: 5px 0 0 0;\">A file has been edited<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"innerpadding borderbottom\" style=\"border-bottom: 1px solid #f2eeed; padding: 30px 30px 30px 30px;\">\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"h2\" style=\"color: #153643; font-family: sans-serif; font-size: 24px; font-weight: bold; line-height: 28px; padding: 0 0 15px 0;\">Hello {receiver},<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"bodycopy\" style=\"color: #153643; font-family: sans-serif; font-size: 16px; line-height: 22px;\">You receive this notification because a file has been edited on {website_url}<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"innerpadding borderbottom\" style=\"border-bottom: 1px solid #f2eeed; padding: 30px 30px 30px 30px;\">\r\n<table class=\"col380\" style=\"width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"bodycopy\" style=\"color: #153643; font-family: sans-serif; font-size: 16px; line-height: 22px;\">A file has been edited by a user who owns it or an administrator, you can visit the website to get more information about it.<\/td>\r\n<\/tr>\r\n<tr>\r\n<td style=\"padding: 20px 0 0 0;\">\r\n<table class=\"buttonwrapper\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" bgcolor=\"#64B7EB\">\r\n<tbody>\r\n<tr>\r\n<td class=\"button\" style=\"font-family: sans-serif; font-size: 18px; font-weight: bold; padding: 0 30px 0 30px; text-align: center;\" height=\"45\"><a style=\"color: #ffffff; text-decoration: none;\" href=\"{website_url}\">Visit the website<\/a><\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"footer\" style=\"padding: 20px 30px 15px 30px;\" bgcolor=\"#44525f\">\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"footercopy\" style=\"color: #ffffff; font-family: sans-serif; font-size: 12px;\" align=\"center\">You receive this Email because an administrator has registered it in the file manager notification system. Please get in touch with an administrator to manage your email preference.<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>","delete_event":"1","placeholder4":"1","delete_event_subject":"A file has been deleted","delete_event_additional_email":"","delete_event_editor":"<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" bgcolor=\"#fafafa\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table border=\"0\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" align=\"center\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table class=\"content\" style=\"max-width: 700px; width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"center\" bgcolor=\"#ffffff\">\r\n<tbody>\r\n<tr>\r\n<td class=\"header\" style=\"padding: 40px 30px 20px 30px;\" bgcolor=\"#64B7EB\">\r\n<table border=\"0\" width=\"70\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td style=\"padding: 0 20px 20px 0;\" height=\"70\"><img class=\"fix\" style=\"height: auto;\" src=\"components\/com_dropfiles\/assets\/images\/icon-download.png\" alt=\"\" width=\"70\" height=\"70\" border=\"0\" \/><\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<table border=\"0\" width=\"425\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table class=\"col425\" style=\"max-width: 525px; width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td height=\"70\">\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"subhead\" style=\"color: #ffffff; font-family: sans-serif; font-size: 15px; letter-spacing: 5px; padding: 0 0 0 3px;\">File manager<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"h1\" style=\"color: #fff; font-family: sans-serif; font-size: 33px; font-weight: bold; line-height: 38px; padding: 5px 0 0 0;\">A file has been removed<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"innerpadding borderbottom\" style=\"border-bottom: 1px solid #f2eeed; padding: 30px 30px 30px 30px;\">\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"h2\" style=\"color: #153643; font-family: sans-serif; font-size: 24px; font-weight: bold; line-height: 28px; padding: 0 0 15px 0;\">Hello {receiver},<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"bodycopy\" style=\"color: #153643; font-family: sans-serif; font-size: 16px; line-height: 22px;\">You receive this notification because a file has been removed on {website_url}<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"innerpadding borderbottom\" style=\"border-bottom: 1px solid #f2eeed; padding: 30px 30px 30px 30px;\">\r\n<table class=\"col380\" style=\"width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"bodycopy\" style=\"color: #153643; font-family: sans-serif; font-size: 16px; line-height: 22px;\">A file has been removed by a user who owns it or an administrator, you can visit the website to get more information about it.<\/td>\r\n<\/tr>\r\n<tr>\r\n<td style=\"padding: 20px 0 0 0;\">\r\n<table class=\"buttonwrapper\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" bgcolor=\"#64B7EB\">\r\n<tbody>\r\n<tr>\r\n<td class=\"button\" style=\"font-family: sans-serif; font-size: 18px; font-weight: bold; padding: 0 30px 0 30px; text-align: center;\" height=\"45\"><a style=\"color: #ffffff; text-decoration: none;\" href=\"{website_url}\">Visit the website<\/a><\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"footer\" style=\"padding: 20px 30px 15px 30px;\" bgcolor=\"#44525f\">\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"footercopy\" style=\"color: #ffffff; font-family: sans-serif; font-size: 12px;\" align=\"center\">You receive this Email because an administrator has registered it in the file manager notification system. Please get in touch with an administrator to manage your email preference.<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>","download_event":"0","placeholder5":"1","download_event_subject":"A file has been downloaded","download_event_additional_email":"","download_event_editor":"<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" bgcolor=\"#fafafa\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table border=\"0\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" align=\"center\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table class=\"content\" style=\"max-width: 700px; width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"center\" bgcolor=\"#ffffff\">\r\n<tbody>\r\n<tr>\r\n<td class=\"header\" style=\"padding: 40px 30px 20px 30px;\" bgcolor=\"#64B7EB\">\r\n<table border=\"0\" width=\"70\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td style=\"padding: 0 20px 20px 0;\" height=\"70\"><img class=\"fix\" style=\"height: auto;\" src=\"components\/com_dropfiles\/assets\/images\/icon-download.png\" alt=\"\" width=\"70\" height=\"70\" border=\"0\" \/><\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<table border=\"0\" width=\"425\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table class=\"col425\" style=\"max-width: 525px; width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td height=\"70\">\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"subhead\" style=\"color: #ffffff; font-family: sans-serif; font-size: 15px; letter-spacing: 5px; padding: 0 0 0 3px;\">File manager<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"h1\" style=\"color: #fff; font-family: sans-serif; font-size: 33px; font-weight: bold; line-height: 38px; padding: 5px 0 0 0;\">A file has been downloaded<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"innerpadding borderbottom\" style=\"border-bottom: 1px solid #f2eeed; padding: 30px 30px 30px 30px;\">\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"h2\" style=\"color: #153643; font-family: sans-serif; font-size: 24px; font-weight: bold; line-height: 28px; padding: 0 0 15px 0;\">Hello {receiver},<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"bodycopy\" style=\"color: #153643; font-family: sans-serif; font-size: 16px; line-height: 22px;\">You receive this notification because a file has been downloaded on {website_url}<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"innerpadding borderbottom\" style=\"border-bottom: 1px solid #f2eeed; padding: 30px 30px 30px 30px;\">\r\n<table class=\"col380\" style=\"width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\">\r\n<tbody>\r\n<tr>\r\n<td>\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"bodycopy\" style=\"color: #153643; font-family: sans-serif; font-size: 16px; line-height: 22px;\">A file has been downloaded by a user who owns it or an administrator, you can visit the website to get more information about it.<\/td>\r\n<\/tr>\r\n<tr>\r\n<td style=\"padding: 20px 0 0 0;\">\r\n<table class=\"buttonwrapper\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" bgcolor=\"#64B7EB\">\r\n<tbody>\r\n<tr>\r\n<td class=\"button\" style=\"font-family: sans-serif; font-size: 18px; font-weight: bold; padding: 0 30px 0 30px; text-align: center;\" height=\"45\"><a style=\"color: #ffffff; text-decoration: none;\" href=\"{website_url}\">Visit the website<\/a><\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<tr>\r\n<td class=\"footer\" style=\"padding: 20px 30px 15px 30px;\" bgcolor=\"#44525f\">\r\n<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n<tbody>\r\n<tr>\r\n<td class=\"footercopy\" style=\"color: #ffffff; font-family: sans-serif; font-size: 12px;\" align=\"center\">You receive this Email because an administrator has registered it in the file manager notification system. Please get in touch with an administrator to manage your email preference.<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>\r\n<\/td>\r\n<\/tr>\r\n<\/tbody>\r\n<\/table>","dropbox_key":"","dropbox_secret":"","dropbox_authorization_code":"","dropbox_token":"","dropbox_sync_method":"dropbox_sync_page_curl_ajax","dropbox_sync_time":"5","dropbox_last_log":"","google_client_id":"","google_client_secret":"","google_credentials":"","google_base_folder":"","sync_method":"sync_page_curl_ajax","sync_time":"5","google_watch_changes":"1","last_log":"","indexgoogle":"1","dropfiles_google_watch_data":"","dropfiles_google_last_changes_token":"","dropfiles_google_last_sync_changes":"","onedriveKey":"","onedriveSecret":"","onedriveSyncMethod":"sync_page_curl_ajax","onedriveSyncTime":"5","onedrive_last_log":"","onedriveCredentials":"","onedriveBaseFolderId":"","onedriveBaseFolderName":"","onedriveKeyOld":"","onedriveSecretOld":"","onedriveCredentialsOld":"","onedriveBaseFolderIdOld":"","onedriveBaseFolderNameOld":"","searchindexer":"","ref_exclude_category_id":"","createtheme":"","customthemelist":"","__field1":"","__field2":"","dropbox_cron_task_url":"","dropboxbtn":"","dropbox_document":"","cron_task_url":"","googlebtn":"","google_document":"","onedrivebtn":"","onedrive_document":"","note1":"","note2":"","doccat":"","jdowncat":"","edocmancategory":"","phocadownloadcat":"","rules":{"core.admin":{"1":"","2":"","11":"","3":"","4":"","5":"","13":"","14":"","6":"","7":"","9":"","10":"","15":"","8":""},"core.manage":{"1":"","2":"","11":"","3":"","4":"","5":"","13":"","14":"","6":"","7":"","9":"","10":"","15":"","8":""},"core.create":{"1":"","2":"","11":"","3":"","4":"","5":"","13":"","14":"","6":"","7":"","9":"","10":"","15":"","8":""},"core.delete":{"1":"","2":"","11":"","3":"","4":"","5":"","13":"","14":"","6":"","7":"","9":"","10":"","15":"","8":""},"core.edit":{"1":"","2":"","11":"","3":"","4":"","5":"","13":"","14":"","6":"","7":"","9":"","10":"","15":"","8":""},"core.edit.own":{"1":"","2":"","11":"","3":"","4":"","5":"","13":"","14":"","6":"","7":"","9":"","10":"","15":"","8":""},"com_dropfiles.viewfile_download":{"1":"1","2":"","11":"","3":"","4":"","5":"","13":"","14":"","6":"","7":"","9":"","10":"","15":"","8":""}},"adminassets":"","jutranslation":"","liveupdate":"","component":"com_dropfiles"}');
+		if ($installed)
+		{
 			EmundusHelperUpdate::enableEmundusPlugins('com_dropfiles');
 		}
 
 		return $installed;
 	}
 
-	private function checkDropfilesPlugins() {
-		$installed = EmundusHelperUpdate::installExtension('Emundus - Create new dropfiles category','setup_category','{"name":"Emundus - Create new dropfiles category","type":"plugin","creationDate":"July 2020","author":"eMundus","copyright":"(C) 2010-2019 EMUNDUS SOFTWARE. All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"https:\/\/www.emundus.fr","version":"6.9.10","description":"PLG_EMUNDUS_SETUP_CATEGORY_DESCRIPTION","group":"","filename":"setup_category"}','plugin',1,'emundus');
-		if($installed) {
+	private function checkDropfilesPlugins()
+	{
+		$installed = EmundusHelperUpdate::installExtension('Emundus - Create new dropfiles category', 'setup_category', '{"name":"Emundus - Create new dropfiles category","type":"plugin","creationDate":"July 2020","author":"eMundus","copyright":"(C) 2010-2019 EMUNDUS SOFTWARE. All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"https:\/\/www.emundus.fr","version":"6.9.10","description":"PLG_EMUNDUS_SETUP_CATEGORY_DESCRIPTION","group":"","filename":"setup_category"}', 'plugin', 1, 'emundus');
+		if ($installed)
+		{
 			EmundusHelperUpdate::enableEmundusPlugins('setup_category', 'emundus');
 		}
 
 		return $installed;
 	}
 
-	private function checkEmundusRegistrationRedirect() {
-		$installed = EmundusHelperUpdate::installExtension('Emundus Registration Redirect Plugin','emundusregistrationredirect', '{"name":"Emundus Registration Redirect Plugin","type":"plugin","creationDate":"16 May 2018","author":"eMundus","copyright":"(C) 2010-2018 EMUNDUS SOFTWARE. All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"http:\/\/www.emundus.fr","version":"6.6.3","description":"This plugin enables you to handle redirect to a custom registration page","group":"","filename":"emundusregistrationredirect"}','plugin',1,'system','{"url_to_registration":"PLG_EMUNDUS_REGISTRATION_REDIRECT_URL","item_id":""}');
-		if($installed) {
+	private function checkEmundusRegistrationRedirect()
+	{
+		$installed = EmundusHelperUpdate::installExtension('Emundus Registration Redirect Plugin', 'emundusregistrationredirect', '{"name":"Emundus Registration Redirect Plugin","type":"plugin","creationDate":"16 May 2018","author":"eMundus","copyright":"(C) 2010-2018 EMUNDUS SOFTWARE. All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"http:\/\/www.emundus.fr","version":"6.6.3","description":"This plugin enables you to handle redirect to a custom registration page","group":"","filename":"emundusregistrationredirect"}', 'plugin', 1, 'system', '{"url_to_registration":"PLG_EMUNDUS_REGISTRATION_REDIRECT_URL","item_id":""}');
+		if ($installed)
+		{
 			EmundusHelperUpdate::enableEmundusPlugins('emundusregistrationredirect', 'system');
 		}
 
 		return $installed;
 	}
 
-	private function checkPayboxFiles() {
+	private function checkPayboxFiles()
+	{
 		$checked = true;
+
+		$query = $this->dbo->getQuery(true);
+
+		try
+		{
+			$query->select('payment_id')
+				->from($this->dbo->quoteName('#__hikashop_payment'))
+				->where($this->dbo->quoteName('payment_type') . ' = ' . $this->dbo->quote('paybox'));
+			$this->dbo->setQuery($query);
+			$paybox_payments = $this->dbo->loadColumn();
+
+			foreach ($paybox_payments as $payboxPayment)
+			{
+				$payboxFile = JPATH_SITE . '/paybox_' . $payboxPayment . '.php';
+
+				if (file_exists($payboxFile))
+				{
+					$checked = true;
+					break;
+				}
+				else
+				{
+					// Create the file
+					$payboxFileContent = '<?php
+$_GET[\'option\']=\'com_hikashop\';
+$_GET[\'tmpl\']=\'component\';
+$_GET[\'ctrl\']=\'checkout\';
+$_GET[\'task\']=\'notify\';
+$_GET[\'notif_payment\']=\'paybox\';
+$_GET[\'format\']=\'html\';
+$_GET[\'lang\']=\'fr\';
+$_GET[\'notif_id\']=\'' . $payboxPayment . '\';
+$_REQUEST[\'option\']=\'com_hikashop\';
+$_REQUEST[\'tmpl\']=\'component\';
+$_REQUEST[\'ctrl\']=\'checkout\';
+$_REQUEST[\'task\']=\'notify\';
+$_REQUEST[\'notif_payment\']=\'paybox\';
+$_REQUEST[\'format\']=\'html\';
+$_REQUEST[\'lang\']=\'fr\';
+$_REQUEST[\'notif_id\']=\'' . $payboxPayment . '\';
+include(\'index.php\');
+?>';
+					if (!file_put_contents($payboxFile, $payboxFileContent))
+					{
+						$checked = false;
+						break;
+					}
+				}
+			}
+		}
+		catch (Exception $e)
+		{
+		}
+
+		return $checked;
+	}
+
+	private function checkFabrikMultipleSelect()
+	{
+		$checked = false;
+
+		// First check advanced_behavior parameter in Fabrik component
+		$query = $this->dbo->getQuery(true);
+
+		try
+		{
+			$query->select('extension_id,params')
+				->from($this->dbo->quoteName('#__extensions'))
+				->where($this->dbo->quoteName('element') . ' = ' . $this->dbo->quote('com_fabrik'));
+			$this->dbo->setQuery($query);
+			$com_fabrik = $this->dbo->loadObject();
+
+			if(!empty($com_fabrik->extension_id))
+			{
+				$params = json_decode($com_fabrik->params, true);
+				$params['advanced_behavior'] = 1;
+				$com_fabrik->params = json_encode($params);
+				$checked = $this->dbo->updateObject('#__extensions', $com_fabrik, 'extension_id');
+			}
+
+			// Then check if elements of type multilist are set to multiple select
+			$query->clear()
+				->select('id,params')
+				->from($this->dbo->quoteName('#__fabrik_elements'))
+				->where($this->dbo->quoteName('plugin') . ' = ' . $this->dbo->quote('databasejoin'))
+				->where('JSON_VALID(' . $this->dbo->quoteName('params') . ')')
+				->where('JSON_EXTRACT(' . $this->dbo->quoteName('params') . ', "$.database_join_display_type") = ' . $this->dbo->quote('multilist'));
+			$this->dbo->setQuery($query);
+			$elements = $this->dbo->loadObjectList();
+
+			foreach ($elements as $element) {
+				$params = json_decode($element->params, true);
+				$params['advanced_behavior'] = 1;
+				$element->params = json_encode($params);
+				$checked = $this->dbo->updateObject('#__fabrik_elements', $element, 'id');
+			}
+		}
+		catch (Exception $e)
+		{
+		}
+
+		return $checked;
+	}
+
+	private function checkFabrikFormTemplate()
+	{
+		$checked = false;
+
+		try
+		{
+			$query = $this->dbo->getQuery(true);
+
+			$query->clear()
+				->update($this->dbo->quoteName('#__fabrik_forms'))
+				->set($this->dbo->quoteName('form_template') . ' = ' . $this->dbo->quote('emundus'))
+				->where($this->dbo->quoteName('form_template') . ' = ' . $this->dbo->quote('bootstrap'));
+			$this->dbo->setQuery($query);
+			$checked = $this->dbo->execute();
+
+			$query->clear()
+				->update($this->dbo->quoteName('#__fabrik_forms'))
+				->set($this->dbo->quoteName('view_only_template') . ' = ' . $this->dbo->quote('emundus'))
+				->where($this->dbo->quoteName('view_only_template') . ' = ' . $this->dbo->quote('bootstrap'));
+			$this->dbo->setQuery($query);
+			$checked = $this->dbo->execute();
+		}
+		catch (Exception $e)
+		{
+			$checked = false;
+		}
+
+		return $checked;
+	}
+	
+	private function checkNationalityTable()
+	{
+		$checked = false;
+
+		try
+		{
+			// Check if data_nationality table exists
+			$query = 'SHOW TABLES LIKE ' . $this->dbo->quote('data_nationality');
+			$this->dbo->setQuery($query);
+			$tableExists = $this->dbo->loadResult();
+
+			if(!$tableExists)
+			{
+				//TODO: Create the table via a sql file
+			} else {
+				$checked = true;
+			}
+		}
+		catch (Exception $e)
+		{
+		}
 
 		return $checked;
 	}
