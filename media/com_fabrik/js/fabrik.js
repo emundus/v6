@@ -27,7 +27,7 @@ define(['jquery', 'fab/loader', 'fab/requestqueue'], function (jQuery, Loader, R
 
     /**
      * Get the bootstrap version. Returns either 2.x of 3.x
-     * @p·aram {string} pluginName Optional plugin name to search fof VERSION property
+     * @param {string} pluginName Optional plugin name to search fof VERSION property
      * @returns {*}
      */
     Fabrik.bootstrapVersion = function (pluginName) {

@@ -728,9 +728,11 @@ class EmundusModelPayment extends JModelList
             } catch (Exception $e) {
                 JLog::add('Error getting hikashop infos from fnum ('. $fnum .') : '. $e, JLog::ERROR, 'com_emundus.payment');
             }
-
+			
             $config = json_decode($params, true);
             if (empty($config) && empty($config['sender_first_name']))  {
+				$config = array();
+
                 $query->clear()
                     ->select('ju.email, jepd.first_name, jepd.last_name, dc.code_iso_2, jepd.city_1, jepd.telephone_1, jepd.street_1')
                     ->from('#__users as ju')
@@ -739,9 +741,8 @@ class EmundusModelPayment extends JModelList
                     ->leftJoin('data_country AS dc ON dc.id = jepd.country_1')
                     ->where('jecc.fnum LIKE ' . $db->quote($fnum));
 
-                $db->setQuery($query);
-
                 try {
+	                $db->setQuery($query);
                     $data = $db->loadObject();
                 } catch (Exception $e) {
                     JLog::add('Error trying to get peronal_details for payment infos', JLog::ERROR, 'com_emundus.payment');
