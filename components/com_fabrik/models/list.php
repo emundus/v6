@@ -16,7 +16,6 @@ jimport('joomla.application.component.modelform');
 use Fabrik\Helpers\Pagination;
 use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
-use Joomla\CMS\Log\Log;
 
 require_once COM_FABRIK_FRONTEND . '/models/list-advanced-search.php';
 
@@ -12511,62 +12510,4 @@ class FabrikFEModelList extends JModelForm
 
 		return $layout;
 	}
-
-    /**
-     * Copy group rights into another group
-     *
-     * @param   int  $id  group's id to copy rights from
-     * @param   int  $new_group_id  New group obtaining the copied rights
-     *
-     * @return bool
-     */
-    public function copyGroupRights($id, $new_group_id)
-    {
-        $db = $this->getDb();
-
-        $query = $db->getQuery(true);
-
-        $query->select('action_id, c, r, u, d')
-            ->from($db->quoteName('#__emundus_acl'))
-            ->where($db->quoteName('group_id') . ' = ' . $db->quote(reset($id)));
-        $db->setQuery($query);
-        $acl = $db->loadObjectList();
-
-        foreach ($acl as $aclItem){
-
-            $query->clear();
-
-            if($aclItem->action_id == 1){
-                $query->update($db->quoteName('#__emundus_acl'))
-                    ->set($db->quoteName('action_id') . ' = ' . 1)
-                    ->set($db->quoteName('c') . ' = ' . $aclItem->c)
-                    ->set($db->quoteName('r') . ' = ' . $aclItem->r)
-                    ->set($db->quoteName('u') . ' = ' . $aclItem->u)
-                    ->set($db->quoteName('d') . ' = ' . $aclItem->d)
-                    ->where($db->quoteName('group_id') . ' = ' . $db->quote($new_group_id));
-            }
-            else {
-                $query->insert($db->quoteName('#__emundus_acl'))
-                    ->set($db->quoteName('group_id') . ' = ' . $new_group_id)
-                    ->set($db->quoteName('action_id') . ' = ' . $aclItem->action_id)
-                    ->set($db->quoteName('c') . ' = ' . $aclItem->c)
-                    ->set($db->quoteName('r') . ' = ' . $aclItem->r)
-                    ->set($db->quoteName('u') . ' = ' . $aclItem->u)
-                    ->set($db->quoteName('d') . ' = ' . $aclItem->d);
-            }
-
-            try {
-                $db->setQuery($query);
-                $db->execute();
-
-            } catch (Exception $e) {
-                Log::add('component/com_fabrik/models/list | Error : Group rights could not be copy', Log::ERROR, 'com_emundus');
-                return false;
-            }
-        }
-        return true;
-
-    }
-
-
 }
