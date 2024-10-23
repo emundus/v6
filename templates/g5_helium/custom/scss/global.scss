@@ -1,12 +1,16 @@
 /*CSS base*/
 /*IMPORT POLICE*/
-@import url("https://use.typekit.net/czx4mrf.css");
 
 @import "variables";
 @import "dependencies";
 @import "tchooz";
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@font-face {
+    font-family: 'Inter';
+    src: url('/media/com_emundus/css/fonts/google/Inter/Inter-VariableFont_opsz,wght.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
 
 /* Here you can add Anything you want to be present on the entire site AND with variables */
 /* - Laura.scss */

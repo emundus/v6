@@ -286,7 +286,7 @@ class PlgFabrik_ElementRating extends PlgFabrik_Element
 		$formId        = $list->form_id;
 		$creatorId     = $this->getCreatorId($listId, $formId, $rowId, $ids);
 		$userId        = $this->getStoreUserId($listId, $rowId);
-		$this->canRate = ($creatorId == $userId || $rowId == 0);
+		$this->canRate = ($creatorId == $userId || empty($rowId));
 
 		return $this->canRate;
 	}

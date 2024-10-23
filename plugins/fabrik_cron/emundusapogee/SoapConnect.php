@@ -91,11 +91,10 @@ class SoapConnect {
             $faultString = $doc->getElementsByTagName('faultstring');
             $detail = $doc->getElementsByTagName('detail');
 
-            $fault = $detail->length > 0 ? $detail->item(0)->getElementsByTagName('fault') : '';
-
             if ($response === false || !in_array($info, array(200,201,202,203,204,205,206,207,208,226))) {
                 $response_message = $faultString->length > 0 ? $doc->getElementsByTagName('faultstring')->item(0)->nodeValue : "";
 
+                $fault = $detail->length > 0 ? $detail->item(0)->getElementsByTagName('fault') : '';
                 $faultLastChild = $fault->length > 0 ? $fault->item(0)->lastChild : '';
 
                 if (!empty($faultLastChild) && $faultLastChild->nodeName == 'lastErrorMsg') {
@@ -124,6 +123,7 @@ class SoapConnect {
                         'status' => 1
                     );
                 } else {
+                    $fault = $detail->length > 0 ? $detail->item(0)->getElementsByTagName('fault') : '';
                     $faultLastChild = $fault->length > 0 ? $fault->item(0)->lastChild : '';
 
                     if (!empty($faultLastChild) && $faultLastChild->nodeName == 'lastErrorMsg') {

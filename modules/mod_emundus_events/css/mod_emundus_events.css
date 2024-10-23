@@ -1,0 +1,56 @@
+.mod_emundus_events__list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    padding: 24px 48px;
+}
+
+.mod_emundus_events__block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 16px;
+    border: solid 1px #727272;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+.mod_emundus_events__block_icon {
+    background: white;
+    border-radius: 16px;
+    border: solid 1px #EDEDED;
+}
+
+.mod_emundus_events__month {
+    background-color: purple;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
+    padding: 0 20px;
+}
+
+.mod_emundus_events__day {
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    height: 42px;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+}
+
+.mod_emundus_events__date {
+    font-weight: 300;
+    font-size: 18px;
+    margin-bottom: 8px;
+}
+
+.mod_emundus_events__link {
+    text-decoration: underline;
+}

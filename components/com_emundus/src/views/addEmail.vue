@@ -53,10 +53,10 @@
             <div class="form-group">
               <label>{{ translate('COM_EMUNDUS_ONBOARD_CHOOSECATEGORY') }}</label>
               <incremental-select
-                  v-if="categories.length > 0"
                   :options="this.categoriesList"
                   :defaultValue="incSelectDefaultValue"
                   :locked="mode != 'create'"
+                  :key="categories.length"
                   @update-value="updateCategorySelectedValue"
               >
               </incremental-select>

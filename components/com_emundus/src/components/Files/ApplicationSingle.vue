@@ -6,10 +6,10 @@
       :class="{ 'context-files': context === 'files', 'hidden': hidden }"
   >
     <div class="em-modal-header em-w-100 em-h-50 em-p-12-16 em-bg-main-900 em-flex-row">
-      <div class="em-flex-row em-pointer em-flex-space-between em-w-100" id="evaluation-modal-close">
+      <div class="em-flex-row em-flex-space-between em-w-100" id="evaluation-modal-close">
         <div class="em-flex-row em-gap-8">
           <div class="em-w-max-content em-flex-row">
-          <span class="material-icons-outlined em-font-size-16"
+          <span class="material-icons-outlined em-font-size-16 em-pointer"
                 @click="onClose" style="color: white">arrow_back</span>
           </div>
           <span class="em-text-neutral-500">|</span>
@@ -21,8 +21,8 @@
           </p>
         </div>
         <div v-if="fnums.length > 1" class="em-flex-row">
-          <span class="material-icons-outlined em-font-size-16" style="color:white;" @click="openPreviousFnum">navigate_before</span>
-          <span class="material-icons-outlined em-font-size-16" style="color:white;" @click="openNextFnum">navigate_next</span>
+          <span class="material-icons-outlined em-font-size-16 em-pointer" style="color:white;" @click="openPreviousFnum">navigate_before</span>
+          <span class="material-icons-outlined em-font-size-16 em-pointer" style="color:white;" @click="openNextFnum">navigate_next</span>
         </div>
       </div>
     </div>
@@ -60,13 +60,6 @@
       </div>
 
       <div id="modal-evaluationgrid">
-        <div class="em-flex-column" v-if="!loading" style="width: 40px;height: 40px;margin: 24px 0 12px 24px;">
-          <div class="em-circle-main-100 em-flex-column" style="width: 40px">
-            <div class="em-circle-main-200 em-flex-column" style="width: 24px">
-              <span class="material-icons-outlined em-main-400-color" style="font-size: 14px">troubleshoot</span>
-            </div>
-          </div>
-        </div>
         <iframe v-if="url" :src="url" class="iframe-evaluation" id="iframe-evaluation" @load="iframeLoaded($event);"
                 title="Evaluation form"/>
         <div class="em-page-loader" v-if="loading"></div>
