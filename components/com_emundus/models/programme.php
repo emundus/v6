@@ -943,7 +943,7 @@ class EmundusModelProgramme extends JModelList {
 	        $tmp = [];
 			foreach ($categories as $category) {
 				if (!empty($category)) {
-					$tmp[] = ['value' => $category, 'label' => $category];
+					$tmp[] = ['value' => $category, 'label' => JText::_($category)];
 				}
 	        }
 			$categories = $tmp;

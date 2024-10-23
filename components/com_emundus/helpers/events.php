@@ -513,7 +513,10 @@ class EmundusHelperEvents {
 
                                             if (!empty($stored)) {
                                                 foreach ($stored as $store) {
-                                                    if (count($formModel->data[$repeat_table . '___id']) < count($stored)) {
+                                                    // Use this line to not crash the following count as $formModel->data[$repeat_table . '___id'] returns null if the element does not exist yet (like onload)
+                                                    $instances = (!empty($formModel->data[$repeat_table . '___id'])) ? $formModel->data[$repeat_table . '___id'] : [];
+
+                                                    if (count($instances) < count($stored)) {
                                                         $formModel->data[$repeat_table . '___id'][] = "";
                                                         $formModel->data[$repeat_table . '___id_raw'][] = "";
                                                         $formModel->data[$repeat_table . '___parent_id'][] = "";

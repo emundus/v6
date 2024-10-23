@@ -716,6 +716,11 @@
                   accent-color: var(--em-form-checkbox-color-checked);
                   transform: scale(var(--em-form-checkbox-scale));
                 }
+                @supports (-webkit-touch-callout: none) {
+                    input {
+                        transform: scale(0.7,0.7);
+                    }
+                }
                 span {
                   box-decoration-break: clone;
                   -webkit-box-decoration-break: clone;
