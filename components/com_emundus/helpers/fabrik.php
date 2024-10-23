@@ -19,6 +19,7 @@ jimport('joomla.application.component.helper');
 require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 include_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
@@ -1125,7 +1126,7 @@ die("<script>
 					        $d = DateTime::createFromFormat($format, $raw_value);
 					        if ($d && $d->format($format) == $raw_value)
 					        {
-						        $formatted_value = $html ? JHtml::_('date', $raw_value, JText::_('DATE_FORMAT_LC')) : EmundusHelperDate::displayDate($raw_value);
+						        $formatted_value = $html ? JHtml::_('date', $raw_value, Text::_('DATE_FORMAT_LC')) : EmundusHelperDate::displayDate($raw_value);
 					        }
 					        else
 					        {
@@ -1494,5 +1495,17 @@ die("<script>
 		}
 
 		return $datas;
+	}
+
+	public static function displayPasswordTip()
+	{
+		$params = ComponentHelper::getParams('com_users');
+		$min_length = $params->get('minimum_length');
+		$min_int = $params->get('minimum_integers');
+		$min_sym = $params->get('minimum_symbols');
+		$min_up = $params->get('minimum_uppercase');
+		$min_low = $params->get('minimum_lowercase');
+
+		return Text::sprintf('USER_PASSWORD_TIP', $min_length, $min_int, $min_sym, $min_up, $min_low);
 	}
 }

@@ -146,7 +146,7 @@ class EmundusHelperUpdate
      *
      * @since version 1.33.0
      */
-    public static function disableEmundusPlugins($name) {
+    public static function disableEmundusPlugins($name, $folder = null) {
         $disabled = false;
 
         if (!empty($name)) {
@@ -157,6 +157,9 @@ class EmundusHelperUpdate
                 $query->update($db->quoteName('#__extensions'))
                     ->set($db->quoteName('enabled') . ' = 0')
                     ->where($db->quoteName('element') . ' LIKE ' . $db->quote($name));
+				if(!empty($folder)) {
+					$query->andWhere($db->quoteName('folder') . ' = ' . $db->quote($folder));
+				}
                 $db->setQuery($query);
                 $disabled = $db->execute();
             } catch (Exception $e) {
@@ -2154,6 +2157,9 @@ class EmundusHelperUpdate
             } catch (Exception $e) {
                 $result['message'] = 'ADDING COLUMN : Error : ' . $e->getMessage();
             }
+        } else {
+			$result['message'] = 'ADDING COLUMN : Column already exists.';
+			$result['status'] = true;
         }
 
         return $result;
@@ -2791,7 +2797,6 @@ class EmundusHelperUpdate
 		catch (Exception $e)
 		{
 			$result['message'] = 'UPDATE FLAGS : Error : ' . $e->getMessage();
-
 		}
 
 		return $result;

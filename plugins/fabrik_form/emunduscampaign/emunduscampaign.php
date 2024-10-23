@@ -1,9 +1,9 @@
 <?php
 /**
- * @version 2: emunduscampaign 2019-04-11 Hugo Moracchini
- * @package Fabrik
- * @copyright Copyright (C) 2018 emundus.fr. All rights reserved.
- * @license GNU/GPL, see LICENSE.php
+ * @version     2: emunduscampaign 2019-04-11 Hugo Moracchini
+ * @package     Fabrik
+ * @copyright   Copyright (C) 2018 emundus.fr. All rights reserved.
+ * @license     GNU/GPL, see LICENSE.php
  * Joomla! is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
  * is derivative of works licensed under the GNU General Public License or
@@ -13,6 +13,8 @@
  */
 
 // No direct access
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 
 defined('_JEXEC') or die('Restricted access');
@@ -27,310 +29,391 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
  * @subpackage  Fabrik.form.juseremundus
  * @since       3.0
  */
+class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form
+{
+	/**
+	 * Status field
+	 *
+	 * @var  string
+	 */
+	protected $URLfield = '';
 
-class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
-    /**
-     * Status field
-     *
-     * @var  string
-     */
-    protected $URLfield = '';
+	/**
+	 * Get an element name
+	 *
+	 * @param   string  $pname  Params property name to look up
+	 * @param   bool    $short  Short (true) or full (false) element name, default false/full
+	 *
+	 * @return    string    element full name
+	 */
+	public function getFieldName($pname, $short = false)
+	{
+		$params = $this->getParams();
 
-    /**
-     * Get an element name
-     *
-     * @param   string  $pname  Params property name to look up
-     * @param   bool    $short  Short (true) or full (false) element name, default false/full
-     *
-     * @return	string	element full name
-     */
-    public function getFieldName($pname, $short = false) {
-        $params = $this->getParams();
+		if ($params->get($pname) == '')
+		{
+			return '';
+		}
 
-        if ($params->get($pname) == '') {
-            return '';
-        }
+		$elementModel = FabrikWorker::getPluginManager()->getElementPlugin($params->get($pname));
 
-        $elementModel = FabrikWorker::getPluginManager()->getElementPlugin($params->get($pname));
+		return $short ? $elementModel->getElement()->name : $elementModel->getFullName();
+	}
 
-        return $short ? $elementModel->getElement()->name : $elementModel->getFullName();
-    }
+	/**
+	 * Get the fields value regardless of whether its in joined data or no
+	 *
+	 * @param   string  $pname    Params property name to get the value for
+	 * @param   mixed   $default  Default value
+	 *
+	 * @return  mixed  value
+	 */
+	public function getParam($pname, $default = '')
+	{
+		$params = $this->getParams();
 
-    /**
-     * Get the fields value regardless of whether its in joined data or no
-     *
-     * @param   string  $pname    Params property name to get the value for
-     * @param   mixed   $default  Default value
-     *
-     * @return  mixed  value
-     */
-    public function getParam($pname, $default = '') {
-        $params = $this->getParams();
+		if ($params->get($pname) == '')
+		{
+			return $default;
+		}
 
-        if ($params->get($pname) == '') {
-            return $default;
-        }
+		return $params->get($pname);
+	}
 
-        return $params->get($pname);
-    }
-
-	public function onBeforeLoad() {
-		$app = JFactory::getApplication();
+	public function onBeforeLoad()
+	{
+		$app         = JFactory::getApplication();
 		$current_url = JUri::getInstance()->toString();
-		$parse = parse_url($current_url);
+		$parse       = parse_url($current_url);
 
-		if (strpos($current_url, 'redirect') !== false) {
-			$new_url = str_replace($parse['scheme'].'://'.$parse['host'],'', strstr($current_url, '&redirect=', true));
+		if (strpos($current_url, 'redirect') !== false)
+		{
+			$new_url = str_replace($parse['scheme'] . '://' . $parse['host'], '', strstr($current_url, '&redirect=', true));
 			$app->redirect($new_url);
 		}
 	}
 
-    /**
-     * Main script.
-     *
-     * @return Bool
-     * @throws Exception
-     */
-    public function onAfterProcess() {
+	/**
+	 * Main script.
+	 *
+	 * @return Bool
+	 * @throws Exception
+	 */
+	public function onAfterProcess()
+	{
 
-        jimport('joomla.log.log');
-        Log::addLogger(array('text_file' => 'com_emundus.campaign.php'), Log::ALL, array('com_emundus'));
+		jimport('joomla.log.log');
+		Log::addLogger(array('text_file' => 'com_emundus.campaign.php'), Log::ALL, array('com_emundus'));
 
-        include_once(JPATH_BASE.'/components/com_emundus/models/profile.php');
-        $m_profile = new EmundusModelProfile;
-        $app = JFactory::getApplication();
-        $db = JFactory::getDBO();
-        $session = JFactory::getSession();
-        $jinput = $app->input;
-        $form_type = $this->getParam('form_type', 'cc');
+		include_once(JPATH_BASE . '/components/com_emundus/models/profile.php');
+		$m_profile = new EmundusModelProfile;
+		$app       = JFactory::getApplication();
+		$db        = JFactory::getDBO();
+		$session   = JFactory::getSession();
+		$jinput    = $app->input;
+		$form_type = $this->getParam('form_type', 'cc');
 
-        $config = JFactory::getConfig();
+		$config = JFactory::getConfig();
 
-        $timezone = new DateTimeZone( $config->get('offset') );
-        $now = JFactory::getDate()->setTimezone($timezone);
+		$timezone = new DateTimeZone($config->get('offset'));
+		$now      = JFactory::getDate()->setTimezone($timezone);
 
-        // This allows the plugin to be run from a different context while retaining the same functionality.
-        switch ($form_type) {
+		// This allows the plugin to be run from a different context while retaining the same functionality.
+		switch ($form_type)
+		{
 
-            case 'user':
+			case 'user':
 
-                $query = $db->getQuery(true);
-                $query->select($db->quoteName('id'))
-                    ->from($db->quoteName('#__users'))
-                    ->where($db->quoteName('email').' LIKE '.$db->quote($jinput->getString('jos_emundus_users___email_raw')));
-                $db->setQuery($query);
-                try {
-                    $user = $db->loadResult();
-                    if (empty($user)) {
-                        return false;
-                    }
-                } catch (Exception $e) {
-                    return false;
-                }
+				$query = $db->getQuery(true);
+				$query->select($db->quoteName('id'))
+					->from($db->quoteName('#__users'))
+					->where($db->quoteName('email') . ' LIKE ' . $db->quote($jinput->getString('jos_emundus_users___email_raw')));
+				$db->setQuery($query);
+				try
+				{
+					$user = $db->loadResult();
+					if (empty($user))
+					{
+						return false;
+					}
+				}
+				catch (Exception $e)
+				{
+					return false;
+				}
 
-                $user = JFactory::getUser($user);
+				$user = JFactory::getUser($user);
 
-                $campaign_id = is_array($jinput->getInt('jos_emundus_users___campaign_id_raw')) ? $jinput->getInt('jos_emundus_users___campaign_id_raw')[0] : $jinput->getInt('jos_emundus_users___campaign_id_raw');
-                if (empty($campaign_id)) {
-                    return false;
-                }
+				$campaign_id = is_array($jinput->getInt('jos_emundus_users___campaign_id_raw')) ? $jinput->getInt('jos_emundus_users___campaign_id_raw')[0] : $jinput->getInt('jos_emundus_users___campaign_id_raw');
+				if (empty($campaign_id))
+				{
+					return false;
+				}
 
-                $query->clear()
-                    ->select($db->quoteName('id'))
-                    ->from($db->quoteName('#__emundus_setup_campaigns'))
-                    ->where($db->quoteName('id').' = '.$campaign_id);
-                $db->setQuery($query);
-                try {
-                    if (empty($db->loadResult())) {
-                        return false;
-                    }
-                } catch (Exception $e) {
-                    return false;
-                }
+				$query->clear()
+					->select($db->quoteName('id'))
+					->from($db->quoteName('#__emundus_setup_campaigns'))
+					->where($db->quoteName('id') . ' = ' . $campaign_id);
+				$db->setQuery($query);
+				try
+				{
+					if (empty($db->loadResult()))
+					{
+						return false;
+					}
+				}
+				catch (Exception $e)
+				{
+					return false;
+				}
 
-                // create new fnum
-                $fnum = date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user->id, 7, '0', STR_PAD_LEFT);
+				// create new fnum
+				$fnum = date('YmdHis') . str_pad($campaign_id, 7, '0', STR_PAD_LEFT) . str_pad($user->id, 7, '0', STR_PAD_LEFT);
 
-                $query->clear()
-                    ->insert($db->quoteName('#__emundus_campaign_candidature'))
-                    ->columns($db->quoteName(['date_time','applicant_id', 'user_id', 'campaign_id', 'fnum']))
-                    ->values($db->quote($now).', '.$user->id.', '.$user->id.', '.$campaign_id.', '.$db->quote($fnum));
-                break;
+				$query->clear()
+					->insert($db->quoteName('#__emundus_campaign_candidature'))
+					->columns($db->quoteName(['date_time', 'applicant_id', 'user_id', 'campaign_id', 'fnum']))
+					->values($db->quote($now) . ', ' . $user->id . ', ' . $user->id . ', ' . $campaign_id . ', ' . $db->quote($fnum));
+				break;
 
-            case 'cc':
-            default:
-                $user = $session->get('emundusUser');
-                if (empty($user)) {
-                    $user = JFactory::getUser();
-                }
-                $fnum_tmp = $jinput->get('jos_emundus_campaign_candidature___fnum');
-                $id = $jinput->get('jos_emundus_campaign_candidature___id');
-                $campaign_id = $jinput->getInt('jos_emundus_campaign_candidature___campaign_id_raw', 0);
+			case 'cc':
+			default:
+				$user = $session->get('emundusUser');
+				if (empty($user))
+				{
+					$user = JFactory::getUser();
+				}
+				$fnum_tmp    = $jinput->get('jos_emundus_campaign_candidature___fnum');
+				$id          = $jinput->get('jos_emundus_campaign_candidature___id');
+				$campaign_id = $jinput->getInt('jos_emundus_campaign_candidature___campaign_id_raw', 0);
 
-                if (empty($campaign_id)) {
-                    $campaign_id = $jinput->getInt('jos_emundus_campaign_candidature___campaign_id', 0);
-                }
+				if (empty($campaign_id))
+				{
+					$campaign_id = $jinput->getInt('jos_emundus_campaign_candidature___campaign_id', 0);
+				}
 
-                $campaign_id = is_array($campaign_id) ? $campaign_id[0] : $campaign_id;
-                if (empty($campaign_id)) {
-                    return false;
-                }
+				$campaign_id = is_array($campaign_id) ? $campaign_id[0] : $campaign_id;
+				if (empty($campaign_id))
+				{
+					return false;
+				}
 
-                // create new fnum
-                $fnum = date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user->id, 7, '0', STR_PAD_LEFT);
-                $query = $db->getQuery(true);
-                $query->update($db->quoteName('#__emundus_campaign_candidature'))
-                    ->set($db->quoteName('fnum').' = '.$db->Quote($fnum))
-                    ->set($db->quoteName('date_time').' = '.$db->quote($now))
-                    ->where($db->quoteName('id').' = '.$id.' AND '.$db->quoteName('fnum').' LIKE '.$db->Quote($fnum_tmp).' AND '.$db->quoteName('campaign_id').'='.$campaign_id);
-                break;
+				// create new fnum
+				$fnum  = date('YmdHis') . str_pad($campaign_id, 7, '0', STR_PAD_LEFT) . str_pad($user->id, 7, '0', STR_PAD_LEFT);
+				$query = $db->getQuery(true);
+				$query->update($db->quoteName('#__emundus_campaign_candidature'))
+					->set($db->quoteName('fnum') . ' = ' . $db->Quote($fnum))
+					->set($db->quoteName('date_time') . ' = ' . $db->quote($now))
+					->where($db->quoteName('id') . ' = ' . $id . ' AND ' . $db->quoteName('fnum') . ' LIKE ' . $db->Quote($fnum_tmp) . ' AND ' . $db->quoteName('campaign_id') . '=' . $campaign_id);
+				break;
 
-        }
+		}
 
-        try {
+		try
+		{
 
-            $db->setQuery($query);
-            $db->execute();
+			$db->setQuery($query);
+			$db->execute();
 
-            JPluginHelper::importPlugin('emundus');
-            $dispatcher = JEventDispatcher::getInstance();
-            $dispatcher->trigger('onCreateNewFile', [$user->id, $fnum, $campaign_id]);
-            $dispatcher->trigger('callEventHandler', ['onCreateNewFile', ['user_id' => $user->id, 'fnum' => $fnum, 'cid' => $campaign_id]]);
+			JPluginHelper::importPlugin('emundus');
+			$dispatcher = JEventDispatcher::getInstance();
+			$dispatcher->trigger('onCreateNewFile', [$user->id, $fnum, $campaign_id]);
+			$dispatcher->trigger('callEventHandler', ['onCreateNewFile', ['user_id' => $user->id, 'fnum' => $fnum, 'cid' => $campaign_id]]);
 
-        } catch (Exception $e) {
-            Log::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), Log::ERROR, 'com_emundus');
-            JError::raiseError(500, $query->__toString());
-        }
+		}
+		catch (Exception $e)
+		{
+			Log::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
+			JError::raiseError(500, $query->__toString());
+		}
 
-        $query = 'SELECT esc.*,  esp.label as plabel, esp.menutype
+		$query = 'SELECT esc.*,  esp.label as plabel, esp.menutype
 				FROM #__emundus_setup_campaigns AS esc
 				LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = esc.profile_id
-				WHERE esc.id='.$campaign_id;
+				WHERE esc.id=' . $campaign_id;
 
-        try {
+		try
+		{
 
-            $db->setQuery($query);
-            $campaign = $db->loadAssoc();
+			$db->setQuery($query);
+			$campaign = $db->loadAssoc();
 
-        } catch (Exception $e) {
-            Log::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, Log::ERROR, 'com_emundus');
-            JError::raiseError(500, $query);
-        }
+		}
+		catch (Exception $e)
+		{
+			Log::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $query, Log::ERROR, 'com_emundus');
+			JError::raiseError(500, $query);
+		}
 
-        jimport( 'joomla.user.helper' );
-        $user_profile = JUserHelper::getProfile($user->id)->emundus_profile;
+		jimport('joomla.user.helper');
+		$user_profile = JUserHelper::getProfile($user->id)->emundus_profile;
 
-        $schoolyear = $campaign['year'];
-        $profile = $campaign['profile_id'];
-        $firstname = ucfirst($user_profile['firstname']);
-        $lastname = ucfirst($user_profile['lastname']);
+		$schoolyear = $campaign['year'];
+		$profile    = $campaign['profile_id'];
+		$firstname  = ucfirst($user_profile['firstname']);
+		$lastname   = ucfirst($user_profile['lastname']);
 
-        // Insert data in #__emundus_users
-        $p = $m_profile->isProfileUserSet($user->id);
-        if ($p['cpt'] == 0 ) {
+		// Insert data in #__emundus_users
+		$p = $m_profile->isProfileUserSet($user->id);
+		if ($p['cpt'] == 0)
+		{
 
-            $query = 'INSERT INTO #__emundus_users (user_id, firstname, lastname, profile, schoolyear, registerDate)
-			values ('.$user->id.', '.$db->quote(ucfirst($firstname)).', '.$db->quote(strtoupper($lastname)).', '.$profile.', '.$db->quote($schoolyear).', '.$db->quote($user->registerDate).')';
+			$query = 'INSERT INTO #__emundus_users (user_id, firstname, lastname, profile, schoolyear, registerDate)
+			values (' . $user->id . ', ' . $db->quote(ucfirst($firstname)) . ', ' . $db->quote(strtoupper($lastname)) . ', ' . $profile . ', ' . $db->quote($schoolyear) . ', ' . $db->quote($user->registerDate) . ')';
 
-            try {
-                $db->setQuery($query);
-                $db->execute();
-            } catch (Exception $e) {
-                Log::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, Log::ERROR, 'com_emundus');
-                JError::raiseError(500, $query);
-            }
-        }
+			try
+			{
+				$db->setQuery($query);
+				$db->execute();
+			}
+			catch (Exception $e)
+			{
+				Log::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $query, Log::ERROR, 'com_emundus');
+				JError::raiseError(500, $query);
+			}
+		}
 
-        $query = $db->getQuery(true);
-        $query->select($db->quoteName('id'))
-            ->from($db->quoteName('#__emundus_users_profiles'))
-            ->where($db->quoteName('user_id').' = '.$user->id.' AND '.$db->quoteName('profile_id').' = '.$profile);
-        $db->setQuery($query);
-        try {
-            if (empty($db->loadResult())) {
-                // Insert data in #__emundus_users_profiles
-                $query = 'INSERT INTO #__emundus_users_profiles (user_id, profile_id) VALUES ('.$user->id.','.$profile.')';
-                $db->setQuery($query);
-                try {
-                    $db->execute();
-                } catch (Exception $e) {
-                    Log::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, Log::ERROR, 'com_emundus');
-                    JError::raiseError(500, $query);
-                }
-            }
-        } catch(Exception $e) {
-            Log::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, Log::ERROR, 'com_emundus');
-            JError::raiseError(500, $query);
-        }
+		$query = $db->getQuery(true);
+		$query->select($db->quoteName('id'))
+			->from($db->quoteName('#__emundus_users_profiles'))
+			->where($db->quoteName('user_id') . ' = ' . $user->id . ' AND ' . $db->quoteName('profile_id') . ' = ' . $profile);
+		$db->setQuery($query);
+		try
+		{
+			if (empty($db->loadResult()))
+			{
+				// Insert data in #__emundus_users_profiles
+				$query = 'INSERT INTO #__emundus_users_profiles (user_id, profile_id) VALUES (' . $user->id . ',' . $profile . ')';
+				$db->setQuery($query);
+				try
+				{
+					$db->execute();
+				}
+				catch (Exception $e)
+				{
+					Log::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $query, Log::ERROR, 'com_emundus');
+					JError::raiseError(500, $query);
+				}
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $query, Log::ERROR, 'com_emundus');
+			JError::raiseError(500, $query);
+		}
 
-        // track the LOGS (1 | c | COM_EMUNDUS_ACCESS_FILE_CREATE)
-        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
-        $user = JFactory::getSession()->get('emundusUser');
-        // if user_id is null -> there is no session data because the account is not activated yet, so don't log
-        if ($user->id) {
-            EmundusModelLogs::log($user->id, $user->id, $fnum, 1, 'c', 'COM_EMUNDUS_ACCESS_FILE_CREATE');
-        }
+		// track the LOGS (1 | c | COM_EMUNDUS_ACCESS_FILE_CREATE)
+		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'logs.php');
+		$user = JFactory::getSession()->get('emundusUser');
+		// if user_id is null -> there is no session data because the account is not activated yet, so don't log
+		if ($user->id)
+		{
+			EmundusModelLogs::log($user->id, $user->id, $fnum, 1, 'c', 'COM_EMUNDUS_ACCESS_FILE_CREATE');
+		}
 
-        if ($form_type == 'cc') {
-            $app->redirect($this->getParam('emunduscampaign_redirect_url', null) ?: 'index.php?option=com_emundus&task=openfile&fnum='.$fnum, JText::_('FILE_OK'));
-        }
-        return true;
-    }
+		if ($form_type == 'cc')
+		{
+			$app->redirect($this->getParam('emunduscampaign_redirect_url', null) ?: 'index.php?option=com_emundus&task=openfile&fnum=' . $fnum, JText::_('FILE_OK'));
+		}
 
-    /**
-     * Check Campaign Limit
-     *
-     * @return Bool|null
-     * @throws Exception
-     */
-    public function onBeforeProcess() {
+		return true;
+	}
 
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
-        $m_campaign     = new EmundusModelCampaign;
+	/**
+	 * Check Campaign Limit
+	 *
+	 * @return Bool|null
+	 * @throws Exception
+	 */
+	public function onBeforeProcess()
+	{
+		$db    = Factory::getDbo();
+		$query = $db->getQuery(true);
 
-        $form_type = $this->getParam('form_type', 'cc');
+		// Get default profile for applicant
+		$pid = 1000;
+		$query->select('id')
+			->from($db->quoteName('#__emundus_setup_profiles'))
+			->where($db->quoteName('id') . " = " . $db->quote($pid));
+		$db->setQuery($query);
+		$exist = $db->loadResult();
 
-        switch($form_type) {
-            case 'user':
+		if (!$exist)
+		{
+			$query->clear()
+				->select('id')
+				->from($db->quoteName('#__emundus_setup_profiles'))
+				->where($db->quoteName('published') . " = 1");
+			$db->setQuery($query);
+			$pid = $db->loadResult();
+		}
+		//
+
+		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'campaign.php');
+		$m_campaign = new EmundusModelCampaign;
+
+		$form_type = $this->getParam('form_type', 'cc');
+
+		switch ($form_type)
+		{
+			case 'user':
 				$campaign_id = is_array($this->app->input->get('jos_emundus_users___campaign_id_raw')) ? $this->app->input->get('jos_emundus_users___campaign_id_raw')[0] : $this->app->input->getInt('jos_emundus_users___campaign_id_raw');
 
-                break;
+				break;
 
-            case 'cc':
+			case 'cc':
 				$campaign_id = is_array($this->app->input->get('jos_emundus_campaign_candidature___campaign_id_raw')) ? $this->app->input->get('jos_emundus_campaign_candidature___campaign_id_raw')[0] : $this->app->input->getInt('jos_emundus_campaign_candidature___campaign_id_raw');
 
 				break;
-                }
+		}
 
-		if (!empty($campaign_id)) {
-                // Check if the campaign limit has been obtained
-                if ($m_campaign->isLimitObtained($campaign_id) === true) {
-                    $this->getModel()->formErrorMsg = '';
+		if (!empty($campaign_id))
+		{
+			// Check if the campaign limit has been obtained
+			if ($m_campaign->isLimitObtained($campaign_id) === true)
+			{
+				$this->getModel()->formErrorMsg     = '';
 				$this->getModel()->getForm()->error = Text::_('LIMIT_OBTAINED');
 
-                    return false;
-                }
-        }
+				return false;
+			}
+
+			$query->clear()
+				->select('profile_id')
+				->from($db->quoteName('#__emundus_setup_campaigns'))
+				->where($db->quoteName('id') . " = " . $db->quote($campaign_id));
+			$db->setQuery($query);
+			$campaign_pid = $db->loadResult();
+
+			$pid = ($campaign_pid > 0) ? $campaign_pid : $pid;
+		}
+
+		$this->getModel()->updateFormData('jos_emundus_users___profile', $pid, true);
 
 		return true;
-    }
-    /**
-     * Raise an error - depends on whether you are in admin or not as to what to do
-     *
-     * @param array   &$err   Form models error array
-     * @param string   $field Name
-     * @param string   $msg   Message
-     *
-     * @return  void
-     * @throws Exception
-     */
-    protected function raiseError(&$err, $field, $msg) {
-        $app = JFactory::getApplication();
+	}
 
-        if ($app->isAdmin()) {
-            $app->enqueueMessage($msg, 'notice');
-        } else {
-            $err[$field][0][] = $msg;
-        }
-    }
+	/**
+	 * Raise an error - depends on whether you are in admin or not as to what to do
+	 *
+	 * @param   array   &$err    Form models error array
+	 * @param   string   $field  Name
+	 * @param   string   $msg    Message
+	 *
+	 * @return  void
+	 * @throws Exception
+	 */
+	protected function raiseError(&$err, $field, $msg)
+	{
+		$app = JFactory::getApplication();
+
+		if ($app->isAdmin())
+		{
+			$app->enqueueMessage($msg, 'notice');
+		}
+		else
+		{
+			$err[$field][0][] = $msg;
+		}
+	}
 }
