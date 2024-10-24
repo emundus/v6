@@ -373,6 +373,15 @@
 		<field name="application_form_order" type="text" size="6" label="COM_EMUNDUS_APPLICATION_FORM_ORDER" description="COM_EMUNDUS_APPLICATION_FORM_ORDER_DESC"/>
 		<field name="attachment_order" type="text" size="6" label="COM_EMUNDUS_CANDIDACY_FORM_ORDER" description="COM_EMUNDUS_CANDIDACY_FORM_ORDER_DESC"/>
 		<field name="export_concat_separator" type="text" size="6" default=", " label="COM_EMUNDUS_EXPORT_APPLICATION_SEPARATOR" description="COM_EMUNDUS_EXPORT_APPLICATION_SEPARATOR_DESC"/>
+		<field name="export_elements_to_escape"
+				type="sql" default=""
+			    query="SELECT id, label FROM jos_fabrik_elements"
+			    multiple="true"
+			    key_field="id"
+			    value_field="label"
+				label="COM_EMUNDUS_EXPORT_ELEMENTS_TO_ESCAPE"
+				description="COM_EMUNDUS_EXPORT_ELEMENTS_TO_ESCAPE_DESC"
+		/>
 
 		<field
 				name="spacer1"

@@ -2218,6 +2218,7 @@ class EmundusModelEvaluation extends JModelList {
 			                    foreach ($fabrikElts as $elt) {
 				                    $params      = json_decode($elt['params']);
 				                    $groupParams = json_decode($elt['group_params']);
+                                    $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
 
                                     if (!empty($groupParams) && $groupParams->repeat_group_button == 1)
 									{
@@ -2295,10 +2296,6 @@ class EmundusModelEvaluation extends JModelList {
 									else if ($elt['plugin'] === 'databasejoin')
 									{
                                         $fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, $groupParams->repeat_group_button == 1);
-                                    }
-									else
-									{
-                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
                                     }
 
 				                    if(!isset($fabrikValues[$elt['id']][$fnum]['complex_data'])){

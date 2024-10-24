@@ -320,8 +320,8 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
             }
             $query->clear()
                 ->insert($db->quoteName('#__emundus_campaign_candidature'))
-                ->columns($db->quoteName(['date_time', 'applicant_id', 'user_id', 'campaign_id', 'fnum', 'uuid', 'uuidConnect', 'recordId']))
-                ->values($db->quote($now) . ', ' . $user_id . ', ' . $user_id . ', ' . $campaign_id . ', ' . $db->quote($fnum) . ', ' . $db->quote($single_field_data->fieldData->uuid) . ', ' . $db->quote($single_field_data->fieldData->uuidConnect) . ', ' . $db->quote($single_field_data->recordId));
+                ->columns($db->quoteName(['date_time', 'applicant_id', 'user_id', 'campaign_id', 'fnum', 'uuid', 'uuidConnect', 'recordId', 'num_projet']))
+                ->values($db->quote($now) . ', ' . $user_id . ', ' . $user_id . ', ' . $campaign_id . ', ' . $db->quote($fnum) . ', ' . $db->quote($single_field_data->fieldData->uuid) . ', ' . $db->quote($single_field_data->fieldData->uuidConnect) . ', ' . $db->quote($single_field_data->recordId) . ', ' . $db->quote($single_field_data->fieldData->{'zWEB_FORMULAIRES_PROGRAMMATIONS::NumProjet'}));
 
             try {
                 $db->setQuery($query);
@@ -366,6 +366,19 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
      */
     public function updateFile($emundus_file, $single_field_data, $query, $m_files, $m_message, $db, $admin_step, $filemaker, $mapped_columns, $user_id): void
     {
+        if ($emundus_file->num_projet !== $single_field_data->fieldData->{'zWEB_FORMULAIRES_PROGRAMMATIONS::NumProjet'}) {
+            $query->clear()
+                ->update($db->quoteName('#__emundus_campaign_candidature'))
+                ->set($db->quoteName('num_projet') . ' = ' . $db->quote($single_field_data->fieldData->{'zWEB_FORMULAIRES_PROGRAMMATIONS::NumProjet'}))
+                ->where($db->quoteName('uuid') . "=" . $db->quote($single_field_data->fieldData->uuid));
+            try {
+                $db->setQuery($query);
+                $db->execute();
+            } catch (Exception $e) {
+                $fnum = '';
+                JLog::add("[FILEMAKER CRON] Failed to update num_projet for $fnum - $user_id" . $e->getMessage(), JLog::ERROR, 'com_emundus');
+            }
+        }
         if ($emundus_file->uuidConnect !== $single_field_data->fieldData->uuidConnect) {
             switch ($admin_step) {
                 case 'PRE':

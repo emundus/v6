@@ -5081,6 +5081,14 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 			//
 		}
 
+		if (version_compare($cache_version, '1.39.10', '<=') || $firstrun) {
+			$db->setQuery("ALTER TABLE jos_emundus_personal_detail ROW_FORMAT=DYNAMIC");
+			$db->execute();
+
+			$db->setQuery("ALTER TABLE jos_emundus_users ROW_FORMAT=DYNAMIC");
+			$db->execute();
+		}
+
 		return $succeed;
 	}
 
@@ -5167,8 +5175,6 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 			->set($db->quoteName('custom_data') . ' = ' . $db->quote(json_encode($custom_data)))
 			->where($db->quoteName('element') . ' LIKE ' . $db->quote('com_emundus'));
 		$db->setQuery($query);
-
-
 		if (!$db->execute()) {
 			return false;
 		}
@@ -5237,6 +5243,8 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 			$db->execute();
 		}
 
+		// Check if all columns of Fabrik tables are associated to an element
+		$this->checkColumnsNotAssociatedToFabrik();
 
 		return true;
 	}
@@ -5257,6 +5265,72 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 		}
 		else {
 			echo("Can't scan SQL Files");
+		}
+	}
+
+	private function checkColumnsNotAssociatedToFabrik()
+	{
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select('menutype')
+			->from($db->quoteName('#__emundus_setup_profiles'))
+			->where($db->quoteName('published') . ' = ' . $db->quote('1'))
+			->where($db->quoteName('menutype') . ' IS NOT NULL');
+		$db->setQuery($query);
+		$applicant_profiles = $db->loadColumn();
+
+		foreach ($applicant_profiles as $applicantProfile) {
+			$query->clear()
+				->select('SUBSTRING_INDEX(SUBSTRING(link, LOCATE("formid=",link)+7, 4), "&", 1)')
+				->from($db->quoteName('#__menu'))
+				->where($db->quoteName('menutype') . ' LIKE ' . $db->quote($applicantProfile))
+				->where($db->quoteName('link') . ' LIKE ' . $db->quote('%com_fabrik%'));
+			$db->setQuery($query);
+			$forms_ids = $db->loadColumn();
+
+			foreach ($forms_ids as $formId)
+			{
+				$dead_columns = [];
+
+				$query->clear()
+					->select('db_table_name')
+					->from($db->quoteName('#__fabrik_lists'))
+					->where($db->quoteName('form_id') . ' = ' . $db->quote($formId));
+				$db->setQuery($query);
+				$db_table_name = $db->loadResult();
+
+				$columns = "SHOW COLUMNS FROM $db_table_name";
+				$db->setQuery($columns);
+				$columns = $db->loadObjectList();
+
+				foreach ($columns as $column) {
+					$query->clear()
+						->select('id')
+						->from($db->quoteName('#__fabrik_elements'))
+						->where($db->quoteName('name') . ' LIKE ' . $db->quote($column->Field));
+					$db->setQuery($query);
+					$element_id = $db->loadResult();
+
+					// Check if some datas are present in the column
+					$query->clear()
+						->select('COUNT(*)')
+						->from($db->quoteName($db_table_name))
+						->where($db->quoteName($column->Field) . ' IS NOT NULL');
+					$db->setQuery($query);
+					$datas = $db->loadResult();
+
+					// If not element is associated to the column and no data are present in the column
+					if(empty($element_id) && empty($datas)) {
+						$dead_columns[] = $column->Field;
+					}
+				}
+
+				if(!empty($dead_columns)) {
+					$count = count($dead_columns);
+					echo "\r\033[33m$count columns of table $db_table_name have no associated Fabrik element : " . implode(', ', $dead_columns) . "\033[0m\n";
+				}
+			}
 		}
 	}
 }

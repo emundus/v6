@@ -92,6 +92,7 @@ class EmundusViewEvaluation extends JViewLegacy
         $menu_params  = $menu->getParams($current_menu->id);
 
         $columnSupl = explode(',', $menu_params->get('em_other_columns'));
+        $show_evaluator = $menu_params->get('em_show_evaluator',1);
         $layout     = $jinput->getString('layout', 0);
 
         $m_files = new EmundusModelFiles();
@@ -198,7 +199,9 @@ class EmundusViewEvaluation extends JViewLegacy
                 $defaultElements                    = $this->get('DefaultElements');
                 $this->datas                        = array(array('check' => '#', 'name' => JText::_('COM_EMUNDUS_FILES_APPLICATION_FILES'), 'c.status' => JText::_('COM_EMUNDUS_STATUS')));
                 $fl                                 = array();
-                $fl['jos_emundus_evaluations.user'] = JText::_('COM_EMUNDUS_EVALUATION_EVALUATOR');
+                if ($show_evaluator) {
+                    $fl['jos_emundus_evaluations.user'] = JText::_('COM_EMUNDUS_EVALUATION_EVALUATOR');
+                }
                 // Get eval crieterion
                 if (!empty($defaultElements)) {
                     foreach ($defaultElements as $key => $elt) {
@@ -297,7 +300,7 @@ class EmundusViewEvaluation extends JViewLegacy
                             elseif ($key == 'name' || $key == 'status_class' || $key == 'step' || $key == 'code') {
                                 continue;
                             }
-                            elseif ($key == 'evaluator') {
+                            elseif ($key == 'evaluator' && $show_evaluator) {
 
                                 if ($this->formid > 0 && !empty($value)) {
 
@@ -368,6 +371,9 @@ class EmundusViewEvaluation extends JViewLegacy
                             }
                         }
                         $this->datas[$line['fnum']->val . '-' . $i] = $line;
+                        if (!$show_evaluator && !empty($this->datas[$line['fnum']->val . '-' . $i]['evaluator'])) {
+                            unset($this->datas[$line['fnum']->val.'-'.$i]['evaluator']);
+                        }
                         $i++;
                     }
 

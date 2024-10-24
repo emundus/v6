@@ -9,6 +9,9 @@
  */
 
 // No direct access
+use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
+
 defined('_JEXEC') or die('Restricted access');
 
 // Require the abstract plugin class
@@ -57,9 +60,9 @@ class PlgFabrik_ListCopy extends PlgFabrik_List
 	/**
 	 * Get button image
 	 *
+	 * @return   string  image
 	 * @since   3.1b
 	 *
-	 * @return   string  image
 	 */
 
 	protected function getImageName()
@@ -103,12 +106,82 @@ class PlgFabrik_ListCopy extends PlgFabrik_List
 	 */
 	public function process($opts = array())
 	{
-		$model = $this->getModel();
-		$ids = $this->app->input->get('ids', array(), 'array');
-		$formModel = $model->getFormModel();
+		$model         = $this->getModel();
+		$ids           = $this->app->input->get('ids', array(), 'array');
+		$formModel     = $model->getFormModel();
+		$copied_rights = $this->getParams()->get('copytable_group_rights', 0);
+		$status        = $model->copyRows($ids);
 
-		return $model->copyRows($ids);
+		if ($status && $copied_rights == 1 && sizeof($ids) == 1)
+		{
+			$id     = reset($ids);
+			$status = $this->copyGroupRights($id, $formModel->formData['rowid']);
+		}
+
+		return $status;
 	}
+
+	/**
+	 * Copy group rights into another group
+	 *
+	 * @param   int  $id            group's id to copy rights from
+	 * @param   int  $new_group_id  New group obtaining the copied rights
+	 *
+	 * @return bool
+	 */
+	public function copyGroupRights($id, $new_group_id)
+	{
+		$db    = Factory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select('action_id, c, r, u, d')
+			->from($db->quoteName('#__emundus_acl'))
+			->where($db->quoteName('group_id') . ' = ' . $db->quote($id));
+		$db->setQuery($query);
+		$acl = $db->loadObjectList();
+
+		foreach ($acl as $aclItem)
+		{
+			$query->clear();
+
+			if ($aclItem->action_id == 1)
+			{
+				$query->update($db->quoteName('#__emundus_acl'))
+					->set($db->quoteName('action_id') . ' = ' . 1)
+					->set($db->quoteName('c') . ' = ' . $aclItem->c)
+					->set($db->quoteName('r') . ' = ' . $aclItem->r)
+					->set($db->quoteName('u') . ' = ' . $aclItem->u)
+					->set($db->quoteName('d') . ' = ' . $aclItem->d)
+					->where($db->quoteName('group_id') . ' = ' . $db->quote($new_group_id));
+			}
+			else
+			{
+				$query->insert($db->quoteName('#__emundus_acl'))
+					->set($db->quoteName('group_id') . ' = ' . $new_group_id)
+					->set($db->quoteName('action_id') . ' = ' . $aclItem->action_id)
+					->set($db->quoteName('c') . ' = ' . $aclItem->c)
+					->set($db->quoteName('r') . ' = ' . $aclItem->r)
+					->set($db->quoteName('u') . ' = ' . $aclItem->u)
+					->set($db->quoteName('d') . ' = ' . $aclItem->d);
+			}
+
+			try
+			{
+				$db->setQuery($query);
+				$db->execute();
+
+			}
+			catch (Exception $e)
+			{
+				Log::add('component/com_fabrik/models/list | Error : Group rights could not be copy', Log::ERROR, 'com_emundus');
+
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 
 	/**
 	 * Get the message generated in process()
@@ -134,8 +207,8 @@ class PlgFabrik_ListCopy extends PlgFabrik_List
 	public function onLoadJavascriptInstance($args)
 	{
 		parent::onLoadJavascriptInstance($args);
-		$opts = $this->getElementJSOptions();
-		$opts = json_encode($opts);
+		$opts             = $this->getElementJSOptions();
+		$opts             = json_encode($opts);
 		$this->jsInstance = "new FbListCopy($opts)";
 
 		return true;

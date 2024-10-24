@@ -9,7 +9,10 @@
  */
 
 // No direct access
+require_once JPATH_BASE . '/components/com_emundus/classes/api/Api.php';
+use classes\api\Api;
 use classes\api\FileSynchronizer;
+use Joomla\CMS\Factory;
 
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
@@ -498,4 +501,167 @@ class EmundusModelSync extends JModelList {
 
         return $node_id;
     }
+
+	public function getApi($id)
+	{
+		$api = null;
+
+		try
+		{
+			$db    = Factory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('*')
+				->from($db->quoteName('#__emundus_setup_sync'))
+				->where($db->quoteName('id') . ' = ' . $db->quote($id));
+			$db->setQuery($query);
+			$api = $db->loadObject();
+		}
+		catch (Exception $e)
+		{
+			JLog::add('component/com_emundus/models/sync | Cannot get api : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.sync');
+		}
+
+		return $api;
+	}
+
+	public function callApi($api, $route, $method, $data)
+	{
+		$result = null;
+
+		if (!empty($api->config))
+		{
+			$db    = Factory::getDbo();
+			$query = $db->getQuery(true);
+
+			$config = json_decode($api->config, true);
+			if (!empty($config['routes']) && in_array($route, array_keys($config['routes'])))
+			{
+				$api_class = new Api();
+				$api_class->setBaseUrl($config['base_url']);
+				$api_class->setClient();
+
+				$api_url = '';
+				if (!empty($config['api_url']))
+				{
+					$api_url = $config['api_url'];
+				}
+
+				if (!empty($config['authentication']))
+				{
+					if ($config['authentication']['create_token'])
+					{
+						$token = '';
+						switch ($config['authentication']['token_storage'])
+						{
+							case 'database':
+								if (!empty($config['authentication']['token']) && !empty($config['authentication']['token_expiration']) && $config['authentication']['token_expiration'] > time())
+								{
+									$token = $config['authentication']['token'];
+								}
+								break;
+							case 'session':
+								$session = JFactory::getSession();
+								$token   = $session->get('sync_api_token_' . $api->id);
+								break;
+						}
+
+						if (empty($token) && !empty($config['authentication']['route']))
+						{
+							if (!empty($config['authentication']['method']) && $config['authentication']['method'] == 'post')
+							{
+								$body = [];
+								if (!empty($config['authentication']['login']))
+								{
+									$body['login'] = $config['authentication']['login'];
+								}
+								if (!empty($config['authentication']['password']))
+								{
+									$body['password'] = $config['authentication']['password'];
+								}
+								$body = json_encode($body);
+
+								$response = $api_class->post($api_url . '/' . $config['authentication']['route'], $body);
+							}
+							else
+							{
+								$params = [];
+								if (!empty($config['authentication']['login']))
+								{
+									$params['login'] = $config['authentication']['login'];
+								}
+								if (!empty($config['authentication']['password']))
+								{
+									$params['password'] = $config['authentication']['password'];
+								}
+
+								$response = $api_class->get($api_url . '/' . $config['authentication']['route'], $params);
+							}
+
+							if ($response['status'] != 200)
+							{
+								JLog::add('component/com_emundus/models/sync | Cannot get token : ' . $response['message'], JLog::ERROR, 'com_emundus.sync');
+							}
+							else
+							{
+								$token = $response['data']->{$config['authentication']['token_attribute']};
+								switch ($config['authentication']['token_storage'])
+								{
+									case 'database':
+										$config['authentication']['token'] = $response['data']->{$config['authentication']['token_attribute']};
+										if (!empty($config['authentication']['token_expiration_attribute']))
+										{
+											$config['authentication']['token_expiration'] = $response['data']->{$config['authentication']['token_expiration_attribute']};
+										}
+										else if (!empty($config['authentication']['token_validity']))
+										{
+											$config['authentication']['token_expiration'] = time() + $config['authentication']['token_validity'];
+										}
+
+										$query->clear()
+											->update($db->quoteName('#__emundus_setup_sync'))
+											->set($db->quoteName('config') . ' = ' . $db->quote(json_encode($config)))
+											->where($db->quoteName('id') . ' = ' . $db->quote($api->id));
+										$db->setQuery($query);
+										$db->execute();
+										break;
+									case 'session':
+										$session = JFactory::getSession();
+										$session->set('sync_api_token_' . $api->id, $token);
+										break;
+								}
+							}
+						}
+					}
+
+					if($config['authentication']['headers']) {
+						foreach ($config['authentication']['headers'] as $header) {
+							$value = !empty($config['authentication'][$header]) ? $config['authentication'][$header] : '';
+							if($header == 'token') {
+								$value = $token;
+							}
+							$api_class->addHeader($header, $value);
+						}
+					}
+				}
+
+				$route_config = $config['routes'][$route];
+				$method = strtolower($route_config['type']);
+
+				if($method == 'post') {
+					foreach ($data as $key => $value) {
+						if(!in_array($key, array_keys($route_config['params']))) {
+							unset($data[$key]);
+						}
+					}
+
+					$data = json_encode($data);
+				}
+
+				$result = $api_class->$method($api_url . '/' . $route, $data);
+			}
+		}
+
+		return $result;
+	}
 }

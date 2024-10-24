@@ -68,19 +68,24 @@ class EmundusViewFiles extends JViewLegacy
 		require_once(JPATH_COMPONENT . DS . 'models' . DS . 'evaluation.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
-
 		$menu = JFactory::getApplication()->getMenu();
-		$current_menu = $menu->getActive();
-		$menu_params = $menu->getParams(@$current_menu->id);
-        $session = JFactory::getSession();
+		$itemId = JFactory::getApplication()->input->getInt('Itemid', 0);
+		if(empty($itemId) && !empty($menu)) {
+			$current_menu = $menu->getActive();
+			if(!empty($current_menu)) {
+				$itemId = $current_menu->id;
+			}
+		}
 
+		$menu_params = $menu->getParams($itemId);
         if (!empty($menu_params)) {
             $this->use_module_for_filters = boolval($menu_params->get('em_use_module_for_filters', 0));
         } else {
             $this->use_module_for_filters = false;
         }
 
-        if ($this->use_module_for_filters) {
+		$session = JFactory::getSession();
+		if ($this->use_module_for_filters) {
             $session->set('last-filters-use-adavanced', true);
         } else {
             $session->set('last-filters-use-adavanced', false);
