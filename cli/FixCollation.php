@@ -76,11 +76,7 @@ class FixCollation extends JApplicationCli {
 		$db->setQuery('SET sql_mode = ""')->execute();
 		$db->setQuery('SET FOREIGN_KEY_CHECKS = 0')->execute();
 
-		$emundus_tables    = array_filter($db_tables, function ($table) {
-			return strpos($table, 'jos_emundus_') !== false;
-		});
-
-		foreach ($emundus_tables as $table) {
+		foreach ($db_tables as $table) {
 			if($table == 'jos_emundus_version') {
 				continue;
 			}
