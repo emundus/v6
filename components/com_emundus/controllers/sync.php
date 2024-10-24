@@ -10,6 +10,9 @@
 
 // No direct access
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport('joomla.application.component.controller');
@@ -368,4 +371,30 @@ class EmundusControllerSync extends JControllerLegacy
         echo json_encode((object)$response);
         exit;
     }
+
+	public function callapi()
+	{
+		$response = array('status' => 0, 'message' => Text::_('ACCESS_DENIED'));
+		$user = Factory::getUser();
+
+		$id_api = $this->input->getString('id_api', '');
+
+		$api = $this->m_sync->getApi($id_api);
+
+		if(!empty($api)) {
+			$route = $this->input->getString('route', '');
+			$method = $this->input->gestString('method', 'GET');
+			$data = $this->input->getString('data', '');
+			$data = json_decode($data);
+
+			if(!empty($route)) {
+				$response = $this->m_sync->callApi($api, $route, $method, $data);
+			} else {
+				$response['message'] = Text::_('MISSING_ROUTE');
+			}
+		}
+
+		echo json_encode((object)$response);
+		exit;
+	}
 }
