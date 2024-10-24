@@ -340,10 +340,21 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
         var pageCheckAll = $('.selectPage #em-check-all').is(':checked');
         var is_checked = false;
 
+        var numberOfFilesDisplayed = null;
+        if(document.querySelector('#pager-select')) {
+            numberOfFilesDisplayed = document.querySelector('#pager-select').value;
+        }
+
         if(e.target.id === 'em-check-all'){
             if(pageCheckAll === false){
                 $('.em-check-all-page#em-check-all-page').prop('checked', false);
             } else {
+                if(numberOfFilesDisplayed == 0) {
+                    $('.em-check-all-all').prop('checked', true);
+                    $('.em-check-all-all').trigger('change');
+                    return;
+                }
+
                 is_checked = true;
             }
         }
@@ -354,6 +365,12 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
             if(pageCheck === false){
                 $('.selectPage #em-check-all').prop('checked', false);
             } else {
+                if(numberOfFilesDisplayed == 0) {
+                    $('.em-check-all-all').prop('checked', true);
+                    $('.em-check-all-all').trigger('change');
+                    return;
+                }
+
                 is_checked = true;
             }
         }
