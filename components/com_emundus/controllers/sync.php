@@ -375,7 +375,6 @@ class EmundusControllerSync extends JControllerLegacy
 	public function callapi()
 	{
 		$response = array('status' => 0, 'message' => Text::_('ACCESS_DENIED'));
-		$user = Factory::getUser();
 
 		$id_api = $this->input->getString('id_api', '');
 
