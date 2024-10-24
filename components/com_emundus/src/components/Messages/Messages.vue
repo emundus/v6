@@ -52,7 +52,7 @@
                       <span class="messages__message-item-from">
                         <span v-if="anonymous === 0 && user != message.user_id_from">{{message.name}} - </span>
                         <span v-if="user == message.user_id_from">{{message.name}} - </span>
-                        {{ moment(message.date_time).format("HH:mm") }}
+                        {{ message.date_hour }}
                       </span>
                     </p>
                     <span class="messages__message-item-span" :class="user == message.user_id_from ? 'messages__message-item-span_current-user' : 'messages__message-item-span_other-user'" v-html="message.message"></span>
