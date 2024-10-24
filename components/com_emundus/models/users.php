@@ -3827,7 +3827,7 @@ class EmundusModelUsers extends JModelList {
      */
     public function getColumnsFromProfileForm() {
 
-        $columns = null;
+        $columns = [];
 
         $db = Factory::getDbo();
         $query = $db->getQuery(true);
