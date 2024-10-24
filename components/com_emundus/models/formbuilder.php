@@ -554,14 +554,23 @@ class EmundusModelFormbuilder extends JModelList {
             $result = $db->loadResult();
 	        $increment = str_pad(strval($result), 2, '0', STR_PAD_LEFT);
 
+	        $collation = 'utf8mb4_0900_ai_ci';
+	        $sql_engine = $db->setQuery("SHOW VARIABLES LIKE 'version_comment'")->loadAssoc();
+	        if(!empty($sql_engine)) {
+		        $sql_engine = $sql_engine['Value'];
+		        if(strpos($sql_engine, 'MySQL') === false) {
+			        $collation = 'utf8mb4_unicode_ci';
+		        }
+	        }
+
             $query = "CREATE TABLE IF NOT EXISTS jos_emundus_" . $prid . "_" . $increment . " (
             id int(11) NOT NULL AUTO_INCREMENT,
             time_date datetime NULL DEFAULT current_timestamp(),
-            fnum varchar(28) NOT NULL,
+            fnum varchar(28) CHARSET utf8mb4 NOT NULL,
             user int(11) NULL,
             PRIMARY KEY (id),
             UNIQUE KEY fnum (fnum)
-            ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci";
+            ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=".$collation;
             $db->setQuery($query);
             $table_created = $db->execute();
             //
