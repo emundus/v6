@@ -10,6 +10,7 @@
 // No direct access
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Language\Text;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -1733,6 +1734,21 @@ class EmundusControllerFiles extends JControllerLegacy
 					$encryption_key = JFactory::getConfig()->get('secret');
 				}
 				
+				$emParams = ComponentHelper::getParams('com_emundus');
+				$excel_elts_to_escape = $emParams->get('export_elements_to_escape', '');
+				if(!empty($excel_elts_to_escape) && is_array($excel_elts_to_escape)) {
+					$db = JFactory::getDbo();
+					$query = $db->getQuery(true);
+					
+					$query->select('name')
+						->from($db->quoteName('#__fabrik_elements'))
+						->where($db->quoteName('id') . ' IN ('.implode(',',$excel_elts_to_escape).')');
+					$db->setQuery($query);
+					$excel_elts_to_escape = $db->loadColumn();
+				} else {
+					$excel_elts_to_escape = [];
+				}
+				
 				$already_counted_fnums = array();
 				// On parcours les fnums
 				foreach ($fnumsArray as $fnum) {
@@ -1750,11 +1766,12 @@ class EmundusControllerFiles extends JControllerLegacy
 									$line .= $userProfil->firstname."\t";
 								}
 							} else {
+								list($key_table, $key_element) = explode('___', $k);
+								
 								if ($v == "") {
 									$line .= " "."\t";
 								} else {
 									if (!empty($encrypted_tables)) {
-										list($key_table, $key_element) = explode('___', $k);
 										if (!empty($key_table) && in_array($key_table, $encrypted_tables)) {
 											$decoded_value = json_decode($v, true);
 
@@ -1820,7 +1837,11 @@ class EmundusControllerFiles extends JControllerLegacy
 										elseif (count($opts) > 0 && in_array("upper-case", $opts)) {
 											$line .= JText::_(preg_replace("/\r|\n|\t/", "", mb_strtoupper($v)))."\t";
 										} else {
-											$line .= JText::_(preg_replace("/\r|\n|\t/", "", $v))."\t";
+											if(!empty($key_element) && in_array($key_element,$excel_elts_to_escape)) {
+												$line .= "'". JText::_(preg_replace("/\r|\n|\t/", "", $v))."\t";
+											} else {
+												$line .= JText::_(preg_replace("/\r|\n|\t/", "", $v))."\t";
+											}
 										}
 									}
 								}
