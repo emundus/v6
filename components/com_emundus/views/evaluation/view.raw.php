@@ -371,8 +371,8 @@ class EmundusViewEvaluation extends JViewLegacy
                             }
                         }
                         $this->datas[$line['fnum']->val . '-' . $i] = $line;
-                        if (!$show_evaluator) {
-                            unset($datas[$line['fnum']->val.'-'.$i]['evaluator']);
+                        if (!$show_evaluator && !empty($this->datas[$line['fnum']->val . '-' . $i]['evaluator'])) {
+                            unset($this->datas[$line['fnum']->val.'-'.$i]['evaluator']);
                         }
                         $i++;
                     }
