@@ -112,7 +112,7 @@ class PlgFabrik_ListCopy extends PlgFabrik_List
 		$copied_rights = $this->getParams()->get('copytable_group_rights', 0);
 		$status        = $model->copyRows($ids);
 
-		if ($copied_rights && sizeof($ids) == 1)
+		if ($status && $copied_rights == 1 && sizeof($ids) == 1)
 		{
 			$id     = reset($ids);
 			$status = $this->copyGroupRights($id, $formModel->formData['rowid']);
