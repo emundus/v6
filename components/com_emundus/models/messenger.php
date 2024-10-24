@@ -82,10 +82,16 @@ class EmundusModelMessenger extends JModelList
 					->where($db->quoteName('c.fnum') .' LIKE ' . $db->quote($fnum))
 					->order('m.date_time DESC');
 				$db->setQuery($query, $offset);
+				$messages = $db->loadObjectList();
+
+				foreach($messages as $key => $message) {
+					$hour = EmundusHelperDate::displayDate($message->date_time, 'H:i', 0);
+					$messages[$key]->date_hour = $hour;
+				}
 
 				$datas = new stdClass;
 				$datas->dates = $dates;
-				$datas->messages = array_reverse($db->loadObjectList());
+				$datas->messages = array_reverse($messages);
 				$datas->anonymous = $anonymous_coordinator;
 				$messages = $datas;
 			} catch (Exception $e){
