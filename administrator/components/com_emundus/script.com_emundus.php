@@ -5960,6 +5960,26 @@ include(\'index.php\');
 				$element->params             = json_encode($params);
 				$checked                     = $this->dbo->updateObject('#__fabrik_elements', $element, 'id');
 			}
+			//
+
+			// Now check dropdown elements with multiple select
+			$query->clear()
+				->select('id,params')
+				->from($this->dbo->quoteName('#__fabrik_elements'))
+				->where($this->dbo->quoteName('plugin') . ' = ' . $this->dbo->quote('dropdown'))
+				->where('JSON_VALID(' . $this->dbo->quoteName('params') . ')')
+				->where('JSON_EXTRACT(' . $this->dbo->quoteName('params') . ', "$.multiple") = ' . $this->dbo->quote('1'));
+			$this->dbo->setQuery($query);
+			$elements = $this->dbo->loadObjectList();
+
+			foreach ($elements as $element)
+			{
+				$params                      = json_decode($element->params, true);
+				$params['advanced_behavior'] = 1;
+				$element->params             = json_encode($params);
+				$checked                     = $this->dbo->updateObject('#__fabrik_elements', $element, 'id');
+			}
+			//
 		}
 		catch (Exception $e)
 		{
@@ -6296,8 +6316,6 @@ include(\'index.php\');
 				->where($this->dbo->quoteName('type') . ' = ' . $this->dbo->quote('heading'));
 			$this->dbo->setQuery($query);
 			$heading_menus = $this->dbo->loadColumn();
-			
-			echo '<pre>'; var_dump($heading_menus); echo '</pre>'; die;
 
 			// We need at least 3 menus
 			if(count($heading_menus) < 3) {

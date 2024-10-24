@@ -3587,28 +3587,6 @@ class EmundusHelperUpdate
 		}
 		//
 
-		// Check if dropfiles plugin is enabled
-		$query->clear()
-			->select('extension_id')
-			->from($db->quoteName('#__extensions'))
-			->where($db->quoteName('element') . ' LIKE ' . $db->quote('setup_category'))
-			->where($db->quoteName('folder') . ' LIKE ' . $db->quote('emundus'));
-		$db->setQuery($query);
-		$emundus_dropfiles_plugin = $db->loadResult();
-
-		if(empty($emundus_dropfiles_plugin))
-		{
-			EmundusHelperUpdate::installExtension('Emundus - Create new dropfiles category', 'setup_category', '{"name":"Emundus - Create new dropfiles category","type":"plugin","creationDate":"July 2020","author":"eMundus","copyright":"(C) 2010-2019 EMUNDUS SOFTWARE. All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"https:\/\/www.emundus.fr","version":"6.9.10","description":"PLG_EMUNDUS_SETUP_CATEGORY_DESCRIPTION","group":"","filename":"setup_category"}', 'plugin', 1, 'emundus');
-		} else {
-			$query->clear()
-				->update($db->quoteName('#__extensions'))
-				->set($db->quoteName('enabled') . ' = 1')
-				->where($db->quoteName('extension_id') . ' = ' . $db->quote($emundus_dropfiles_plugin));
-			$db->setQuery($query);
-			$db->execute();
-		}
-		//
-
 		// Manage SCP configuration
 		$query->clear()
 			->select('storage_value')
