@@ -12510,5 +12510,4 @@ class FabrikFEModelList extends JModelForm
 
 		return $layout;
 	}
-
 }
