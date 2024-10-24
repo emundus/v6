@@ -570,7 +570,7 @@ class EmundusModelFormbuilder extends JModelList {
             user int(11) NULL,
             PRIMARY KEY (id),
             UNIQUE KEY fnum (fnum)
-            ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=".$collation;
+            ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE ".$collation;
             $db->setQuery($query);
             $table_created = $db->execute();
             //
